@@ -26,7 +26,7 @@ def demo_plan() -> Generator[Msg, None, None]:
     """
     block = Block("mot", float)
     dae = Dae()
-    yield from ensure_connected(block, dae)
+    yield from ensure_connected(block, dae, force_reconnect=True)
 
     @run_decorator(md={})
     def _inner() -> Generator[Msg, None, None]:

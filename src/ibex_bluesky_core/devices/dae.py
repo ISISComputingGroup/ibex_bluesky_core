@@ -31,8 +31,6 @@ class Dae(
         self.begin_run: SignalX = epics_signal_x(f"{pv_prefix}DAE:BEGINRUN")
         self.end_run: SignalX = epics_signal_x(f"{pv_prefix}DAE:ENDRUN")
 
-        self._last_trigger_timestamp: float | None = None
-
     async def read(self) -> dict[str, Reading]:
         """Take a reading.
 
@@ -44,12 +42,9 @@ class Dae(
         # passed in through configure(), along with any normalisation that needs to be done.
         intensity = await self.good_uah.get_value()
 
-        if self._last_trigger_timestamp is None:
-            raise ValueError("DAE was never triggered.")
-
         return {
             self.name: {
-                "timestamp": self._last_trigger_timestamp,
+                "timestamp": time.time(),
                 "value": intensity,
             }
         }
@@ -76,7 +71,3 @@ class Dae(
         await self.begin_run.trigger(wait=True)
         await asyncio.sleep(2)  # This is a placeholder for the moment
         await self.end_run.trigger(wait=True)
-
-        # It may be better for this to be the actual end time of the run we just ended if we can
-        # get that from ICP.
-        self._last_trigger_timestamp = time.time()
