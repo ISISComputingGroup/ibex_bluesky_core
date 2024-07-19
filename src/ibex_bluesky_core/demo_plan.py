@@ -19,7 +19,7 @@ def demo_plan() -> Generator[Msg, None, None]:
     >>> from bluesky.run_engine import RunEngine
     >>> from bluesky.callbacks import LiveTable
     >>> RE = RunEngine()
-    >>> RE(demo_plan(), LiveTable("mot-value", "DAE"))
+    >>> RE(demo_plan(), LiveTable(["mot-value", "DAE"]))
 
     You will need a DAE in a state which can begin, and a settable & readable
     floating-point block named "mot".
