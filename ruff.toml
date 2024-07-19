@@ -1,0 +1,32 @@
+line-length = 100
+indent-width = 4
+
+[lint]
+extend-select = [
+    "N",     # pep8-naming
+    "D",     # pydocstyle (can use this later but for now causes too many errors)
+    "I",     # isort (for imports)
+    "E501",  # Line too long ({width} > {limit})
+    "E",
+    "F",
+	"W",
+    "ANN",
+	"ASYNC", # Asyncio-specific checks
+	"B",
+	"NPY",   # Numpy-specific rules
+	"RUF",   # Ruff-specific checks, include some useful asyncio rules
+]
+ignore = [
+    "D406",    # Section name should end with a newline ("{name}")
+    "D407",    # Missing dashed underline after section ("{name}")
+    "ANN101",  # ignore this until its removed in future versions
+    "ANN102",  # ignore this until its removed in future versions
+	"D213",    # Incompatible with D212
+	"D203",    # Incompatible with D211
+]
+[lint.per-file-ignores]
+"tests/*" = [
+    "N802",
+    "D",   # Don't require method documentation for test methods
+    "ANN"  # Don't require tests to use type annotations
+]
