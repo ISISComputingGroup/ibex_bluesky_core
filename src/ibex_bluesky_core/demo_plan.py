@@ -28,7 +28,7 @@ def run_demo_plan() -> None:
     prefix = get_pv_prefix()
     block = Block(prefix, "mot", float)
     dae = Dae(prefix)
-    RE(demo_plan(block, dae), LiveTable(["mot-readback", "DAE"]))
+    RE(demo_plan(block, dae), LiveTable(["mot", "DAE"]))
 
 
 def demo_plan(block: Block, dae: Dae) -> Generator[Msg, None, None]:

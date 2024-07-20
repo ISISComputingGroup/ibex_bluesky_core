@@ -17,13 +17,23 @@ class Block(StandardReadable, Locatable, Generic[T]):
         """Create a new Block device."""
         with self.add_children_as_readables(HintedSignal):
             self.readback: SignalR[T] = epics_signal_r(datatype, f"{prefix}CS:SB:{block_name}")
+
+        with self.add_children_as_readables():
             self.setpoint: SignalRW[T] = epics_signal_rw(datatype, f"{prefix}CS:SB:{block_name}:SP")
 
         super().__init__(name=block_name)
+        self.readback.set_name(block_name)
 
     def set(self, value: T) -> AsyncStatus:
-        """Set the setpoint of this block."""
-        return self.setpoint.set(value, wait=False)
+        """Set the setpoint of this block.
+
+        The status returned by this object will be marked done when:
+        - An EPICS completion callback has been received
+          * (To do: make completion callback optional)
+        - (To do: an optionally-configured time period)
+        - (To do: an optionally-configured readback tolerance)
+        """
+        return self.setpoint.set(value, wait=True)
 
     async def locate(self) -> Location[T]:
         """Get the current 'location' (primary value) of this block."""
