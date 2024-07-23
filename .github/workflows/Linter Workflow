@@ -2,6 +2,7 @@ name: Linter
 on: pull_request
 jobs:
   call-workflow:
-    uses: ISISComputingGroup/reusable-workflows/.github/workflows/linters.yml@main
+    uses: ISISComputingGroup/reusable-workflows/.github/workflows/linters.yml@respect_existing_ruff_tomls
     with:
       compare-branch: origin/main
+      python-ver: 3.10
