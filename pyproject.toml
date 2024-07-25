@@ -62,7 +62,7 @@ dev = [
 [tool.pytest.ini_options]
 testpaths = "tests"
 asyncio_mode = "auto"
-addopts = "--cov --cov-report=html"
+addopts = "--cov --cov-report=html -vv"
 
 [tool.coverage.run]
 branch = true
