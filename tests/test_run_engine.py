@@ -1,14 +1,16 @@
+import threading
 from typing import Any, Generator
+from unittest.mock import MagicMock
 
 import bluesky.plan_stubs as bps
 import pytest
-from bluesky.run_engine import RunEngineResult
+from bluesky.run_engine import RunEngine, RunEngineResult
 from bluesky.utils import Msg, RequestAbort, RequestStop, RunEngineInterrupted
-from ibex_bluesky_core.run_engine import get_run_engine
+from ibex_bluesky_core.run_engine import _DuringTask, get_run_engine
 
 
 @pytest.fixture
-def RE():
+def RE() -> RunEngine:
     get_run_engine.cache_clear()
     return get_run_engine()
 
@@ -125,3 +127,15 @@ def test_run_engine_emits_documents_for_interruptions(RE):
     assert result.interrupted
     assert result.exception == RequestStop
     assert result.reason == ""
+
+
+def test_during_task_does_wait_with_small_timeout():
+    task = _DuringTask()
+
+    event = MagicMock(spec=threading.Event)
+    event.wait.side_effect = [False, True]
+
+    task.block(event)
+
+    event.wait.assert_called_with(0.1)
+    assert event.wait.call_count == 2
