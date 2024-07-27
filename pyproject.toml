@@ -79,3 +79,5 @@ directory = "coverage_html_report"
 
 [tool.pyright]
 include = ["src", "tests"]
+reportUntypedFunctionDecorator = true
+reportUntypedClassDecorator = true

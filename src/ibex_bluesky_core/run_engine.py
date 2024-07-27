@@ -35,12 +35,27 @@ def get_run_engine() -> RunEngine:
     unlikely to be desired behaviour, though we cannot prevent users from creating a RunEngine from
     bluesky directly.
 
-    Generally should be used as:
+    Basic usage:
+    - Get the IBEX run engine:
     >>> RE = get_run_engine()
-    >>> plan: Generator[Msg, None, None] = ...
-    >>> RE(plan)  # Run a plan
-    >>> RE.subscribe(...)  # Subscribe to future documents emitted by the run engine
-    >>> RE.abort(reason="...")  # Control the state of the run engine
+
+    - Run a plan:
+    >>> from bluesky.plans import count  # Or any other plan
+    >>> det = ...  # A "detector" object, for example a Block or Dae device.
+    >>> RE(count([det]))
+
+    - Control the state of the run engine:
+    >>> RE.abort(reason="...")  # Stop a plan, do cleanup, and mark as failed (e.g. bad data).
+    >>> RE.stop()  # Stop a plan, do cleanup, mark as success"(e.g. scan has moved past peak).
+    >>> RE.halt()  # Stop a plan, don't do any cleanup, just abort with no further action.
+    >>> RE.resume()  # Resume running a previously-paused plan.
+
+    - Subscribe to data emitted by this run engine:
+    >>> RE.subscribe(lambda name, document: ...)
+
+    For full documentation about the run engine, see:
+    - https://nsls-ii.github.io/bluesky/tutorial.html#the-runengine
+    - https://nsls-ii.github.io/bluesky/run_engine_api.html
     """
     loop = asyncio.new_event_loop()
     RE = RunEngine(
