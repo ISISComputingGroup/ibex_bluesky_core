@@ -37,7 +37,7 @@ jobs:
     needs: [lint-and-test, build]
     runs-on: ubuntu-latest
     environment:
-      name: pypi
+      name: release
       url: https://pypi.org/p/ibex_bluesky_core 
     permissions:
       id-token: write  # IMPORTANT: mandatory for trusted publishing
