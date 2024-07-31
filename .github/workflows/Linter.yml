@@ -28,3 +28,8 @@ jobs:
     steps:
     - run: exit 1
       # see https://stackoverflow.com/a/67532120/4907315
+      if: >-
+          ${{
+               contains(needs.*.result, 'failure')
+            || contains(needs.*.result, 'cancelled')
+          }}
