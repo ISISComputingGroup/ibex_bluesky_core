@@ -24,7 +24,7 @@ class _DuringTask(DuringTask):
             pass
 
 
-@cache
+@cache  # functools.cache ensures we only ever create a single instance of the RunEngine
 def get_run_engine() -> RunEngine:
     """Acquire a RunEngine in a suitable configuration for ISIS experiments.
 
