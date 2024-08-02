@@ -2,7 +2,7 @@ name: Lint-and-test
 on: [pull_request, workflow_call]
 jobs:
   call-linter-workflow:
-    uses: ISISComputingGroup/reusable-workflows/.github/workflows/linters.yml@respect_existing_ruff_tomls
+    uses: ISISComputingGroup/reusable-workflows/.github/workflows/linters.yml@main
     with:
       compare-branch: origin/main
       python-ver: '3.11'
