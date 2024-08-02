@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools"]
+requires = ["setuptools", "setuptools_scm>=8"]
 build-backend = "setuptools.build_meta"
 
 
@@ -81,3 +81,5 @@ directory = "coverage_html_report"
 include = ["src", "tests"]
 reportUntypedFunctionDecorator = true
 reportUntypedClassDecorator = true
+
+[tool.setuptools_scm]
