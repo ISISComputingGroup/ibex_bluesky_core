@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools"]
+requires = ["setuptools", "setuptools_scm>=8"]
 build-backend = "setuptools.build_meta"
 
 
@@ -79,3 +79,5 @@ directory = "coverage_html_report"
 
 [tool.pyright]
 include = ["src", "tests"]
+
+[tool.setuptools_scm]
