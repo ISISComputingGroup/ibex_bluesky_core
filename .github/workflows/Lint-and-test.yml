@@ -1,7 +1,7 @@
-name: Linter
+name: Lint-and-test
 on: [pull_request, workflow_call]
 jobs:
-  call-workflow:
+  call-linter-workflow:
     uses: ISISComputingGroup/reusable-workflows/.github/workflows/linters.yml@respect_existing_ruff_tomls
     with:
       compare-branch: origin/main
@@ -24,7 +24,7 @@ jobs:
     if: ${{ always() }}
     runs-on: ubuntu-latest
     name: Final Results
-    needs: [call-workflow, tests]
+    needs: [call-linter-workflow, tests]
     steps:
     - run: exit 1
       # see https://stackoverflow.com/a/67532120/4907315

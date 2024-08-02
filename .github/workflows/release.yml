@@ -4,7 +4,7 @@ jobs:
   lint-and-test: 
     if: github.ref_type == 'tag'
     name: Run linter and tests
-    uses: ./.github/workflows/Linter.yml
+    uses: ./.github/workflows/Lint-and-test.yml
   build: 
     needs: lint-and-test
     if: github.ref_type == 'tag'
