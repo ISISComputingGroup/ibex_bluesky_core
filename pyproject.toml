@@ -62,7 +62,7 @@ dev = [
 [tool.pytest.ini_options]
 testpaths = "tests"
 asyncio_mode = "auto"
-addopts = "--cov --cov-report=html"
+addopts = "--cov --cov-report=html -vv"
 
 [tool.coverage.run]
 branch = true
@@ -79,5 +79,7 @@ directory = "coverage_html_report"
 
 [tool.pyright]
 include = ["src", "tests"]
+reportUntypedFunctionDecorator = true
+reportUntypedClassDecorator = true
 
 [tool.setuptools_scm]

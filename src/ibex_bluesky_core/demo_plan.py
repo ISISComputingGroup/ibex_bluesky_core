@@ -5,13 +5,15 @@ from typing import Generator
 import bluesky.plan_stubs as bps
 from bluesky.callbacks import LiveTable
 from bluesky.preprocessors import run_decorator
-from bluesky.run_engine import RunEngine
 from bluesky.utils import Msg
 from ophyd_async.plan_stubs import ensure_connected
 
 from ibex_bluesky_core.devices import get_pv_prefix
 from ibex_bluesky_core.devices.block import Block
 from ibex_bluesky_core.devices.dae import Dae
+from ibex_bluesky_core.run_engine import get_run_engine
+
+__all__ = ["run_demo_plan", "demo_plan"]
 
 
 def run_demo_plan() -> None:
@@ -24,7 +26,7 @@ def run_demo_plan() -> None:
     >>> from ibex_bluesky_core.demo_plan import run_demo_plan
     >>> run_demo_plan()
     """
-    RE = RunEngine()
+    RE = get_run_engine()
     prefix = get_pv_prefix()
     block = Block(prefix, "mot", float)
     dae = Dae(prefix)
