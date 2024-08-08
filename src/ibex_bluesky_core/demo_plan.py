@@ -51,6 +51,7 @@ def demo_plan(block: Block, dae: Dae) -> Generator[Msg, None, None]:
         yield from bps.create()  # Create a bundle of readings
         yield from bps.read(block)
         yield from bps.read(dae)
+        yield from bps.read(dae.title)
         yield from bps.save()
 
     yield from _inner()

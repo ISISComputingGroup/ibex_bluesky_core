@@ -1,13 +1,31 @@
 """ophyd-async devices for communicating with the ISIS data acquisition electronics."""
 
 import asyncio
-import time
-from typing import Dict
-
-from bluesky.protocols import Reading, Triggerable
-from event_model import DataKey
-from ophyd_async.core import AsyncStatus, SignalR, SignalX, StandardReadable
+from enum import Enum
+import numpy as np
+from bluesky.protocols import Triggerable
+from ophyd_async.core import AsyncStatus, SignalR, SignalX, StandardReadable, ConfigSignal, SignalRW
 from ophyd_async.epics.signal import epics_signal_r, epics_signal_x
+
+from ibex_bluesky_core.utils.isis_epics_signals import isis_epics_signal_rw
+
+
+class RunstateEnum(str, Enum):
+    PROCESSING = "PROCESSING",
+    SETUP = "SETUP",
+    RUNNING = "RUNNING",
+    PAUSED = "PAUSED",
+    WAITING = "WAITING",
+    VETOING = "VETOING",
+    ENDING = "ENDING",
+    SAVING = "SAVING",
+    RESUMING = "RESUMING",
+    PAUSING = "PAUSING",
+    BEGINNING = "BEGINNING",
+    ABORTING = "ABORTING",
+    UPDATING = "UPDATING",
+    STORING = "STORING",
+    CHANING = "CHANGING"
 
 
 class Dae(
@@ -18,65 +36,30 @@ class Dae(
 
     def __init__(self, prefix: str, name: str = "DAE") -> None:
         """Create a new Dae ophyd-async device."""
+        dae_prefix = f"{prefix}DAE:"
         with self.add_children_as_readables():
-            self.good_uah: SignalR[float] = epics_signal_r(float, f"{prefix}DAE:GOODUAH")
+            self.good_uah: SignalR[float] = epics_signal_r(float, f"{dae_prefix}GOODUAH")
+            self.run_number: SignalR[float] = epics_signal_r(float, f"{dae_prefix}RUNNUMBER")
+            self.run_state: SignalR[RunstateEnum] = epics_signal_r(RunstateEnum, f"{dae_prefix}RUNSTATE")
 
-        self.begin_run: SignalX = epics_signal_x(f"{prefix}DAE:BEGINRUN")
-        self.end_run: SignalX = epics_signal_x(f"{prefix}DAE:ENDRUN")
+            self.title: SignalRW = isis_epics_signal_rw(str, f"{dae_prefix}TITLE")
+            self.users: SignalRW = isis_epics_signal_rw(str, f"{dae_prefix}_USERNAME")
+            # why does np.typing.NDArray not work?
+            # self.spectra_1_period_1: SignalR[np.typing.NDArray] = epics_signal_r(np.typing.NDArray, f"{prefix}DAE"
+            #                                                                                         f":SPECTRA:1:1")
+
+        with self.add_children_as_readables(ConfigSignal):
+            # add configurable pvs here ie. wiring tables, spectra number, etc. - stuff that'll change the shape of other signals
+            # self.
+            pass
+
+        self.begin_run: SignalX = epics_signal_x(f"{dae_prefix}BEGINRUN")
+        self.end_run: SignalX = epics_signal_x(f"{dae_prefix}ENDRUN")
+        self.pause_run: SignalX = epics_signal_x(f"{dae_prefix}PAUSERUN")
+        self.resume_run: SignalX = epics_signal_x(f"{dae_prefix}RESUMERUN")
+        self.abort_run: SignalX = epics_signal_x(f"{dae_prefix}ABORTRUN")
 
         super().__init__(name=name)
-
-    async def read(self) -> dict[str, Reading]:
-        """Take a reading from the DAE.
-
-        For the DAE, this means:
-        - Read "intensity"
-        - If configured to normalise, do normalisation
-
-        Note that this method should be "fast" (should not wait for an acquisition) - it should
-        only read existing PVs.
-
-        In simple setups, e.g. one DAE run per scan point, we can use
-        >>> import bluesky.plan_stubs as bps
-        >>> dae = Dae(...)
-        >>> def plan():
-        >>>     yield from bps.trigger_and_read(dae)
-        to trigger and wait for an acquisition, and then immediately read.
-
-        In more complex setups where the plan needs fine-grained control about exactly when the DAE
-        should begin and end, that is also possible by calling read() without trigger():
-        >>> def plan():
-        >>>     yield from bps.trigger(dae.begin_run)
-        >>> # ... some special logic ...
-        >>>     yield from bps.trigger(dae.end_run)
-        >>>     yield from bps.create()
-        >>>     yield from bps.read(dae)
-        >>>     yield from bps.save()
-        """
-        reading: dict[str, Reading] = await super().read()
-
-        # This is a placeholder for the moment - exactly how to get "intensity" will eventually be
-        # passed in through configure(), along with any normalisation that needs to be done.
-        intensity = await self.good_uah.get_value()
-
-        reading[self.name] = Reading(
-            timestamp=time.time(),
-            value=intensity,
-        )
-
-        return reading
-
-    async def describe(self) -> Dict[str, DataKey]:
-        """Get metadata describing the reading."""
-        descriptor: dict[str, DataKey] = await super().describe()
-
-        descriptor[self.name] = DataKey(
-            shape=[],
-            dtype="number",
-            source=self.good_uah.source,
-        )
-
-        return descriptor
 
     @AsyncStatus.wrap
     async def trigger(self) -> None:
