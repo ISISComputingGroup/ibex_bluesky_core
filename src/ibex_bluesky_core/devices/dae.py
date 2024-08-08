@@ -11,20 +11,20 @@ from ibex_bluesky_core.utils.isis_epics_signals import isis_epics_signal_rw
 
 
 class RunstateEnum(str, Enum):
-    PROCESSING = "PROCESSING",
-    SETUP = "SETUP",
-    RUNNING = "RUNNING",
-    PAUSED = "PAUSED",
-    WAITING = "WAITING",
-    VETOING = "VETOING",
-    ENDING = "ENDING",
-    SAVING = "SAVING",
-    RESUMING = "RESUMING",
-    PAUSING = "PAUSING",
-    BEGINNING = "BEGINNING",
-    ABORTING = "ABORTING",
-    UPDATING = "UPDATING",
-    STORING = "STORING",
+    PROCESSING = "PROCESSING"
+    SETUP = "SETUP"
+    RUNNING = "RUNNING"
+    PAUSED = "PAUSED"
+    WAITING = "WAITING"
+    VETOING = "VETOING"
+    ENDING = "ENDING"
+    SAVING = "SAVING"
+    RESUMING = "RESUMING"
+    PAUSING = "PAUSING"
+    BEGINNING = "BEGINNING"
+    ABORTING = "ABORTING"
+    UPDATING = "UPDATING"
+    STORING = "STORING"
     CHANING = "CHANGING"
 
 
@@ -39,11 +39,20 @@ class Dae(
         dae_prefix = f"{prefix}DAE:"
         with self.add_children_as_readables():
             self.good_uah: SignalR[float] = epics_signal_r(float, f"{dae_prefix}GOODUAH")
-            self.run_number: SignalR[float] = epics_signal_r(float, f"{dae_prefix}RUNNUMBER")
-            self.run_state: SignalR[RunstateEnum] = epics_signal_r(RunstateEnum, f"{dae_prefix}RUNSTATE")
+
+            self.good_frames: SignalR[int] = epics_signal_r(int, f"{dae_prefix}GOODFRAMES")
+            self.period_good_frames: SignalR[int] = epics_signal_r(
+                int, f"{dae_prefix}GOODFRAMES:PD"
+            )
+            self.run_number: SignalR[int] = epics_signal_r(int, f"{dae_prefix}IRUNNUMBER")
+
+            self.run_state: SignalR[RunstateEnum] = epics_signal_r(
+                RunstateEnum, f"{dae_prefix}RUNSTATE"
+            )
 
             self.title: SignalRW = isis_epics_signal_rw(str, f"{dae_prefix}TITLE")
             self.users: SignalRW = isis_epics_signal_rw(str, f"{dae_prefix}_USERNAME")
+            self.rb_number: SignalRW = isis_epics_signal_rw(str, f"{dae_prefix}_RBNUMBER")
             # why does np.typing.NDArray not work?
             # self.spectra_1_period_1: SignalR[np.typing.NDArray] = epics_signal_r(np.typing.NDArray, f"{prefix}DAE"
             #                                                                                         f":SPECTRA:1:1")
