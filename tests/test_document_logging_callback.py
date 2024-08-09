@@ -10,7 +10,6 @@ from bluesky.utils import Msg
 
 def test_run_engine_logs_all_documents(RE):
     m = mock_open()
-    filepath: str
     log_location = Path("C:\\") / "instrument" / "var" / "logs" / "bluesky" / "raw_documents"
 
     def basic_plan() -> Generator[Msg, None, None]:
