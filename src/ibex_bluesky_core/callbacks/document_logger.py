@@ -21,7 +21,6 @@ class DocLoggingCallback:
         Args:
             name: The type of the document e.g start, event, stop
             document: The contents of the docuement as a dictionary
-        
         """
         if name == "start":
             log_location.mkdir(parents=True, exist_ok=True)
