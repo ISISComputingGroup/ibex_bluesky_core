@@ -6,6 +6,7 @@ from threading import Event
 
 from bluesky.run_engine import RunEngine
 from bluesky.utils import DuringTask
+
 from ibex_bluesky_core.callbacks.document_logger import DocLoggingCallback
 
 __all__ = ["get_run_engine"]
@@ -67,6 +68,6 @@ def get_run_engine() -> RunEngine:
     RE.record_interruptions = True
 
     log_callback = DocLoggingCallback()
-    RE.subscribe(log_callback) # Uses ID = 0 for DocLoggingCallback
+    RE.subscribe(log_callback)  # Uses ID = 0 for DocLoggingCallback
 
     return RE
