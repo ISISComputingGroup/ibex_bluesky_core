@@ -4,7 +4,7 @@ jobs:
   call-linter-workflow:
     uses: ISISComputingGroup/reusable-workflows/.github/workflows/linters.yml@install_proj_dependancies_in_workflow
     with:
-      compare-branch: origin/install_proj_dependancies_in_workflow
+      compare-branch: origin/main
       python-ver: '3.11'
   tests:
     runs-on: ubuntu-latest
