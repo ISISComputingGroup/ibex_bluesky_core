@@ -68,6 +68,6 @@ def get_run_engine() -> RunEngine:
     RE.record_interruptions = True
 
     log_callback = DocLoggingCallback()
-    RE.subscribe(log_callback)  # Uses ID = 0 for DocLoggingCallback
+    RE.subscribe(log_callback)
 
     return RE

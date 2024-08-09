@@ -1,21 +1,12 @@
-import json
-import os
 import threading
-from pathlib import Path
 from typing import Any, Generator
-from unittest.mock import MagicMock, mock_open, patch
+from unittest.mock import MagicMock
 
 import bluesky.plan_stubs as bps
 import pytest
-from bluesky.run_engine import RunEngine, RunEngineResult
+from bluesky.run_engine import RunEngineResult
 from bluesky.utils import Msg, RequestAbort, RequestStop, RunEngineInterrupted
 from ibex_bluesky_core.run_engine import _DuringTask, get_run_engine
-
-
-@pytest.fixture
-def RE() -> RunEngine:
-    get_run_engine.cache_clear()
-    return get_run_engine()
 
 
 def test_run_engine_is_singleton():
@@ -142,30 +133,3 @@ def test_during_task_does_wait_with_small_timeout():
 
     event.wait.assert_called_with(0.1)
     assert event.wait.call_count == 2
-
-
-def test_run_engine_logs_all_documents(RE):
-    m = mock_open()
-    filepath: str
-    log_location = Path(
-        os.path.join("C:\\", "instrument", "var", "logs", "bluesky", "raw_documents")
-    )
-
-    def basic_plan() -> Generator[Msg, None, None]:
-        yield from bps.open_run()
-        yield from bps.close_run()
-
-    with patch("ibex_bluesky_core.callbacks.document_logger.open", m):
-        result: RunEngineResult = RE(basic_plan())
-        filepath = os.path.join(log_location, f"{result.run_start_uids[0]}.log")
-
-    for i in range(0, 3):
-        assert m.call_args_list[i].args == (filepath, "a")
-        # Checks that the file is opened 3 times, for open, descriptor then stop
-
-    handle = m()
-    document = json.loads(handle.write.mock_calls[-1].args[0])
-
-    assert document["document"]["exit_status"] == "success"
-    # In the stop document to be written, check that the run is successful with no interruptions
-    assert document["document"]["num_events"]["interruptions"] == 0

@@ -1,10 +1,9 @@
 """Logs all documents that the BlueSky run engine creates via a callback."""
 
 import json
-import os
 from pathlib import Path
 
-log_location = Path(os.path.join("C:\\", "instrument", "var", "logs", "bluesky", "raw_documents"))
+log_location = Path("C:\\") / "instrument" / "var" / "logs" / "bluesky" / "raw_documents"
 
 
 class DocLoggingCallback:
@@ -15,7 +14,7 @@ class DocLoggingCallback:
         self.current_start_document = None
         self.filename = None
 
-    def __call__(self, name: str, document: dict) -> int:
+    def __call__(self, name: str, document: dict) -> None:
         """Is called when a new document needs to be processed. Writes document to a file.
 
         Args:
@@ -27,7 +26,7 @@ class DocLoggingCallback:
             log_location.mkdir(parents=True, exist_ok=True)
 
             self.current_start_document = document["uid"]
-            self.filename = os.path.join(log_location, f"{self.current_start_document}.log")
+            self.filename = log_location / f"{self.current_start_document}.log"
 
         assert self.filename is not None, "Could not create filename."
         assert self.current_start_document is not None, "Saw a non-start document before a start."
@@ -36,5 +35,3 @@ class DocLoggingCallback:
 
         with open(self.filename, "a") as outfile:
             outfile.write(f"{json.dumps(to_write)}\n")
-
-        return 0
