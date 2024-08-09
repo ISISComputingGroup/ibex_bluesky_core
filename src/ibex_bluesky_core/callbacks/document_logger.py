@@ -8,33 +8,28 @@ log_location = Path(os.path.join("C:\\", "instrument", "var", "logs", "bluesky",
 
 
 class DocLoggingCallback:
-    """
-    Logs all documents under log_location, with the file name of their UID (.log).
-    """
+    """Logs all documents under log_location, with the file name of their UID (.log)."""
 
     def __init__(self) -> None:
-        """
-        Initialises current_start_document and filename.
-        """
-
+        """Initialise current_start_document and filename."""
         self.current_start_document = None
         self.filename = None
 
     def __call__(self, name: str, document: dict) -> int:
-        """
-        Is called when a new document needs to be processed. Writes document to a file.
+        """Is called when a new document needs to be processed. Writes document to a file.
 
         Args:
             name: The type of the document e.g start, event, stop
             document: The contents of the docuement as a dictionary
+        
         """
-
         if name == "start":
             log_location.mkdir(parents=True, exist_ok=True)
 
             self.current_start_document = document["uid"]
-            self.filename: str = os.path.join(log_location, f"{self.current_start_document}.log")
+            self.filename = os.path.join(log_location, f"{self.current_start_document}.log")
 
+        assert self.filename is not None, "Could not create filename."
         assert self.current_start_document is not None, "Saw a non-start document before a start."
 
         to_write = {"type": name, "document": document}
