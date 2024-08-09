@@ -30,7 +30,8 @@ def run_demo_plan() -> None:
     prefix = get_pv_prefix()
     block = Block(prefix, "mot", float)
     dae = Dae(prefix)
-    RE(demo_plan(block, dae), LiveTable(["mot", "DAE"]))
+    RE(demo_plan(block, dae), LiveTable(["mot", "DAE-good_uah", "DAE-run_state", "DAE-rb_number"], default_prec=10))
+    #RE(demo_plan(block, dae), print)
 
 
 def demo_plan(block: Block, dae: Dae) -> Generator[Msg, None, None]:
@@ -45,13 +46,16 @@ def demo_plan(block: Block, dae: Dae) -> Generator[Msg, None, None]:
 
         # More complicated acquisition showing arbitrary DAE control to support complex use-cases.
         yield from bps.abs_set(block, 2.0, wait=True)
-        yield from bps.trigger(dae.begin_run, wait=True)
-        yield from bps.sleep(5)  # ... some complicated logic ...
-        yield from bps.trigger(dae.end_run, wait=True)
+        yield from bps.trigger(dae.controls.begin_run, wait=True)
+        yield from bps.sleep(2)  # ... some complicated logic ...
+        yield from bps.trigger(dae.controls.end_run, wait=True)
         yield from bps.create()  # Create a bundle of readings
         yield from bps.read(block)
         yield from bps.read(dae)
-        yield from bps.read(dae.title)
         yield from bps.save()
 
     yield from _inner()
+
+
+if __name__ == "__main__":
+    run_demo_plan()

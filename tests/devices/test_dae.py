@@ -30,14 +30,12 @@ def test_dae_monitors_correct_pvs(dae: Dae):
 async def test_dae_read_contains_intensity_and_default_keys(dae: Dae):
     reading = await dae.read()
 
-    assert "DAE" in reading.keys()
     assert "DAE-good_uah" in reading.keys()
 
 
 async def test_dae_describe_contains_intensity_and_default_keys(dae: Dae):
     descriptor = await dae.describe()
 
-    assert "DAE" in descriptor.keys()
     assert "DAE-good_uah" in descriptor.keys()
 
 
