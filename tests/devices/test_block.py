@@ -77,11 +77,6 @@ async def test_read(simple_block):
             "timestamp": ANY,
             "value": 10.0,
         },
-        "float_block-setpoint": {
-            "alarm_severity": 0,
-            "timestamp": ANY,
-            "value": 20.0,
-        },
         "float_block-setpoint_readback": {
             "alarm_severity": 0,
             "timestamp": ANY,
@@ -100,7 +95,6 @@ async def test_describe(simple_block):
     assert reading.keys() == descriptor.keys()
 
     assert descriptor["float_block"]["dtype"] == "number"
-    assert descriptor["float_block-setpoint"]["dtype"] == "number"
     assert descriptor["float_block-setpoint_readback"]["dtype"] == "number"
 
 
@@ -183,21 +177,14 @@ async def test_runcontrol_read_and_describe(simple_block):
 
     assert reading.keys() == {
         "float_block-run_control-in_range",
-        "float_block-run_control-low_limit",
-        "float_block-run_control-suspend_if_invalid",
-        "float_block-run_control-out_time",
-        "float_block-run_control-enabled",
-        "float_block-run_control-in_time",
-        "float_block-run_control-high_limit",
     }
 
-    for bool_reading in ["in_range", "enabled", "suspend_if_invalid"]:
-        assert reading[f"float_block-run_control-{bool_reading}"] == {
-            "alarm_severity": 0,
-            "timestamp": ANY,
-            "value": False,
-        }
-        assert descriptor[f"float_block-run_control-{bool_reading}"]["dtype"] == "boolean"
+    assert reading["float_block-run_control-in_range"] == {
+        "alarm_severity": 0,
+        "timestamp": ANY,
+        "value": False,
+    }
+    assert descriptor["float_block-run_control-in_range"]["dtype"] == "boolean"
 
 
 async def test_runcontrol_hints(simple_block):
