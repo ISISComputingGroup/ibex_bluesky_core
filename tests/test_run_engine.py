@@ -1,3 +1,5 @@
+# pyright: reportMissingParameterType=false
+
 import threading
 from typing import Any, Generator
 from unittest.mock import MagicMock

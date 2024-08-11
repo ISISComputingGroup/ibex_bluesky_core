@@ -1,3 +1,5 @@
+# pyright: reportMissingParameterType=false
+
 import asyncio
 import sys
 from unittest.mock import ANY, MagicMock, patch
@@ -5,7 +7,7 @@ from unittest.mock import ANY, MagicMock, patch
 import pytest
 from ibex_bluesky_core.devices.block import (
     BlockRwRbv,
-    BlockWriteConfiguration,
+    BlockWriteConfig,
     block_mot,
     block_r,
     block_rw,
@@ -29,7 +31,7 @@ async def simple_block() -> BlockRwRbv[float]:
     return block
 
 
-async def _block_with_write_config(write_config: BlockWriteConfiguration) -> BlockRwRbv[float]:
+async def _block_with_write_config(write_config: BlockWriteConfig[float]) -> BlockRwRbv[float]:
     block = BlockRwRbv(float, MOCK_PREFIX, "block", write_config=write_config)
     await block.connect(mock=True)
     return block
@@ -114,14 +116,14 @@ async def test_block_set(simple_block):
 
 
 async def test_block_set_without_epics_completion_callback():
-    block = await _block_with_write_config(BlockWriteConfiguration(use_completion_callback=False))
+    block = await _block_with_write_config(BlockWriteConfig(use_completion_callback=False))
     await block.set(20)
     get_mock_put(block.setpoint).assert_called_once_with(20, wait=False, timeout=None)
 
 
 async def test_block_set_with_arbitrary_completion_function():
     func = MagicMock(return_value=True)
-    block = await _block_with_write_config(BlockWriteConfiguration(set_success_func=func))
+    block = await _block_with_write_config(BlockWriteConfig(set_success_func=func))
 
     set_mock_value(block.readback, 10)
     set_mock_value(block.setpoint_readback, 30)
@@ -134,7 +136,7 @@ async def test_block_set_with_arbitrary_completion_function():
 async def test_block_set_with_timeout():
     func = MagicMock(return_value=False)  # Never completes
     block = await _block_with_write_config(
-        BlockWriteConfiguration(set_success_func=func, set_timeout_s=0.1)
+        BlockWriteConfig(set_success_func=func, set_timeout_s=0.1)
     )
 
     set_mock_value(block.readback, 10)
@@ -147,14 +149,14 @@ async def test_block_set_with_timeout():
 
 async def test_block_set_which_completes_before_timeout():
     block = await _block_with_write_config(
-        BlockWriteConfiguration(use_completion_callback=False, set_timeout_s=1)
+        BlockWriteConfig(use_completion_callback=False, set_timeout_s=1)
     )
     await block.set(20)
 
 
 async def test_block_set_with_settle_time_longer_than_timeout():
     block = await _block_with_write_config(
-        BlockWriteConfiguration(use_completion_callback=False, set_timeout_s=1, settle_time_s=30)
+        BlockWriteConfig(use_completion_callback=False, set_timeout_s=1, settle_time_s=30)
     )
 
     with patch("ibex_bluesky_core.devices.block.asyncio.sleep") as mock_aio_sleep:

@@ -26,7 +26,7 @@ __all__ = [
     "BlockR",
     "BlockRw",
     "BlockRwRbv",
-    "BlockWriteConfiguration",
+    "BlockWriteConfig",
     "block_r",
     "block_rw",
     "block_rw_rbv",
@@ -35,7 +35,7 @@ __all__ = [
 
 
 @dataclass(kw_only=True)
-class BlockWriteConfiguration(Generic[T]):
+class BlockWriteConfig(Generic[T]):
     """Configuration settings for writing to blocks.
 
     use_completion_callback: Whether to wait for an EPICS completion callback while setting
@@ -51,6 +51,9 @@ class BlockWriteConfiguration(Generic[T]):
 
         If use_completion_callback is True, the completion callback must complete before
         set_success_func is ever called.
+
+        Executing this function should be "fast" (i.e. the function should not sleep), and it should
+        not do any external I/O.
 
         Defaults to None, which means no check is applied.
 
@@ -116,7 +119,7 @@ class BlockRw(BlockR[T], Movable):
         prefix: str,
         block_name: str,
         *,
-        write_config: BlockWriteConfiguration[T] | None = None,
+        write_config: BlockWriteConfig[T] | None = None,
     ) -> None:
         """Create a new read-write block.
 
@@ -140,7 +143,7 @@ class BlockRw(BlockR[T], Movable):
         """
         self.setpoint: SignalRW[T] = epics_signal_rw(datatype, f"{prefix}CS:SB:{block_name}:SP")
 
-        self._write_config = write_config or BlockWriteConfiguration()
+        self._write_config: BlockWriteConfig[T] = write_config or BlockWriteConfig()
 
         super().__init__(datatype=datatype, prefix=prefix, block_name=block_name)
 
@@ -181,7 +184,7 @@ class BlockRwRbv(BlockRw[T], Locatable):
         prefix: str,
         block_name: str,
         *,
-        write_config: BlockWriteConfiguration[T] | None = None,
+        write_config: BlockWriteConfig[T] | None = None,
     ) -> None:
         """Create a new read/write/setpoint readback block.
 
@@ -225,7 +228,7 @@ def block_r(datatype: Type[T], block_name: str) -> BlockR[T]:
 
 
 def block_rw(
-    datatype: Type[T], block_name: str, *, write_config: BlockWriteConfiguration[T] | None = None
+    datatype: Type[T], block_name: str, *, write_config: BlockWriteConfig[T] | None = None
 ) -> BlockRw[T]:
     """Get a local read-write block for the current instrument.
 
@@ -237,7 +240,7 @@ def block_rw(
 
 
 def block_rw_rbv(
-    datatype: Type[T], block_name: str, *, write_config: BlockWriteConfiguration[T] | None = None
+    datatype: Type[T], block_name: str, *, write_config: BlockWriteConfig[T] | None = None
 ) -> BlockRwRbv[T]:
     """Get a local read/write/setpoint readback block for the current instrument.
 
