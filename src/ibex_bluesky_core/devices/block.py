@@ -15,11 +15,21 @@ from ophyd_async.core import (
 )
 from ophyd_async.epics.signal import epics_signal_r, epics_signal_rw
 
+from ibex_bluesky_core.devices import get_pv_prefix
+
 """Block data type"""
 T = TypeVar("T")
 
 
-__all__ = ["BlockR", "BlockRw", "BlockRwRbv", "BlockWriteConfiguration"]
+__all__ = [
+    "BlockR",
+    "BlockRw",
+    "BlockRwRbv",
+    "BlockWriteConfiguration",
+    "block_r",
+    "block_rw",
+    "block_rw_rbv",
+]
 
 
 @dataclass(kw_only=True)
@@ -186,3 +196,26 @@ class BlockRwRbv(BlockRw[T], Locatable):
             "readback": actual,
             "setpoint": sp_rbv,
         }
+
+
+def block_r(datatype: Type[T], block_name: str) -> BlockR[T]:
+    """Get a local read-only block for the current instrument."""
+    return BlockR(datatype=datatype, prefix=get_pv_prefix(), block_name=block_name)
+
+
+def block_rw(
+    datatype: Type[T], block_name: str, *, write_config: BlockWriteConfiguration[T] | None = None
+) -> BlockRw[T]:
+    """Get a local read-write block for the current instrument."""
+    return BlockRw(
+        datatype=datatype, prefix=get_pv_prefix(), block_name=block_name, write_config=write_config
+    )
+
+
+def block_rw_rbv(
+    datatype: Type[T], block_name: str, *, write_config: BlockWriteConfiguration[T] | None = None
+) -> BlockRwRbv[T]:
+    """Get a local read/write/setpoint readback block for the current instrument."""
+    return BlockRwRbv(
+        datatype=datatype, prefix=get_pv_prefix(), block_name=block_name, write_config=write_config
+    )

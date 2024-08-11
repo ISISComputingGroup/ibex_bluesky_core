@@ -3,7 +3,13 @@ import sys
 from unittest.mock import MagicMock, patch
 
 import pytest
-from ibex_bluesky_core.devices.block import BlockRwRbv, BlockWriteConfiguration
+from ibex_bluesky_core.devices.block import (
+    BlockRwRbv,
+    BlockWriteConfiguration,
+    block_r,
+    block_rw,
+    block_rw_rbv,
+)
 from ophyd_async.core import get_mock_put, set_mock_value
 
 MOCK_PREFIX = "UNITTEST:MOCK:"
@@ -108,3 +114,11 @@ async def test_block_set_with_settle_time_longer_than_timeout():
         await block.set(20)
 
         mock_aio_sleep.assert_called_once_with(30)
+
+
+@pytest.mark.parametrize("func", [block_r, block_rw, block_rw_rbv])
+def test_block_utility_function(func):
+    with patch("ibex_bluesky_core.devices.block.get_pv_prefix") as mock_get_prefix:
+        mock_get_prefix.return_value = MOCK_PREFIX
+        block = func(float, "some_block")
+        assert block.readback.source.endswith("UNITTEST:MOCK:CS:SB:some_block")
