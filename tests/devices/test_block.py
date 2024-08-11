@@ -6,6 +6,7 @@ import pytest
 from ibex_bluesky_core.devices.block import (
     BlockRwRbv,
     BlockWriteConfiguration,
+    block_mot,
     block_r,
     block_rw,
     block_rw_rbv,
@@ -196,3 +197,19 @@ async def test_runcontrol_hints(simple_block):
 async def test_runcontrol_monitors_correct_pv(simple_block):
     source = simple_block.run_control.in_range.source
     assert source.endswith("UNITTEST:MOCK:CS:SB:float_block:RC:INRANGE")
+
+
+def test_block_mot():
+    with patch("ibex_bluesky_core.devices.block.get_pv_prefix") as mock_get_prefix:
+        mock_get_prefix.return_value = MOCK_PREFIX
+        mot = block_mot("foo")
+
+        # Slightly counterintuitive, but looking at foo:SP:RBV here is INTENTIONAL and NECESSARY.
+        # GWBLOCK mangles foo.VAL and foo.RBV (to make them display nicely in the GUI), but that
+        # mangling *breaks* ophyd-async. The mangling is not applied to the :SP:RBV alias, so we use
+        # that instead to preserve sane motor record behaviour.
+        assert mot.user_setpoint.source.endswith("UNITTEST:MOCK:CS:SB:foo:SP:RBV.VAL")
+        assert mot.user_readback.source.endswith("UNITTEST:MOCK:CS:SB:foo:SP:RBV.RBV")
+        assert mot.name == "foo"
+        assert mot.user_readback.name == "foo"
+        assert mot.user_setpoint.name == "foo-user_setpoint"
