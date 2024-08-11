@@ -1,3 +1,5 @@
+import asyncio
+import sys
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -5,6 +7,12 @@ from ibex_bluesky_core.devices.block import BlockRwRbv, BlockWriteConfiguration
 from ophyd_async.core import get_mock_put, set_mock_value
 
 MOCK_PREFIX = "UNITTEST:MOCK:"
+
+
+if sys.version_info < (3, 11):
+    aio_timeout_error = asyncio.exceptions.TimeoutError
+else:
+    aio_timeout_error = TimeoutError
 
 
 @pytest.fixture
@@ -77,7 +85,7 @@ async def test_block_set_with_timeout():
 
     set_mock_value(block.readback, 10)
 
-    with pytest.raises(TimeoutError):
+    with pytest.raises(aio_timeout_error):
         await block.set(20)
 
     func.assert_called_once_with(20, 10)
