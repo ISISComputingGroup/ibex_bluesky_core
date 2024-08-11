@@ -73,16 +73,20 @@ class _RunControl(StandardReadable):
     """Subdevice for common run-control signals."""
 
     def __init__(self, prefix: str, name: str = "") -> None:
-        self.inrange = epics_signal_r(bool, f"{prefix}INRANGE")
+        with self.add_children_as_readables(HintedSignal):
+            # When explicitly reading run control, the most obvious signal that people will be
+            # interested in is whether the block is in range or not.
+            self.in_range = epics_signal_r(bool, f"{prefix}INRANGE")
 
-        self.low_limit = epics_signal_rw(float, f"{prefix}LOW")
-        self.high_limit = epics_signal_rw(float, f"{prefix}HIGH")
+        with self.add_children_as_readables():
+            self.low_limit = epics_signal_rw(float, f"{prefix}LOW")
+            self.high_limit = epics_signal_rw(float, f"{prefix}HIGH")
 
-        self.suspend_if_invalid = epics_signal_rw(bool, f"{prefix}SOI")
-        self.enabled = epics_signal_rw(bool, f"{prefix}ENABLE")
+            self.suspend_if_invalid = epics_signal_rw(bool, f"{prefix}SOI")
+            self.enabled = epics_signal_rw(bool, f"{prefix}ENABLE")
 
-        self.out_time = epics_signal_r(float, f"{prefix}OUT:TIME")
-        self.in_time = epics_signal_r(float, f"{prefix}IN:TIME")
+            self.out_time = epics_signal_r(float, f"{prefix}OUT:TIME")
+            self.in_time = epics_signal_r(float, f"{prefix}IN:TIME")
 
         super().__init__(name=name)
 
@@ -95,8 +99,8 @@ class BlockR(StandardReadable, Generic[T]):
         with self.add_children_as_readables(HintedSignal):
             self.readback: SignalR[T] = epics_signal_r(datatype, f"{prefix}CS:SB:{block_name}")
 
-        with self.add_children_as_readables():
-            self.run_control = _RunControl(f"{prefix}CS:SB:{block_name}:RC:")
+        # Run control doesn't need to be read by default
+        self.run_control = _RunControl(f"{prefix}CS:SB:{block_name}:RC:")
 
         super().__init__(name=block_name)
         self.readback.set_name(block_name)
