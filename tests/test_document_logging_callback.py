@@ -1,3 +1,5 @@
+# pyright: reportMissingParameterType=false
+
 import json
 from pathlib import Path
 from typing import Generator
