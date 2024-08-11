@@ -1,6 +1,6 @@
 import asyncio
 import sys
-from unittest.mock import MagicMock, patch
+from unittest.mock import ANY, MagicMock, patch
 
 import pytest
 from ibex_bluesky_core.devices.block import (
@@ -59,6 +59,59 @@ async def test_locate(simple_block):
     }
 
 
+async def test_hints(simple_block):
+    # The primary readback should be the only "hinted" signal on a block
+    hints = simple_block.hints
+    assert hints == {"fields": ["float_block"]}
+
+
+async def test_read(simple_block):
+    set_mock_value(simple_block.readback, 10.0)
+    set_mock_value(simple_block.setpoint, 20.0)
+    set_mock_value(simple_block.setpoint_readback, 30.0)
+    reading = await simple_block.read()
+
+    assert reading == {
+        "float_block": {
+            "alarm_severity": 0,
+            "timestamp": ANY,
+            "value": 10.0,
+        },
+        "float_block-setpoint": {
+            "alarm_severity": 0,
+            "timestamp": ANY,
+            "value": 20.0,
+        },
+        "float_block-setpoint_readback": {
+            "alarm_severity": 0,
+            "timestamp": ANY,
+            "value": 30.0,
+        },
+    }
+
+
+async def test_describe(simple_block):
+    set_mock_value(simple_block.readback, 10.0)
+    set_mock_value(simple_block.setpoint, 20.0)
+    set_mock_value(simple_block.setpoint_readback, 30.0)
+    reading = await simple_block.read()
+    descriptor = await simple_block.describe()
+
+    assert reading.keys() == descriptor.keys()
+
+    assert descriptor["float_block"]["dtype"] == "number"
+    assert descriptor["float_block-setpoint"]["dtype"] == "number"
+    assert descriptor["float_block-setpoint_readback"]["dtype"] == "number"
+
+
+async def test_read_and_describe_configuration(simple_block):
+    # Blocks don't have any configuration signals at the moment so these should be empty
+    configuration_reading = await simple_block.read_configuration()
+    configuration_descriptor = await simple_block.describe_configuration()
+    assert configuration_reading == {}
+    assert configuration_descriptor == {}
+
+
 async def test_block_set(simple_block):
     set_mock_value(simple_block.setpoint, 10)
     await simple_block.set(20)
@@ -101,7 +154,6 @@ async def test_block_set_which_completes_before_timeout():
     block = await _block_with_write_config(
         BlockWriteConfiguration(use_completion_callback=False, set_timeout_s=1)
     )
-
     await block.set(20)
 
 
@@ -112,7 +164,6 @@ async def test_block_set_with_settle_time_longer_than_timeout():
 
     with patch("ibex_bluesky_core.devices.block.asyncio.sleep") as mock_aio_sleep:
         await block.set(20)
-
         mock_aio_sleep.assert_called_once_with(30)
 
 
@@ -122,3 +173,39 @@ def test_block_utility_function(func):
         mock_get_prefix.return_value = MOCK_PREFIX
         block = func(float, "some_block")
         assert block.readback.source.endswith("UNITTEST:MOCK:CS:SB:some_block")
+
+
+async def test_runcontrol_read_and_describe(simple_block):
+    reading = await simple_block.run_control.read()
+    descriptor = await simple_block.run_control.describe()
+
+    assert reading.keys() == descriptor.keys()
+
+    assert reading.keys() == {
+        "float_block-run_control-in_range",
+        "float_block-run_control-low_limit",
+        "float_block-run_control-suspend_if_invalid",
+        "float_block-run_control-out_time",
+        "float_block-run_control-enabled",
+        "float_block-run_control-in_time",
+        "float_block-run_control-high_limit",
+    }
+
+    for bool_reading in ["in_range", "enabled", "suspend_if_invalid"]:
+        assert reading[f"float_block-run_control-{bool_reading}"] == {
+            "alarm_severity": 0,
+            "timestamp": ANY,
+            "value": False,
+        }
+        assert descriptor[f"float_block-run_control-{bool_reading}"]["dtype"] == "boolean"
+
+
+async def test_runcontrol_hints(simple_block):
+    # Hinted field for explicitly reading run-control: is the reading in range?
+    hints = simple_block.run_control.hints
+    assert hints == {"fields": ["float_block-run_control-in_range"]}
+
+
+async def test_runcontrol_monitors_correct_pv(simple_block):
+    source = simple_block.run_control.in_range.source
+    assert source.endswith("UNITTEST:MOCK:CS:SB:float_block:RC:INRANGE")
