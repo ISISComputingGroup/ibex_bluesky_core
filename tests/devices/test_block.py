@@ -1,31 +1,43 @@
+from unittest.mock import MagicMock, patch
+
 import pytest
-from ibex_bluesky_core.devices.block import BlockRwRbv
+from ibex_bluesky_core.devices.block import BlockRwRbv, BlockWriteConfiguration
 from ophyd_async.core import get_mock_put, set_mock_value
+
+MOCK_PREFIX = "UNITTEST:MOCK:"
 
 
 @pytest.fixture
-async def float_block() -> BlockRwRbv[float]:
-    block = BlockRwRbv(float, "UNITTEST:MOCK:", "float_block")
+async def simple_block() -> BlockRwRbv[float]:
+    block = BlockRwRbv(float, MOCK_PREFIX, "float_block")
     await block.connect(mock=True)
     return block
 
 
-def test_block_naming(float_block):
-    assert float_block.name == "float_block"
-    assert float_block.setpoint.name == "float_block-setpoint"
-    assert float_block.readback.name == "float_block"
+async def _block_with_write_config(write_config: BlockWriteConfiguration) -> BlockRwRbv[float]:
+    block = BlockRwRbv(float, MOCK_PREFIX, "block", write_config=write_config)
+    await block.connect(mock=True)
+    return block
 
 
-def test_block_signal_monitors_correct_pv(float_block):
-    assert float_block.readback.source.endswith("UNITTEST:MOCK:CS:SB:float_block")
-    assert float_block.setpoint.source.endswith("UNITTEST:MOCK:CS:SB:float_block:SP")
+def test_block_naming(simple_block):
+    assert simple_block.name == "float_block"
+    assert simple_block.setpoint.name == "float_block-setpoint"
+    assert simple_block.setpoint_readback.name == "float_block-setpoint_readback"
+    assert simple_block.readback.name == "float_block"
 
 
-async def test_locate(float_block):
-    set_mock_value(float_block.readback, 10)
-    set_mock_value(float_block.setpoint, 20)
-    set_mock_value(float_block.setpoint_readback, 30)
-    location = await float_block.locate()
+def test_block_signal_monitors_correct_pv(simple_block):
+    assert simple_block.readback.source.endswith("UNITTEST:MOCK:CS:SB:float_block")
+    assert simple_block.setpoint.source.endswith("UNITTEST:MOCK:CS:SB:float_block:SP")
+    assert simple_block.setpoint_readback.source.endswith("UNITTEST:MOCK:CS:SB:float_block:SP:RBV")
+
+
+async def test_locate(simple_block):
+    set_mock_value(simple_block.readback, 10)
+    set_mock_value(simple_block.setpoint, 20)
+    set_mock_value(simple_block.setpoint_readback, 30)
+    location = await simple_block.locate()
 
     assert location == {
         "readback": 10,
@@ -33,7 +45,58 @@ async def test_locate(float_block):
     }
 
 
-async def test_block_set(float_block):
-    set_mock_value(float_block.setpoint, 10)
-    await float_block.set(20)
-    get_mock_put(float_block.setpoint).assert_called_once_with(20, wait=True, timeout=None)
+async def test_block_set(simple_block):
+    set_mock_value(simple_block.setpoint, 10)
+    await simple_block.set(20)
+    get_mock_put(simple_block.setpoint).assert_called_once_with(20, wait=True, timeout=None)
+
+
+async def test_block_set_without_epics_completion_callback():
+    block = await _block_with_write_config(BlockWriteConfiguration(use_completion_callback=False))
+    await block.set(20)
+    get_mock_put(block.setpoint).assert_called_once_with(20, wait=False, timeout=None)
+
+
+async def test_block_set_with_arbitrary_completion_function():
+    func = MagicMock(return_value=True)
+    block = await _block_with_write_config(BlockWriteConfiguration(set_success_func=func))
+
+    set_mock_value(block.readback, 10)
+    set_mock_value(block.setpoint_readback, 30)
+
+    await block.set(20)
+
+    func.assert_called_once_with(20, 10)
+
+
+async def test_block_set_with_timeout():
+    func = MagicMock(return_value=False)  # Never completes
+    block = await _block_with_write_config(
+        BlockWriteConfiguration(set_success_func=func, set_timeout_s=0.1)
+    )
+
+    set_mock_value(block.readback, 10)
+
+    with pytest.raises(TimeoutError):
+        await block.set(20)
+
+    func.assert_called_once_with(20, 10)
+
+
+async def test_block_set_which_completes_before_timeout():
+    block = await _block_with_write_config(
+        BlockWriteConfiguration(use_completion_callback=False, set_timeout_s=1)
+    )
+
+    await block.set(20)
+
+
+async def test_block_set_with_settle_time_longer_than_timeout():
+    block = await _block_with_write_config(
+        BlockWriteConfiguration(use_completion_callback=False, set_timeout_s=1, settle_time_s=30)
+    )
+
+    with patch("ibex_bluesky_core.devices.block.asyncio.sleep") as mock_aio_sleep:
+        await block.set(20)
+
+        mock_aio_sleep.assert_called_once_with(30)
