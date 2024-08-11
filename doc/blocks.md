@@ -39,8 +39,6 @@ value of the block.
 A simple constructor, `block_r`, is available, which assumes the current instrument's PV
 prefix.
 
-The underlying type is `BlockR`
-
 ### `block_rw` (read, write)
 
 This is a read-write block. It supports all of the same protocols as `BlockR`, with the
@@ -59,8 +57,6 @@ It can also be used as a `Movable` in full plans like `bluesky.plans.scan()`.
 > This is simply a matter of terminology - bluesky fully supports moving things which
 > are not motors, even if the documentation tends to use motors as the examples.
 
-The underlying type is `BlockRw`
-
 ### `block_rw_rbv` (read, write, setpoint readback)
 
 This is a block with full support for reading and writing as per `BlockRw`, but with
@@ -68,8 +64,6 @@ the addition of `bluesky`'s `Locatable` protocol, which allows you to read back 
 current setpoint. Where possible, the setpoint will be read back from hardware.
 
 This object is suitable for use in plan stubs such as `bluesky.plan_stubs.locate()`.
-
-The underlying type is `BlockRwRbv`
 
 ### `block_mot` (motor-specific)
 
@@ -83,8 +77,6 @@ This represents a block pointing at a motor record. This has support for:
 This type is recommended to be used if the underlying block is a motor record. It always has
 type `float`, and as such does not take a type argument (unlike the other block types).
 
-The underlying type is `ophyd_async.epics.motor.Motor`
-
 ## Configuring block write behaviour
 
 `BlockRw` and `BlockRwRbv` both take a `write_config` argument, which can be used to configure
@@ -92,3 +84,12 @@ the behaviour on writing to a block, for example tolerances and settle times.
 
 See the docstring on `ibex_bluesky_core.devices.block.BlockWriteConfig` for a detailed
 description of all the options which are available.
+
+## Run control
+
+Run control information is available via the `block.run_control` sub-device.
+
+Both configuring and reading the current status of run control are permitted.
+
+> **_ℹ️_**  
+> Run control limits are always `float`, regardless of the datatype of the block.

@@ -4,8 +4,13 @@ import asyncio
 import sys
 from unittest.mock import ANY, MagicMock, patch
 
+import bluesky.plan_stubs as bps
+import bluesky.plans as bp
 import pytest
 from ibex_bluesky_core.devices.block import (
+    BlockMot,
+    BlockR,
+    BlockRw,
     BlockRwRbv,
     BlockWriteConfig,
     block_mot,
@@ -24,9 +29,30 @@ else:
     aio_timeout_error = TimeoutError
 
 
+async def _make_block(clazz):
+    block = clazz(float, MOCK_PREFIX, "float_block")
+    await block.connect(mock=True)
+    return block
+
+
 @pytest.fixture
-async def simple_block() -> BlockRwRbv[float]:
-    block = BlockRwRbv(float, MOCK_PREFIX, "float_block")
+async def rw_rbv_block() -> BlockRwRbv[float]:
+    return await _make_block(BlockRwRbv)
+
+
+@pytest.fixture(params=[BlockRw, BlockRwRbv])
+async def writable_block(request) -> BlockRw[float]:
+    return await _make_block(request.param)
+
+
+@pytest.fixture(params=[BlockR, BlockRw, BlockRwRbv])
+async def readable_block(request) -> BlockR[float]:
+    return await _make_block(request.param)
+
+
+@pytest.fixture
+async def mot_block():
+    block = BlockMot(MOCK_PREFIX, "mot_block")
     await block.connect(mock=True)
     return block
 
@@ -37,24 +63,37 @@ async def _block_with_write_config(write_config: BlockWriteConfig[float]) -> Blo
     return block
 
 
-def test_block_naming(simple_block):
-    assert simple_block.name == "float_block"
-    assert simple_block.setpoint.name == "float_block-setpoint"
-    assert simple_block.setpoint_readback.name == "float_block-setpoint_readback"
-    assert simple_block.readback.name == "float_block"
+def test_block_naming(rw_rbv_block):
+    assert rw_rbv_block.name == "float_block"
+    assert rw_rbv_block.setpoint.name == "float_block-setpoint"
+    assert rw_rbv_block.setpoint_readback.name == "float_block-setpoint_readback"
+    assert rw_rbv_block.readback.name == "float_block"
 
 
-def test_block_signal_monitors_correct_pv(simple_block):
-    assert simple_block.readback.source.endswith("UNITTEST:MOCK:CS:SB:float_block")
-    assert simple_block.setpoint.source.endswith("UNITTEST:MOCK:CS:SB:float_block:SP")
-    assert simple_block.setpoint_readback.source.endswith("UNITTEST:MOCK:CS:SB:float_block:SP:RBV")
+def test_mot_block_naming(mot_block):
+    assert mot_block.name == "mot_block"
+    assert mot_block.user_readback.name == "mot_block"
+    assert mot_block.user_setpoint.name == ("mot_block-user_setpoint" "")
 
 
-async def test_locate(simple_block):
-    set_mock_value(simple_block.readback, 10)
-    set_mock_value(simple_block.setpoint, 20)
-    set_mock_value(simple_block.setpoint_readback, 30)
-    location = await simple_block.locate()
+def test_block_signal_monitors_correct_pv(rw_rbv_block):
+    assert rw_rbv_block.readback.source.endswith("UNITTEST:MOCK:CS:SB:float_block")
+    assert rw_rbv_block.setpoint.source.endswith("UNITTEST:MOCK:CS:SB:float_block:SP")
+    assert rw_rbv_block.setpoint_readback.source.endswith("UNITTEST:MOCK:CS:SB:float_block:SP:RBV")
+
+
+def test_mot_block_monitors_correct_pv(mot_block):
+    # The SP:RBV here is intentional - GWBLOCK mangles mot_block by "swapping" .RBV and .VAL,
+    # but doesn't mangle the :SP:RBV motor record alias, so we use that instead.
+    assert mot_block.user_setpoint.source.endswith("UNITTEST:MOCK:CS:SB:mot_block:SP:RBV.VAL")
+    assert mot_block.user_readback.source.endswith("UNITTEST:MOCK:CS:SB:mot_block:SP:RBV.RBV")
+
+
+async def test_locate(rw_rbv_block):
+    set_mock_value(rw_rbv_block.readback, 10)
+    set_mock_value(rw_rbv_block.setpoint, 20)
+    set_mock_value(rw_rbv_block.setpoint_readback, 30)
+    location = await rw_rbv_block.locate()
 
     assert location == {
         "readback": 10,
@@ -62,17 +101,20 @@ async def test_locate(simple_block):
     }
 
 
-async def test_hints(simple_block):
+async def test_hints(readable_block):
     # The primary readback should be the only "hinted" signal on a block
-    hints = simple_block.hints
-    assert hints == {"fields": ["float_block"]}
+    assert readable_block.hints == {"fields": ["float_block"]}
 
 
-async def test_read(simple_block):
-    set_mock_value(simple_block.readback, 10.0)
-    set_mock_value(simple_block.setpoint, 20.0)
-    set_mock_value(simple_block.setpoint_readback, 30.0)
-    reading = await simple_block.read()
+async def test_mot_hints(mot_block):
+    assert mot_block.hints == {"fields": ["mot_block"]}
+
+
+async def test_read(rw_rbv_block):
+    set_mock_value(rw_rbv_block.readback, 10.0)
+    set_mock_value(rw_rbv_block.setpoint, 20.0)
+    set_mock_value(rw_rbv_block.setpoint_readback, 30.0)
+    reading = await rw_rbv_block.read()
 
     assert reading == {
         "float_block": {
@@ -88,12 +130,12 @@ async def test_read(simple_block):
     }
 
 
-async def test_describe(simple_block):
-    set_mock_value(simple_block.readback, 10.0)
-    set_mock_value(simple_block.setpoint, 20.0)
-    set_mock_value(simple_block.setpoint_readback, 30.0)
-    reading = await simple_block.read()
-    descriptor = await simple_block.describe()
+async def test_describe(rw_rbv_block):
+    set_mock_value(rw_rbv_block.readback, 10.0)
+    set_mock_value(rw_rbv_block.setpoint, 20.0)
+    set_mock_value(rw_rbv_block.setpoint_readback, 30.0)
+    reading = await rw_rbv_block.read()
+    descriptor = await rw_rbv_block.describe()
 
     assert reading.keys() == descriptor.keys()
 
@@ -101,18 +143,18 @@ async def test_describe(simple_block):
     assert descriptor["float_block-setpoint_readback"]["dtype"] == "number"
 
 
-async def test_read_and_describe_configuration(simple_block):
+async def test_read_and_describe_configuration(readable_block):
     # Blocks don't have any configuration signals at the moment so these should be empty
-    configuration_reading = await simple_block.read_configuration()
-    configuration_descriptor = await simple_block.describe_configuration()
+    configuration_reading = await readable_block.read_configuration()
+    configuration_descriptor = await readable_block.describe_configuration()
     assert configuration_reading == {}
     assert configuration_descriptor == {}
 
 
-async def test_block_set(simple_block):
-    set_mock_value(simple_block.setpoint, 10)
-    await simple_block.set(20)
-    get_mock_put(simple_block.setpoint).assert_called_once_with(20, wait=True, timeout=None)
+async def test_block_set(writable_block):
+    set_mock_value(writable_block.setpoint, 10)
+    await writable_block.set(20)
+    get_mock_put(writable_block.setpoint).assert_called_once_with(20, wait=True, timeout=None)
 
 
 async def test_block_set_without_epics_completion_callback():
@@ -164,17 +206,25 @@ async def test_block_set_with_settle_time_longer_than_timeout():
         mock_aio_sleep.assert_called_once_with(30)
 
 
-@pytest.mark.parametrize("func", [block_r, block_rw, block_rw_rbv])
-def test_block_utility_function(func):
+@pytest.mark.parametrize(
+    "func,args",
+    [
+        (block_r, (float, "some_block")),
+        (block_rw, (float, "some_block")),
+        (block_rw_rbv, (float, "some_block")),
+        (block_mot, ("some_block",)),
+    ],
+)
+def test_block_utility_function(func, args):
     with patch("ibex_bluesky_core.devices.block.get_pv_prefix") as mock_get_prefix:
         mock_get_prefix.return_value = MOCK_PREFIX
-        block = func(float, "some_block")
-        assert block.readback.source.endswith("UNITTEST:MOCK:CS:SB:some_block")
+        block = func(*args)
+        assert block.name == "some_block"
 
 
-async def test_runcontrol_read_and_describe(simple_block):
-    reading = await simple_block.run_control.read()
-    descriptor = await simple_block.run_control.describe()
+async def test_runcontrol_read_and_describe(readable_block):
+    reading = await readable_block.run_control.read()
+    descriptor = await readable_block.run_control.describe()
 
     assert reading.keys() == descriptor.keys()
 
@@ -190,28 +240,45 @@ async def test_runcontrol_read_and_describe(simple_block):
     assert descriptor["float_block-run_control-in_range"]["dtype"] == "boolean"
 
 
-async def test_runcontrol_hints(simple_block):
+async def test_runcontrol_hints(readable_block):
     # Hinted field for explicitly reading run-control: is the reading in range?
-    hints = simple_block.run_control.hints
+    hints = readable_block.run_control.hints
     assert hints == {"fields": ["float_block-run_control-in_range"]}
 
 
-async def test_runcontrol_monitors_correct_pv(simple_block):
-    source = simple_block.run_control.in_range.source
+async def test_runcontrol_monitors_correct_pv(readable_block):
+    source = readable_block.run_control.in_range.source
     assert source.endswith("UNITTEST:MOCK:CS:SB:float_block:RC:INRANGE")
 
 
-def test_block_mot():
-    with patch("ibex_bluesky_core.devices.block.get_pv_prefix") as mock_get_prefix:
-        mock_get_prefix.return_value = MOCK_PREFIX
-        mot = block_mot("foo")
+async def test_mot_block_runcontrol_monitors_correct_pv(mot_block):
+    source = mot_block.run_control.in_range.source
+    # The main "motor" uses mot_block:SP:RBV, but run control should not.
+    assert source.endswith("UNITTEST:MOCK:CS:SB:mot_block:RC:INRANGE")
 
-        # Slightly counterintuitive, but looking at foo:SP:RBV here is INTENTIONAL and NECESSARY.
-        # GWBLOCK mangles foo.VAL and foo.RBV (to make them display nicely in the GUI), but that
-        # mangling *breaks* ophyd-async. The mangling is not applied to the :SP:RBV alias, so we use
-        # that instead to preserve sane motor record behaviour.
-        assert mot.user_setpoint.source.endswith("UNITTEST:MOCK:CS:SB:foo:SP:RBV.VAL")
-        assert mot.user_readback.source.endswith("UNITTEST:MOCK:CS:SB:foo:SP:RBV.RBV")
-        assert mot.name == "foo"
-        assert mot.user_readback.name == "foo"
-        assert mot.user_setpoint.name == "foo-user_setpoint"
+
+def test_plan_count_block(RE, readable_block):
+    set_mock_value(readable_block.readback, 123.0)
+
+    docs = []
+    result = RE(bp.count([readable_block]), lambda typ, doc: docs.append((typ, doc)))
+    assert result.exit_status == "success"
+
+    # Should have one event document
+    assert len([doc for (typ, doc) in docs if typ == "event"]) == 1
+
+    for typ, doc in docs:
+        if typ == "event":
+            assert doc["data"]["float_block"] == 123.0
+
+
+def test_plan_rd_block(RE, readable_block):
+    set_mock_value(readable_block.readback, 123.0)
+    result = RE(bps.rd(readable_block))
+    assert result.plan_result == 123.0
+
+
+def test_plan_mv_block(RE, writable_block):
+    set_mock_value(writable_block.setpoint, 123.0)
+    RE(bps.mv(writable_block, 456.0))
+    get_mock_put(writable_block.setpoint).assert_called_once_with(456.0, wait=True, timeout=None)

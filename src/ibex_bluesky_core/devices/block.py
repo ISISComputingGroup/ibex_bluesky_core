@@ -23,14 +23,16 @@ T = TypeVar("T")
 
 
 __all__ = [
+    "BlockMot",
     "BlockR",
     "BlockRw",
     "BlockRwRbv",
     "BlockWriteConfig",
+    "RunControl",
+    "block_mot",
     "block_r",
     "block_rw",
     "block_rw_rbv",
-    "block_mot",
 ]
 
 
@@ -74,10 +76,20 @@ class BlockWriteConfig(Generic[T]):
     settle_time_s: float = 0.0
 
 
-class _RunControl(StandardReadable):
+class RunControl(StandardReadable):
     """Subdevice for common run-control signals."""
 
     def __init__(self, prefix: str, name: str = "") -> None:
+        """Create a run control wrapper for a block.
+
+        Usually run control should be accessed via the run_control property on a block, rather
+        than by constructing an instance of this class directly.
+
+        Args:
+            prefix: the run-control prefix, e.g. "IN:INSTRUMENT:CS:SB:blockname:RC:"
+            name: ophyd device name
+
+        """
         with self.add_children_as_readables(HintedSignal):
             # When explicitly reading run control, the most obvious signal that people will be
             # interested in is whether the block is in range or not.
@@ -99,12 +111,19 @@ class BlockR(StandardReadable, Generic[T]):
     """Device representing an IBEX readable block of arbitrary data type."""
 
     def __init__(self, datatype: Type[T], prefix: str, block_name: str) -> None:
-        """Create a new read-only block."""
+        """Create a new read-only block.
+
+        Args:
+            datatype: the type of data in this block (e.g. str, int, float)
+            prefix: the current instrument's PV prefix
+            block_name: the name of the block
+
+        """
         with self.add_children_as_readables(HintedSignal):
             self.readback: SignalR[T] = epics_signal_r(datatype, f"{prefix}CS:SB:{block_name}")
 
         # Run control doesn't need to be read by default
-        self.run_control = _RunControl(f"{prefix}CS:SB:{block_name}:RC:")
+        self.run_control = RunControl(f"{prefix}CS:SB:{block_name}:RC:")
 
         super().__init__(name=block_name)
         self.readback.set_name(block_name)
@@ -219,6 +238,57 @@ class BlockRwRbv(BlockRw[T], Locatable):
         }
 
 
+class BlockMot(Motor):
+    """Device representing an IBEX block pointing at a motor."""
+
+    def __init__(
+        self,
+        prefix: str,
+        block_name: str,
+    ) -> None:
+        """Create a new motor-record block.
+
+        The 'BlockMot' object supports motion-specific functionality such as:
+        - Stopping if a scan is aborted (supports the bluesky 'Stoppable' protocol)
+        - Limit checking (before a move starts - supports the bluesky 'Checkable' protocol)
+        - Automatic calculation of move timeouts based on motor velocity
+        - Fly scanning
+
+        However, it generally relies on the underlying motor being "well-behaved". For example, a
+        motor which does many retries may exceed the simple default timeout based on velocity (it
+        is possible to explicitly specify a timeout on set() to override this).
+
+        Blocks pointing at motors do not take a BlockWriteConfiguration parameter, as these
+        parameters duplicate functionality which already exists in the motor record. The mapping is:
+
+        use_completion_callback:
+            Motors always use completion callbacks to check whether motion has completed. Whether to
+            wait on that completion callback can be configured by the 'wait' keyword argument on
+            set().
+        set_success_func:
+            Use .RDBD and .RTRY to control motor retries if the position has not been reached to
+            within a specified tolerance. Note that motors which retry a lot may exceed the default
+            motion timeout which is calculated based on velocity, distance and acceleration.
+        set_timeout_s:
+            A suitable timeout is calculated automatically based on velocity, distance and
+            acceleration as defined on the motor record. This may be overridden by the 'timeout'
+            keyword-argument on set().
+        settle_time_s:
+            Use .DLY on the motor record to configure this.
+        """
+        self.run_control = RunControl(f"{prefix}CS:SB:{block_name}:RC:")
+
+        # GWBLOCK aliases .VAL to .RBV on a motor record for a block pointing at MOT:MTRxxxx.RBV,
+        # which is what we have recommended to our users for motor blocks... That means that you
+        # can't write to .VAL on a motor block. ophyd_async (reasonably) assumes you can write to
+        # .VAL for a motor which you want to move.
+        #
+        # However, we also have motor record aliases for :SP and :SP:RBV, which *don't* get mangled
+        # by GWBLOCK in that way. So by pointing at CS:SB:blockname:SP:RBV rather than
+        # CS:SB:blockname here, we avoid a write access exception when moving a motor block.
+        super().__init__(f"{prefix}CS:SB:{block_name}:SP:RBV", name=block_name)
+
+
 def block_r(datatype: Type[T], block_name: str) -> BlockR[T]:
     """Get a local read-only block for the current instrument.
 
@@ -251,42 +321,9 @@ def block_rw_rbv(
     )
 
 
-def block_mot(block_name: str) -> Motor:
+def block_mot(block_name: str) -> BlockMot:
     """Get a local block pointing at a motor record for the local instrument.
 
-    The 'Motor' object supports motion-specific functionality such as:
-    - Stopping if a scan is aborted (supports the bluesky 'Stoppable' protocol)
-    - Limit checking (before a move starts - supports the bluesky 'Checkable' protocol)
-    - Automatic calculation of move timeouts based on motor velocity
-    - Fly scanning
-
-    However, it generally relies on the underlying motor being "well-behaved". For example, a motor
-    which does many retries may exceed the simple default timeout based on velocity (it is possible
-    to explicitly specify a timeout on set() to override this).
-
-    Blocks pointing at motors do not take a BlockWriteConfiguration parameter, as these parameters
-    duplicate functionality which already exists in the motor record. The mapping is:
-
-    use_completion_callback:
-        Motors always use completion callbacks to check whether motion has completed. Whether to
-        wait on that completion callback can be configured by the 'wait' keyword argument on set().
-    set_success_func:
-        Use .RDBD and .RTRY to control motor retries if the position has not been reached to within
-        a specified tolerance. Note that motors which retry a lot may exceed the default motion
-        timeout which is calculated based on velocity, distance and acceleration.
-    set_timeout_s:
-        A suitable timeout is calculated automatically based on velocity, distance and acceleration
-        as defined on the motor record. This may be overridden by the 'timeout' keyword-argument on
-        set().
-    settle_time_s:
-        Use .DLY on the motor record to configure this.
+    See documentation of BlockMot for more information.
     """
-    # GWBLOCK aliases .VAL to .RBV on a motor record for a block pointing at MOT:MTRxxxx.RBV, which
-    # is what we have recommended to our users for motor blocks... That means that you can't write
-    # to .VAL on a motor block. ophyd_async (reasonably) assumes you can write to .VAL for a motor
-    # which you want to move.
-    #
-    # However, we also have motor record aliases for :SP and :SP:RBV, which *don't* get mangled by
-    # GWBLOCK in that way. So by pointing at CS:SB:blockname:SP:RBV rather than CS:SB:blockname
-    # here, we avoid a write access exception when moving a motor block.
-    return Motor(f"{get_pv_prefix()}CS:SB:{block_name}:SP:RBV", name=block_name)
+    return BlockMot(prefix=get_pv_prefix(), block_name=block_name)
