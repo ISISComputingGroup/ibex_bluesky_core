@@ -13,6 +13,7 @@ from ophyd_async.core import (
     StandardReadable,
     observe_value,
 )
+from ophyd_async.epics.motor import Motor
 from ophyd_async.epics.signal import epics_signal_r, epics_signal_rw
 
 from ibex_bluesky_core.devices import get_pv_prefix
@@ -29,6 +30,7 @@ __all__ = [
     "block_r",
     "block_rw",
     "block_rw_rbv",
+    "block_mot",
 ]
 
 
@@ -215,14 +217,20 @@ class BlockRwRbv(BlockRw[T], Locatable):
 
 
 def block_r(datatype: Type[T], block_name: str) -> BlockR[T]:
-    """Get a local read-only block for the current instrument."""
+    """Get a local read-only block for the current instrument.
+
+    See documentation of BlockR for more information.
+    """
     return BlockR(datatype=datatype, prefix=get_pv_prefix(), block_name=block_name)
 
 
 def block_rw(
     datatype: Type[T], block_name: str, *, write_config: BlockWriteConfiguration[T] | None = None
 ) -> BlockRw[T]:
-    """Get a local read-write block for the current instrument."""
+    """Get a local read-write block for the current instrument.
+
+    See documentation of BlockRw for more information.
+    """
     return BlockRw(
         datatype=datatype, prefix=get_pv_prefix(), block_name=block_name, write_config=write_config
     )
@@ -231,7 +239,51 @@ def block_rw(
 def block_rw_rbv(
     datatype: Type[T], block_name: str, *, write_config: BlockWriteConfiguration[T] | None = None
 ) -> BlockRwRbv[T]:
-    """Get a local read/write/setpoint readback block for the current instrument."""
+    """Get a local read/write/setpoint readback block for the current instrument.
+
+    See documentation of BlockRwRbv for more information.
+    """
     return BlockRwRbv(
         datatype=datatype, prefix=get_pv_prefix(), block_name=block_name, write_config=write_config
     )
+
+
+def block_mot(block_name: str) -> Motor:
+    """Get a local block pointing at a motor record for the local instrument.
+
+    The 'Motor' object supports motion-specific functionality such as:
+    - Stopping if a scan is aborted (supports the bluesky 'Stoppable' protocol)
+    - Limit checking (before a move starts - supports the bluesky 'Checkable' protocol)
+    - Automatic calculation of move timeouts based on motor velocity
+    - Fly scanning
+
+    However, it generally relies on the underlying motor being "well-behaved". For example, a motor
+    which does many retries may exceed the simple default timeout based on velocity (it is possible
+    to explicitly specify a timeout on set() to override this).
+
+    Blocks pointing at motors do not take a BlockWriteConfiguration parameter, as these parameters
+    duplicate functionality which already exists in the motor record. The mapping is:
+
+    use_completion_callback:
+        Motors always use completion callbacks to check whether motion has completed. Whether to
+        wait on that completion callback can be configured by the 'wait' keyword argument on set().
+    set_success_func:
+        Use .RDBD and .RTRY to control motor retries if the position has not been reached to within
+        a specified tolerance. Note that motors which retry a lot may exceed the default motion
+        timeout which is calculated based on velocity, distance and acceleration.
+    set_timeout_s:
+        A suitable timeout is calculated automatically based on velocity, distance and acceleration
+        as defined on the motor record. This may be overridden by the 'timeout' keyword-argument on
+        set().
+    settle_time_s:
+        Use .DLY on the motor record to configure this.
+    """
+    # GWBLOCK aliases .VAL to .RBV on a motor record for a block pointing at MOT:MTRxxxx.RBV, which
+    # is what we have recommended to our users for motor blocks... That means that you can't write
+    # to .VAL on a motor block. ophyd_async (reasonably) assumes you can write to .VAL for a motor
+    # which you want to move.
+    #
+    # However, we also have motor record aliases for :SP and :SP:RBV, which *don't* get mangled by
+    # GWBLOCK in that way. So by pointing at CS:SB:blockname:SP:RBV rather than CS:SB:blockname
+    # here, we avoid a write access exception when moving a motor block.
+    return Motor(f"{get_pv_prefix()}CS:SB:{block_name}:SP:RBV", name=block_name)
