@@ -3,7 +3,6 @@
 from typing import Generator
 
 import bluesky.plan_stubs as bps
-from bluesky.callbacks import LiveTable
 from bluesky.preprocessors import run_decorator
 from bluesky.utils import Msg
 from ophyd_async.plan_stubs import ensure_connected
@@ -34,7 +33,8 @@ def run_demo_plan() -> None:
         "mot",
     )
     dae = Dae(prefix)
-    RE(demo_plan(block, dae), LiveTable(["mot", "DAE"]))
+    # RE(demo_plan(block, dae), LiveTable(["mot", "DAE"]))
+    RE(demo_plan(block, dae), print)
 
 
 def demo_plan(block: BlockRwRbv, dae: Dae) -> Generator[Msg, None, None]:
