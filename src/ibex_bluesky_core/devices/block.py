@@ -78,15 +78,14 @@ class _RunControl(StandardReadable):
             # interested in is whether the block is in range or not.
             self.in_range = epics_signal_r(bool, f"{prefix}INRANGE")
 
-        with self.add_children_as_readables():
-            self.low_limit = epics_signal_rw(float, f"{prefix}LOW")
-            self.high_limit = epics_signal_rw(float, f"{prefix}HIGH")
+        self.low_limit = epics_signal_rw(float, f"{prefix}LOW")
+        self.high_limit = epics_signal_rw(float, f"{prefix}HIGH")
 
-            self.suspend_if_invalid = epics_signal_rw(bool, f"{prefix}SOI")
-            self.enabled = epics_signal_rw(bool, f"{prefix}ENABLE")
+        self.suspend_if_invalid = epics_signal_rw(bool, f"{prefix}SOI")
+        self.enabled = epics_signal_rw(bool, f"{prefix}ENABLE")
 
-            self.out_time = epics_signal_r(float, f"{prefix}OUT:TIME")
-            self.in_time = epics_signal_r(float, f"{prefix}IN:TIME")
+        self.out_time = epics_signal_r(float, f"{prefix}OUT:TIME")
+        self.in_time = epics_signal_r(float, f"{prefix}IN:TIME")
 
         super().__init__(name=name)
 
@@ -119,6 +118,17 @@ class BlockRw(BlockR[T], Movable):
     ) -> None:
         """Create a new read-write block.
 
+        The setpoint is not added to read() by default. For most cases where setpoint readback
+        functionality is desired, BlockRwRbv is a more suitable type.
+
+        If you *explicitly* need to read the setpoint from a BlockRw, you can do so in a plan with:
+        >>> import bluesky.plan_stubs as bps
+        >>> block: BlockRw = ...
+        >>> bps.read(block.setpoint)
+
+        But note that this does not read back the setpoint from hardware, but rather the setpoint
+        which was last sent by EPICS.
+
         Args:
             datatype: the type of data in this block (e.g. str, int, float)
             prefix: the current instrument's PV prefix
@@ -126,8 +136,7 @@ class BlockRw(BlockR[T], Movable):
             write_config: Settings which control how this device will set the underlying PVs
 
         """
-        with self.add_children_as_readables():
-            self.setpoint: SignalRW[T] = epics_signal_rw(datatype, f"{prefix}CS:SB:{block_name}:SP")
+        self.setpoint: SignalRW[T] = epics_signal_rw(datatype, f"{prefix}CS:SB:{block_name}:SP")
 
         self._write_config = write_config or BlockWriteConfiguration()
 
@@ -173,6 +182,9 @@ class BlockRwRbv(BlockRw[T], Locatable):
         write_config: BlockWriteConfiguration[T] | None = None,
     ) -> None:
         """Create a new read/write/setpoint readback block.
+
+        The setpoint readback is added to read(), but not hints(), by default. If you do not need
+        a setpoint readback, choose BlockRw instead of BlockRwRbv.
 
         Args:
             datatype: the type of data in this block (e.g. str, int, float)
