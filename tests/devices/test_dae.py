@@ -23,8 +23,8 @@ def test_explicit_dae_naming():
 
 def test_dae_monitors_correct_pvs(dae: Dae):
     assert dae.good_uah.source.endswith("UNITTEST:MOCK:DAE:GOODUAH")
-    assert dae.begin_run.source.endswith("UNITTEST:MOCK:DAE:BEGINRUN")
-    assert dae.end_run.source.endswith("UNITTEST:MOCK:DAE:ENDRUN")
+    assert dae.controls.begin_run.source.endswith("UNITTEST:MOCK:DAE:BEGINRUN")
+    assert dae.controls.end_run.source.endswith("UNITTEST:MOCK:DAE:ENDRUN")
 
 
 async def test_dae_read_contains_intensity_and_default_keys(dae: Dae):
@@ -47,10 +47,10 @@ async def test_dae_descriptor_contains_same_keys_as_reading(dae: Dae):
 
 
 async def test_trigger_calls_triggers_begin_and_end(dae: Dae):
-    get_mock_put(dae.begin_run).assert_not_called()
-    get_mock_put(dae.end_run).assert_not_called()
+    get_mock_put(dae.controls.begin_run).assert_not_called()
+    get_mock_put(dae.controls.end_run).assert_not_called()
 
     await dae.trigger()
 
-    get_mock_put(dae.begin_run).assert_called_once()
-    get_mock_put(dae.end_run).assert_called_once()
+    get_mock_put(dae.controls.begin_run).assert_called_once()
+    get_mock_put(dae.controls.end_run).assert_called_once()

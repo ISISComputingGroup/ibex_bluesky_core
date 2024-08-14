@@ -42,16 +42,32 @@ class Dae(
         dae_prefix = f"{prefix}DAE:"
         with self.add_children_as_readables():
             self.good_uah: SignalR[float] = epics_signal_r(float, f"{dae_prefix}GOODUAH")
+            self.count_rate: SignalR[float] = epics_signal_r(float, f"{dae_prefix}COUNTRATE")
 
+            self.neutron_proton_ratio: SignalR[float] = epics_signal_r(float, f"{dae_prefix}NPRATIO")
             self.good_frames: SignalR[int] = epics_signal_r(int, f"{dae_prefix}GOODFRAMES")
+            self.raw_frames: SignalR[int] = epics_signal_r(int, f"{dae_prefix}RAWFRAMES")
+            self.total_counts: SignalR[int] = epics_signal_r(int, f"{dae_prefix}TOTALCOUNTS")
+
+
             self.period_good_frames: SignalR[int] = epics_signal_r(
                 int, f"{dae_prefix}GOODFRAMES_PD"
             )
             self.run_number: SignalR[int] = epics_signal_r(int, f"{dae_prefix}IRUNNUMBER")
             self.run_number_str: SignalR[str] = epics_signal_r(str, f"{dae_prefix}RUNNUMBER")
 
+            self.cycle_number: SignalR[str] = epics_signal_r(str, f"{dae_prefix}ISISCYCLE")
+
+            self.inst_name: SignalR[str] = epics_signal_r(str, f"{dae_prefix}INSTNAME")
+            self.run_start_time: SignalR[str] = epics_signal_r(str, f"{dae_prefix}STARTTIME")
             self.run_duration: SignalR[int] = epics_signal_r(int, f"{dae_prefix}RUNDURATION")
+            self.num_time_channels: SignalR[int] = epics_signal_r(int, f"{dae_prefix}NUMTIMECHANNELS")
+            self.num_spectra: SignalR[int] = epics_signal_r(int, f"{dae_prefix}NUMSPECTRA")
+
             self.period_run_duration: SignalR[int] = epics_signal_r(int, f"{dae_prefix}RUNDURATION_PD")
+            self.period_good_frames: SignalR[int] = epics_signal_r(int, f"{dae_prefix}GOODFRAMES_PD")
+            self.period_raw_frames: SignalR[int] = epics_signal_r(int, f"{dae_prefix}RAWFRAMES_PD")
+            self.period_good_uah: SignalR[float] = epics_signal_r(float, f"{dae_prefix}GOODUAH_PD")
 
             self.beam_current: SignalR[float] = epics_signal_r(float, f"{dae_prefix}BEAMCURRENT")
             self.total_uamps: SignalR[float] = epics_signal_r(float, f"{dae_prefix}TOTALUAMPS")
@@ -61,6 +77,7 @@ class Dae(
             )
 
             self.title: SignalRW = isis_epics_signal_rw(str, f"{dae_prefix}TITLE")
+            self.show_title_and_users: SignalRW = isis_epics_signal_rw(bool, f"{dae_prefix}TITLE:DISPLAY")
             self.users: SignalRW = isis_epics_signal_rw(str, f"{dae_prefix}_USERNAME")
             self.rb_number: SignalRW = isis_epics_signal_rw(str, f"{dae_prefix}_RBNUMBER")
 
@@ -69,8 +86,8 @@ class Dae(
             )
 
         with self.add_children_as_readables(ConfigSignal):
-            # add configurable pvs here ie. wiring tables, spectra number, etc. - stuff that'll change the shape of other signals
-            # self.
+            # add configurable pvs here ie. wiring tables, spectra number, etc. - stuff that'll change the shape of
+            # other signals self.
             pass
 
         self.controls: DaeControls = DaeControls(dae_prefix)
