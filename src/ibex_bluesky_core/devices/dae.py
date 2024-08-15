@@ -35,6 +35,7 @@ class RunstateEnum(str, Enum):
     def __str__(self):
         return str(self.value)
 
+
 class YesNoEnum(str, Enum):
     No = "No"
     Yes = "Yes"
@@ -84,7 +85,9 @@ class Dae(StandardReadable, Triggerable):
                 RunstateEnum, f"{dae_prefix}RUNSTATE"
             )
             self.title: SignalRW = isis_epics_signal_rw(str, f"{dae_prefix}TITLE")
-            self.show_title_and_users: SignalRW = epics_signal_rw(YesNoEnum, f"{dae_prefix}TITLE:DISPLAY", f"{dae_prefix}TITLE:DISPLAY")
+            self.show_title_and_users: SignalRW = epics_signal_rw(
+                YesNoEnum, f"{dae_prefix}TITLE:DISPLAY", f"{dae_prefix}TITLE:DISPLAY"
+            )
 
             self.users: SignalRW = isis_epics_signal_rw(str, f"{dae_prefix}_USERNAME")
             self.rb_number: SignalRW = isis_epics_signal_rw(str, f"{dae_prefix}_RBNUMBER")

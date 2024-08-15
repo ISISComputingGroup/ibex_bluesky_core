@@ -32,7 +32,10 @@ def run_demo_plan() -> None:
     dae = Dae(prefix)
     RE(
         demo_plan(block, dae),
-        LiveTable(["mot", "DAE-good_uah", "DAE-run_state", "DAE-rb_number", "DAE-period-run_duration"], default_prec=10),
+        LiveTable(
+            ["mot", "DAE-good_uah", "DAE-run_state", "DAE-rb_number", "DAE-period-run_duration"],
+            default_prec=10,
+        ),
     )
     # RE(demo_plan(block, dae), print)
 
