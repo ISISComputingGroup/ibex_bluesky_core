@@ -1,6 +1,6 @@
-from ibex_bluesky_core.utils.isis_epics_signals import isis_epics_signal_rw
 from unittest.mock import patch
-from time import sleep
+
+from ibex_bluesky_core.utils.isis_epics_signals import isis_epics_signal_rw
 
 
 def test_isis_epics_rw_signal_appends_correct_sp_suffix():

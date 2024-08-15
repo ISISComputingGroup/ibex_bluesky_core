@@ -30,8 +30,11 @@ def run_demo_plan() -> None:
     prefix = get_pv_prefix()
     block = Block(prefix, "mot", float)
     dae = Dae(prefix)
-    RE(demo_plan(block, dae), LiveTable(["mot", "DAE-good_uah", "DAE-run_state", "DAE-rb_number"], default_prec=10))
-    #RE(demo_plan(block, dae), print)
+    RE(
+        demo_plan(block, dae),
+        LiveTable(["mot", "DAE-good_uah", "DAE-run_state", "DAE-rb_number"], default_prec=10),
+    )
+    # RE(demo_plan(block, dae), print)
 
 
 def demo_plan(block: Block, dae: Dae) -> Generator[Msg, None, None]:
