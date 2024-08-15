@@ -6,7 +6,7 @@ from enum import Enum
 import numpy as np
 from bluesky.protocols import Triggerable
 from ophyd_async.core import AsyncStatus, ConfigSignal, SignalR, SignalRW, StandardReadable
-from ophyd_async.epics.signal import epics_signal_r
+from ophyd_async.epics.signal import epics_signal_r, epics_signal_rw
 
 from ibex_bluesky_core.devices.dae_controls import DaeControls
 from ibex_bluesky_core.devices.dae_event_mode import DaeEventMode
@@ -35,6 +35,13 @@ class RunstateEnum(str, Enum):
     def __str__(self):
         return str(self.value)
 
+class YesNoEnum(str, Enum):
+    No = "No"
+    Yes = "Yes"
+
+    def __str__(self):
+        return str(self.value)
+
 
 class Dae(StandardReadable, Triggerable):
     """Device representing the ISIS data acquisition electronics."""
@@ -46,7 +53,7 @@ class Dae(StandardReadable, Triggerable):
             self.good_uah: SignalR[float] = epics_signal_r(float, f"{dae_prefix}GOODUAH")
             self.count_rate: SignalR[float] = epics_signal_r(float, f"{dae_prefix}COUNTRATE")
             self.m_events: SignalR[float] = epics_signal_r(float, f"{dae_prefix}MEVENTS")
-            self.sim_mode: SignalR[bool] = epics_signal_r(bool, f"{dae_prefix}SIM_MODE")
+            self.sim_mode: SignalR[YesNoEnum] = epics_signal_r(YesNoEnum, f"{dae_prefix}SIM_MODE")
             self.neutron_proton_ratio: SignalR[float] = epics_signal_r(
                 float, f"{dae_prefix}NPRATIO"
             )
@@ -77,9 +84,8 @@ class Dae(StandardReadable, Triggerable):
                 RunstateEnum, f"{dae_prefix}RUNSTATE"
             )
             self.title: SignalRW = isis_epics_signal_rw(str, f"{dae_prefix}TITLE")
-            self.show_title_and_users: SignalRW = isis_epics_signal_rw(
-                bool, f"{dae_prefix}TITLE:DISPLAY"
-            )
+            self.show_title_and_users: SignalRW = epics_signal_rw(YesNoEnum, f"{dae_prefix}TITLE:DISPLAY", f"{dae_prefix}TITLE:DISPLAY")
+
             self.users: SignalRW = isis_epics_signal_rw(str, f"{dae_prefix}_USERNAME")
             self.rb_number: SignalRW = isis_epics_signal_rw(str, f"{dae_prefix}_RBNUMBER")
 
