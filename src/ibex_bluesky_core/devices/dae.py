@@ -71,6 +71,7 @@ class Dae(StandardReadable, Triggerable):
                 int, f"{dae_prefix}NUMTIMECHANNELS"
             )
             self.num_spectra: SignalR[int] = epics_signal_r(int, f"{dae_prefix}NUMSPECTRA")
+
             self.period = DaePeriod(dae_prefix)
             self.period_num: SignalRW = isis_epics_signal_rw(int, f"{dae_prefix}PERIOD")
             self.number_of_periods: SignalRW = isis_epics_signal_rw(int, f"{dae_prefix}NUMPERIODS")
