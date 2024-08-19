@@ -4,6 +4,7 @@ import asyncio
 from functools import cache
 from threading import Event
 
+import matplotlib
 from bluesky.run_engine import RunEngine
 from bluesky.utils import DuringTask
 
@@ -60,9 +61,19 @@ def get_run_engine() -> RunEngine:
     - https://nsls-ii.github.io/bluesky/run_engine_api.html
     """
     loop = asyncio.new_event_loop()
+
+    # Only log *very* slow callbacks (in asyncio debug mode)
+    # Fitting/plotting can take more than the 100ms default.
+    loop.slow_callback_duration = 500
+
+    # See https://github.com/bluesky/bluesky/pull/1770 for details
+    # We don't need to use our custom _DuringTask if matplotlib is
+    # configured to use Qt.
+    dt = None if "qt" in matplotlib.get_backend() else _DuringTask()
+
     RE = RunEngine(
         loop=loop,
-        during_task=_DuringTask(),
+        during_task=dt,
         call_returns_result=True,  # Will be default in a future bluesky version.
     )
     RE.record_interruptions = True

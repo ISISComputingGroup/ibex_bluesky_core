@@ -1,6 +1,7 @@
 import pytest
-from ibex_bluesky_core.devices.dae import Dae
 from ophyd_async.core import get_mock_put
+
+from ibex_bluesky_core.devices.dae import Dae
 
 
 @pytest.fixture

@@ -3,11 +3,14 @@
 from typing import Generator
 
 import bluesky.plan_stubs as bps
+import matplotlib
+import matplotlib.pyplot as plt
 from bluesky.callbacks import LiveTable
-from bluesky.preprocessors import run_decorator
+from bluesky.preprocessors import run_decorator, subs_decorator
 from bluesky.utils import Msg
 from ophyd_async.plan_stubs import ensure_connected
 
+from ibex_bluesky_core.callbacks.plotting import LivePlot
 from ibex_bluesky_core.devices import get_pv_prefix
 from ibex_bluesky_core.devices.block import Block
 from ibex_bluesky_core.devices.dae import Dae
@@ -30,13 +33,19 @@ def run_demo_plan() -> None:
     prefix = get_pv_prefix()
     block = Block(prefix, "mot", float)
     dae = Dae(prefix)
-    RE(demo_plan(block, dae), LiveTable(["mot", "DAE"]))
+    RE(demo_plan(block, dae))
 
 
 def demo_plan(block: Block, dae: Dae) -> Generator[Msg, None, None]:
     """Demonstration plan which moves a block and reads the DAE."""
     yield from ensure_connected(block, dae, force_reconnect=True)
 
+    @subs_decorator(
+        [
+            LivePlot(y=dae.name, x=block.name, marker="x", linestyle="none"),
+            LiveTable([block.name, dae.name]),
+        ]
+    )
     @run_decorator(md={})
     def _inner() -> Generator[Msg, None, None]:
         # A "simple" acquisition using trigger_and_read.
@@ -54,3 +63,11 @@ def demo_plan(block: Block, dae: Dae) -> Generator[Msg, None, None]:
         yield from bps.save()
 
     yield from _inner()
+
+
+if __name__ == "__main__":
+    if "genie_python" not in matplotlib.get_backend():
+        matplotlib.use("qtagg")
+        plt.ion()
+    run_demo_plan()
+    input("plan complete, press return to continue.")
