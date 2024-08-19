@@ -7,6 +7,8 @@ from unittest.mock import ANY, MagicMock, patch
 import bluesky.plan_stubs as bps
 import bluesky.plans as bp
 import pytest
+from ophyd_async.core import get_mock_put, set_mock_value
+
 from ibex_bluesky_core.devices.block import (
     BlockMot,
     BlockR,
@@ -18,7 +20,6 @@ from ibex_bluesky_core.devices.block import (
     block_rw,
     block_rw_rbv,
 )
-from ophyd_async.core import get_mock_put, set_mock_value
 
 MOCK_PREFIX = "UNITTEST:MOCK:"
 
@@ -276,6 +277,12 @@ def test_plan_rd_block(RE, readable_block):
     set_mock_value(readable_block.readback, 123.0)
     result = RE(bps.rd(readable_block))
     assert result.plan_result == 123.0
+
+
+def test_plan_trigger_block(RE, readable_block):
+    # A block must be able to be triggered for use in adaptive scans.
+    result = RE(bps.trigger(readable_block))
+    assert result.exit_status == "success"
 
 
 def test_plan_mv_block(RE, writable_block):

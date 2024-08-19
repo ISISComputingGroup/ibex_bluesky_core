@@ -4,7 +4,7 @@ import asyncio
 from dataclasses import dataclass
 from typing import Callable, Generic, Type, TypeVar
 
-from bluesky.protocols import Locatable, Location, Movable
+from bluesky.protocols import Locatable, Location, Movable, Triggerable
 from ophyd_async.core import (
     AsyncStatus,
     HintedSignal,
@@ -107,7 +107,7 @@ class RunControl(StandardReadable):
         super().__init__(name=name)
 
 
-class BlockR(StandardReadable, Generic[T]):
+class BlockR(StandardReadable, Triggerable, Generic[T]):
     """Device representing an IBEX readable block of arbitrary data type."""
 
     def __init__(self, datatype: Type[T], prefix: str, block_name: str) -> None:
@@ -127,6 +127,13 @@ class BlockR(StandardReadable, Generic[T]):
 
         super().__init__(name=block_name)
         self.readback.set_name(block_name)
+
+    @AsyncStatus.wrap
+    async def trigger(self) -> None:
+        """Blocks need to be triggerable to be used in adaptive scans.
+
+        They do not do anything when triggered.
+        """
 
 
 class BlockRw(BlockR[T], Movable):

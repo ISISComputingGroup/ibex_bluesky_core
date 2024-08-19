@@ -47,7 +47,7 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = [
-  "ruff",
+  "ruff>=0.6",
   "pyright",
   "pytest",
   "pytest-asyncio",
