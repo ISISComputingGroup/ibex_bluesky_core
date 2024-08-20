@@ -1,6 +1,7 @@
 from unittest.mock import patch
 
 import pytest
+
 from ibex_bluesky_core.devices import get_pv_prefix
 
 
