@@ -12,7 +12,7 @@ from ophyd_async.plan_stubs import ensure_connected
 
 from ibex_bluesky_core.callbacks.plotting import LivePlot
 from ibex_bluesky_core.devices import get_pv_prefix
-from ibex_bluesky_core.devices.block import Block
+from ibex_bluesky_core.devices.block import BlockRwRbv, block_rw_rbv
 from ibex_bluesky_core.devices.dae import Dae
 from ibex_bluesky_core.run_engine import get_run_engine
 
@@ -31,12 +31,12 @@ def run_demo_plan() -> None:
     """
     RE = get_run_engine()
     prefix = get_pv_prefix()
-    block = Block(prefix, "mot", float)
+    block = block_rw_rbv(float, "mot")
     dae = Dae(prefix)
     RE(demo_plan(block, dae))
 
 
-def demo_plan(block: Block, dae: Dae) -> Generator[Msg, None, None]:
+def demo_plan(block: BlockRwRbv[float], dae: Dae) -> Generator[Msg, None, None]:
     """Demonstration plan which moves a block and reads the DAE."""
     yield from ensure_connected(block, dae, force_reconnect=True)
 

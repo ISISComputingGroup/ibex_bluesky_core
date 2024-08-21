@@ -1,3 +1,5 @@
+# pyright: reportMissingParameterType=false
+
 import pytest
 from ophyd_async.core import get_mock_put
 

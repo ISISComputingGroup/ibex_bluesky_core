@@ -48,7 +48,7 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = [
-  "ruff",
+  "ruff>=0.6",
   "pyright",
   "pytest",
   "pytest-asyncio",
@@ -81,7 +81,17 @@ directory = "coverage_html_report"
 
 [tool.pyright]
 include = ["src", "tests"]
-reportUntypedFunctionDecorator = true
+reportConstantRedefinition = true
+reportDeprecated = true
+reportInconsistentConstructor = true
+reportMissingParameterType = true
+reportMissingTypeArgument = true
+reportUnnecessaryCast = true
+reportUnnecessaryComparison = true
+reportUnnecessaryContains = true
+reportUnnecessaryIsInstance = true
+reportUntypedBaseClass = true
 reportUntypedClassDecorator = true
+reportUntypedFunctionDecorator = true
 
 [tool.setuptools_scm]
