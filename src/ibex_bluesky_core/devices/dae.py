@@ -75,6 +75,13 @@ class Dae(StandardReadable, Triggerable):
             self.period_num: SignalRW = isis_epics_signal_rw(int, f"{dae_prefix}PERIOD")
             self.number_of_periods: SignalRW = isis_epics_signal_rw(int, f"{dae_prefix}NUMPERIODS")
 
+            self.spectra_integrals: SignalR[np.ndarray] = epics_signal_r(
+                np.ndarray[np.int32], f"{dae_prefix}SPECINTEGRALS"
+            )
+            self.spectra_data: SignalR[np.typing.NDArray[np.int32]] = epics_signal_r(
+                np.typing.NDArray[np.int32], f"{dae_prefix}SPECDATA"
+            )
+
             # TODO hmm are we only going to show 1 of these or more?
             self.monitor = DaeMonitor(dae_prefix)
             self.event_mode = DaeEventMode(dae_prefix)
