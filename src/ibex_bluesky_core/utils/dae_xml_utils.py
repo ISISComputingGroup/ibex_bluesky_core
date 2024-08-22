@@ -3,6 +3,7 @@ from typing import Dict, Tuple
 
 def convert_xml_to_names_and_values(xml) -> Dict[str, str]:
     names_and_values = dict()
+    # This finds all elements with a "name" element, but ignores the first one as it's the root
     elements = xml.findall(".//Name/..")[1:]
     for element in elements:
         name, value = _get_names_and_values(element)
