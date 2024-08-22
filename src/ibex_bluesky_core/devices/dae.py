@@ -12,6 +12,9 @@ from ibex_bluesky_core.devices.dae_controls import DaeControls
 from ibex_bluesky_core.devices.dae_event_mode import DaeEventMode
 from ibex_bluesky_core.devices.dae_monitor import DaeMonitor
 from ibex_bluesky_core.devices.dae_period import DaePeriod
+from ibex_bluesky_core.devices.dae_period_settings import DaePeriodSettings
+from ibex_bluesky_core.devices.dae_settings import DaeSettings
+from ibex_bluesky_core.devices.dae_tcb_settings import DaeTCBSettings
 from ibex_bluesky_core.utils.isis_epics_signals import isis_epics_signal_rw
 
 
@@ -36,6 +39,7 @@ class RunstateEnum(str, Enum):
         return str(self.value)
 
 
+# TODO get rid of this
 class YesNoEnum(str, Enum):
     No = "No"
     Yes = "Yes"
@@ -76,12 +80,17 @@ class Dae(StandardReadable, Triggerable):
             self.period_num: SignalRW = isis_epics_signal_rw(int, f"{dae_prefix}PERIOD")
             self.number_of_periods: SignalRW = isis_epics_signal_rw(int, f"{dae_prefix}NUMPERIODS")
 
-            self.spectra_integrals: SignalR[np.ndarray] = epics_signal_r(
-                np.ndarray[np.int32], f"{dae_prefix}SPECINTEGRALS"
-            )
-            self.spectra_data: SignalR[np.typing.NDArray[np.int32]] = epics_signal_r(
-                np.typing.NDArray[np.int32], f"{dae_prefix}SPECDATA"
-            )
+            self.settings = DaeSettings(dae_prefix)
+            self.period_settings = DaePeriodSettings(dae_prefix)
+            self.tcb_settings = DaeTCBSettings(dae_prefix)
+
+            # TODO needs processing - use subdevice
+            # self.spectra_integrals: SignalR[np.ndarray] = epics_signal_r(
+            #     np.ndarray[np.int32], f"{dae_prefix}SPECINTEGRALS"
+            # )
+            # self.spectra_data: SignalR[np.typing.NDArray[np.int32]] = epics_signal_r(
+            #     np.typing.NDArray[np.int32], f"{dae_prefix}SPECDATA"
+            # )
 
             # TODO hmm are we only going to show 1 of these or more?
             self.monitor = DaeMonitor(dae_prefix)
@@ -100,6 +109,7 @@ class Dae(StandardReadable, Triggerable):
             self.users: SignalRW = isis_epics_signal_rw(str, f"{dae_prefix}_USERNAME")
             self.rb_number: SignalRW = isis_epics_signal_rw(str, f"{dae_prefix}_RBNUMBER")
 
+            # TODO pull out subdevice for spectra which looks at X, Y etc.
             self.spectra_1_period_1_x: SignalR[np.typing.NDArray[np.float32]] = epics_signal_r(
                 np.typing.NDArray[np.float32], f"{prefix}DAE" f":SPEC:1:1:X"
             )
