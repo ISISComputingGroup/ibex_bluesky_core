@@ -1,8 +1,8 @@
 from dataclasses import dataclass
 from ophyd_async.core import SignalRW, StandardReadable, AsyncStatus
-from ibex_bluesky_core.utils.dae_xml_utils import convert_xml_to_names_and_values
-from ibex_bluesky_core.utils.isis_epics_signals import isis_epics_signal_rw
 import xml.etree.ElementTree as ET
+
+from ibex_bluesky_core.devices import convert_xml_to_names_and_values, isis_epics_signal_rw
 
 
 @dataclass

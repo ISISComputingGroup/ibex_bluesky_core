@@ -1,4 +1,3 @@
-from cProfile import label
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import Dict, Any, List
@@ -6,15 +5,15 @@ from typing import Dict, Any, List
 from bluesky.protocols import Movable, Status
 from ophyd_async.core import SignalRW, StandardReadable, AsyncStatus
 
-from ibex_bluesky_core.utils.dae_xml_utils import convert_xml_to_names_and_values
-from ibex_bluesky_core.utils.isis_epics_signals import isis_epics_signal_rw
 import xml.etree.ElementTree as ET
+
+from ibex_bluesky_core.devices import convert_xml_to_names_and_values, isis_epics_signal_rw
 
 
 class PeriodType(Enum):
-    UNUSED = 0
-    DAQ = 1
-    DWELL = 2
+    SOFTWARE = 0
+    HARDWARE_DAE = 1
+    HARDWARE_EXTERNAL = 2
 
 
 class PeriodSource(Enum):
@@ -46,8 +45,8 @@ def convert_xml_to_period_settings(value: str) -> DaePeriodSettingsData:
     settings_from_xml = convert_xml_to_names_and_values(root)
     settings = DaePeriodSettingsData(
         periods_soft_num=int(settings_from_xml["Number Of Software Periods"]),
-        periods_type=PeriodType(settings_from_xml["Period Type"]),
-        periods_src=PeriodSource(settings_from_xml["Period Setup Source"]),
+        periods_type=PeriodType(int(settings_from_xml["Period Type"])),
+        periods_src=PeriodSource(int(settings_from_xml["Period Setup Source"])),
         periods_file=settings_from_xml["Period File"],
         periods_seq=int(settings_from_xml["Hardware Period Sequences"]),
         periods_delay=int(settings_from_xml["Output Delay (us)"]),
@@ -61,8 +60,6 @@ def convert_xml_to_period_settings(value: str) -> DaePeriodSettingsData:
             for i in range(1, 9)
         ],
     )
-
-    print(settings)
     return settings
 
 

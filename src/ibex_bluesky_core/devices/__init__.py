@@ -1,9 +1,13 @@
 """Common utilities for use across devices."""
+from __future__ import annotations
 
 import binascii
 import os
 import zlib
-from typing import Dict, Tuple
+from typing import Dict, Tuple, Type
+
+from ophyd_async.core import T, SignalRW
+from ophyd_async.epics.signal import epics_signal_rw
 
 
 def get_pv_prefix() -> str:
@@ -46,3 +50,11 @@ def _get_names_and_values(element) -> Tuple[str, str]:
         value = value.text
     # TODO hmmmm, should we get choices here and store them somewhere? not sure.
     return name, value
+
+
+def isis_epics_signal_rw(datatype: Type[T], read_pv: str, name: str = "") -> SignalRW[T]:
+    """Utility function for making a RW signal using the ISIS PV naming standard ie. read_pv being TITLE,
+    write_pv being TITLE:SP
+    """
+    write_pv = f"{read_pv}:SP"
+    return epics_signal_rw(datatype, read_pv, write_pv, name)

@@ -1,19 +1,42 @@
 from dataclasses import dataclass
+from enum import Enum
 from typing import Dict, Any
 
 from ophyd_async.core import SignalRW, StandardReadable, AsyncStatus
 
-from ibex_bluesky_core.utils.dae_xml_utils import convert_xml_to_names_and_values
-from ibex_bluesky_core.utils.dehex_and_decompress import dehex_and_decompress
-from ibex_bluesky_core.utils.isis_epics_signals import isis_epics_signal_rw
+
 import xml.etree.ElementTree as ET
+
+from ibex_bluesky_core.devices import convert_xml_to_names_and_values, isis_epics_signal_rw, dehex_and_decompress
+
+class TimeUnit(Enum):
+    MICROSECONDS = 0
+    NANOSECONDS = 1
+
+class CalculationMethod(Enum):
+    SPECIFY_PARAMETERS = 0
+    USE_TCB_FILE = 1
+
+class TimeRegimeMode(Enum):
+    BLANK = 0
+    DT = 1
+    DTDIVT = 2
+    DTDIVT2 = 3
+    SHIFTED = 4
 
 
 @dataclass
+class TimeRegime:
+    pass
+
+class TimeRegimeRow:
+    pass
+
+@dataclass
 class DaeTCBSettingsData:
-    tcb_file = None
+    tcb_file: str|None = None
     tcb_tables = []
-    tcb_calculation_method = None
+    tcb_calculation_method: CalculationMethod|None = None
 
 
 def convert_xml_to_tcb_settings(value: str) -> DaeTCBSettingsData:
