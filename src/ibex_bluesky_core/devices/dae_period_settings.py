@@ -43,7 +43,7 @@ class DaePeriodSettingsData:
 def convert_xml_to_period_settings(value: str) -> DaePeriodSettingsData:
     root = ET.fromstring(value)
     settings_from_xml = convert_xml_to_names_and_values(root)
-    settings = DaePeriodSettingsData(
+    return DaePeriodSettingsData(
         periods_soft_num=int(settings_from_xml["Number Of Software Periods"]),
         periods_type=PeriodType(int(settings_from_xml["Period Type"])),
         periods_src=PeriodSource(int(settings_from_xml["Period Setup Source"])),
@@ -60,7 +60,6 @@ def convert_xml_to_period_settings(value: str) -> DaePeriodSettingsData:
             for i in range(1, 9)
         ],
     )
-    return settings
 
 
 def convert_period_settings_to_xml(value: DaePeriodSettingsData):

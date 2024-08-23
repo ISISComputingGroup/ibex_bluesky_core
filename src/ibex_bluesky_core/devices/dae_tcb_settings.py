@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from enum import Enum
 from typing import Dict, Any
 
@@ -7,15 +7,22 @@ from ophyd_async.core import SignalRW, StandardReadable, AsyncStatus
 
 import xml.etree.ElementTree as ET
 
-from ibex_bluesky_core.devices import convert_xml_to_names_and_values, isis_epics_signal_rw, dehex_and_decompress
+from ibex_bluesky_core.devices import (
+    convert_xml_to_names_and_values,
+    isis_epics_signal_rw,
+    dehex_and_decompress,
+)
+
 
 class TimeUnit(Enum):
     MICROSECONDS = 0
     NANOSECONDS = 1
 
+
 class CalculationMethod(Enum):
     SPECIFY_PARAMETERS = 0
     USE_TCB_FILE = 1
+
 
 class TimeRegimeMode(Enum):
     BLANK = 0
@@ -26,26 +33,53 @@ class TimeRegimeMode(Enum):
 
 
 @dataclass
-class TimeRegime:
-    pass
-
 class TimeRegimeRow:
-    pass
+    from_: float | None = None
+    to: float | None = None
+    steps: float | None = None
+    mode: TimeRegimeMode | None = None
+
+
+@dataclass
+class TimeRegime:
+    rows: Dict[int, TimeRegimeRow] = field(
+        default_factory=lambda: {i: TimeRegimeRow() for i in range(1, 6)}
+    )
+
 
 @dataclass
 class DaeTCBSettingsData:
-    tcb_file: str|None = None
-    tcb_tables = []
-    tcb_calculation_method: CalculationMethod|None = None
+    tcb_file: str | None = None
+    time_unit: TimeUnit | None = None
+    tcb_tables: Dict[int, TimeRegime] = field(
+        default_factory=lambda: {i: TimeRegime() for i in range(1, 7)}
+    )
+    tcb_calculation_method: CalculationMethod | None = None
 
 
 def convert_xml_to_tcb_settings(value: str) -> DaeTCBSettingsData:
     root = ET.fromstring(value)
     settings_from_xml = convert_xml_to_names_and_values(root)
-    print(settings_from_xml)
-    settings = DaeTCBSettingsData()
-    # TODO parse
-    return settings
+
+    return DaeTCBSettingsData(
+        tcb_file=settings_from_xml["Time Channel File"],
+        tcb_calculation_method=CalculationMethod(int(settings_from_xml["Calculation Method"])),
+        time_unit=TimeUnit(int(settings_from_xml["Time Unit"])),
+        tcb_tables={
+            tr: TimeRegime(
+                rows={
+                    r: TimeRegimeRow(
+                        from_=float(settings_from_xml[f"TR{tr} From {r}"]),
+                        to=float(settings_from_xml[f"TR{tr} To {r}"]),
+                        steps=float(settings_from_xml[f"TR{tr} Steps {r}"]),
+                        mode=TimeRegimeMode(int(settings_from_xml[f"TR{tr} In Mode {r}"])),
+                    )
+                    for r in range(1, 6)
+                }
+            )
+            for tr in range(1, 7)
+        },
+    )
 
 
 def convert_tcb_settings_to_xml(value: DaeTCBSettingsData):
