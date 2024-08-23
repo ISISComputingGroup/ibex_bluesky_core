@@ -7,12 +7,12 @@ import xml.etree.ElementTree as ET
 
 @dataclass
 class DaeSettingsData:
-    wiring_filepath: str|None = None
-    detector_filepath: str|None = None
-    spectra_filepath: str|None = None
-    mon_spect: int|None = None
-    mon_from: int|None = None
-    mon_to: int|None = None
+    wiring_filepath: str | None = None
+    detector_filepath: str | None = None
+    spectra_filepath: str | None = None
+    mon_spect: int | None = None
+    mon_from: int | None = None
+    mon_to: int | None = None
     dae_sync = None
     smp_veto = None
     ts2_veto = None
@@ -22,8 +22,8 @@ class DaeSettingsData:
     ext2_veto = None
     ext3_veto = None
     fermi_veto = None
-    fermi_delay: int|None = None
-    fermi_width: int|None = None
+    fermi_delay: int | None = None
+    fermi_width: int | None = None
 
 
 def convert_xml_to_dae_settings(value: str) -> DaeSettingsData:
