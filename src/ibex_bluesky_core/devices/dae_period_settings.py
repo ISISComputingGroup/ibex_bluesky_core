@@ -1,17 +1,16 @@
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Dict, Any, List
+from typing import List
 from xml.etree.ElementTree import tostring
 
-from bluesky.protocols import Movable, Status, Locatable, SyncOrAsync, Location, Readable, Reading
-from event_model import DataKey
-from ophyd_async.core import SignalRW, StandardReadable, AsyncStatus, Device
+from bluesky.protocols import Locatable, Location
+from ophyd_async.core import SignalRW, AsyncStatus, Device
 
 import xml.etree.ElementTree as ET
 
 from ibex_bluesky_core.devices import convert_xml_to_names_and_values, isis_epics_signal_rw
 
-from src.ibex_bluesky_core.devices import get_all_elements_in_xml_with_child_called_name
+from ibex_bluesky_core.devices import get_all_elements_in_xml_with_child_called_name, set_value_in_dae_xml
 
 OUTPUT_DELAY = "Output Delay (us)"
 PERIOD_SEQUENCES = "Hardware Period Sequences"
@@ -72,28 +71,23 @@ def convert_xml_to_period_settings(value: str) -> DaePeriodSettingsData:
         ],
     )
 
-def set_in_xml(elements:List[ET.ElementTree], name:str, value:Any):
-    if value is not None and (isinstance(value, list) and value):
-        for i in elements:
-            if i.find("Name").text == name:
-                i.find("Val").text = value
 
 def convert_period_settings_to_xml(current_xml: str, value: DaePeriodSettingsData):
     # get xml here, then substitute values from the dataclasses
     root = ET.fromstring(current_xml)
     elements  = get_all_elements_in_xml_with_child_called_name(root)
     # yuck, use a for loop
-    set_in_xml(elements, PERIODS_SOFT_NUM, value.periods_soft_num)
-    set_in_xml(elements, PERIOD_TYPE, value.periods_type)
-    set_in_xml(elements, PERIOD_SETUP_SOURCE, value.periods_src)
-    set_in_xml(elements, PERIOD_FILE, value.periods_file)
-    set_in_xml(elements, PERIOD_SEQUENCES, value.periods_seq)
-    set_in_xml(elements, OUTPUT_DELAY, value.periods_delay)
+    set_value_in_dae_xml(elements, PERIODS_SOFT_NUM, value.periods_soft_num)
+    set_value_in_dae_xml(elements, PERIOD_TYPE, value.periods_type)
+    set_value_in_dae_xml(elements, PERIOD_SETUP_SOURCE, value.periods_src)
+    set_value_in_dae_xml(elements, PERIOD_FILE, value.periods_file)
+    set_value_in_dae_xml(elements, PERIOD_SEQUENCES, value.periods_seq)
+    set_value_in_dae_xml(elements, OUTPUT_DELAY, value.periods_delay)
     for i in range(1,8+1):
-        set_in_xml(elements, f"Type {i}", value.periods_settings[i-1].type)
-        set_in_xml(elements, f"Frames {i}", value.periods_settings[i-1].frames)
-        set_in_xml(elements, f"Output {i}", value.periods_settings[i-1].output)
-        set_in_xml(elements, f"Label {i}", value.periods_settings[i-1].type)
+        set_value_in_dae_xml(elements, f"Type {i}", value.periods_settings[i - 1].type)
+        set_value_in_dae_xml(elements, f"Frames {i}", value.periods_settings[i - 1].frames)
+        set_value_in_dae_xml(elements, f"Output {i}", value.periods_settings[i - 1].output)
+        set_value_in_dae_xml(elements, f"Label {i}", value.periods_settings[i - 1].type)
     print(tostring(root, encoding="unicode"))
     return tostring(root, encoding="unicode")
 

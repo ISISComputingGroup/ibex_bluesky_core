@@ -5,7 +5,9 @@ from __future__ import annotations
 import binascii
 import os
 import zlib
-from typing import Dict, Tuple, Type
+from enum import Enum
+from typing import Dict, Tuple, Type, List, Any
+from xml.etree import ElementTree as ET
 
 from ophyd_async.core import T, SignalRW
 from ophyd_async.epics.signal import epics_signal_rw
@@ -47,8 +49,6 @@ def get_all_elements_in_xml_with_child_called_name(xml):
     return elements
 
 
-
-
 def _get_names_and_values(element) -> Tuple[str, str]:
     name = element.find("Name")
     if name is not None and hasattr(name, "text"):
@@ -66,3 +66,15 @@ def isis_epics_signal_rw(datatype: Type[T], read_pv: str, name: str = "") -> Sig
     """
     write_pv = f"{read_pv}:SP"
     return epics_signal_rw(datatype, read_pv, write_pv, name)
+
+
+def set_value_in_dae_xml(elements:List[ET.ElementTree], name:str, value:Any):
+    """
+    TODO add some docs here pls
+    """
+    if value is not None and (isinstance(value, list) and value):
+        if isinstance(value, Enum):
+            value = value.value
+        for i in elements:
+            if i.find("Name").text == name:
+                i.find("Val").text = value
