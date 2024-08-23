@@ -15,6 +15,8 @@ from ibex_bluesky_core.run_engine import get_run_engine
 
 __all__ = ["run_demo_plan", "demo_plan"]
 
+from src.ibex_bluesky_core.devices.dae_period_settings import DaePeriodSettingsData
+
 
 def run_demo_plan() -> None:
     """Run the demo plan, including setup which would usually be done outside the plan.
@@ -32,10 +34,19 @@ def run_demo_plan() -> None:
     dae = Dae(prefix)
     RE(
         demo_plan(block, dae),
-        LiveTable(
-            ["mot", "DAE-good_uah", "DAE-run_state", "DAE-rb_number", "DAE-period-run_duration"],
-            default_prec=10,
-        ),
+        [
+            LiveTable(
+                [
+                    "mot",
+                    "DAE-good_uah",
+                    "DAE-run_state",
+                    "DAE-rb_number",
+                    "DAE-period-run_duration",
+                ],
+                default_prec=10,
+            ),
+            print,
+        ],
     )
     # RE(demo_plan(block, dae), print)
 
@@ -46,19 +57,23 @@ def demo_plan(block: BlockRwRbv[float], dae: Dae) -> Generator[Msg, None, None]:
 
     @run_decorator(md={})
     def _inner() -> Generator[Msg, None, None]:
+        current_settings: DaePeriodSettingsData = yield from bps.rd(dae.period_settings)
+        print(current_settings)
+        current_settings.periods_file = "C:\\system42\\test.txt"
+        yield from bps.mv(dae.period_settings, current_settings)
         # A "simple" acquisition using trigger_and_read.
-        yield from bps.abs_set(block, 1.0, wait=True)
-        yield from bps.trigger_and_read([block, dae])
-
-        # More complicated acquisition showing arbitrary DAE control to support complex use-cases.
-        yield from bps.abs_set(block, 2.0, wait=True)
-        yield from bps.trigger(dae.controls.begin_run, wait=True)
-        yield from bps.sleep(2)  # ... some complicated logic ...
-        yield from bps.trigger(dae.controls.end_run, wait=True)
-        yield from bps.create()  # Create a bundle of readings
-        yield from bps.read(block)
-        yield from bps.read(dae)
-        yield from bps.save()
+        # yield from bps.abs_set(block, 1.0, wait=True)
+        # yield from bps.trigger_and_read([block, dae])
+        #
+        # # More complicated acquisition showing arbitrary DAE control to support complex use-cases.
+        # yield from bps.abs_set(block, 2.0, wait=True)
+        # yield from bps.trigger(dae.controls.begin_run, wait=True)
+        # yield from bps.sleep(2)  # ... some complicated logic ...
+        # yield from bps.trigger(dae.controls.end_run, wait=True)
+        # yield from bps.create()  # Create a bundle of readings
+        # yield from bps.read(block)
+        # yield from bps.read(dae)
+        # yield from bps.save()
 
     yield from _inner()
 

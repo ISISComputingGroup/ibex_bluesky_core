@@ -13,6 +13,12 @@ from ibex_bluesky_core.devices import (
     dehex_and_decompress,
 )
 
+from src.ibex_bluesky_core.devices import get_all_elements_in_xml_with_child_called_name
+
+TIME_UNIT = "Time Unit"
+CALCULATION_METHOD = "Calculation Method"
+TIME_CHANNEL_FILE = "Time Channel File"
+
 
 class TimeUnit(Enum):
     MICROSECONDS = 0
@@ -62,9 +68,9 @@ def convert_xml_to_tcb_settings(value: str) -> DaeTCBSettingsData:
     settings_from_xml = convert_xml_to_names_and_values(root)
 
     return DaeTCBSettingsData(
-        tcb_file=settings_from_xml["Time Channel File"],
-        tcb_calculation_method=CalculationMethod(int(settings_from_xml["Calculation Method"])),
-        time_unit=TimeUnit(int(settings_from_xml["Time Unit"])),
+        tcb_file=settings_from_xml[TIME_CHANNEL_FILE],
+        tcb_calculation_method=CalculationMethod(int(settings_from_xml[CALCULATION_METHOD])),
+        time_unit=TimeUnit(int(settings_from_xml[TIME_UNIT])),
         tcb_tables={
             tr: TimeRegime(
                 rows={
@@ -82,8 +88,17 @@ def convert_xml_to_tcb_settings(value: str) -> DaeTCBSettingsData:
     )
 
 
-def convert_tcb_settings_to_xml(value: DaeTCBSettingsData):
-    return ET.fromstring("")
+def convert_tcb_settings_to_xml(current_xml: str, value: DaeTCBSettingsData) -> str:
+    # get xml here, then substitute values from the dataclasses
+    root = ET.fromstring(current_xml)
+
+    elements  = get_all_elements_in_xml_with_child_called_name(root)
+
+    for i in elements:
+        if elements.find("Name") == TIME_UNIT:
+            i.text = value.time_unit
+
+    return root.tostring()
 
 
 class DaeTCBSettings(StandardReadable):
