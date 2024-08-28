@@ -76,7 +76,6 @@ def get_run_engine() -> RunEngine:
         during_task=dt,
         call_returns_result=True,  # Will be default in a future bluesky version.
     )
-    RE.record_interruptions = True
 
     log_callback = DocLoggingCallback()
     RE.subscribe(log_callback)
