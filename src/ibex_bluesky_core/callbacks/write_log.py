@@ -18,54 +18,41 @@ class OutputLoggingCallback(CallbackBase):
         self.current_start_document = None
         self.filename = None
 
-    def start(self, doc: RunStart) -> RunStart | None:
+    def start(self, doc: RunStart) -> None:
         save_path.mkdir(parents=True, exist_ok=True)
 
         self.current_start_document = doc["uid"] #or would the user prefer scan_id as the name of the log?
-        self.filename = save_path / f"{self.current_start_document}.csv"
+        self.filename = save_path / f"{self.current_start_document}.txt"
         
         assert self.filename is not None, "Could not create filename."
         assert self.current_start_document is not None, "Saw a non-start document before a start."
         
-        start_field_names = ["scan_id", "start_time"]
-        start_data = [{"scan_id": doc["scan_id"], "start_time": doc["time"]}]
-        """with open(self.filename, "a") as outfile:
-            for key, value in start_write.items():
-                outfile.write('%s %s\n' % (key,value))"""
+        start_data = ["scan_id", "time"]
 
-        #this part should be for the data below, from events
+        start_data_reordered = {key: doc[key] for key in start_data if key in doc}
+
+        for key in doc: 
+            if key not in start_data_reordered:
+                start_data_reordered[key] = doc[key]
+    
         with open(self.filename, "a") as outfile:
-            writer = csv.DictWriter(outfile, fieldnames=start_field_names)
-            writer.writeheader()
-            writer.writerows(start_data)
+            for key, value in start_data_reordered.items():
+                outfile.write('%s: %s\n' % (key,value))
 
-        return super().start(doc)
-
-    def descriptor(self, doc: EventDescriptor) -> EventDescriptor | None:
+    def descriptor(self, doc: EventDescriptor) -> None:
         return super().descriptor(doc)
     
     def event(self, doc: Event) -> Event:
+        event_data = doc["data"]
+        event_data_reordered = {"seq_num": doc["seq_num"], **event_data}
+        event_data_list = [event_data_reordered]
+        event_data_fieldnames= event_data_reordered.keys()
 
-        event_write = {"run_number: ": doc["seq_num"]}
-
-        event_data_write = doc["data"]
-
-        with open(self.filename, "a") as outfile:
-            for key, value in event_write.items():
-                outfile.write('%s %s\n' % (key,value))
-
-            for key,value in event_data_write.items():
-                outfile.write('%s %s\n' % (key,value))
-
-        return super().event(doc)
+        with open(self.filename, "a", newline='') as outfile:
+            writer = csv.DictWriter(outfile, fieldnames=event_data_fieldnames, delimiter='\t')
+            if doc["seq_num"] == 1:
+                writer.writeheader()
+            writer.writerows(event_data_list)
     
-    def stop(self, doc: RunStop) -> RunStop | None:
+    def stop(self, doc: RunStop) -> None:
         return super().stop(doc)
-
-    """if name == "event":
-            event_write = {"run_number: ": document["seq_num"],} 
-            event_data_write = document["data"]
-            #output_dict.update(event_write)
-            #output_dict.update(event_data_write)"""
-    
-        
