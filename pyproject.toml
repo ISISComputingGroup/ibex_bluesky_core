@@ -43,6 +43,7 @@ classifiers = [
 dependencies = [
   "bluesky",
   "ophyd-async[ca]",
+  "matplotlib",
 ]
 
 [project.optional-dependencies]
@@ -52,6 +53,7 @@ dev = [
   "pytest",
   "pytest-asyncio",
   "pytest-cov",
+  "pyqt6",  # For dev testing with matplotlib's qt backend.
 ]
 
 [project.urls]
