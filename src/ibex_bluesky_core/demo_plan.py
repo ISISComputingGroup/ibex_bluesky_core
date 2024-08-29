@@ -62,22 +62,23 @@ def demo_plan(block: BlockRwRbv[float], dae: Dae) -> Generator[Msg, None, None]:
     def _inner() -> Generator[Msg, None, None]:
         current_period_settings: DaePeriodSettingsData = yield from bps.rd(dae.period_settings)
         print(current_period_settings)
-        current_period_settings.periods_src = 1
-        current_period_settings.periods_file = (
-            "C:/Instrument/Settings/config/NDLT1542/configurations/tables/period1.dat"
-        )
+        current_period_settings.periods_type = 0
+
+        current_period_settings.periods_src = 0
 
         yield from bps.mv(dae.period_settings, current_period_settings)
 
         current_dae_settings: DaeSettingsData = yield from bps.rd(dae.dae_settings)
         print(current_dae_settings)
 
-        current_dae_settings.mon_spect = random.randint(1, 1000)
-        print(current_dae_settings.spectra_filepath)
+        # current_dae_settings.mon_spect = random.randint(1, 10)
         current_dae_settings.spectra_filepath = (
-            "C:/Instrument/Settings/config/NDLT1542/configurations/tables/RCPTT_spectra128.dat"
+            "C:/Instrument/Settings/config/NDLT1542/configurations/tables/spectra_ibextest.dat"
         )
         yield from bps.mv(dae.dae_settings, current_dae_settings)
+
+        new_dae_settings: DaeSettingsData = yield from bps.rd(dae.dae_settings)
+        print(new_dae_settings)
 
         current_tcb_settings: DaeTCBSettingsData = yield from bps.rd(dae.tcb_settings)
         print(current_tcb_settings)
@@ -85,18 +86,18 @@ def demo_plan(block: BlockRwRbv[float], dae: Dae) -> Generator[Msg, None, None]:
         yield from bps.mv(dae.tcb_settings, current_tcb_settings)
 
         # A "simple" acquisition using trigger_and_read.
-        # yield from bps.abs_set(block, 1.0, wait=True)
-        # yield from bps.trigger_and_read([block, dae])
-        #
-        # # More complicated acquisition showing arbitrary DAE control to support complex use-cases.
-        # yield from bps.abs_set(block, 2.0, wait=True)
-        # yield from bps.trigger(dae.controls.begin_run, wait=True)
-        # yield from bps.sleep(2)  # ... some complicated logic ...
-        # yield from bps.trigger(dae.controls.end_run, wait=True)
-        # yield from bps.create()  # Create a bundle of readings
-        # yield from bps.read(block)
-        # yield from bps.read(dae)
-        # yield from bps.save()
+        yield from bps.abs_set(block, 1.0, wait=True)
+        yield from bps.trigger_and_read([block, dae])
+
+        # More complicated acquisition showing arbitrary DAE control to support complex use-cases.
+        yield from bps.abs_set(block, 2.0, wait=True)
+        yield from bps.trigger(dae.controls.begin_run, wait=True)
+        yield from bps.sleep(2)  # ... some complicated logic ...
+        yield from bps.trigger(dae.controls.end_run, wait=True)
+        yield from bps.create()  # Create a bundle of readings
+        yield from bps.read(block)
+        yield from bps.read(dae)
+        yield from bps.save()
 
     yield from _inner()
 
