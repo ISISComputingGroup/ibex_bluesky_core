@@ -9,13 +9,13 @@ from ophyd_async.core import AsyncStatus, SignalR, SignalRW, StandardReadable
 from ophyd_async.epics.signal import epics_signal_r, epics_signal_rw
 
 from ibex_bluesky_core.devices import isis_epics_signal_rw
-from ibex_bluesky_core.devices.dae_controls import DaeControls
-from ibex_bluesky_core.devices.dae_event_mode import DaeEventMode
-from ibex_bluesky_core.devices.dae_monitor import DaeMonitor
-from ibex_bluesky_core.devices.dae_period import DaePeriod
-from ibex_bluesky_core.devices.dae_period_settings import DaePeriodSettings
-from ibex_bluesky_core.devices.dae_settings import DaeSettings
-from ibex_bluesky_core.devices.dae_tcb_settings import DaeTCBSettings
+from ibex_bluesky_core.devices.dae.dae_controls import DaeControls
+from ibex_bluesky_core.devices.dae.dae_event_mode import DaeEventMode
+from ibex_bluesky_core.devices.dae.dae_monitor import DaeMonitor
+from ibex_bluesky_core.devices.dae.dae_period import DaePeriod
+from ibex_bluesky_core.devices.dae.dae_period_settings import DaePeriodSettings
+from ibex_bluesky_core.devices.dae.dae_settings import DaeSettings
+from ibex_bluesky_core.devices.dae.dae_tcb_settings import DaeTCBSettings
 
 
 class RunstateEnum(str, Enum):

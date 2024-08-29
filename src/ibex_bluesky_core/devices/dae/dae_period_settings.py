@@ -8,9 +8,11 @@ from bluesky.protocols import Locatable, Location
 from ophyd_async.core import AsyncStatus, Device, SignalRW
 
 from ibex_bluesky_core.devices import (
+    isis_epics_signal_rw,
+)
+from ibex_bluesky_core.devices.dae import (
     convert_xml_to_names_and_values,
     get_all_elements_in_xml_with_child_called_name,
-    isis_epics_signal_rw,
     set_value_in_dae_xml,
 )
 

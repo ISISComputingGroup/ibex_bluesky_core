@@ -1,6 +1,5 @@
 """Demonstration plan showing basic bluesky functionality."""
 
-import random
 from typing import Generator
 
 import bluesky.plan_stubs as bps
@@ -11,14 +10,14 @@ from ophyd_async.plan_stubs import ensure_connected
 
 from ibex_bluesky_core.devices import get_pv_prefix
 from ibex_bluesky_core.devices.block import BlockRwRbv, block_rw_rbv
-from ibex_bluesky_core.devices.dae import Dae
-from ibex_bluesky_core.devices.dae_settings import DaeSettingsData
-from ibex_bluesky_core.devices.dae_tcb_settings import DaeTCBSettingsData
+from ibex_bluesky_core.devices.dae.dae import Dae
+from ibex_bluesky_core.devices.dae.dae_settings import DaeSettingsData
+from ibex_bluesky_core.devices.dae.dae_tcb_settings import DaeTCBSettingsData
 from ibex_bluesky_core.run_engine import get_run_engine
 
 __all__ = ["run_demo_plan", "demo_plan"]
 
-from src.ibex_bluesky_core.devices.dae_period_settings import DaePeriodSettingsData
+from ibex_bluesky_core.devices.dae.dae_period_settings import DaePeriodSettingsData
 
 
 def run_demo_plan() -> None:
