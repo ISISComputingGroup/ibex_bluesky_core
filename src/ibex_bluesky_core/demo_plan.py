@@ -1,5 +1,6 @@
 """Demonstration plan showing basic bluesky functionality."""
 
+import random
 from typing import Generator
 
 import bluesky.plan_stubs as bps
@@ -11,6 +12,8 @@ from ophyd_async.plan_stubs import ensure_connected
 from ibex_bluesky_core.devices import get_pv_prefix
 from ibex_bluesky_core.devices.block import BlockRwRbv, block_rw_rbv
 from ibex_bluesky_core.devices.dae import Dae
+from ibex_bluesky_core.devices.dae_settings import DaeSettingsData
+from ibex_bluesky_core.devices.dae_tcb_settings import DaeTCBSettingsData
 from ibex_bluesky_core.run_engine import get_run_engine
 
 __all__ = ["run_demo_plan", "demo_plan"]
@@ -57,10 +60,30 @@ def demo_plan(block: BlockRwRbv[float], dae: Dae) -> Generator[Msg, None, None]:
 
     @run_decorator(md={})
     def _inner() -> Generator[Msg, None, None]:
-        current_settings: DaePeriodSettingsData = yield from bps.rd(dae.period_settings)
-        print(current_settings)
-        current_settings.periods_file = "C:\\system42\\test.txt"
-        yield from bps.mv(dae.period_settings, current_settings)
+        current_period_settings: DaePeriodSettingsData = yield from bps.rd(dae.period_settings)
+        print(current_period_settings)
+        current_period_settings.periods_src = 1
+        current_period_settings.periods_file = (
+            "C:/Instrument/Settings/config/NDLT1542/configurations/tables/period1.dat"
+        )
+
+        yield from bps.mv(dae.period_settings, current_period_settings)
+
+        current_dae_settings: DaeSettingsData = yield from bps.rd(dae.dae_settings)
+        print(current_dae_settings)
+
+        current_dae_settings.mon_spect = random.randint(1, 1000)
+        print(current_dae_settings.spectra_filepath)
+        current_dae_settings.spectra_filepath = (
+            "C:/Instrument/Settings/config/NDLT1542/configurations/tables/RCPTT_spectra128.dat"
+        )
+        yield from bps.mv(dae.dae_settings, current_dae_settings)
+
+        current_tcb_settings: DaeTCBSettingsData = yield from bps.rd(dae.tcb_settings)
+        print(current_tcb_settings)
+        current_tcb_settings.time_unit = 1 if current_tcb_settings.time_unit == 0 else 0
+        yield from bps.mv(dae.tcb_settings, current_tcb_settings)
+
         # A "simple" acquisition using trigger_and_read.
         # yield from bps.abs_set(block, 1.0, wait=True)
         # yield from bps.trigger_and_read([block, dae])

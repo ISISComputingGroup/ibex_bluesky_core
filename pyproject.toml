@@ -42,7 +42,7 @@ classifiers = [
 
 dependencies = [
   "bluesky",
-  "ophyd-async[ca]",
+  "ophyd-async[ca]@git+https://github.com/bluesky/ophyd-async.git",
 ]
 
 [project.optional-dependencies]

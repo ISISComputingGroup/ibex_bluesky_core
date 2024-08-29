@@ -1,18 +1,19 @@
+import xml.etree.ElementTree as ET
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Dict, Any
+from typing import Dict
+from xml.etree.ElementTree import tostring
 
-from ophyd_async.core import SignalRW, StandardReadable, AsyncStatus
-
-
-import xml.etree.ElementTree as ET
+from bluesky.protocols import Locatable, Location
+from ophyd_async.core import AsyncStatus, Device, SignalRW
 
 from ibex_bluesky_core.devices import (
+    compress_and_hex,
     convert_xml_to_names_and_values,
-    isis_epics_signal_rw,
     dehex_and_decompress,
+    isis_epics_signal_rw,
+    set_value_in_dae_xml,
 )
-
 from src.ibex_bluesky_core.devices import get_all_elements_in_xml_with_child_called_name
 
 TIME_UNIT = "Time Unit"
@@ -88,31 +89,37 @@ def convert_xml_to_tcb_settings(value: str) -> DaeTCBSettingsData:
     )
 
 
-def convert_tcb_settings_to_xml(current_xml: str, value: DaeTCBSettingsData) -> str:
+def convert_tcb_settings_to_xml(current_xml: str, settings: DaeTCBSettingsData) -> str:
     # get xml here, then substitute values from the dataclasses
     root = ET.fromstring(current_xml)
+    elements = get_all_elements_in_xml_with_child_called_name(root)
+    set_value_in_dae_xml(elements, TIME_CHANNEL_FILE, settings.tcb_file)
+    set_value_in_dae_xml(elements, CALCULATION_METHOD, settings.tcb_calculation_method)
+    set_value_in_dae_xml(elements, TIME_UNIT, settings.time_unit)
+    for tr, regime in settings.tcb_tables.items():
+        for r, row in regime.rows.items():
+            set_value_in_dae_xml(elements, f"TR{tr} From {r}", row.from_)
+            set_value_in_dae_xml(elements, f"TR{tr} To {r}", row.to)
+            set_value_in_dae_xml(elements, f"TR{tr} Steps {r}", row.steps)
+            set_value_in_dae_xml(elements, f"TR{tr} In Mode {r}", row.mode)
+    return tostring(root, encoding="unicode")
 
-    elements  = get_all_elements_in_xml_with_child_called_name(root)
 
-    for i in elements:
-        if elements.find("Name") == TIME_UNIT:
-            i.text = value.time_unit
-
-    return root.tostring()
-
-
-class DaeTCBSettings(StandardReadable):
+class DaeTCBSettings(Device, Locatable):
     def __init__(self, dae_prefix, name=""):
-        with self.add_children_as_readables():
-            self.tcb_settings: SignalRW[str] = isis_epics_signal_rw(str, f"{dae_prefix}TCBSETTINGS")
+        self.tcb_settings: SignalRW[str] = isis_epics_signal_rw(str, f"{dae_prefix}TCBSETTINGS")
         super().__init__(name=name)
 
-    async def read(self) -> Dict[str, Any]:
+    async def locate(self) -> Location:
         value = await self.tcb_settings.get_value()
-        value_dehexed = dehex_and_decompress(value.encode())
-        return {self.tcb_settings.name: convert_xml_to_tcb_settings(value_dehexed)}
+        value_dehexed = dehex_and_decompress(value.encode()).decode()
+        tcb_settings = convert_xml_to_tcb_settings(value_dehexed)
+        return {"setpoint": tcb_settings, "readback": tcb_settings}
 
     @AsyncStatus.wrap
     async def set(self, value: DaeTCBSettingsData) -> None:
-        the_value_to_write = convert_tcb_settings_to_xml(value)
+        current_xml = await self.tcb_settings.get_value()
+        current_xml_dehexed = dehex_and_decompress(current_xml).decode()
+        xml = convert_tcb_settings_to_xml(current_xml_dehexed, value)
+        the_value_to_write = compress_and_hex(xml).decode()
         await self.tcb_settings.set(the_value_to_write, wait=True)

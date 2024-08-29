@@ -6,10 +6,10 @@ import binascii
 import os
 import zlib
 from enum import Enum
-from typing import Dict, Tuple, Type, List, Any
+from typing import Any, Dict, List, Tuple, Type
 from xml.etree import ElementTree as ET
 
-from ophyd_async.core import T, SignalRW
+from ophyd_async.core import SignalRW, T
 from ophyd_async.epics.signal import epics_signal_rw
 
 
@@ -30,8 +30,22 @@ def dehex_and_decompress(value: bytes) -> bytes:
         value: The string to be decompressed, encoded in hex
 
     Returns A decompressed version of the inputted string
+
     """
     return zlib.decompress(binascii.unhexlify(value))
+
+
+def compress_and_hex(value: str) -> bytes:
+    """Compresses the inputted string and encodes it as hex.
+
+    Args:
+        value: The string to be compressed
+
+    Returns A compressed and hexed version of the inputted string
+
+    """
+    compr = zlib.compress(bytes(value, "utf-8"))
+    return binascii.hexlify(compr)
 
 
 def convert_xml_to_names_and_values(xml) -> Dict[str, str]:
@@ -68,13 +82,11 @@ def isis_epics_signal_rw(datatype: Type[T], read_pv: str, name: str = "") -> Sig
     return epics_signal_rw(datatype, read_pv, write_pv, name)
 
 
-def set_value_in_dae_xml(elements:List[ET.ElementTree], name:str, value:Any):
-    """
-    TODO add some docs here pls
-    """
-    if value is not None and (isinstance(value, list) and value):
+def set_value_in_dae_xml(elements: List[ET.ElementTree], name: str, value: Any):
+    """TODO add some docs here pls"""
+    if value is not None:
         if isinstance(value, Enum):
             value = value.value
         for i in elements:
             if i.find("Name").text == name:
-                i.find("Val").text = value
+                i.find("Val").text = str(value)

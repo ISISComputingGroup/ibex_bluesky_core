@@ -1,16 +1,18 @@
+import xml.etree.ElementTree as ET
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import List
 from xml.etree.ElementTree import tostring
 
 from bluesky.protocols import Locatable, Location
-from ophyd_async.core import SignalRW, AsyncStatus, Device
+from ophyd_async.core import AsyncStatus, Device, SignalRW
 
-import xml.etree.ElementTree as ET
-
-from ibex_bluesky_core.devices import convert_xml_to_names_and_values, isis_epics_signal_rw
-
-from ibex_bluesky_core.devices import get_all_elements_in_xml_with_child_called_name, set_value_in_dae_xml
+from ibex_bluesky_core.devices import (
+    convert_xml_to_names_and_values,
+    get_all_elements_in_xml_with_child_called_name,
+    isis_epics_signal_rw,
+    set_value_in_dae_xml,
+)
 
 OUTPUT_DELAY = "Output Delay (us)"
 PERIOD_SEQUENCES = "Hardware Period Sequences"
@@ -67,51 +69,43 @@ def convert_xml_to_period_settings(value: str) -> DaePeriodSettingsData:
                 output=int(settings_from_xml[f"Output {i}"]),
                 label=settings_from_xml[f"Label {i}"],
             )
-            for i in range(1, 8+1)
+            for i in range(1, 8 + 1)
         ],
     )
 
 
-def convert_period_settings_to_xml(current_xml: str, value: DaePeriodSettingsData):
+def convert_period_settings_to_xml(current_xml: str, value: DaePeriodSettingsData) -> str:
     # get xml here, then substitute values from the dataclasses
     root = ET.fromstring(current_xml)
-    elements  = get_all_elements_in_xml_with_child_called_name(root)
-    # yuck, use a for loop
+    elements = get_all_elements_in_xml_with_child_called_name(root)
     set_value_in_dae_xml(elements, PERIODS_SOFT_NUM, value.periods_soft_num)
     set_value_in_dae_xml(elements, PERIOD_TYPE, value.periods_type)
     set_value_in_dae_xml(elements, PERIOD_SETUP_SOURCE, value.periods_src)
     set_value_in_dae_xml(elements, PERIOD_FILE, value.periods_file)
     set_value_in_dae_xml(elements, PERIOD_SEQUENCES, value.periods_seq)
     set_value_in_dae_xml(elements, OUTPUT_DELAY, value.periods_delay)
-    for i in range(1,8+1):
+    for i in range(1, 8 + 1):
         set_value_in_dae_xml(elements, f"Type {i}", value.periods_settings[i - 1].type)
         set_value_in_dae_xml(elements, f"Frames {i}", value.periods_settings[i - 1].frames)
         set_value_in_dae_xml(elements, f"Output {i}", value.periods_settings[i - 1].output)
         set_value_in_dae_xml(elements, f"Label {i}", value.periods_settings[i - 1].type)
-    print(tostring(root, encoding="unicode"))
     return tostring(root, encoding="unicode")
 
 
-
-
 class DaePeriodSettings(Device, Locatable):
-    async def locate(self) -> Location:
-        value = await self.period_settings.get_value()
-        period_settings = convert_xml_to_period_settings(value)
-        return {"setpoint": period_settings, "readback": period_settings}
-
     def __init__(self, dae_prefix, name=""):
         self.period_settings: SignalRW[str] = isis_epics_signal_rw(
             str, f"{dae_prefix}HARDWAREPERIODS"
         )
         super().__init__(name=name)
 
+    async def locate(self) -> Location:
+        value = await self.period_settings.get_value()
+        period_settings = convert_xml_to_period_settings(value)
+        return {"setpoint": period_settings, "readback": period_settings}
+
     @AsyncStatus.wrap
     async def set(self, value: DaePeriodSettingsData) -> None:
-        # the_value_to_write = convert_period_settings_to_xml(value)
-        # current_location = await self.locate()
-        # current_settings = current_location["readback"]
         current_xml = await self.period_settings.get_value()
         to_write = convert_period_settings_to_xml(current_xml, value)
-
         await self.period_settings.set(to_write, wait=True)

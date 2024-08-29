@@ -1,4 +1,3 @@
-import pytest
 from ibex_bluesky_core.utils.dehex_and_decompress import dehex_and_decompress
 
 

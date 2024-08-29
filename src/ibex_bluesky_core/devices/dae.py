@@ -5,9 +5,10 @@ from enum import Enum
 
 import numpy as np
 from bluesky.protocols import Triggerable
-from ophyd_async.core import AsyncStatus, ConfigSignal, SignalR, SignalRW, StandardReadable
+from ophyd_async.core import AsyncStatus, SignalR, SignalRW, StandardReadable
 from ophyd_async.epics.signal import epics_signal_r, epics_signal_rw
 
+from ibex_bluesky_core.devices import isis_epics_signal_rw
 from ibex_bluesky_core.devices.dae_controls import DaeControls
 from ibex_bluesky_core.devices.dae_event_mode import DaeEventMode
 from ibex_bluesky_core.devices.dae_monitor import DaeMonitor
@@ -15,7 +16,6 @@ from ibex_bluesky_core.devices.dae_period import DaePeriod
 from ibex_bluesky_core.devices.dae_period_settings import DaePeriodSettings
 from ibex_bluesky_core.devices.dae_settings import DaeSettings
 from ibex_bluesky_core.devices.dae_tcb_settings import DaeTCBSettings
-from ibex_bluesky_core.devices import isis_epics_signal_rw
 
 
 class RunstateEnum(str, Enum):
@@ -75,9 +75,9 @@ class Dae(StandardReadable, Triggerable):
         self.period_num: SignalRW = isis_epics_signal_rw(int, f"{dae_prefix}PERIOD")
         self.number_of_periods: SignalRW = isis_epics_signal_rw(int, f"{dae_prefix}NUMPERIODS")
 
-        # self.settings = DaeSettings(dae_prefix)
+        self.dae_settings = DaeSettings(dae_prefix)
         self.period_settings = DaePeriodSettings(dae_prefix)
-        # self.tcb_settings = DaeTCBSettings(dae_prefix)
+        self.tcb_settings = DaeTCBSettings(dae_prefix)
 
         # TODO needs processing - use subdevice
         # self.spectra_integrals: SignalR[np.ndarray] = epics_signal_r(
