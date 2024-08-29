@@ -1,12 +1,10 @@
 from unittest.mock import patch
 
-from ibex_bluesky_core.utils.isis_epics_signals import isis_epics_signal_rw
+from ibex_bluesky_core.devices import isis_epics_signal_rw
 
 
 def test_isis_epics_rw_signal_appends_correct_sp_suffix():
-    with patch(
-        "ibex_bluesky_core.utils.isis_epics_signals.epics_signal_rw"
-    ) as mock_epics_signal_rw:
+    with patch("ibex_bluesky_core.devices.epics_signal_rw") as mock_epics_signal_rw:
         read_pv = "TEST"
         expected_sp_pv = f"{read_pv}:SP"
         datatype = int

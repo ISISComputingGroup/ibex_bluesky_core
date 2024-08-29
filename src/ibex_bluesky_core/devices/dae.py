@@ -39,15 +39,6 @@ class RunstateEnum(str, Enum):
         return str(self.value)
 
 
-# TODO get rid of this
-class YesNoEnum(str, Enum):
-    No = "No"
-    Yes = "Yes"
-
-    def __str__(self):
-        return str(self.value)
-
-
 class Dae(StandardReadable, Triggerable):
     """Device representing the ISIS data acquisition electronics."""
 
@@ -57,7 +48,7 @@ class Dae(StandardReadable, Triggerable):
         self.good_uah: SignalR[float] = epics_signal_r(float, f"{dae_prefix}GOODUAH")
         self.count_rate: SignalR[float] = epics_signal_r(float, f"{dae_prefix}COUNTRATE")
         self.m_events: SignalR[float] = epics_signal_r(float, f"{dae_prefix}MEVENTS")
-        self.sim_mode: SignalR[YesNoEnum] = epics_signal_r(YesNoEnum, f"{dae_prefix}SIM_MODE")
+        self.sim_mode: SignalR[bool] = epics_signal_r(bool, f"{dae_prefix}SIM_MODE")
         self.neutron_proton_ratio: SignalR[float] = epics_signal_r(float, f"{dae_prefix}NPRATIO")
         self.good_frames: SignalR[int] = epics_signal_r(int, f"{dae_prefix}GOODFRAMES")
         self.raw_frames: SignalR[int] = epics_signal_r(int, f"{dae_prefix}RAWFRAMES")
@@ -87,7 +78,6 @@ class Dae(StandardReadable, Triggerable):
         #     np.typing.NDArray[np.int32], f"{dae_prefix}SPECDATA"
         # )
 
-        # TODO hmm are we only going to show 1 of these or more?
         self.monitor = DaeMonitor(dae_prefix)
         self.event_mode = DaeEventMode(dae_prefix)
 
@@ -98,7 +88,7 @@ class Dae(StandardReadable, Triggerable):
         )
         self.title: SignalRW = isis_epics_signal_rw(str, f"{dae_prefix}TITLE")
         self.show_title_and_users: SignalRW = epics_signal_rw(
-            YesNoEnum, f"{dae_prefix}TITLE:DISPLAY", f"{dae_prefix}TITLE:DISPLAY"
+            bool, f"{dae_prefix}TITLE:DISPLAY", f"{dae_prefix}TITLE:DISPLAY"
         )
 
         self.users: SignalRW = isis_epics_signal_rw(str, f"{dae_prefix}_USERNAME")
