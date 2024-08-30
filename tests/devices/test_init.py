@@ -2,7 +2,12 @@ from unittest.mock import patch
 
 import pytest
 
-from ibex_bluesky_core.devices import compress_and_hex, dehex_and_decompress, get_pv_prefix, isis_epics_signal_rw
+from ibex_bluesky_core.devices import (
+    compress_and_hex,
+    dehex_and_decompress,
+    get_pv_prefix,
+    isis_epics_signal_rw,
+)
 
 
 def test_can_dehex_and_decompress():

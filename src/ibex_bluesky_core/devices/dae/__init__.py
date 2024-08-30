@@ -10,7 +10,8 @@ def convert_xml_to_names_and_values(xml) -> Dict[str, str]:
     elements = get_all_elements_in_xml_with_child_called_name(xml)
     for element in elements:
         name, value = _get_names_and_values(element)
-        names_and_values[name] = value
+        if name is not None:
+            names_and_values[name] = value
     return names_and_values
 
 
@@ -20,15 +21,15 @@ def get_all_elements_in_xml_with_child_called_name(xml):
     return elements
 
 
-def _get_names_and_values(element) -> Tuple[str, str]:
+def _get_names_and_values(element) -> tuple[Any, Any] | tuple[None, None]:
     name = element.find("Name")
-    if name is not None and hasattr(name, "text"):
+    if name is not None and name.text is not None:
         name = name.text
-    value = element.find("Val")
-    if value is not None and hasattr(value, "text"):
-        value = value.text
-    # TODO hmmmm, should we get choices here and store them somewhere? not sure.
-    return name, value
+        value = element.find("Val")
+        if value is not None and value.text is not None:
+            value = value.text
+            return name, value
+    return None, None
 
 
 def set_value_in_dae_xml(elements: List[ET.ElementTree], name: str, value: Any):
