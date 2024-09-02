@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from enum import Enum
 from xml.etree.ElementTree import tostring
 
-from bluesky.protocols import Locatable, Location
+from bluesky.protocols import Locatable, Location, Movable
 from ophyd_async.core import AsyncStatus, Device, SignalRW
 
 from ibex_bluesky_core.devices import (
@@ -136,7 +136,7 @@ def convert_dae_settings_to_xml(current_xml: str, settings: DaeSettingsData) -> 
     return tostring(root, encoding="unicode")
 
 
-class DaeSettings(Device, Locatable):
+class DaeSettings(Device, Locatable, Movable):
     def __init__(self, dae_prefix, name=""):
         self.dae_settings: SignalRW[str] = isis_epics_signal_rw(str, f"{dae_prefix}DAESETTINGS")
         super().__init__(name=name)
