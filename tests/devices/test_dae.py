@@ -3,17 +3,26 @@ from enum import Enum
 from xml.etree import ElementTree as ET
 
 import pytest
+
+from ibex_bluesky_core.devices import compress_and_hex, dehex_and_decompress
 from ibex_bluesky_core.devices.dae.dae import Dae, RunstateEnum
 from ophyd_async.core import get_mock_put
 
-from ibex_bluesky_core.devices.dae.dae_period_settings import DaePeriodSettingsData, DaePeriodSettings
+from ibex_bluesky_core.devices.dae.dae_period_settings import (
+    DaePeriodSettingsData,
+    DaePeriodSettings,
+    PeriodSource,
+    PeriodType,
+    SinglePeriodSettings,
+)
 from ibex_bluesky_core.devices.dae.dae_settings import (
     DaeSettings,
     TimingSource,
     DaeSettingsData,
     convert_xml_to_dae_settings,
 )
-from ibex_bluesky_core.devices.dae.dae_tcb_settings import DaeTCBSettings, DaeTCBSettingsData
+from ibex_bluesky_core.devices.dae.dae_tcb_settings import DaeTCBSettings, DaeTCBSettingsData, CalculationMethod, \
+    TimeUnit
 from src.ibex_bluesky_core.devices.dae import set_value_in_dae_xml, convert_xml_to_names_and_values
 from src.ibex_bluesky_core.devices.dae.dae_controls import BeginRunExBits
 from ophyd_async.core import get_mock_put, set_mock_value
@@ -194,8 +203,7 @@ def test_get_names_and_values_without_value_does_not_get_parsed():
     assert ret == {"test": None}
 
 
-period_settings_template = """
-<?xml version="1.0"?>
+period_settings_template = """<?xml version="1.0"?>
 <Cluster>
   <Name>Hardware Periods</Name>
   <NumElts>38</NumElts>
@@ -570,8 +578,7 @@ initial_period_settings = """<?xml version="1.0"?>
 </Cluster>
 """
 
-tcb_settings_template = """
-<Cluster>
+tcb_settings_template = """<Cluster>
 	<Name>Time Channels</Name>
 	<NumElts>123</NumElts>
 	<DBL>
@@ -656,15 +663,15 @@ tcb_settings_template = """
 	</U16>
 	<U16>
 		<Name>Time Unit</Name>
-		<Val>0</Val>
+		<Val>{time_units}</Val>
 	</U16>
 	<String>
 		<Name>Time Channel File</Name>
-		<Val></Val>
+		<Val>{tcb_file}</Val>
 	</String>
 	<U16>
 		<Name>Calculation Method</Name>
-		<Val>0</Val>
+		<Val>{calc_method}</Val>
 	</U16>
 	<DBL>
 		<Name>TR2 From 1</Name>
@@ -1068,8 +1075,7 @@ tcb_settings_template = """
 	</U16>
 </Cluster>
 """
-initial_tcb_settings = """
-<Cluster>
+initial_tcb_settings = """<Cluster>
 	<Name>Time Channels</Name>
 	<NumElts>123</NumElts>
 	<DBL>
@@ -1902,18 +1908,129 @@ async def test_dae_settings_get_parsed_correctly():
     xml = await daesettings.dae_settings.get_value()
     assert ET.canonicalize(xml) == ET.canonicalize(xml_filled_in)
 
-async def test_period_settings_get_parsed_correctly():
-    data = DaePeriodSettingsData()
 
+async def test_period_settings_get_parsed_correctly():
+    expected_setup_source = PeriodSource.FILE
+    expected_period_type = PeriodType.SOFTWARE
+    expected_periods_file = "C:\\someperiodfile.txt"
+    expected_soft_periods_num = 42
+    expected_hardware_period_sequences = 52
+    expected_output_delay = 123
+    expected_type_1 = 0
+    expected_frames_1 = 1
+    expected_output_1 = 2
+    expected_type_2 = 0
+    expected_frames_2 = 1
+    expected_output_2 = 2
+    expected_type_3 = 1
+    expected_frames_3 = 2
+    expected_output_3 = 3
+    expected_type_4 = 2
+    expected_frames_4 = 3
+    expected_output_4 = 4
+    expected_type_5 = 0
+    expected_frames_5 = 1
+    expected_output_5 = 2
+    expected_type_6 = 1
+    expected_frames_6 = 1
+    expected_output_6 = 2
+    expected_type_7 = 1
+    expected_frames_7 = 4
+    expected_output_7 = 2
+    expected_type_8 = 2
+    expected_frames_8 = 2
+    expected_output_8 = 2
+
+    periods_settings = [
+        SinglePeriodSettings(
+            type=expected_type_1, frames=expected_frames_1, output=expected_output_1
+        ),
+        SinglePeriodSettings(
+            type=expected_type_2, frames=expected_frames_2, output=expected_output_2
+        ),
+        SinglePeriodSettings(
+            type=expected_type_3, frames=expected_frames_3, output=expected_output_3
+        ),
+        SinglePeriodSettings(
+            type=expected_type_4, frames=expected_frames_4, output=expected_output_4
+        ),
+        SinglePeriodSettings(
+            type=expected_type_5, frames=expected_frames_5, output=expected_output_5
+        ),
+        SinglePeriodSettings(
+            type=expected_type_6, frames=expected_frames_6, output=expected_output_6
+        ),
+        SinglePeriodSettings(
+            type=expected_type_7, frames=expected_frames_7, output=expected_output_7
+        ),
+        SinglePeriodSettings(
+            type=expected_type_8, frames=expected_frames_8, output=expected_output_8
+        ),
+    ]
+
+    data = DaePeriodSettingsData(
+        periods_soft_num=expected_soft_periods_num,
+        periods_type=expected_period_type,
+        periods_src=expected_setup_source,
+        periods_file=expected_periods_file,
+        periods_seq=expected_hardware_period_sequences,
+        periods_delay=expected_output_delay,
+        periods_settings=periods_settings,
+    )
+    xml_filled_in = period_settings_template.format(
+        period_src=expected_setup_source.value,
+        period_type=expected_period_type.value,
+        period_file=expected_periods_file,
+        num_soft_periods=expected_soft_periods_num,
+        period_seq=expected_hardware_period_sequences,
+        period_delay=expected_output_delay,
+        type_1=expected_type_1,
+        frames_1=expected_frames_1,
+        output_1=expected_output_1,
+        type_2=expected_type_2,
+        frames_2=expected_frames_2,
+        output_2=expected_output_2,
+        type_3=expected_type_3,
+        frames_3=expected_frames_3,
+        output_3=expected_output_3,
+        type_4=expected_type_4,
+        frames_4=expected_frames_4,
+        output_4=expected_output_4,
+        type_5=expected_type_5,
+        frames_5=expected_frames_5,
+        output_5=expected_output_5,
+        type_6=expected_type_6,
+        frames_6=expected_frames_6,
+        output_6=expected_output_6,
+        type_7=expected_type_7,
+        frames_7=expected_frames_7,
+        output_7=expected_output_7,
+        type_8=expected_type_8,
+        frames_8=expected_frames_8,
+        output_8=expected_output_8,
+    )
     periodsettings = DaePeriodSettings(MOCK_PREFIX)
     await periodsettings.period_settings.connect(mock=True)
     await periodsettings.period_settings.set(initial_period_settings)
-    pass
+    await periodsettings.set(data)
+    location = await periodsettings.locate()
+    assert location == {"setpoint": data, "readback": data}
+    xml = await periodsettings.period_settings.get_value()
+    assert ET.canonicalize(xml) == ET.canonicalize(xml_filled_in)
+
 
 async def test_tcb_settings_get_parsed_correctly():
-    data = DaeTCBSettingsData()
+    expected_tcb_file = "C:\\tcb.dat"
+    expected_calc_method = CalculationMethod.SPECIFY_PARAMETERS
+    expected_time_unit = TimeUnit.MICROSECONDS
+
+    tcb_tables = {
+
+    }
+    data = DaeTCBSettingsData(tcb_file=expected_tcb_file,time_unit=expected_time_unit,tcb_tables=tcb_tables, tcb_calculation_method=expected_calc_method)
 
     tcbsettings = DaeTCBSettings(MOCK_PREFIX)
     await tcbsettings.tcb_settings.connect(mock=True)
-    await tcbsettings.tcb_settings.set(initial_tcb_settings)
-    pass
+    await tcbsettings.tcb_settings.set(compress_and_hex(initial_tcb_settings).decode())
+    location = await tcbsettings.locate()
+    assert location == {"setpoint": data, "readback": data}

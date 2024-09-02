@@ -51,7 +51,7 @@ class DaePeriodSettingsData:
     periods_file: None | str = None
     periods_seq: None | int = None
     periods_delay: None | int = None
-    periods_settings: List[SinglePeriodSettings] = field(default_factory=lambda: [])
+    periods_settings: List[SinglePeriodSettings] | None = None
 
 
 def convert_xml_to_period_settings(value: str) -> DaePeriodSettingsData:
@@ -90,7 +90,7 @@ def convert_period_settings_to_xml(current_xml: str, value: DaePeriodSettingsDat
         set_value_in_dae_xml(elements, f"Type {i}", value.periods_settings[i - 1].type)
         set_value_in_dae_xml(elements, f"Frames {i}", value.periods_settings[i - 1].frames)
         set_value_in_dae_xml(elements, f"Output {i}", value.periods_settings[i - 1].output)
-        set_value_in_dae_xml(elements, f"Label {i}", value.periods_settings[i - 1].type)
+        set_value_in_dae_xml(elements, f"Label {i}", value.periods_settings[i - 1].label)
     return tostring(root, encoding="unicode")
 
 
