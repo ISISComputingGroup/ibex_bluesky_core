@@ -189,10 +189,10 @@ def test_get_names_and_values_without_value_does_not_get_parsed():
         """
     root = ET.fromstring(test_xml)
     ret = convert_xml_to_names_and_values(root)
-    assert not ret
+    assert ret == {"test": None}
 
 
-period_settings = """
+period_settings_template = """
 <?xml version="1.0"?>
 <Cluster>
   <Name>Hardware Periods</Name>
@@ -381,7 +381,7 @@ period_settings = """
 </Cluster>
 """
 
-tcb_settings = """
+tcb_settings_template = """
 <Cluster>
 	<Name>Time Channels</Name>
 	<NumElts>123</NumElts>
@@ -880,7 +880,7 @@ tcb_settings = """
 </Cluster>
 """
 
-dae_settings = """<?xml version="1.0"?>
+dae_settings_template = """<?xml version="1.0"?>
 <Cluster>
   <Name>Data Acquisition</Name>
   <NumElts>23</NumElts>
@@ -997,11 +997,136 @@ dae_settings = """<?xml version="1.0"?>
   </String>
   <String>
     <Name>Veto 2 Name</Name>
-    <Val>{veto_2_name}</Val>
+    <Val/>
   </String>
   <String>
     <Name>Veto 3 Name</Name>
-    <Val>{veto_3_name}</Val>
+    <Val/>
+  </String>
+</Cluster>
+"""
+initial_dae_settings = r"""<?xml version="1.0"?>
+<Cluster>
+  <Name>Data Acquisition</Name>
+  <NumElts>23</NumElts>
+  <I32>
+    <Name>Monitor Spectrum</Name>
+    <Val>4</Val>
+  </I32>
+  <DBL>
+    <Name>from</Name>
+    <Val>1000</Val>
+  </DBL>
+  <DBL>
+    <Name>to</Name>
+    <Val>5000</Val>
+  </DBL>
+  <String>
+    <Name>Wiring Table</Name>
+    <Val>C:/Instrument/Settings/config/NDXNIMROD/configurations/tables/NIMROD84modules+9monitors+LAB5Oct2012Wiring.dat</Val>
+  </String>
+  <String>
+    <Name>Detector Table</Name>
+    <Val>C:/Instrument/Settings/config/NDXNIMROD/configurations/tables/NIMROD84modules+9monitors+LAB5Oct2012Detector.dat</Val>
+  </String>
+  <String>
+    <Name>Spectra Table</Name>
+    <Val>C:/Instrument/Settings/config/NDXNIMROD/configurations/tables/NIMROD84modules+9monitors+LAB5Oct2012Spectra.dat</Val>
+  </String>
+  <EW>
+    <Name>DAETimingSource</Name>
+    <Choice>ISIS</Choice>
+    <Choice>Internal Test Clock</Choice>
+    <Choice>SMP</Choice>
+    <Choice>Muon Cerenkov</Choice>
+    <Choice>Muon MS</Choice>
+    <Choice>ISIS (first TS1)</Choice>
+    <Choice>TS1 Only</Choice>
+    <Val>0</Val>
+  </EW>
+  <EW>
+    <Name>SMP (Chopper) Veto</Name>
+    <Choice>NO</Choice>
+    <Choice>YES</Choice>
+    <Val>0</Val>
+  </EW>
+  <EW>
+    <Name>Veto 0</Name>
+    <Choice>NO</Choice>
+    <Choice>YES</Choice>
+    <Val>0</Val>
+  </EW>
+  <EW>
+    <Name>Muon MS Mode</Name>
+    <Choice>DISABLED</Choice>
+    <Choice>ENABLED</Choice>
+    <Val>1</Val>
+  </EW>
+  <EW>
+    <Name> Fermi Chopper Veto</Name>
+    <Choice>NO</Choice>
+    <Choice>YES</Choice>
+    <Val>0</Val>
+  </EW>
+  <DBL>
+    <Name>FC Delay</Name>
+    <Val>0</Val>
+  </DBL>
+  <DBL>
+    <Name>FC Width</Name>
+    <Val>0</Val>
+  </DBL>
+  <EW>
+    <Name>Veto 1</Name>
+    <Choice>NO</Choice>
+    <Choice>YES</Choice>
+    <Val>0</Val>
+  </EW>
+  <EW>
+    <Name>Veto 2</Name>
+    <Choice>NO</Choice>
+    <Choice>YES</Choice>
+    <Val>0</Val>
+  </EW>
+  <EW>
+    <Name>Veto 3</Name>
+    <Choice>NO</Choice>
+    <Choice>YES</Choice>
+    <Val>0</Val>
+  </EW>
+  <EW>
+    <Name>Muon Cerenkov Pulse</Name>
+    <Choice>FIRST</Choice>
+    <Choice>SECOND</Choice>
+    <Val>0</Val>
+  </EW>
+  <EW>
+    <Name> TS2 Pulse Veto</Name>
+    <Choice>NO</Choice>
+    <Choice>YES</Choice>
+    <Val>0</Val>
+  </EW>
+  <EW>
+    <Name> ISIS 50Hz Veto</Name>
+    <Choice>NO</Choice>
+    <Choice>YES</Choice>
+    <Val>0</Val>
+  </EW>
+  <String>
+    <Name>Veto 0 Name</Name>
+    <Val/>
+  </String>
+  <String>
+    <Name>Veto 1 Name</Name>
+    <Val/>
+  </String>
+  <String>
+    <Name>Veto 2 Name</Name>
+    <Val/>
+  </String>
+  <String>
+    <Name>Veto 3 Name</Name>
+    <Val/>
   </String>
 </Cluster>
 """
@@ -1059,115 +1184,33 @@ async def test_dae_settings_get_parsed_correctly():
 
     daesettings = DaeSettings(MOCK_PREFIX)
     await daesettings.dae_settings.connect(mock=True)
+    await daesettings.dae_settings.set(initial_dae_settings)
 
-    xml_filled_in = dae_settings.format(
+    xml_filled_in = dae_settings_template.format(
         wiring_table=expected_wiring_table,
         detector_table=expected_detector_table,
         spectra_table=expected_spectra_table,
         mon_spec=expected_mon_spec,
         from_=expected_from,
         to=expected_to,
-        timing_src=expected_timing_source,
-        smp_veto=expected_smp_veto,
-        ts2_veto=expected_ts2_veto,
-        hz50_veto=expected_50hz_veto,
-        veto_0=expected_veto_0,
-        veto_1=expected_veto_1,
-        veto_2=expected_veto_2,
-        veto_3=expected_veto_3,
-        fermi_veto=expected_fc_veto,
+        timing_src=expected_timing_source.value,
+        smp_veto=int(expected_smp_veto),
+        ts2_veto=int(expected_ts2_veto),
+        hz50_veto=int(expected_50hz_veto),
+        veto_0=int(expected_veto_0),
+        veto_1=int(expected_veto_1),
+        veto_2=int(expected_veto_2),
+        veto_3=int(expected_veto_3),
+        fermi_veto=int(expected_fc_veto),
         fc_delay=expected_fc_delay,
         fc_width=expected_fc_width,
-        muon_ms_mode=expected_muon_ms_mode,
+        muon_ms_mode=int(expected_muon_ms_mode),
         muon_cherenkov_pulse=expected_muon_ck_pulse,
         veto_0_name=expected_veto_0_name,
         veto_1_name=expected_veto_1_name,
-        veto_2_name=expected_veto_2_name,
-        veto_3_name=expected_veto_3_name,
     )
-
-    # daesettings.dae_settings.set(xml_filled_in)
-    await daesettings.dae_settings.set(xml_filled_in)
-    location = await daesettings.dae_settings.locate()
-
+    await daesettings.set(data)
+    location = await daesettings.locate()
     assert location == {"setpoint": data, "readback": data}
-
-#
-# def test_convert_xml_to_dae_settings():
-#     expected_50hz_veto = 1
-#     expected_ts2_veto = 0
-#     expected_veto_0 = 1
-#     expected_veto_1 = 1
-#     expected_veto_2 = 0
-#     expected_veto_3 = 0
-#     expected_smp_veto = 1
-#     expected_fc_veto = 1
-#     expected_veto_0_name = "veto 0"
-#     expected_veto_1_name = "veto 1"
-#     expected_veto_2_name = None
-#     expected_veto_3_name = None
-#     expected_muon_ms_mode = 0
-#     expected_muon_ck_pulse = 3
-#     expected_fc_delay = 1
-#     expected_fc_width = 2
-#     expected_timing_source = 0
-#     expected_from = 0
-#     expected_to = 1000
-#     expected_mon_spec = 555
-#     expected_wiring_table = "C:\\somefile.dat"
-#     expected_spectra_table = "C:\\anotherfile.dat"
-#     expected_detector_table = "C:\\anotherfile123.dat"
-#     data = DaeSettingsData(
-#         wiring_filepath=expected_wiring_table,
-#         detector_filepath=expected_detector_table,
-#         spectra_filepath=expected_spectra_table,
-#         mon_spect=expected_mon_spec,
-#         mon_from=expected_from,
-#         mon_to=expected_to,
-#         timing_source=expected_timing_source,
-#         smp_veto=expected_smp_veto,
-#         ts2_veto=expected_ts2_veto,
-#         hz50_veto=expected_50hz_veto,
-#         ext0_veto=expected_veto_0,
-#         ext1_veto=expected_veto_1,
-#         ext2_veto=expected_veto_2,
-#         ext3_veto=expected_veto_3,
-#         fermi_veto=expected_fc_veto,
-#         fermi_delay=expected_fc_delay,
-#         fermi_width=expected_fc_width,
-#         muon_ms_mode=expected_muon_ms_mode,
-#         muon_cherenkov_pulse=expected_muon_ck_pulse,
-#         veto_0_name=expected_veto_0_name,
-#         veto_1_name=expected_veto_1_name,
-#         veto_2_name=expected_veto_2_name,
-#         veto_3_name=expected_veto_3_name,
-#     )
-#
-#     xml_filled_in = dae_settings.format(
-#         wiring_table=expected_wiring_table,
-#         detector_table=expected_detector_table,
-#         spectra_table=expected_spectra_table,
-#         mon_spec=expected_mon_spec,
-#         from_=expected_from,
-#         to=expected_to,
-#         timing_src=expected_timing_source,
-#         smp_veto=expected_smp_veto,
-#         ts2_veto=expected_ts2_veto,
-#         hz50_veto=expected_50hz_veto,
-#         veto_0=expected_veto_0,
-#         veto_1=expected_veto_1,
-#         veto_2=expected_veto_2,
-#         veto_3=expected_veto_3,
-#         fermi_veto=expected_fc_veto,
-#         fc_delay=expected_fc_delay,
-#         fc_width=expected_fc_width,
-#         muon_ms_mode=expected_muon_ms_mode,
-#         muon_cherenkov_pulse=expected_muon_ck_pulse,
-#         veto_0_name=expected_veto_0_name,
-#         veto_1_name=expected_veto_1_name,
-#         veto_2_name=expected_veto_2_name,
-#         veto_3_name=expected_veto_3_name,
-#     )
-#
-#     converted = convert_xml_to_dae_settings(xml_filled_in)
-#     assert converted == data
+    xml = await daesettings.dae_settings.get_value()
+    assert ET.canonicalize(xml) == ET.canonicalize(xml_filled_in)

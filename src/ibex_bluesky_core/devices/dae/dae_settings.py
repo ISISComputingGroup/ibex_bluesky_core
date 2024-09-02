@@ -116,6 +116,7 @@ def convert_dae_settings_to_xml(current_xml: str, settings: DaeSettingsData) -> 
     set_value_in_dae_xml(elements, SPECTRA_TABLE, settings.spectra_filepath)
     set_value_in_dae_xml(elements, FROM, settings.mon_from)
     set_value_in_dae_xml(elements, TO, settings.mon_to)
+    set_value_in_dae_xml(elements, MONITOR_SPECTRUM, settings.mon_spect)
     set_value_in_dae_xml(elements, DAE_TIMING_SOURCE, settings.timing_source)
     set_value_in_dae_xml(elements, SMP_CHOPPER_VETO, int(settings.smp_veto))
     set_value_in_dae_xml(elements, TS2_PULSE_VETO, int(settings.ts2_veto))
