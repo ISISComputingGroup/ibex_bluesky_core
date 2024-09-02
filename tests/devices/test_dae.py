@@ -6,12 +6,14 @@ import pytest
 from ibex_bluesky_core.devices.dae.dae import Dae, RunstateEnum
 from ophyd_async.core import get_mock_put
 
+from ibex_bluesky_core.devices.dae.dae_period_settings import DaePeriodSettingsData, DaePeriodSettings
 from ibex_bluesky_core.devices.dae.dae_settings import (
     DaeSettings,
     TimingSource,
     DaeSettingsData,
     convert_xml_to_dae_settings,
 )
+from ibex_bluesky_core.devices.dae.dae_tcb_settings import DaeTCBSettings, DaeTCBSettingsData
 from src.ibex_bluesky_core.devices.dae import set_value_in_dae_xml, convert_xml_to_names_and_values
 from src.ibex_bluesky_core.devices.dae.dae_controls import BeginRunExBits
 from ophyd_async.core import get_mock_put, set_mock_value
@@ -380,8 +382,693 @@ period_settings_template = """
   </String>
 </Cluster>
 """
+initial_period_settings = """<?xml version="1.0"?>
+<Cluster>
+  <Name>Hardware Periods</Name>
+  <NumElts>38</NumElts>
+  <EW>
+    <Name>Period Setup Source</Name>
+    <Choice>Use Parameters Below</Choice>
+    <Choice>Read from file</Choice>
+    <Val>0</Val>
+  </EW>
+  <EW>
+    <Name>Period Type</Name>
+    <Choice>Software (PC controlled)</Choice>
+    <Choice>Hardware (DAE internal control)</Choice>
+    <Choice>Hardware (External signal control)</Choice>
+    <Val>0</Val>
+  </EW>
+  <String>
+    <Name>Period File</Name>
+    <Val/>
+  </String>
+  <I32>
+    <Name>Number Of Software Periods</Name>
+    <Val>1</Val>
+  </I32>
+  <DBL>
+    <Name>Hardware Period Sequences</Name>
+    <Val>0</Val>
+  </DBL>
+  <DBL>
+    <Name>Output Delay (us)</Name>
+    <Val>0</Val>
+  </DBL>
+  <EW>
+    <Name>Type 1</Name>
+    <Choice>UNUSED</Choice>
+    <Choice>DAQ</Choice>
+    <Choice>DWELL</Choice>
+    <Val>0</Val>
+  </EW>
+  <I32>
+    <Name>Frames 1</Name>
+    <Val>0</Val>
+  </I32>
+  <U16>
+    <Name>Output 1</Name>
+    <Val>0</Val>
+  </U16>
+  <String>
+    <Name>Label 1</Name>
+    <Val/>
+  </String>
+  <EW>
+    <Name>Type 2</Name>
+    <Choice>UNUSED</Choice>
+    <Choice>DAQ</Choice>
+    <Choice>DWELL</Choice>
+    <Val>0</Val>
+  </EW>
+  <I32>
+    <Name>Frames 2</Name>
+    <Val>0</Val>
+  </I32>
+  <U16>
+    <Name>Output 2</Name>
+    <Val>0</Val>
+  </U16>
+  <String>
+    <Name>Label 2</Name>
+    <Val/>
+  </String>
+  <EW>
+    <Name>Type 3</Name>
+    <Choice>UNUSED</Choice>
+    <Choice>DAQ</Choice>
+    <Choice>DWELL</Choice>
+    <Val>0</Val>
+  </EW>
+  <I32>
+    <Name>Frames 3</Name>
+    <Val>0</Val>
+  </I32>
+  <U16>
+    <Name>Output 3</Name>
+    <Val>0</Val>
+  </U16>
+  <String>
+    <Name>Label 3</Name>
+    <Val/>
+  </String>
+  <EW>
+    <Name>Type 4</Name>
+    <Choice>UNUSED</Choice>
+    <Choice>DAQ</Choice>
+    <Choice>DWELL</Choice>
+    <Val>0</Val>
+  </EW>
+  <I32>
+    <Name>Frames 4</Name>
+    <Val>0</Val>
+  </I32>
+  <U16>
+    <Name>Output 4</Name>
+    <Val>0</Val>
+  </U16>
+  <String>
+    <Name>Label 4</Name>
+    <Val/>
+  </String>
+  <EW>
+    <Name>Type 5</Name>
+    <Choice>UNUSED</Choice>
+    <Choice>DAQ</Choice>
+    <Choice>DWELL</Choice>
+    <Val>0</Val>
+  </EW>
+  <I32>
+    <Name>Frames 5</Name>
+    <Val>0</Val>
+  </I32>
+  <U16>
+    <Name>Output 5</Name>
+    <Val>0</Val>
+  </U16>
+  <String>
+    <Name>Label 5</Name>
+    <Val/>
+  </String>
+  <EW>
+    <Name>Type 6</Name>
+    <Choice>UNUSED</Choice>
+    <Choice>DAQ</Choice>
+    <Choice>DWELL</Choice>
+    <Val>0</Val>
+  </EW>
+  <I32>
+    <Name>Frames 6</Name>
+    <Val>0</Val>
+  </I32>
+  <U16>
+    <Name>Output 6</Name>
+    <Val>0</Val>
+  </U16>
+  <String>
+    <Name>Label 6</Name>
+    <Val/>
+  </String>
+  <EW>
+    <Name>Type 7</Name>
+    <Choice>UNUSED</Choice>
+    <Choice>DAQ</Choice>
+    <Choice>DWELL</Choice>
+    <Val>0</Val>
+  </EW>
+  <I32>
+    <Name>Frames 7</Name>
+    <Val>0</Val>
+  </I32>
+  <U16>
+    <Name>Output 7</Name>
+    <Val>0</Val>
+  </U16>
+  <String>
+    <Name>Label 7</Name>
+    <Val/>
+  </String>
+  <EW>
+    <Name>Type 8</Name>
+    <Choice>UNUSED</Choice>
+    <Choice>DAQ</Choice>
+    <Choice>DWELL</Choice>
+    <Val>0</Val>
+  </EW>
+  <I32>
+    <Name>Frames 8</Name>
+    <Val>0</Val>
+  </I32>
+  <U16>
+    <Name>Output 8</Name>
+    <Val>0</Val>
+  </U16>
+  <String>
+    <Name>Label 8</Name>
+    <Val/>
+  </String>
+</Cluster>
+"""
 
 tcb_settings_template = """
+<Cluster>
+	<Name>Time Channels</Name>
+	<NumElts>123</NumElts>
+	<DBL>
+		<Name>TR1 From 1</Name>
+		<Val>150</Val>
+	</DBL>
+	<DBL>
+		<Name>TR1 To 1</Name>
+		<Val>95000</Val>
+	</DBL>
+	<DBL>
+		<Name>TR1 Steps 1</Name>
+		<Val>0.002</Val>
+	</DBL>
+	<U16>
+		<Name>TR1 In Mode 1</Name>
+		<Val>2</Val>
+	</U16>
+	<DBL>
+		<Name>TR1 From 2</Name>
+		<Val>0</Val>
+	</DBL>
+	<DBL>
+		<Name>TR1 To 2</Name>
+		<Val>0</Val>
+	</DBL>
+	<DBL>
+		<Name>TR1 Steps 2</Name>
+		<Val>0</Val>
+	</DBL>
+	<U16>
+		<Name>TR1 In Mode 2</Name>
+		<Val>0</Val>
+	</U16>
+	<DBL>
+		<Name>TR1 From 3</Name>
+		<Val>0</Val>
+	</DBL>
+	<DBL>
+		<Name>TR1 To 3</Name>
+		<Val>0</Val>
+	</DBL>
+	<DBL>
+		<Name>TR1 Steps 3</Name>
+		<Val>0</Val>
+	</DBL>
+	<U16>
+		<Name>TR1 In Mode 3</Name>
+		<Val>0</Val>
+	</U16>
+	<DBL>
+		<Name>TR1 From 4</Name>
+		<Val>0</Val>
+	</DBL>
+	<DBL>
+		<Name>TR1 To 4</Name>
+		<Val>0</Val>
+	</DBL>
+	<DBL>
+		<Name>TR1 Steps 4</Name>
+		<Val>0</Val>
+	</DBL>
+	<U16>
+		<Name>TR1 In Mode 4</Name>
+		<Val>0</Val>
+	</U16>
+	<DBL>
+		<Name>TR1 From 5</Name>
+		<Val>0</Val>
+	</DBL>
+	<DBL>
+		<Name>TR1 To 5</Name>
+		<Val>0</Val>
+	</DBL>
+	<DBL>
+		<Name>TR1 Steps 5</Name>
+		<Val>0</Val>
+	</DBL>
+	<U16>
+		<Name>TR1 In Mode 5</Name>
+		<Val>0</Val>
+	</U16>
+	<U16>
+		<Name>Time Unit</Name>
+		<Val>0</Val>
+	</U16>
+	<String>
+		<Name>Time Channel File</Name>
+		<Val></Val>
+	</String>
+	<U16>
+		<Name>Calculation Method</Name>
+		<Val>0</Val>
+	</U16>
+	<DBL>
+		<Name>TR2 From 1</Name>
+		<Val>150</Val>
+	</DBL>
+	<DBL>
+		<Name>TR2 To 1</Name>
+		<Val>95000</Val>
+	</DBL>
+	<DBL>
+		<Name>TR2 Steps 1</Name>
+		<Val>1.5</Val>
+	</DBL>
+	<U16>
+		<Name>TR2 In Mode 1</Name>
+		<Val>1</Val>
+	</U16>
+	<DBL>
+		<Name>TR2 From 2</Name>
+		<Val>0</Val>
+	</DBL>
+	<DBL>
+		<Name>TR2 To 2</Name>
+		<Val>0</Val>
+	</DBL>
+	<DBL>
+		<Name>TR2 Steps 2</Name>
+		<Val>0</Val>
+	</DBL>
+	<U16>
+		<Name>TR2 In Mode 2</Name>
+		<Val>0</Val>
+	</U16>
+	<DBL>
+		<Name>TR2 From 3</Name>
+		<Val>0</Val>
+	</DBL>
+	<DBL>
+		<Name>TR2 To 3</Name>
+		<Val>0</Val>
+	</DBL>
+	<DBL>
+		<Name>TR2 Steps 3</Name>
+		<Val>0</Val>
+	</DBL>
+	<U16>
+		<Name>TR2 In Mode 3</Name>
+		<Val>0</Val>
+	</U16>
+	<DBL>
+		<Name>TR2 From 4</Name>
+		<Val>0</Val>
+	</DBL>
+	<DBL>
+		<Name>TR2 To 4</Name>
+		<Val>0</Val>
+	</DBL>
+	<DBL>
+		<Name>TR2 Steps 4</Name>
+		<Val>0</Val>
+	</DBL>
+	<U16>
+		<Name>TR2 In Mode 4</Name>
+		<Val>0</Val>
+	</U16>
+	<DBL>
+		<Name>TR2 From 5</Name>
+		<Val>0</Val>
+	</DBL>
+	<DBL>
+		<Name>TR2 To 5</Name>
+		<Val>0</Val>
+	</DBL>
+	<DBL>
+		<Name>TR2 Steps 5</Name>
+		<Val>0</Val>
+	</DBL>
+	<U16>
+		<Name>TR2 In Mode 5</Name>
+		<Val>0</Val>
+	</U16>
+	<DBL>
+		<Name>TR3 From 1</Name>
+		<Val>0</Val>
+	</DBL>
+	<DBL>
+		<Name>TR3 To 1</Name>
+		<Val>0</Val>
+	</DBL>
+	<DBL>
+		<Name>TR3 Steps 1</Name>
+		<Val>0</Val>
+	</DBL>
+	<U16>
+		<Name>TR3 In Mode 1</Name>
+		<Val>0</Val>
+	</U16>
+	<DBL>
+		<Name>TR3 From 2</Name>
+		<Val>0</Val>
+	</DBL>
+	<DBL>
+		<Name>TR3 To 2</Name>
+		<Val>0</Val>
+	</DBL>
+	<DBL>
+		<Name>TR3 Steps 2</Name>
+		<Val>0</Val>
+	</DBL>
+	<U16>
+		<Name>TR3 In Mode 2</Name>
+		<Val>0</Val>
+	</U16>
+	<DBL>
+		<Name>TR3 From 3</Name>
+		<Val>0</Val>
+	</DBL>
+	<DBL>
+		<Name>TR3 To 3</Name>
+		<Val>0</Val>
+	</DBL>
+	<DBL>
+		<Name>TR3 Steps 3</Name>
+		<Val>0</Val>
+	</DBL>
+	<U16>
+		<Name>TR3 In Mode 3</Name>
+		<Val>0</Val>
+	</U16>
+	<DBL>
+		<Name>TR3 From 4</Name>
+		<Val>0</Val>
+	</DBL>
+	<DBL>
+		<Name>TR3 To 4</Name>
+		<Val>0</Val>
+	</DBL>
+	<DBL>
+		<Name>TR3 Steps 4</Name>
+		<Val>0</Val>
+	</DBL>
+	<U16>
+		<Name>TR3 In Mode 4</Name>
+		<Val>0</Val>
+	</U16>
+	<DBL>
+		<Name>TR3 From 5</Name>
+		<Val>0</Val>
+	</DBL>
+	<DBL>
+		<Name>TR3 To 5</Name>
+		<Val>0</Val>
+	</DBL>
+	<DBL>
+		<Name>TR3 Steps 5</Name>
+		<Val>0</Val>
+	</DBL>
+	<U16>
+		<Name>TR3 In Mode 5</Name>
+		<Val>0</Val>
+	</U16>
+	<DBL>
+		<Name>TR4 From 1</Name>
+		<Val>0</Val>
+	</DBL>
+	<DBL>
+		<Name>TR4 To 1</Name>
+		<Val>0</Val>
+	</DBL>
+	<DBL>
+		<Name>TR4 Steps 1</Name>
+		<Val>0</Val>
+	</DBL>
+	<U16>
+		<Name>TR4 In Mode 1</Name>
+		<Val>0</Val>
+	</U16>
+	<DBL>
+		<Name>TR4 From 2</Name>
+		<Val>0</Val>
+	</DBL>
+	<DBL>
+		<Name>TR4 To 2</Name>
+		<Val>0</Val>
+	</DBL>
+	<DBL>
+		<Name>TR4 Steps 2</Name>
+		<Val>0</Val>
+	</DBL>
+	<U16>
+		<Name>TR4 In Mode 2</Name>
+		<Val>0</Val>
+	</U16>
+	<DBL>
+		<Name>TR4 From 3</Name>
+		<Val>0</Val>
+	</DBL>
+	<DBL>
+		<Name>TR4 To 3</Name>
+		<Val>0</Val>
+	</DBL>
+	<DBL>
+		<Name>TR4 Steps 3</Name>
+		<Val>0</Val>
+	</DBL>
+	<U16>
+		<Name>TR4 In Mode 3</Name>
+		<Val>0</Val>
+	</U16>
+	<DBL>
+		<Name>TR4 From 4</Name>
+		<Val>0</Val>
+	</DBL>
+	<DBL>
+		<Name>TR4 To 4</Name>
+		<Val>0</Val>
+	</DBL>
+	<DBL>
+		<Name>TR4 Steps 4</Name>
+		<Val>0</Val>
+	</DBL>
+	<U16>
+		<Name>TR4 In Mode 4</Name>
+		<Val>0</Val>
+	</U16>
+	<DBL>
+		<Name>TR4 From 5</Name>
+		<Val>0</Val>
+	</DBL>
+	<DBL>
+		<Name>TR4 To 5</Name>
+		<Val>0</Val>
+	</DBL>
+	<DBL>
+		<Name>TR4 Steps 5</Name>
+		<Val>0</Val>
+	</DBL>
+	<U16>
+		<Name>TR4 In Mode 5</Name>
+		<Val>0</Val>
+	</U16>
+	<DBL>
+		<Name>TR5 From 1</Name>
+		<Val>0</Val>
+	</DBL>
+	<DBL>
+		<Name>TR5 To 1</Name>
+		<Val>0</Val>
+	</DBL>
+	<DBL>
+		<Name>TR5 Steps 1</Name>
+		<Val>0</Val>
+	</DBL>
+	<U16>
+		<Name>TR5 In Mode 1</Name>
+		<Val>0</Val>
+	</U16>
+	<DBL>
+		<Name>TR5 From 2</Name>
+		<Val>0</Val>
+	</DBL>
+	<DBL>
+		<Name>TR5 To 2</Name>
+		<Val>0</Val>
+	</DBL>
+	<DBL>
+		<Name>TR5 Steps 2</Name>
+		<Val>0</Val>
+	</DBL>
+	<U16>
+		<Name>TR5 In Mode 2</Name>
+		<Val>0</Val>
+	</U16>
+	<DBL>
+		<Name>TR5 From 3</Name>
+		<Val>0</Val>
+	</DBL>
+	<DBL>
+		<Name>TR5 To 3</Name>
+		<Val>0</Val>
+	</DBL>
+	<DBL>
+		<Name>TR5 Steps 3</Name>
+		<Val>0</Val>
+	</DBL>
+	<U16>
+		<Name>TR5 In Mode 3</Name>
+		<Val>0</Val>
+	</U16>
+	<DBL>
+		<Name>TR5 From 4</Name>
+		<Val>0</Val>
+	</DBL>
+	<DBL>
+		<Name>TR5 To 4</Name>
+		<Val>0</Val>
+	</DBL>
+	<DBL>
+		<Name>TR5 Steps 4</Name>
+		<Val>0</Val>
+	</DBL>
+	<U16>
+		<Name>TR5 In Mode 4</Name>
+		<Val>0</Val>
+	</U16>
+	<DBL>
+		<Name>TR5 From 5</Name>
+		<Val>0</Val>
+	</DBL>
+	<DBL>
+		<Name>TR5 To 5</Name>
+		<Val>0</Val>
+	</DBL>
+	<DBL>
+		<Name>TR5 Steps 5</Name>
+		<Val>0</Val>
+	</DBL>
+	<U16>
+		<Name>TR5 In Mode 5</Name>
+		<Val>0</Val>
+	</U16>
+	<DBL>
+		<Name>TR6 From 1</Name>
+		<Val>0</Val>
+	</DBL>
+	<DBL>
+		<Name>TR6 To 1</Name>
+		<Val>0</Val>
+	</DBL>
+	<DBL>
+		<Name>TR6 Steps 1</Name>
+		<Val>0</Val>
+	</DBL>
+	<U16>
+		<Name>TR6 In Mode 1</Name>
+		<Val>0</Val>
+	</U16>
+	<DBL>
+		<Name>TR6 From 2</Name>
+		<Val>0</Val>
+	</DBL>
+	<DBL>
+		<Name>TR6 To 2</Name>
+		<Val>0</Val>
+	</DBL>
+	<DBL>
+		<Name>TR6 Steps 2</Name>
+		<Val>0</Val>
+	</DBL>
+	<U16>
+		<Name>TR6 In Mode 2</Name>
+		<Val>0</Val>
+	</U16>
+	<DBL>
+		<Name>TR6 From 3</Name>
+		<Val>0</Val>
+	</DBL>
+	<DBL>
+		<Name>TR6 To 3</Name>
+		<Val>0</Val>
+	</DBL>
+	<DBL>
+		<Name>TR6 Steps 3</Name>
+		<Val>0</Val>
+	</DBL>
+	<U16>
+		<Name>TR6 In Mode 3</Name>
+		<Val>0</Val>
+	</U16>
+	<DBL>
+		<Name>TR6 From 4</Name>
+		<Val>0</Val>
+	</DBL>
+	<DBL>
+		<Name>TR6 To 4</Name>
+		<Val>0</Val>
+	</DBL>
+	<DBL>
+		<Name>TR6 Steps 4</Name>
+		<Val>0</Val>
+	</DBL>
+	<U16>
+		<Name>TR6 In Mode 4</Name>
+		<Val>0</Val>
+	</U16>
+	<DBL>
+		<Name>TR6 From 5</Name>
+		<Val>0</Val>
+	</DBL>
+	<DBL>
+		<Name>TR6 To 5</Name>
+		<Val>0</Val>
+	</DBL>
+	<DBL>
+		<Name>TR6 Steps 5</Name>
+		<Val>0</Val>
+	</DBL>
+	<U16>
+		<Name>TR6 In Mode 5</Name>
+		<Val>0</Val>
+	</U16>
+</Cluster>
+"""
+initial_tcb_settings = """
 <Cluster>
 	<Name>Time Channels</Name>
 	<NumElts>123</NumElts>
@@ -1214,3 +1901,19 @@ async def test_dae_settings_get_parsed_correctly():
     assert location == {"setpoint": data, "readback": data}
     xml = await daesettings.dae_settings.get_value()
     assert ET.canonicalize(xml) == ET.canonicalize(xml_filled_in)
+
+async def test_period_settings_get_parsed_correctly():
+    data = DaePeriodSettingsData()
+
+    periodsettings = DaePeriodSettings(MOCK_PREFIX)
+    await periodsettings.period_settings.connect(mock=True)
+    await periodsettings.period_settings.set(initial_period_settings)
+    pass
+
+async def test_tcb_settings_get_parsed_correctly():
+    data = DaeTCBSettingsData()
+
+    tcbsettings = DaeTCBSettings(MOCK_PREFIX)
+    await tcbsettings.tcb_settings.connect(mock=True)
+    await tcbsettings.tcb_settings.set(initial_tcb_settings)
+    pass
