@@ -2520,10 +2520,12 @@ async def test_tcb_settings_get_parsed_correctly():
     xml = dehex_and_decompress(xml_hexed.encode()).decode()
     assert ET.canonicalize(xml) == ET.canonicalize(xml_filled_in)
 
+
 def test_tcb_settings_does_not_set_anything_if_all_none_provided():
     data = DaeTCBSettingsData()
     output = _convert_tcb_settings_to_xml(initial_tcb_settings, data)
     assert ET.canonicalize(initial_tcb_settings) == ET.canonicalize(output)
+
 
 def test_period_settings_does_not_set_anything_if_all_none_provided():
     data = DaePeriodSettingsData()
