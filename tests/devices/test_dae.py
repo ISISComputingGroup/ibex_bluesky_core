@@ -75,7 +75,7 @@ async def test_dae_descriptor_contains_same_keys_as_reading(dae: Dae):
 async def test_begin_run_sets_begin_run_ex(dae: Dae):
     get_mock_put(dae.controls.begin_run_ex.begin_run_ex).assert_not_called()
     await dae.controls.begin_run_ex.set(BeginRunExBits.NONE)
-    get_mock_put(dae.controls.begin_run_ex.begin_run_ex).assert_called_once()
+    assert get_mock_put(dae.controls.begin_run_ex.begin_run_ex).call_args.args == (0,)
 
 
 async def test_begin_run_ex_with_options_sets_begin_run_ex_correctly(dae: Dae):

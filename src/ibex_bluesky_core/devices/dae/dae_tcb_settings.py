@@ -42,11 +42,11 @@ class CalculationMethod(Enum):
 class TimeRegimeMode(Enum):
     """Time Regime Mode options for a single row."""
 
-    BLANK = 0
-    DT = 1
-    DTDIVT = 2
-    DTDIVT2 = 3
-    SHIFTED = 4
+    BLANK = 0  # Blank
+    DT = 1  # dT = C
+    DTDIVT = 2  # dT/T = C
+    DTDIVT2 = 3  # dT/T**2 = C
+    SHIFTED = 4  # Shifted
 
 
 @dataclass(kw_only=True)

@@ -1,7 +1,5 @@
 """Utilities for the DAE device - mostly XML helpers."""
 
-from __future__ import annotations
-
 from enum import Enum
 from typing import Any, Dict, List
 from xml.etree.ElementTree import Element
