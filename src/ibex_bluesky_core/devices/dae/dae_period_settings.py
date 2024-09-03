@@ -55,13 +55,13 @@ class SinglePeriodSettings:
 class DaePeriodSettingsData:
     """Dataclass for the hardware period settings."""
 
+    periods_settings: List[SinglePeriodSettings]
     periods_soft_num: None | int = None
     periods_type: PeriodType | None = None
     periods_src: PeriodSource | None = None
     periods_file: None | str = None
     periods_seq: None | int = None
     periods_delay: None | int = None
-    periods_settings: List[SinglePeriodSettings] | None = None
 
 
 def _convert_xml_to_period_settings(value: str) -> DaePeriodSettingsData:
@@ -97,10 +97,11 @@ def _convert_period_settings_to_xml(current_xml: str, value: DaePeriodSettingsDa
     set_value_in_dae_xml(elements, PERIOD_SEQUENCES, value.periods_seq)
     set_value_in_dae_xml(elements, OUTPUT_DELAY, value.periods_delay)
     for i in range(1, 8 + 1):
-        set_value_in_dae_xml(elements, f"Type {i}", value.periods_settings[i - 1].type)
-        set_value_in_dae_xml(elements, f"Frames {i}", value.periods_settings[i - 1].frames)
-        set_value_in_dae_xml(elements, f"Output {i}", value.periods_settings[i - 1].output)
-        set_value_in_dae_xml(elements, f"Label {i}", value.periods_settings[i - 1].label)
+        period = value.periods_settings[i - 1]
+        set_value_in_dae_xml(elements, f"Type {i}", period.type)
+        set_value_in_dae_xml(elements, f"Frames {i}", period.frames)
+        set_value_in_dae_xml(elements, f"Output {i}", period.output)
+        set_value_in_dae_xml(elements, f"Label {i}", period.label)
     return tostring(root, encoding="unicode")
 
 

@@ -39,7 +39,6 @@ def demo_plan(block: BlockRwRbv[float], dae: Dae) -> Generator[Msg, None, None]:
 
     @run_decorator(md={})
     def _inner() -> Generator[Msg, None, None]:
-
         # More complicated acquisition showing arbitrary DAE control to support complex use-cases.
         yield from bps.abs_set(block, 2.0, wait=True)
         yield from bps.trigger(dae.controls.begin_run, wait=True)

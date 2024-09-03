@@ -48,8 +48,7 @@ def test_dae_naming(dae: Dae):
 
 def test_dae_runstate_string_repr(dae: Dae):
     expected = "PROCESSING"
-    dae.run_state = RunstateEnum.PROCESSING
-    assert str(dae.run_state) == expected
+    assert str(RunstateEnum.PROCESSING) == expected
 
 
 def test_explicit_dae_naming():
@@ -80,7 +79,7 @@ async def test_begin_run_sets_begin_run_ex(dae: Dae):
 async def test_begin_run_ex_with_options_sets_begin_run_ex_correctly(dae: Dae):
     get_mock_put(dae.controls.begin_run_ex.begin_run_ex).assert_not_called()
     await dae.controls.begin_run_ex.set(
-        BeginRunExBits.NONE + BeginRunExBits.BEGINIFPAUSED + BeginRunExBits.BEGINIFDELAYED
+        BeginRunExBits.NONE | BeginRunExBits.BEGINIFPAUSED | BeginRunExBits.BEGINIFDELAYED
     )
     get_mock_put(dae.controls.begin_run_ex.begin_run_ex).assert_called_once()
     assert get_mock_put(dae.controls.begin_run_ex.begin_run_ex).call_args.args == (3,)

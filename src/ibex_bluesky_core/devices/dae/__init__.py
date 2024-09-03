@@ -29,7 +29,7 @@ def _get_names_and_values(element: Element) -> tuple[Any, Any] | tuple[None, Non
     if name is not None and name.text is not None:
         name = name.text
         value = element.find("Val")
-        return name, value.text
+        return name, value.text if value is not None else None
     return None, None
 
 
@@ -44,6 +44,8 @@ def set_value_in_dae_xml(
         if isinstance(value, Enum):
             value = value.value
         for i in elements:
-            if i.find("Name").text == name:
-                i.find("Val").text = str(value)
+            name_element = i.find("Name")
+            value_element = i.find("Val")
+            if name_element is not None and value_element is not None and name_element.text == name:
+                value_element.text = str(value)
                 return

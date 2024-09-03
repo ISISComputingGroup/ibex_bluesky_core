@@ -113,8 +113,10 @@ def _convert_xml_to_dae_settings(value: str) -> DaeSettingsData:
         veto_3_name=settings_from_xml[VETO3_NAME],
     )
 
-def _bool_to_int_or_none(to_convert: bool|None) -> int|None:
+
+def _bool_to_int_or_none(to_convert: bool | None) -> int | None:
     return to_convert if to_convert is None else int(to_convert)
+
 
 def _convert_dae_settings_to_xml(current_xml: str, settings: DaeSettingsData) -> str:
     root = ET.fromstring(current_xml)
