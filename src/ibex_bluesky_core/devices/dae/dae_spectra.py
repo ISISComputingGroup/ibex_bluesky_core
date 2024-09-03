@@ -9,6 +9,7 @@ class DaeSpectra(StandardReadable):
     """Subdevice for a single DAE spectra."""
 
     def __init__(self, dae_prefix: str, *, spectra: int, period: int, name: str = "") -> None:
+        """Set up signals for a single DAE spectra."""
         self.x: SignalR[np.typing.NDArray[np.float32]] = epics_signal_r(
             np.typing.NDArray[np.float32], f"{dae_prefix}DAE" f":SPEC:{period}:{spectra}:X"
         )

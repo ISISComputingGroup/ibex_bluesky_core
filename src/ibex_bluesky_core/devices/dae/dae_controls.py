@@ -11,6 +11,7 @@ class DaeControls(StandardReadable):
     """Subdevice for the DAE run controls."""
 
     def __init__(self, dae_prefix: str, name: str = "") -> None:
+        """Set up write-only signals for DAE controls."""
         self.begin_run: SignalX = epics_signal_x(f"{dae_prefix}BEGINRUN")
         self.begin_run_ex: BeginRunEx = BeginRunEx(dae_prefix)
         self.end_run: SignalX = epics_signal_x(f"{dae_prefix}ENDRUN")
@@ -35,9 +36,11 @@ class BeginRunEx(StandardReadable, Movable):
     """Subdevice for the BEGINRUNEX signal to begin a run."""
 
     def __init__(self, dae_prefix: str, name: str = "") -> None:
+        """Set up write-only signal for BEGINRUNEX."""
         self.begin_run_ex: SignalRW = epics_signal_rw(int, f"{dae_prefix}BEGINRUNEX")
         super().__init__(name=name)
 
     @AsyncStatus.wrap
     async def set(self, value: BeginRunExBits) -> None:
+        """Start a run with the specified bits - See BeginRunExBits."""
         await self.begin_run_ex.set(value, wait=True)

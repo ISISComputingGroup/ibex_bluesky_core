@@ -8,6 +8,7 @@ class DaePeriod(StandardReadable):
     """Subdevice for the current DAE period."""
 
     def __init__(self, dae_prefix: str, name: str = "") -> None:
+        """Set up signals for the current DAE period."""
         with self.add_children_as_readables():
             self.run_duration: SignalR[int] = epics_signal_r(int, f"{dae_prefix}RUNDURATION_PD")
             self.good_frames: SignalR[int] = epics_signal_r(int, f"{dae_prefix}GOODFRAMES_PD")

@@ -8,6 +8,7 @@ class DaeEventMode(StandardReadable):
     """Subdevice for event mode statistics."""
 
     def __init__(self, dae_prefix: str, name: str = "") -> None:
+        """Set up signals for DAE event mode statistics."""
         with self.add_children_as_readables():
             self.fraction: SignalR[float] = epics_signal_r(float, f"{dae_prefix}EVENTMODEFRACTION")
             self.buf_used: SignalR[float] = epics_signal_r(float, f"{dae_prefix}EVENTMODEBUFUSED")

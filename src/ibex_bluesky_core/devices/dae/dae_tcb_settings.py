@@ -121,10 +121,15 @@ class DaeTCBSettings(Device, Locatable):
     """Subdevice for the DAE time channel settings."""
 
     def __init__(self, dae_prefix: str, name: str = "") -> None:
+        """Set up signal for the DAE time channel settings.
+
+        See DaeTCBSettingsData for options.
+        """
         self.tcb_settings: SignalRW[str] = isis_epics_signal_rw(str, f"{dae_prefix}TCBSETTINGS")
         super().__init__(name=name)
 
     async def locate(self) -> Location:
+        """Retrieve and convert the current XML to DaeTCBSettingsData."""
         value = await self.tcb_settings.get_value()
         value_dehexed = dehex_and_decompress(value.encode()).decode()
         tcb_settings = _convert_xml_to_tcb_settings(value_dehexed)
@@ -132,6 +137,7 @@ class DaeTCBSettings(Device, Locatable):
 
     @AsyncStatus.wrap
     async def set(self, value: DaeTCBSettingsData) -> None:
+        """Set any changes in the tcb settings to the XML."""
         current_xml = await self.tcb_settings.get_value()
         current_xml_dehexed = dehex_and_decompress(current_xml).decode()
         xml = _convert_tcb_settings_to_xml(current_xml_dehexed, value)
