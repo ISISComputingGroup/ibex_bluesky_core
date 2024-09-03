@@ -51,18 +51,14 @@ class TimeRegimeRow:
 
 @dataclass
 class TimeRegime:
-    rows: Dict[int, TimeRegimeRow] = field(
-        default_factory=lambda: {i: TimeRegimeRow() for i in range(1, 6)}
-    )
+    rows: Dict[int, TimeRegimeRow]|None = None
 
 
 @dataclass
 class DaeTCBSettingsData:
     tcb_file: str | None = None
     time_unit: TimeUnit | None = None
-    tcb_tables: Dict[int, TimeRegime] = field(
-        default_factory=lambda: {i: TimeRegime() for i in range(1, 7)}
-    )
+    tcb_tables: Dict[int, TimeRegime]|None = None
     tcb_calculation_method: CalculationMethod | None = None
 
 

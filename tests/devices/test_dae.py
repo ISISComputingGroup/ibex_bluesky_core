@@ -2189,34 +2189,32 @@ async def test_tcb_settings_get_parsed_correctly():
                     steps=expected_tr1_steps_1,
                     mode=expected_tr1_mode_1,
                 ),
-                2:TimeRegimeRow(
+                2: TimeRegimeRow(
                     from_=expected_tr1_from_2,
                     to=expected_tr1_to_2,
                     steps=expected_tr1_steps_2,
                     mode=expected_tr1_mode_2,
                 ),
-                3:TimeRegimeRow(
+                3: TimeRegimeRow(
                     from_=expected_tr1_from_3,
                     to=expected_tr1_to_3,
                     steps=expected_tr1_steps_3,
                     mode=expected_tr1_mode_3,
                 ),
-                4:TimeRegimeRow(
+                4: TimeRegimeRow(
                     from_=expected_tr1_from_4,
                     to=expected_tr1_to_4,
                     steps=expected_tr1_steps_4,
                     mode=expected_tr1_mode_4,
                 ),
-                5:TimeRegimeRow(
+                5: TimeRegimeRow(
                     from_=expected_tr1_from_5,
                     to=expected_tr1_to_5,
                     steps=expected_tr1_steps_5,
                     mode=expected_tr1_mode_5,
-                )
+                ),
             }
-
-            ),
-
+        ),
         2: TimeRegime(
             {
                 1: TimeRegimeRow(
@@ -2231,13 +2229,13 @@ async def test_tcb_settings_get_parsed_correctly():
                     steps=expected_tr2_steps_2,
                     mode=expected_tr2_mode_2,
                 ),
-                3:TimeRegimeRow(
+                3: TimeRegimeRow(
                     from_=expected_tr2_from_3,
                     to=expected_tr2_to_3,
                     steps=expected_tr2_steps_3,
                     mode=expected_tr2_mode_3,
                 ),
-                4:TimeRegimeRow(
+                4: TimeRegimeRow(
                     from_=expected_tr2_from_4,
                     to=expected_tr2_to_4,
                     steps=expected_tr2_steps_4,
@@ -2321,31 +2319,31 @@ async def test_tcb_settings_get_parsed_correctly():
         ),
         5: TimeRegime(
             {
-                1:TimeRegimeRow(
+                1: TimeRegimeRow(
                     from_=expected_tr5_from_1,
                     to=expected_tr5_to_1,
                     steps=expected_tr5_steps_1,
                     mode=expected_tr5_mode_1,
                 ),
-                2:TimeRegimeRow(
+                2: TimeRegimeRow(
                     from_=expected_tr5_from_2,
                     to=expected_tr5_to_2,
                     steps=expected_tr5_steps_2,
                     mode=expected_tr5_mode_2,
                 ),
-                3:TimeRegimeRow(
+                3: TimeRegimeRow(
                     from_=expected_tr5_from_3,
                     to=expected_tr5_to_3,
                     steps=expected_tr5_steps_3,
                     mode=expected_tr5_mode_3,
                 ),
-                4:TimeRegimeRow(
+                4: TimeRegimeRow(
                     from_=expected_tr5_from_4,
                     to=expected_tr5_to_4,
                     steps=expected_tr5_steps_4,
                     mode=expected_tr5_mode_4,
                 ),
-                5:TimeRegimeRow(
+                5: TimeRegimeRow(
                     from_=expected_tr5_from_5,
                     to=expected_tr5_to_5,
                     steps=expected_tr5_steps_5,
@@ -2403,3 +2401,133 @@ async def test_tcb_settings_get_parsed_correctly():
     await tcbsettings.set(data)
     location = await tcbsettings.locate()
     assert location == {"setpoint": data, "readback": data}
+
+    xml_filled_in = tcb_settings_template.format(
+        tcb_file=expected_tcb_file,
+        time_units=expected_time_unit.value,
+        calc_method=expected_calc_method.value,
+        tr1_mode_1=expected_tr1_mode_1.value,
+        tr1_from_1=expected_tr1_from_1,
+        tr1_to_1=expected_tr1_to_1,
+        tr1_steps_1=expected_tr1_steps_1,
+        tr1_mode_2=expected_tr1_mode_2.value,
+        tr1_from_2=expected_tr1_from_2,
+        tr1_to_2=expected_tr1_to_2,
+        tr1_steps_2=expected_tr1_steps_2,
+        tr1_mode_3=expected_tr1_mode_3.value,
+        tr1_from_3=expected_tr1_from_3,
+        tr1_to_3=expected_tr1_to_3,
+        tr1_steps_3=expected_tr1_steps_3,
+        tr1_mode_4=expected_tr1_mode_4.value,
+        tr1_from_4=expected_tr1_from_4,
+        tr1_to_4=expected_tr1_to_4,
+        tr1_steps_4=expected_tr1_steps_4,
+        tr1_mode_5=expected_tr1_mode_5.value,
+        tr1_from_5=expected_tr1_from_5,
+        tr1_to_5=expected_tr1_to_5,
+        tr1_steps_5=expected_tr1_steps_5,
+        tr2_mode_1=expected_tr2_mode_1.value,
+        tr2_from_1=expected_tr2_from_1,
+        tr2_to_1=expected_tr2_to_1,
+        tr2_steps_1=expected_tr2_steps_1,
+        tr2_mode_2=expected_tr2_mode_2.value,
+        tr2_from_2=expected_tr2_from_2,
+        tr2_to_2=expected_tr2_to_2,
+        tr2_steps_2=expected_tr2_steps_2,
+        tr2_mode_3=expected_tr2_mode_3.value,
+        tr2_from_3=expected_tr2_from_3,
+        tr2_to_3=expected_tr2_to_3,
+        tr2_steps_3=expected_tr2_steps_3,
+        tr2_mode_4=expected_tr2_mode_4.value,
+        tr2_from_4=expected_tr2_from_4,
+        tr2_to_4=expected_tr2_to_4,
+        tr2_steps_4=expected_tr2_steps_4,
+        tr2_mode_5=expected_tr2_mode_5.value,
+        tr2_from_5=expected_tr2_from_5,
+        tr2_to_5=expected_tr2_to_5,
+        tr2_steps_5=expected_tr2_steps_5,
+        tr3_mode_1=expected_tr3_mode_1.value,
+        tr3_from_1=expected_tr3_from_1,
+        tr3_to_1=expected_tr3_to_1,
+        tr3_steps_1=expected_tr3_steps_1,
+        tr3_mode_2=expected_tr3_mode_2.value,
+        tr3_from_2=expected_tr3_from_2,
+        tr3_to_2=expected_tr3_to_2,
+        tr3_steps_2=expected_tr3_steps_2,
+        tr3_mode_3=expected_tr3_mode_3.value,
+        tr3_from_3=expected_tr3_from_3,
+        tr3_to_3=expected_tr3_to_3,
+        tr3_steps_3=expected_tr3_steps_3,
+        tr3_mode_4=expected_tr3_mode_4.value,
+        tr3_from_4=expected_tr3_from_4,
+        tr3_to_4=expected_tr3_to_4,
+        tr3_steps_4=expected_tr3_steps_4,
+        tr3_mode_5=expected_tr3_mode_5.value,
+        tr3_from_5=expected_tr3_from_5,
+        tr3_to_5=expected_tr3_to_5,
+        tr3_steps_5=expected_tr3_steps_5,
+        tr4_mode_1=expected_tr4_mode_1.value,
+        tr4_from_1=expected_tr4_from_1,
+        tr4_to_1=expected_tr4_to_1,
+        tr4_steps_1=expected_tr4_steps_1,
+        tr4_mode_2=expected_tr4_mode_2.value,
+        tr4_from_2=expected_tr4_from_2,
+        tr4_to_2=expected_tr4_to_2,
+        tr4_steps_2=expected_tr4_steps_2,
+        tr4_mode_3=expected_tr4_mode_3.value,
+        tr4_from_3=expected_tr4_from_3,
+        tr4_to_3=expected_tr4_to_3,
+        tr4_steps_3=expected_tr4_steps_3,
+        tr4_mode_4=expected_tr4_mode_4.value,
+        tr4_from_4=expected_tr4_from_4,
+        tr4_to_4=expected_tr4_to_4,
+        tr4_steps_4=expected_tr4_steps_4,
+        tr4_mode_5=expected_tr4_mode_5.value,
+        tr4_from_5=expected_tr4_from_5,
+        tr4_to_5=expected_tr4_to_5,
+        tr4_steps_5=expected_tr4_steps_5,
+        tr5_mode_1=expected_tr5_mode_1.value,
+        tr5_from_1=expected_tr5_from_1,
+        tr5_to_1=expected_tr5_to_1,
+        tr5_steps_1=expected_tr5_steps_1,
+        tr5_mode_2=expected_tr5_mode_2.value,
+        tr5_from_2=expected_tr5_from_2,
+        tr5_to_2=expected_tr5_to_2,
+        tr5_steps_2=expected_tr5_steps_2,
+        tr5_mode_3=expected_tr5_mode_3.value,
+        tr5_from_3=expected_tr5_from_3,
+        tr5_to_3=expected_tr5_to_3,
+        tr5_steps_3=expected_tr5_steps_3,
+        tr5_mode_4=expected_tr5_mode_4.value,
+        tr5_from_4=expected_tr5_from_4,
+        tr5_to_4=expected_tr5_to_4,
+        tr5_steps_4=expected_tr5_steps_4,
+        tr5_mode_5=expected_tr5_mode_5.value,
+        tr5_from_5=expected_tr5_from_5,
+        tr5_to_5=expected_tr5_to_5,
+        tr5_steps_5=expected_tr5_steps_5,
+        tr6_mode_1=expected_tr6_mode_1.value,
+        tr6_from_1=expected_tr6_from_1,
+        tr6_to_1=expected_tr6_to_1,
+        tr6_steps_1=expected_tr6_steps_1,
+        tr6_mode_2=expected_tr6_mode_2.value,
+        tr6_from_2=expected_tr6_from_2,
+        tr6_to_2=expected_tr6_to_2,
+        tr6_steps_2=expected_tr6_steps_2,
+        tr6_mode_3=expected_tr6_mode_3.value,
+        tr6_from_3=expected_tr6_from_3,
+        tr6_to_3=expected_tr6_to_3,
+        tr6_steps_3=expected_tr6_steps_3,
+        tr6_mode_4=expected_tr6_mode_4.value,
+        tr6_from_4=expected_tr6_from_4,
+        tr6_to_4=expected_tr6_to_4,
+        tr6_steps_4=expected_tr6_steps_4,
+        tr6_mode_5=expected_tr6_mode_5.value,
+        tr6_from_5=expected_tr6_from_5,
+        tr6_to_5=expected_tr6_to_5,
+        tr6_steps_5=expected_tr6_steps_5,
+    )
+
+    xml_hexed = await tcbsettings.tcb_settings.get_value()
+    xml = dehex_and_decompress(xml_hexed)
+    assert ET.canonicalize(xml) == ET.canonicalize(xml_filled_in)
