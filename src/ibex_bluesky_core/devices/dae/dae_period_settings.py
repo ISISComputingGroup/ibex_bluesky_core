@@ -117,7 +117,7 @@ class DaePeriodSettings(Device, Locatable):
         )
         super().__init__(name=name)
 
-    async def locate(self) -> Location:
+    async def locate(self) -> Location[DaePeriodSettingsData]:
         """Retrieve and convert the current XML to DaePeriodSettingsData."""
         value = await self.period_settings.get_value()
         period_settings = _convert_xml_to_period_settings(value)

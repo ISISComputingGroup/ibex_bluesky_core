@@ -128,7 +128,7 @@ class DaeTCBSettings(Device, Locatable):
         self.tcb_settings: SignalRW[str] = isis_epics_signal_rw(str, f"{dae_prefix}TCBSETTINGS")
         super().__init__(name=name)
 
-    async def locate(self) -> Location:
+    async def locate(self) -> Location[DaeTCBSettingsData]:
         """Retrieve and convert the current XML to DaeTCBSettingsData."""
         value = await self.tcb_settings.get_value()
         value_dehexed = dehex_and_decompress(value.encode()).decode()

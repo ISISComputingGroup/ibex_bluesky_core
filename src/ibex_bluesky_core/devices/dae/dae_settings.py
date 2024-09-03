@@ -113,6 +113,8 @@ def _convert_xml_to_dae_settings(value: str) -> DaeSettingsData:
         veto_3_name=settings_from_xml[VETO3_NAME],
     )
 
+def _bool_to_int_or_none(to_convert: bool|None) -> int|None:
+    return to_convert if to_convert is None else int(to_convert)
 
 def _convert_dae_settings_to_xml(current_xml: str, settings: DaeSettingsData) -> str:
     root = ET.fromstring(current_xml)
@@ -124,17 +126,17 @@ def _convert_dae_settings_to_xml(current_xml: str, settings: DaeSettingsData) ->
     set_value_in_dae_xml(elements, TO, settings.mon_to)
     set_value_in_dae_xml(elements, MONITOR_SPECTRUM, settings.mon_spect)
     set_value_in_dae_xml(elements, DAE_TIMING_SOURCE, settings.timing_source)
-    set_value_in_dae_xml(elements, SMP_CHOPPER_VETO, int(settings.smp_veto))
-    set_value_in_dae_xml(elements, TS2_PULSE_VETO, int(settings.ts2_veto))
-    set_value_in_dae_xml(elements, ISIS_50HZ_VETO, int(settings.hz50_veto))
-    set_value_in_dae_xml(elements, VETO0, int(settings.ext0_veto))
-    set_value_in_dae_xml(elements, VETO1, int(settings.ext1_veto))
-    set_value_in_dae_xml(elements, VETO2, int(settings.ext2_veto))
-    set_value_in_dae_xml(elements, VETO3, int(settings.ext3_veto))
-    set_value_in_dae_xml(elements, FERMI_CHOPPER_VETO, int(settings.fermi_veto))
+    set_value_in_dae_xml(elements, SMP_CHOPPER_VETO, _bool_to_int_or_none(settings.smp_veto))
+    set_value_in_dae_xml(elements, TS2_PULSE_VETO, _bool_to_int_or_none(settings.ts2_veto))
+    set_value_in_dae_xml(elements, ISIS_50HZ_VETO, _bool_to_int_or_none(settings.hz50_veto))
+    set_value_in_dae_xml(elements, VETO0, _bool_to_int_or_none(settings.ext0_veto))
+    set_value_in_dae_xml(elements, VETO1, _bool_to_int_or_none(settings.ext1_veto))
+    set_value_in_dae_xml(elements, VETO2, _bool_to_int_or_none(settings.ext2_veto))
+    set_value_in_dae_xml(elements, VETO3, _bool_to_int_or_none(settings.ext3_veto))
+    set_value_in_dae_xml(elements, FERMI_CHOPPER_VETO, _bool_to_int_or_none(settings.fermi_veto))
     set_value_in_dae_xml(elements, FC_DELAY, settings.fermi_delay)
     set_value_in_dae_xml(elements, FC_WIDTH, settings.fermi_width)
-    set_value_in_dae_xml(elements, MUON_MS_MODE, int(settings.muon_ms_mode))
+    set_value_in_dae_xml(elements, MUON_MS_MODE, _bool_to_int_or_none(settings.muon_ms_mode))
     set_value_in_dae_xml(elements, MUON_CERENKOV_PULSE, settings.muon_cherenkov_pulse)
     set_value_in_dae_xml(elements, VETO0_NAME, settings.veto_0_name)
     set_value_in_dae_xml(elements, VETO1_NAME, settings.veto_1_name)
@@ -154,7 +156,7 @@ class DaeSettings(Device, Locatable, Movable):
         self.dae_settings: SignalRW[str] = isis_epics_signal_rw(str, f"{dae_prefix}DAESETTINGS")
         super().__init__(name=name)
 
-    async def locate(self) -> Location:
+    async def locate(self) -> Location[DaeSettingsData]:
         """Retrieve and convert the current XML to DaeSettingsData."""
         value = await self.dae_settings.get_value()
         period_settings = _convert_xml_to_dae_settings(value)

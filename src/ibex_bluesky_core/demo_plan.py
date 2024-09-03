@@ -39,15 +39,12 @@ def demo_plan(block: BlockRwRbv[float], dae: Dae) -> Generator[Msg, None, None]:
 
     @run_decorator(md={})
     def _inner() -> Generator[Msg, None, None]:
-        # A "simple" acquisition using trigger_and_read.
-        yield from bps.abs_set(block, 1.0, wait=True)
-        yield from bps.trigger_and_read([block, dae])
 
         # More complicated acquisition showing arbitrary DAE control to support complex use-cases.
         yield from bps.abs_set(block, 2.0, wait=True)
-        yield from bps.trigger(dae.begin_run, wait=True)
+        yield from bps.trigger(dae.controls.begin_run, wait=True)
         yield from bps.sleep(5)  # ... some complicated logic ...
-        yield from bps.trigger(dae.end_run, wait=True)
+        yield from bps.trigger(dae.controls.end_run, wait=True)
         yield from bps.create()  # Create a bundle of readings
         yield from bps.read(block)
         yield from bps.read(dae)
