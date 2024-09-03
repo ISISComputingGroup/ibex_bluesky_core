@@ -12,12 +12,12 @@ class DaeSpectra(StandardReadable):
     def __init__(self, dae_prefix: str, *, spectra: int, period: int, name: str = "") -> None:
         """Set up signals for a single DAE spectra."""
         self.x: SignalR[NDArray[float32]] = epics_signal_r(
-            NDArray[float32], f"{dae_prefix}DAE" f":SPEC:{period}:{spectra}:X"
+            NDArray[float32], f"{dae_prefix}SPEC:{period}:{spectra}:X"
         )
         self.y: SignalR[NDArray[float32]] = epics_signal_r(
-            NDArray[float32], f"{dae_prefix}DAE" f":SPEC:{period}:{spectra}:Y"
+            NDArray[float32], f"{dae_prefix}SPEC:{period}:{spectra}:Y"
         )
         self.yc: SignalR[NDArray[float32]] = epics_signal_r(
-            NDArray[float32], f"{dae_prefix}DAE" f":SPEC:{period}:{spectra}:YC"
+            NDArray[float32], f"{dae_prefix}SPEC:{period}:{spectra}:YC"
         )
         super().__init__(name=name)
