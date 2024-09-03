@@ -51,14 +51,14 @@ class TimeRegimeRow:
 
 @dataclass
 class TimeRegime:
-    rows: Dict[int, TimeRegimeRow]|None = None
+    rows: Dict[int, TimeRegimeRow] | None = None
 
 
 @dataclass
 class DaeTCBSettingsData:
     tcb_file: str | None = None
     time_unit: TimeUnit | None = None
-    tcb_tables: Dict[int, TimeRegime]|None = None
+    tcb_tables: Dict[int, TimeRegime] | None = None
     tcb_calculation_method: CalculationMethod | None = None
 
 
