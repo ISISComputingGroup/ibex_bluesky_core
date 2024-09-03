@@ -35,12 +35,7 @@ def demo_plan() -> Generator[Msg, None, None]:
     )
     @run_decorator(md={})
     def _inner() -> Generator[Msg, None, None]:
-        # A "simple" acquisition using trigger_and_read.
-        # Currently this does not work as the DAE does not have a trigger method.
-        # yield from bps.abs_set(block, 1.0, wait=True)
-        # yield from bps.trigger_and_read([block, dae])
-
-        # More complicated acquisition showing arbitrary DAE control to support complex use-cases.
+        # Acquisition showing arbitrary DAE control to support complex use-cases.
         yield from bps.abs_set(block, 2.0, wait=True)
         yield from bps.trigger(dae.controls.begin_run, wait=True)
         yield from bps.sleep(5)  # ... some complicated logic ...
