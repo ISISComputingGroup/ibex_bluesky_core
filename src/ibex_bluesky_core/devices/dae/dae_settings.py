@@ -1,3 +1,5 @@
+"""ophyd-async devices and utilities for the general DAE settings."""
+
 import xml.etree.ElementTree as ET
 from dataclasses import dataclass
 from enum import Enum
@@ -42,6 +44,8 @@ WIRING_TABLE = "Wiring Table"
 
 
 class TimingSource(Enum):
+    """The DAE timing source."""
+
     ISIS = 0
     INTERNAL_TEST_CLOCK = 1
     SMP = 2
@@ -138,6 +142,8 @@ def _convert_dae_settings_to_xml(current_xml: str, settings: DaeSettingsData) ->
 
 
 class DaeSettings(Device, Locatable, Movable):
+    """Subdevice for the DAE general settings."""
+
     def __init__(self, dae_prefix: str, name: str = "") -> None:
         self.dae_settings: SignalRW[str] = isis_epics_signal_rw(str, f"{dae_prefix}DAESETTINGS")
         super().__init__(name=name)

@@ -47,9 +47,6 @@ def compress_and_hex(value: str) -> bytes:
 
 
 def isis_epics_signal_rw(datatype: Type[T], read_pv: str, name: str = "") -> SignalRW[T]:
-    """Utility function to make a RW signal using the ISIS PV naming standard
-    ie. read_pv being TITLE, write_pv being TITLE:SP.
-
-    """
+    """Make a RW signal with ISIS' PV naming standard ie. read_pv as TITLE, write_pv as TITLE:SP."""
     write_pv = f"{read_pv}:SP"
     return epics_signal_rw(datatype, read_pv, write_pv, name)

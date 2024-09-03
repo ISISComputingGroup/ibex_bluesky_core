@@ -20,6 +20,8 @@ from src.ibex_bluesky_core.devices.dae.dae_spectra import DaeSpectra
 
 
 class RunstateEnum(str, Enum):
+    """The run state."""
+
     PROCESSING = "PROCESSING"
     SETUP = "SETUP"
     RUNNING = "RUNNING"
@@ -37,6 +39,7 @@ class RunstateEnum(str, Enum):
     CHANGING = "CHANGING"
 
     def __str__(self) -> str:
+        """Return a string representation of the enum value."""
         return str(self.value)
 
 

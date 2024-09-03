@@ -1,8 +1,12 @@
+"""ophyd-async devices and utilities for the DAE event mode statistics."""
+
 from ophyd_async.core import SignalR, StandardReadable
 from ophyd_async.epics.signal import epics_signal_r
 
 
 class DaeEventMode(StandardReadable):
+    """Subdevice for event mode statistics."""
+
     def __init__(self, dae_prefix: str, name: str = "") -> None:
         with self.add_children_as_readables():
             self.fraction: SignalR[float] = epics_signal_r(float, f"{dae_prefix}EVENTMODEFRACTION")

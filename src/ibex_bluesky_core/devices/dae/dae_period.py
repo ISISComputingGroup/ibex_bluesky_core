@@ -1,8 +1,12 @@
+"""ophyd-async devices and utilities for a DAE period."""
+
 from ophyd_async.core import SignalR, StandardReadable
 from ophyd_async.epics.signal import epics_signal_r
 
 
 class DaePeriod(StandardReadable):
+    """Subdevice for the current DAE period."""
+
     def __init__(self, dae_prefix: str, name: str = "") -> None:
         with self.add_children_as_readables():
             self.run_duration: SignalR[int] = epics_signal_r(int, f"{dae_prefix}RUNDURATION_PD")

@@ -1,3 +1,5 @@
+"""ophyd-async devices and utilities for the DAE hardware period settings."""
+
 import xml.etree.ElementTree as ET
 from dataclasses import dataclass
 from enum import Enum
@@ -25,18 +27,24 @@ PERIODS_SOFT_NUM = "Number Of Software Periods"
 
 
 class PeriodType(Enum):
+    """General period type."""
+
     SOFTWARE = 0
     HARDWARE_DAE = 1
     HARDWARE_EXTERNAL = 2
 
 
 class PeriodSource(Enum):
+    """The period setup source, whether to use parameters or file."""
+
     PARAMETERS = 0
     FILE = 1
 
 
 @dataclass
 class SinglePeriodSettings:
+    """Dataclass for the settings on a single period."""
+
     type: int | None = None
     frames: int | None = None
     output: int | None = None
@@ -45,6 +53,8 @@ class SinglePeriodSettings:
 
 @dataclass
 class DaePeriodSettingsData:
+    """Dataclass for the hardware period settings."""
+
     periods_soft_num: None | int = None
     periods_type: PeriodType | None = None
     periods_src: PeriodSource | None = None
@@ -95,7 +105,9 @@ def _convert_period_settings_to_xml(current_xml: str, value: DaePeriodSettingsDa
 
 
 class DaePeriodSettings(Device, Locatable):
-    def __init__(self, dae_prefix:str, name:str="") -> None:
+    """Subdevice for the DAE hardware period settings."""
+
+    def __init__(self, dae_prefix: str, name: str = "") -> None:
         self.period_settings: SignalRW[str] = isis_epics_signal_rw(
             str, f"{dae_prefix}HARDWAREPERIODS"
         )

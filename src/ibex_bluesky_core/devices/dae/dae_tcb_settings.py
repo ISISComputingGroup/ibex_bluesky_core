@@ -1,3 +1,5 @@
+"""ophyd-async devices and utilities for the DAE time channel settings."""
+
 import xml.etree.ElementTree as ET
 from dataclasses import dataclass
 from enum import Enum
@@ -116,6 +118,8 @@ def _convert_tcb_settings_to_xml(current_xml: str, settings: DaeTCBSettingsData)
 
 
 class DaeTCBSettings(Device, Locatable):
+    """Subdevice for the DAE time channel settings."""
+
     def __init__(self, dae_prefix: str, name: str = "") -> None:
         self.tcb_settings: SignalRW[str] = isis_epics_signal_rw(str, f"{dae_prefix}TCBSETTINGS")
         super().__init__(name=name)
