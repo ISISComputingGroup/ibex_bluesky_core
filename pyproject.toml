@@ -42,7 +42,7 @@ classifiers = [
 
 dependencies = [
   "bluesky",
-  "ophyd-async[ca]@git+https://github.com/bluesky/ophyd-async.git",
+  "ophyd-async[ca]",
   "matplotlib",
   "numpy"
 ]
