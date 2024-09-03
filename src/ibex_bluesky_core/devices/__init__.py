@@ -34,7 +34,7 @@ def dehex_and_decompress(value: bytes) -> bytes:
 
 
 def compress_and_hex(value: str) -> bytes:
-    """Compresses the inputted string and encodes it as hex.
+    """Compress the inputted string and encode it as hex.
 
     Args:
         value: The string to be compressed
@@ -47,8 +47,9 @@ def compress_and_hex(value: str) -> bytes:
 
 
 def isis_epics_signal_rw(datatype: Type[T], read_pv: str, name: str = "") -> SignalRW[T]:
-    """Utility function for making a RW signal using the ISIS PV naming standard ie. read_pv being TITLE,
-    write_pv being TITLE:SP
+    """Utility function to make a RW signal using the ISIS PV naming standard
+    ie. read_pv being TITLE, write_pv being TITLE:SP.
+
     """
     write_pv = f"{read_pv}:SP"
     return epics_signal_rw(datatype, read_pv, write_pv, name)

@@ -3,36 +3,33 @@ from enum import Enum
 from xml.etree import ElementTree as ET
 
 import pytest
+from ophyd_async.core import get_mock_put
 
 from ibex_bluesky_core.devices import compress_and_hex, dehex_and_decompress
 from ibex_bluesky_core.devices.dae.dae import Dae, RunstateEnum
-from ophyd_async.core import get_mock_put
-
 from ibex_bluesky_core.devices.dae.dae_period_settings import (
-    DaePeriodSettingsData,
     DaePeriodSettings,
+    DaePeriodSettingsData,
     PeriodSource,
     PeriodType,
     SinglePeriodSettings,
 )
 from ibex_bluesky_core.devices.dae.dae_settings import (
     DaeSettings,
-    TimingSource,
     DaeSettingsData,
-    convert_xml_to_dae_settings,
+    TimingSource,
 )
 from ibex_bluesky_core.devices.dae.dae_tcb_settings import (
+    CalculationMethod,
     DaeTCBSettings,
     DaeTCBSettingsData,
-    CalculationMethod,
     TimeRegime,
     TimeRegimeMode,
     TimeRegimeRow,
     TimeUnit,
 )
-from src.ibex_bluesky_core.devices.dae import set_value_in_dae_xml, convert_xml_to_names_and_values
+from src.ibex_bluesky_core.devices.dae import convert_xml_to_names_and_values, set_value_in_dae_xml
 from src.ibex_bluesky_core.devices.dae.dae_controls import BeginRunExBits
-from ophyd_async.core import get_mock_put, set_mock_value
 
 MOCK_PREFIX = "UNITTEST:MOCK:"
 
@@ -175,7 +172,7 @@ def test_get_names_and_values_from_xml():
 
 
 def test_get_names_and_values_without_name_does_not_get_parsed():
-    test_xml = f"""
+    test_xml = """
         <element>
             <child>
                 <Name>Cluster</Name>
@@ -193,7 +190,7 @@ def test_get_names_and_values_without_name_does_not_get_parsed():
 
 
 def test_get_names_and_values_without_value_does_not_get_parsed():
-    test_xml = f"""
+    test_xml = """
         <element>
             <child>
                 <Name>Cluster</Name>

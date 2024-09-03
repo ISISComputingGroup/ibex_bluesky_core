@@ -3,7 +3,7 @@ from ophyd_async.epics.signal import epics_signal_r
 
 
 class DaeEventMode(StandardReadable):
-    def __init__(self, dae_prefix, name=""):
+    def __init__(self, dae_prefix: str, name: str = "") -> None:
         with self.add_children_as_readables():
             self.fraction: SignalR[float] = epics_signal_r(float, f"{dae_prefix}EVENTMODEFRACTION")
             self.buf_used: SignalR[float] = epics_signal_r(float, f"{dae_prefix}EVENTMODEBUFUSED")

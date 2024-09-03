@@ -7,6 +7,8 @@ from unittest.mock import ANY, MagicMock, patch
 import bluesky.plan_stubs as bps
 import bluesky.plans as bp
 import pytest
+from ophyd_async.core import get_mock_put, set_mock_value
+
 from ibex_bluesky_core.devices.block import (
     BlockMot,
     BlockR,
@@ -18,7 +20,6 @@ from ibex_bluesky_core.devices.block import (
     block_rw,
     block_rw_rbv,
 )
-from ophyd_async.core import get_mock_put, set_mock_value
 
 MOCK_PREFIX = "UNITTEST:MOCK:"
 

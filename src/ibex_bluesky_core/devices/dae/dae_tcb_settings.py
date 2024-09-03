@@ -1,5 +1,5 @@
 import xml.etree.ElementTree as ET
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from enum import Enum
 from typing import Dict
 from xml.etree.ElementTree import tostring
@@ -24,16 +24,22 @@ TIME_CHANNEL_FILE = "Time Channel File"
 
 
 class TimeUnit(Enum):
+    """Time unit for DAE TCB settings."""
+
     MICROSECONDS = 0
     NANOSECONDS = 1
 
 
 class CalculationMethod(Enum):
+    """Calculation method for DAE TCB settings."""
+
     SPECIFY_PARAMETERS = 0
     USE_TCB_FILE = 1
 
 
 class TimeRegimeMode(Enum):
+    """Time Regime Mode options for a single row."""
+
     BLANK = 0
     DT = 1
     DTDIVT = 2
@@ -43,6 +49,8 @@ class TimeRegimeMode(Enum):
 
 @dataclass
 class TimeRegimeRow:
+    """A single time regime row."""
+
     from_: float | None = None
     to: float | None = None
     steps: float | None = None
@@ -51,18 +59,22 @@ class TimeRegimeRow:
 
 @dataclass
 class TimeRegime:
+    """Time regime - contains a dict(rows) which is row_number:TimeRegimeRow."""
+
     rows: Dict[int, TimeRegimeRow] | None = None
 
 
 @dataclass
 class DaeTCBSettingsData:
+    """Dataclass for the DAE TCB settings."""
+
     tcb_file: str | None = None
     time_unit: TimeUnit | None = None
     tcb_tables: Dict[int, TimeRegime] | None = None
     tcb_calculation_method: CalculationMethod | None = None
 
 
-def convert_xml_to_tcb_settings(value: str) -> DaeTCBSettingsData:
+def _convert_xml_to_tcb_settings(value: str) -> DaeTCBSettingsData:
     root = ET.fromstring(value)
     settings_from_xml = convert_xml_to_names_and_values(root)
 
@@ -87,7 +99,7 @@ def convert_xml_to_tcb_settings(value: str) -> DaeTCBSettingsData:
     )
 
 
-def convert_tcb_settings_to_xml(current_xml: str, settings: DaeTCBSettingsData) -> str:
+def _convert_tcb_settings_to_xml(current_xml: str, settings: DaeTCBSettingsData) -> str:
     # get xml here, then substitute values from the dataclasses
     root = ET.fromstring(current_xml)
     elements = get_all_elements_in_xml_with_child_called_name(root)
@@ -104,20 +116,20 @@ def convert_tcb_settings_to_xml(current_xml: str, settings: DaeTCBSettingsData) 
 
 
 class DaeTCBSettings(Device, Locatable):
-    def __init__(self, dae_prefix, name=""):
+    def __init__(self, dae_prefix: str, name: str = "") -> None:
         self.tcb_settings: SignalRW[str] = isis_epics_signal_rw(str, f"{dae_prefix}TCBSETTINGS")
         super().__init__(name=name)
 
     async def locate(self) -> Location:
         value = await self.tcb_settings.get_value()
         value_dehexed = dehex_and_decompress(value.encode()).decode()
-        tcb_settings = convert_xml_to_tcb_settings(value_dehexed)
+        tcb_settings = _convert_xml_to_tcb_settings(value_dehexed)
         return {"setpoint": tcb_settings, "readback": tcb_settings}
 
     @AsyncStatus.wrap
     async def set(self, value: DaeTCBSettingsData) -> None:
         current_xml = await self.tcb_settings.get_value()
         current_xml_dehexed = dehex_and_decompress(current_xml).decode()
-        xml = convert_tcb_settings_to_xml(current_xml_dehexed, value)
+        xml = _convert_tcb_settings_to_xml(current_xml_dehexed, value)
         the_value_to_write = compress_and_hex(xml).decode()
         await self.tcb_settings.set(the_value_to_write, wait=True)

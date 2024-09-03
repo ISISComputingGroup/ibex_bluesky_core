@@ -6,9 +6,7 @@ from xml.etree.ElementTree import Element
 
 
 def convert_xml_to_names_and_values(xml: Element) -> Dict[str, str]:
-    """
-    Converts an XML element's children to a dict containing <Name>.text:<Val>.text
-    """
+    """Converts an XML element's children to a dict containing <Name>.text:<Val>.text."""
     names_and_values = dict()
     elements = get_all_elements_in_xml_with_child_called_name(xml)
     for element in elements:
@@ -18,8 +16,8 @@ def convert_xml_to_names_and_values(xml: Element) -> Dict[str, str]:
     return names_and_values
 
 
-def get_all_elements_in_xml_with_child_called_name(xml: Element):
-    # This finds all elements with a "name" element, but ignores the first one as it's the root
+def get_all_elements_in_xml_with_child_called_name(xml: Element) -> List[Element]:
+    """Find all elements with a "name" element, but ignore the first one as it's the root."""
     elements = xml.findall(".//Name/..")[1:]
     return elements
 
@@ -33,8 +31,10 @@ def _get_names_and_values(element: Element) -> tuple[Any, Any] | tuple[None, Non
     return None, None
 
 
-def set_value_in_dae_xml(elements: List[Element], name: str, value: Any):
-    """Finds and sets a value in the DAE XML, given a name and value. Does nothing (by design) if value is None as to leave value unchanged"""
+def set_value_in_dae_xml(elements: List[Element], name: str, value: str|Enum|int) -> None:
+    """Find and set a value in the DAE XML, given a name and value.
+    Do nothing (by design) if value is None to leave value unchanged.
+    """
     if value is not None:
         if isinstance(value, Enum):
             value = value.value

@@ -1,5 +1,5 @@
 import xml.etree.ElementTree as ET
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from enum import Enum
 from typing import List
 from xml.etree.ElementTree import tostring
@@ -54,7 +54,7 @@ class DaePeriodSettingsData:
     periods_settings: List[SinglePeriodSettings] | None = None
 
 
-def convert_xml_to_period_settings(value: str) -> DaePeriodSettingsData:
+def _convert_xml_to_period_settings(value: str) -> DaePeriodSettingsData:
     root = ET.fromstring(value)
     settings_from_xml = convert_xml_to_names_and_values(root)
     return DaePeriodSettingsData(
@@ -76,7 +76,7 @@ def convert_xml_to_period_settings(value: str) -> DaePeriodSettingsData:
     )
 
 
-def convert_period_settings_to_xml(current_xml: str, value: DaePeriodSettingsData) -> str:
+def _convert_period_settings_to_xml(current_xml: str, value: DaePeriodSettingsData) -> str:
     # get xml here, then substitute values from the dataclasses
     root = ET.fromstring(current_xml)
     elements = get_all_elements_in_xml_with_child_called_name(root)
@@ -95,7 +95,7 @@ def convert_period_settings_to_xml(current_xml: str, value: DaePeriodSettingsDat
 
 
 class DaePeriodSettings(Device, Locatable):
-    def __init__(self, dae_prefix, name=""):
+    def __init__(self, dae_prefix:str, name:str="") -> None:
         self.period_settings: SignalRW[str] = isis_epics_signal_rw(
             str, f"{dae_prefix}HARDWAREPERIODS"
         )
@@ -103,11 +103,11 @@ class DaePeriodSettings(Device, Locatable):
 
     async def locate(self) -> Location:
         value = await self.period_settings.get_value()
-        period_settings = convert_xml_to_period_settings(value)
+        period_settings = _convert_xml_to_period_settings(value)
         return {"setpoint": period_settings, "readback": period_settings}
 
     @AsyncStatus.wrap
     async def set(self, value: DaePeriodSettingsData) -> None:
         current_xml = await self.period_settings.get_value()
-        to_write = convert_period_settings_to_xml(current_xml, value)
+        to_write = _convert_period_settings_to_xml(current_xml, value)
         await self.period_settings.set(to_write, wait=True)

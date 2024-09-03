@@ -3,6 +3,7 @@
 import asyncio
 from enum import Enum
 
+import numpy as np
 from bluesky.protocols import Triggerable
 from ophyd_async.core import AsyncStatus, SignalR, SignalRW, StandardReadable
 from ophyd_async.epics.signal import epics_signal_r, epics_signal_rw
@@ -15,10 +16,8 @@ from ibex_bluesky_core.devices.dae.dae_period import DaePeriod
 from ibex_bluesky_core.devices.dae.dae_period_settings import DaePeriodSettings
 from ibex_bluesky_core.devices.dae.dae_settings import DaeSettings
 from ibex_bluesky_core.devices.dae.dae_tcb_settings import DaeTCBSettings
-
 from src.ibex_bluesky_core.devices.dae.dae_spectra import DaeSpectra
 
-import numpy as np
 
 class RunstateEnum(str, Enum):
     PROCESSING = "PROCESSING"
@@ -37,7 +36,7 @@ class RunstateEnum(str, Enum):
     STORING = "STORING"
     CHANGING = "CHANGING"
 
-    def __str__(self):
+    def __str__(self) -> str:
         return str(self.value)
 
 

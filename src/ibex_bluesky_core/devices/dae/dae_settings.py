@@ -78,7 +78,7 @@ class DaeSettingsData:
     veto_3_name: str | None = None
 
 
-def convert_xml_to_dae_settings(value: str) -> DaeSettingsData:
+def _convert_xml_to_dae_settings(value: str) -> DaeSettingsData:
     root = ET.fromstring(value)
     settings_from_xml = convert_xml_to_names_and_values(root)
     return DaeSettingsData(
@@ -108,7 +108,7 @@ def convert_xml_to_dae_settings(value: str) -> DaeSettingsData:
     )
 
 
-def convert_dae_settings_to_xml(current_xml: str, settings: DaeSettingsData) -> str:
+def _convert_dae_settings_to_xml(current_xml: str, settings: DaeSettingsData) -> str:
     root = ET.fromstring(current_xml)
     elements = get_all_elements_in_xml_with_child_called_name(root)
     set_value_in_dae_xml(elements, WIRING_TABLE, settings.wiring_filepath)
@@ -138,17 +138,17 @@ def convert_dae_settings_to_xml(current_xml: str, settings: DaeSettingsData) -> 
 
 
 class DaeSettings(Device, Locatable, Movable):
-    def __init__(self, dae_prefix, name=""):
+    def __init__(self, dae_prefix: str, name: str = "") -> None:
         self.dae_settings: SignalRW[str] = isis_epics_signal_rw(str, f"{dae_prefix}DAESETTINGS")
         super().__init__(name=name)
 
     async def locate(self) -> Location:
         value = await self.dae_settings.get_value()
-        period_settings = convert_xml_to_dae_settings(value)
+        period_settings = _convert_xml_to_dae_settings(value)
         return {"setpoint": period_settings, "readback": period_settings}
 
     @AsyncStatus.wrap
     async def set(self, value: DaeSettingsData) -> None:
         current_xml = await self.dae_settings.get_value()
-        to_write = convert_dae_settings_to_xml(current_xml, value)
+        to_write = _convert_dae_settings_to_xml(current_xml, value)
         await self.dae_settings.set(to_write, wait=True)
