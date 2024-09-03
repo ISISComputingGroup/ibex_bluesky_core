@@ -1,11 +1,9 @@
 """ophyd-async devices for communicating with the ISIS data acquisition electronics."""
 
-import asyncio
 from enum import Enum
 
 import numpy as np
-from bluesky.protocols import Triggerable
-from ophyd_async.core import AsyncStatus, SignalR, SignalRW, StandardReadable
+from ophyd_async.core import SignalR, SignalRW, StandardReadable
 from ophyd_async.epics.signal import epics_signal_r, epics_signal_rw
 
 from ibex_bluesky_core.devices import isis_epics_signal_rw
@@ -43,7 +41,7 @@ class RunstateEnum(str, Enum):
         return str(self.value)
 
 
-class Dae(StandardReadable, Triggerable):
+class Dae(StandardReadable):
     """Device representing the ISIS data acquisition electronics."""
 
     def __init__(self, prefix: str, name: str = "DAE") -> None:
@@ -102,19 +100,3 @@ class Dae(StandardReadable, Triggerable):
         self.controls: DaeControls = DaeControls(dae_prefix)
 
         super().__init__(name=name)
-
-    @AsyncStatus.wrap
-    async def trigger(self) -> None:
-        """Trigger counting.
-
-        For the DAE, in the simple case with one run per scan point, this means:
-        - Begin a run
-        - Wait for configured time/uamps/frames/...
-        - End the run
-
-        This method is allowed to be "slow" - i.e. it should wait for data to be
-        ready before returning.
-        """
-        await self.controls.begin_run.trigger()
-        await asyncio.sleep(2)  # This is a placeholder for the moment
-        await self.controls.end_run.trigger(wait=True)

@@ -71,16 +71,6 @@ async def test_dae_descriptor_contains_same_keys_as_reading(dae: Dae):
     assert reading.keys() == descriptor.keys()
 
 
-async def test_trigger_calls_triggers_begin_and_end(dae: Dae):
-    get_mock_put(dae.controls.begin_run).assert_not_called()
-    get_mock_put(dae.controls.end_run).assert_not_called()
-
-    await dae.trigger()
-
-    get_mock_put(dae.controls.begin_run).assert_called_once()
-    get_mock_put(dae.controls.end_run).assert_called_once()
-
-
 async def test_begin_run_sets_begin_run_ex(dae: Dae):
     get_mock_put(dae.controls.begin_run_ex.begin_run_ex).assert_not_called()
     await dae.controls.begin_run_ex.set(BeginRunExBits.NONE)
