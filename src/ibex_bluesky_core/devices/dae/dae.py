@@ -3,7 +3,6 @@
 import asyncio
 from enum import Enum
 
-import numpy as np
 from bluesky.protocols import Triggerable
 from ophyd_async.core import AsyncStatus, SignalR, SignalRW, StandardReadable
 from ophyd_async.epics.signal import epics_signal_r, epics_signal_rw
@@ -17,6 +16,9 @@ from ibex_bluesky_core.devices.dae.dae_period_settings import DaePeriodSettings
 from ibex_bluesky_core.devices.dae.dae_settings import DaeSettings
 from ibex_bluesky_core.devices.dae.dae_tcb_settings import DaeTCBSettings
 
+from src.ibex_bluesky_core.devices.dae.dae_spectra import DaeSpectra
+
+import numpy as np
 
 class RunstateEnum(str, Enum):
     PROCESSING = "PROCESSING"
@@ -70,13 +72,12 @@ class Dae(StandardReadable, Triggerable):
         self.period_settings = DaePeriodSettings(dae_prefix)
         self.tcb_settings = DaeTCBSettings(dae_prefix)
 
-        # TODO needs processing - use subdevice
-        # self.spectra_integrals: SignalR[np.ndarray] = epics_signal_r(
-        #     np.ndarray[np.int32], f"{dae_prefix}SPECINTEGRALS"
-        # )
-        # self.spectra_data: SignalR[np.typing.NDArray[np.int32]] = epics_signal_r(
-        #     np.typing.NDArray[np.int32], f"{dae_prefix}SPECDATA"
-        # )
+        self.raw_spectra_integrals: SignalR[np.typing.NDArray[np.int32]] = epics_signal_r(
+            np.typing.NDArray[np.int32], f"{dae_prefix}SPECINTEGRALS"
+        )
+        self.raw_spectra_data: SignalR[np.typing.NDArray[np.int32]] = epics_signal_r(
+            np.typing.NDArray[np.int32], f"{dae_prefix}SPECDATA"
+        )
 
         self.monitor = DaeMonitor(dae_prefix)
         self.event_mode = DaeEventMode(dae_prefix)
@@ -94,10 +95,7 @@ class Dae(StandardReadable, Triggerable):
         self.users: SignalRW = isis_epics_signal_rw(str, f"{dae_prefix}_USERNAME")
         self.rb_number: SignalRW = isis_epics_signal_rw(str, f"{dae_prefix}_RBNUMBER")
 
-        # TODO pull out subdevice for spectra which looks at X, Y etc.
-        self.spectra_1_period_1_x: SignalR[np.typing.NDArray[np.float32]] = epics_signal_r(
-            np.typing.NDArray[np.float32], f"{prefix}DAE" f":SPEC:1:1:X"
-        )
+        self.spectra_1_period_1 = DaeSpectra(dae_prefix, period=1, spectra=1)
 
         self.controls: DaeControls = DaeControls(dae_prefix)
 
