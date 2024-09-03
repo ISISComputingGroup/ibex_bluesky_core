@@ -2,7 +2,8 @@
 
 from enum import Enum
 
-import numpy as np
+from numpy import int32
+from numpy.typing import NDArray
 from ophyd_async.core import SignalR, SignalRW, StandardReadable
 from ophyd_async.epics.signal import epics_signal_r, epics_signal_rw
 
@@ -65,18 +66,18 @@ class Dae(StandardReadable):
         self.num_spectra: SignalR[int] = epics_signal_r(int, f"{dae_prefix}NUMSPECTRA")
 
         self.period = DaePeriod(dae_prefix)
-        self.period_num: SignalRW = isis_epics_signal_rw(int, f"{dae_prefix}PERIOD")
-        self.number_of_periods: SignalRW = isis_epics_signal_rw(int, f"{dae_prefix}NUMPERIODS")
+        self.period_num: SignalRW[int] = isis_epics_signal_rw(int, f"{dae_prefix}PERIOD")
+        self.number_of_periods: SignalRW[int] = isis_epics_signal_rw(int, f"{dae_prefix}NUMPERIODS")
 
         self.dae_settings = DaeSettings(dae_prefix)
         self.period_settings = DaePeriodSettings(dae_prefix)
         self.tcb_settings = DaeTCBSettings(dae_prefix)
 
-        self.raw_spectra_integrals: SignalR[np.typing.NDArray[np.int32]] = epics_signal_r(
-            np.typing.NDArray[np.int32], f"{dae_prefix}SPECINTEGRALS"
+        self.raw_spectra_integrals: SignalR[NDArray[int32]] = epics_signal_r(
+            NDArray[int32], f"{dae_prefix}SPECINTEGRALS"
         )
-        self.raw_spectra_data: SignalR[np.typing.NDArray[np.int32]] = epics_signal_r(
-            np.typing.NDArray[np.int32], f"{dae_prefix}SPECDATA"
+        self.raw_spectra_data: SignalR[NDArray[int32]] = epics_signal_r(
+            NDArray[int32], f"{dae_prefix}SPECDATA"
         )
 
         self.monitor = DaeMonitor(dae_prefix)
@@ -87,13 +88,13 @@ class Dae(StandardReadable):
         self.run_state: SignalR[RunstateEnum] = epics_signal_r(
             RunstateEnum, f"{dae_prefix}RUNSTATE"
         )
-        self.title: SignalRW = isis_epics_signal_rw(str, f"{dae_prefix}TITLE")
-        self.show_title_and_users: SignalRW = epics_signal_rw(
+        self.title: SignalRW[str] = isis_epics_signal_rw(str, f"{dae_prefix}TITLE")
+        self.show_title_and_users: SignalRW[bool] = epics_signal_rw(
             bool, f"{dae_prefix}TITLE:DISPLAY", f"{dae_prefix}TITLE:DISPLAY"
         )
 
-        self.users: SignalRW = isis_epics_signal_rw(str, f"{dae_prefix}_USERNAME")
-        self.rb_number: SignalRW = isis_epics_signal_rw(str, f"{dae_prefix}_RBNUMBER")
+        self.users: SignalRW[str] = isis_epics_signal_rw(str, f"{dae_prefix}_USERNAME")
+        self.rb_number: SignalRW[str] = isis_epics_signal_rw(str, f"{dae_prefix}_RBNUMBER")
 
         self.spectra_1_period_1 = DaeSpectra(dae_prefix, period=1, spectra=1)
 

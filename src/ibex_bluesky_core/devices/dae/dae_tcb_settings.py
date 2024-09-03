@@ -139,7 +139,7 @@ class DaeTCBSettings(Device, Locatable):
     async def set(self, value: DaeTCBSettingsData) -> None:
         """Set any changes in the tcb settings to the XML."""
         current_xml = await self.tcb_settings.get_value()
-        current_xml_dehexed = dehex_and_decompress(current_xml).decode()
+        current_xml_dehexed = dehex_and_decompress(current_xml.encode()).decode()
         xml = _convert_tcb_settings_to_xml(current_xml_dehexed, value)
         the_value_to_write = compress_and_hex(xml).decode()
         await self.tcb_settings.set(the_value_to_write, wait=True)

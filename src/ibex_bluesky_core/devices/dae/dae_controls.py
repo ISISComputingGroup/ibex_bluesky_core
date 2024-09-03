@@ -37,7 +37,7 @@ class BeginRunEx(StandardReadable, Movable):
 
     def __init__(self, dae_prefix: str, name: str = "") -> None:
         """Set up write-only signal for BEGINRUNEX."""
-        self.begin_run_ex: SignalRW = epics_signal_rw(int, f"{dae_prefix}BEGINRUNEX")
+        self.begin_run_ex: SignalRW[int] = epics_signal_rw(int, f"{dae_prefix}BEGINRUNEX")
         super().__init__(name=name)
 
     @AsyncStatus.wrap

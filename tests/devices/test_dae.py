@@ -2516,5 +2516,5 @@ async def test_tcb_settings_get_parsed_correctly():
     )
 
     xml_hexed = await tcbsettings.tcb_settings.get_value()
-    xml = dehex_and_decompress(xml_hexed)
+    xml = dehex_and_decompress(xml_hexed.encode()).decode()
     assert ET.canonicalize(xml) == ET.canonicalize(xml_filled_in)
