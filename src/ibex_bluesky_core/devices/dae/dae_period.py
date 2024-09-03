@@ -9,12 +9,11 @@ class DaePeriod(StandardReadable):
 
     def __init__(self, dae_prefix: str, name: str = "") -> None:
         """Set up signals for the current DAE period."""
-        with self.add_children_as_readables():
-            self.run_duration: SignalR[int] = epics_signal_r(int, f"{dae_prefix}RUNDURATION_PD")
-            self.good_frames: SignalR[int] = epics_signal_r(int, f"{dae_prefix}GOODFRAMES_PD")
-            self.raw_frames: SignalR[int] = epics_signal_r(int, f"{dae_prefix}RAWFRAMES_PD")
-            self.good_uah: SignalR[float] = epics_signal_r(float, f"{dae_prefix}GOODUAH_PD")
-            self.type: SignalR[str] = epics_signal_r(str, f"{dae_prefix}PERIODTYPE")
-            self.sequence: SignalR[int] = epics_signal_r(int, f"{dae_prefix}PERIODSEQ")
+        self.run_duration: SignalR[int] = epics_signal_r(int, f"{dae_prefix}RUNDURATION_PD")
+        self.good_frames: SignalR[int] = epics_signal_r(int, f"{dae_prefix}GOODFRAMES_PD")
+        self.raw_frames: SignalR[int] = epics_signal_r(int, f"{dae_prefix}RAWFRAMES_PD")
+        self.good_uah: SignalR[float] = epics_signal_r(float, f"{dae_prefix}GOODUAH_PD")
+        self.type: SignalR[str] = epics_signal_r(str, f"{dae_prefix}PERIODTYPE")
+        self.sequence: SignalR[int] = epics_signal_r(int, f"{dae_prefix}PERIODSEQ")
 
         super().__init__(name=name)
