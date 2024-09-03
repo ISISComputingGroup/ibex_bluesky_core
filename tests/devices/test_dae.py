@@ -21,8 +21,15 @@ from ibex_bluesky_core.devices.dae.dae_settings import (
     DaeSettingsData,
     convert_xml_to_dae_settings,
 )
-from ibex_bluesky_core.devices.dae.dae_tcb_settings import DaeTCBSettings, DaeTCBSettingsData, CalculationMethod, \
-    TimeUnit
+from ibex_bluesky_core.devices.dae.dae_tcb_settings import (
+    DaeTCBSettings,
+    DaeTCBSettingsData,
+    CalculationMethod,
+    TimeRegime,
+    TimeRegimeMode,
+    TimeRegimeRow,
+    TimeUnit,
+)
 from src.ibex_bluesky_core.devices.dae import set_value_in_dae_xml, convert_xml_to_names_and_values
 from src.ibex_bluesky_core.devices.dae.dae_controls import BeginRunExBits
 from ophyd_async.core import get_mock_put, set_mock_value
@@ -583,83 +590,83 @@ tcb_settings_template = """<Cluster>
 	<NumElts>123</NumElts>
 	<DBL>
 		<Name>TR1 From 1</Name>
-		<Val>150</Val>
+		<Val>{tr1_from_1}</Val>
 	</DBL>
 	<DBL>
 		<Name>TR1 To 1</Name>
-		<Val>95000</Val>
+		<Val>{tr1_to_1}</Val>
 	</DBL>
 	<DBL>
 		<Name>TR1 Steps 1</Name>
-		<Val>0.002</Val>
+		<Val>{tr1_steps_1}</Val>
 	</DBL>
 	<U16>
 		<Name>TR1 In Mode 1</Name>
-		<Val>2</Val>
+		<Val>{tr1_mode_1}</Val>
 	</U16>
 	<DBL>
 		<Name>TR1 From 2</Name>
-		<Val>0</Val>
+		<Val>{tr1_from_2}</Val>
 	</DBL>
 	<DBL>
 		<Name>TR1 To 2</Name>
-		<Val>0</Val>
+		<Val>{tr1_to_2}</Val>
 	</DBL>
 	<DBL>
 		<Name>TR1 Steps 2</Name>
-		<Val>0</Val>
+		<Val>{tr1_steps_2}</Val>
 	</DBL>
 	<U16>
 		<Name>TR1 In Mode 2</Name>
-		<Val>0</Val>
+		<Val>{tr1_mode_2}</Val>
 	</U16>
 	<DBL>
 		<Name>TR1 From 3</Name>
-		<Val>0</Val>
+		<Val>{tr1_from_3}</Val>
 	</DBL>
 	<DBL>
 		<Name>TR1 To 3</Name>
-		<Val>0</Val>
+		<Val>{tr1_to_3}</Val>
 	</DBL>
 	<DBL>
 		<Name>TR1 Steps 3</Name>
-		<Val>0</Val>
+		<Val>{tr1_steps_3}</Val>
 	</DBL>
 	<U16>
 		<Name>TR1 In Mode 3</Name>
-		<Val>0</Val>
+		<Val>{tr1_mode_3}</Val>
 	</U16>
 	<DBL>
 		<Name>TR1 From 4</Name>
-		<Val>0</Val>
+		<Val>{tr1_from_4}</Val>
 	</DBL>
 	<DBL>
 		<Name>TR1 To 4</Name>
-		<Val>0</Val>
+		<Val>{tr1_to_4}</Val>
 	</DBL>
 	<DBL>
 		<Name>TR1 Steps 4</Name>
-		<Val>0</Val>
+		<Val>{tr1_steps_4}</Val>
 	</DBL>
 	<U16>
 		<Name>TR1 In Mode 4</Name>
-		<Val>0</Val>
+		<Val>{tr1_mode_4}</Val>
 	</U16>
 	<DBL>
 		<Name>TR1 From 5</Name>
-		<Val>0</Val>
+		<Val>{tr1_from_5}</Val>
 	</DBL>
 	<DBL>
 		<Name>TR1 To 5</Name>
-		<Val>0</Val>
+		<Val>{tr1_to_5}</Val>
 	</DBL>
 	<DBL>
 		<Name>TR1 Steps 5</Name>
-		<Val>0</Val>
+		<Val>{tr1_steps_5}</Val>
 	</DBL>
 	<U16>
 		<Name>TR1 In Mode 5</Name>
-		<Val>0</Val>
+		<Val>{tr1_mode_5}</Val>
 	</U16>
 	<U16>
 		<Name>Time Unit</Name>
@@ -675,403 +682,403 @@ tcb_settings_template = """<Cluster>
 	</U16>
 	<DBL>
 		<Name>TR2 From 1</Name>
-		<Val>150</Val>
+		<Val>{tr2_from_1}</Val>
 	</DBL>
 	<DBL>
 		<Name>TR2 To 1</Name>
-		<Val>95000</Val>
+		<Val>{tr2_to_1}</Val>
 	</DBL>
 	<DBL>
 		<Name>TR2 Steps 1</Name>
-		<Val>1.5</Val>
+		<Val>{tr2_steps_1}</Val>
 	</DBL>
 	<U16>
 		<Name>TR2 In Mode 1</Name>
-		<Val>1</Val>
+		<Val>{tr2_mode_1}</Val>
 	</U16>
 	<DBL>
 		<Name>TR2 From 2</Name>
-		<Val>0</Val>
+		<Val>{tr2_from_2}</Val>
 	</DBL>
 	<DBL>
 		<Name>TR2 To 2</Name>
-		<Val>0</Val>
+		<Val>{tr2_to_2}</Val>
 	</DBL>
 	<DBL>
 		<Name>TR2 Steps 2</Name>
-		<Val>0</Val>
+		<Val>{tr2_steps_2}</Val>
 	</DBL>
 	<U16>
 		<Name>TR2 In Mode 2</Name>
-		<Val>0</Val>
+		<Val>{tr2_mode_2}</Val>
 	</U16>
 	<DBL>
 		<Name>TR2 From 3</Name>
-		<Val>0</Val>
+		<Val>{tr2_from_3}</Val>
 	</DBL>
 	<DBL>
 		<Name>TR2 To 3</Name>
-		<Val>0</Val>
+		<Val>{tr2_to_3}</Val>
 	</DBL>
 	<DBL>
 		<Name>TR2 Steps 3</Name>
-		<Val>0</Val>
+		<Val>{tr2_steps_3}</Val>
 	</DBL>
 	<U16>
 		<Name>TR2 In Mode 3</Name>
-		<Val>0</Val>
+		<Val>{tr2_mode_3}</Val>
 	</U16>
 	<DBL>
 		<Name>TR2 From 4</Name>
-		<Val>0</Val>
+		<Val>{tr2_from_4}</Val>
 	</DBL>
 	<DBL>
 		<Name>TR2 To 4</Name>
-		<Val>0</Val>
+		<Val>{tr2_to_4}</Val>
 	</DBL>
 	<DBL>
 		<Name>TR2 Steps 4</Name>
-		<Val>0</Val>
+		<Val>{tr2_steps_4}</Val>
 	</DBL>
 	<U16>
 		<Name>TR2 In Mode 4</Name>
-		<Val>0</Val>
+		<Val>{tr2_mode_4}</Val>
 	</U16>
 	<DBL>
 		<Name>TR2 From 5</Name>
-		<Val>0</Val>
+		<Val>{tr2_from_5}</Val>
 	</DBL>
 	<DBL>
 		<Name>TR2 To 5</Name>
-		<Val>0</Val>
+		<Val>{tr2_to_5}</Val>
 	</DBL>
 	<DBL>
 		<Name>TR2 Steps 5</Name>
-		<Val>0</Val>
+		<Val>{tr2_steps_5}</Val>
 	</DBL>
 	<U16>
 		<Name>TR2 In Mode 5</Name>
-		<Val>0</Val>
+		<Val>{tr2_mode_5}</Val>
 	</U16>
 	<DBL>
 		<Name>TR3 From 1</Name>
-		<Val>0</Val>
+		<Val>{tr3_from_1}</Val>
 	</DBL>
 	<DBL>
 		<Name>TR3 To 1</Name>
-		<Val>0</Val>
+		<Val>{tr3_to_1}</Val>
 	</DBL>
 	<DBL>
 		<Name>TR3 Steps 1</Name>
-		<Val>0</Val>
+		<Val>{tr3_steps_1}</Val>
 	</DBL>
 	<U16>
 		<Name>TR3 In Mode 1</Name>
-		<Val>0</Val>
+		<Val>{tr3_mode_1}</Val>
 	</U16>
 	<DBL>
 		<Name>TR3 From 2</Name>
-		<Val>0</Val>
+		<Val>{tr3_from_2}</Val>
 	</DBL>
 	<DBL>
 		<Name>TR3 To 2</Name>
-		<Val>0</Val>
+		<Val>{tr3_to_2}</Val>
 	</DBL>
 	<DBL>
 		<Name>TR3 Steps 2</Name>
-		<Val>0</Val>
+		<Val>{tr3_steps_2}</Val>
 	</DBL>
 	<U16>
 		<Name>TR3 In Mode 2</Name>
-		<Val>0</Val>
+		<Val>{tr3_mode_2}</Val>
 	</U16>
 	<DBL>
 		<Name>TR3 From 3</Name>
-		<Val>0</Val>
+		<Val>{tr3_from_3}</Val>
 	</DBL>
 	<DBL>
 		<Name>TR3 To 3</Name>
-		<Val>0</Val>
+		<Val>{tr3_to_3}</Val>
 	</DBL>
 	<DBL>
 		<Name>TR3 Steps 3</Name>
-		<Val>0</Val>
+		<Val>{tr3_steps_3}</Val>
 	</DBL>
 	<U16>
 		<Name>TR3 In Mode 3</Name>
-		<Val>0</Val>
+		<Val>{tr3_mode_3}</Val>
 	</U16>
 	<DBL>
 		<Name>TR3 From 4</Name>
-		<Val>0</Val>
+		<Val>{tr3_from_4}</Val>
 	</DBL>
 	<DBL>
 		<Name>TR3 To 4</Name>
-		<Val>0</Val>
+		<Val>{tr3_to_4}</Val>
 	</DBL>
 	<DBL>
 		<Name>TR3 Steps 4</Name>
-		<Val>0</Val>
+		<Val>{tr3_steps_4}</Val>
 	</DBL>
 	<U16>
 		<Name>TR3 In Mode 4</Name>
-		<Val>0</Val>
+		<Val>{tr3_mode_4}</Val>
 	</U16>
 	<DBL>
 		<Name>TR3 From 5</Name>
-		<Val>0</Val>
+		<Val>{tr3_from_5}</Val>
 	</DBL>
 	<DBL>
 		<Name>TR3 To 5</Name>
-		<Val>0</Val>
+		<Val>{tr3_to_5}</Val>
 	</DBL>
 	<DBL>
 		<Name>TR3 Steps 5</Name>
-		<Val>0</Val>
+		<Val>{tr3_steps_5}</Val>
 	</DBL>
 	<U16>
 		<Name>TR3 In Mode 5</Name>
-		<Val>0</Val>
+		<Val>{tr3_mode_5}</Val>
 	</U16>
 	<DBL>
 		<Name>TR4 From 1</Name>
-		<Val>0</Val>
+		<Val>{tr4_from_1}</Val>
 	</DBL>
 	<DBL>
 		<Name>TR4 To 1</Name>
-		<Val>0</Val>
+		<Val>{tr4_to_1}</Val>
 	</DBL>
 	<DBL>
 		<Name>TR4 Steps 1</Name>
-		<Val>0</Val>
+		<Val>{tr4_steps_1}</Val>
 	</DBL>
 	<U16>
 		<Name>TR4 In Mode 1</Name>
-		<Val>0</Val>
+		<Val>{tr4_mode_1}</Val>
 	</U16>
 	<DBL>
 		<Name>TR4 From 2</Name>
-		<Val>0</Val>
+		<Val>{tr4_from_2}</Val>
 	</DBL>
 	<DBL>
 		<Name>TR4 To 2</Name>
-		<Val>0</Val>
+		<Val>{tr4_to_2}</Val>
 	</DBL>
 	<DBL>
 		<Name>TR4 Steps 2</Name>
-		<Val>0</Val>
+		<Val>{tr4_steps_2}</Val>
 	</DBL>
 	<U16>
 		<Name>TR4 In Mode 2</Name>
-		<Val>0</Val>
+		<Val>{tr4_mode_2}</Val>
 	</U16>
 	<DBL>
 		<Name>TR4 From 3</Name>
-		<Val>0</Val>
+		<Val>{tr4_from_3}</Val>
 	</DBL>
 	<DBL>
 		<Name>TR4 To 3</Name>
-		<Val>0</Val>
+		<Val>{tr4_to_3}</Val>
 	</DBL>
 	<DBL>
 		<Name>TR4 Steps 3</Name>
-		<Val>0</Val>
+		<Val>{tr4_steps_3}</Val>
 	</DBL>
 	<U16>
 		<Name>TR4 In Mode 3</Name>
-		<Val>0</Val>
+		<Val>{tr4_mode_3}</Val>
 	</U16>
 	<DBL>
 		<Name>TR4 From 4</Name>
-		<Val>0</Val>
+		<Val>{tr4_from_4}</Val>
 	</DBL>
 	<DBL>
 		<Name>TR4 To 4</Name>
-		<Val>0</Val>
+		<Val>{tr4_to_4}</Val>
 	</DBL>
 	<DBL>
 		<Name>TR4 Steps 4</Name>
-		<Val>0</Val>
+		<Val>{tr4_steps_4}</Val>
 	</DBL>
 	<U16>
 		<Name>TR4 In Mode 4</Name>
-		<Val>0</Val>
+		<Val>{tr4_mode_4}</Val>
 	</U16>
 	<DBL>
 		<Name>TR4 From 5</Name>
-		<Val>0</Val>
+		<Val>{tr4_from_5}</Val>
 	</DBL>
 	<DBL>
 		<Name>TR4 To 5</Name>
-		<Val>0</Val>
+		<Val>{tr4_to_5}</Val>
 	</DBL>
 	<DBL>
 		<Name>TR4 Steps 5</Name>
-		<Val>0</Val>
+		<Val>{tr4_steps_5}</Val>
 	</DBL>
 	<U16>
 		<Name>TR4 In Mode 5</Name>
-		<Val>0</Val>
+		<Val>{tr4_mode_5}</Val>
 	</U16>
 	<DBL>
 		<Name>TR5 From 1</Name>
-		<Val>0</Val>
+		<Val>{tr5_from_1}</Val>
 	</DBL>
 	<DBL>
 		<Name>TR5 To 1</Name>
-		<Val>0</Val>
+		<Val>{tr5_to_1}</Val>
 	</DBL>
 	<DBL>
 		<Name>TR5 Steps 1</Name>
-		<Val>0</Val>
+		<Val>{tr5_steps_1}</Val>
 	</DBL>
 	<U16>
 		<Name>TR5 In Mode 1</Name>
-		<Val>0</Val>
+		<Val>{tr5_mode_1}</Val>
 	</U16>
 	<DBL>
 		<Name>TR5 From 2</Name>
-		<Val>0</Val>
+		<Val>{tr5_from_2}</Val>
 	</DBL>
 	<DBL>
 		<Name>TR5 To 2</Name>
-		<Val>0</Val>
+		<Val>{tr5_to_2}</Val>
 	</DBL>
 	<DBL>
 		<Name>TR5 Steps 2</Name>
-		<Val>0</Val>
+		<Val>{tr5_steps_2}</Val>
 	</DBL>
 	<U16>
 		<Name>TR5 In Mode 2</Name>
-		<Val>0</Val>
+		<Val>{tr5_mode_2}</Val>
 	</U16>
 	<DBL>
 		<Name>TR5 From 3</Name>
-		<Val>0</Val>
+		<Val>{tr5_from_3}</Val>
 	</DBL>
 	<DBL>
 		<Name>TR5 To 3</Name>
-		<Val>0</Val>
+		<Val>{tr5_to_3}</Val>
 	</DBL>
 	<DBL>
 		<Name>TR5 Steps 3</Name>
-		<Val>0</Val>
+		<Val>{tr5_steps_3}</Val>
 	</DBL>
 	<U16>
 		<Name>TR5 In Mode 3</Name>
-		<Val>0</Val>
+		<Val>{tr5_mode_3}</Val>
 	</U16>
 	<DBL>
 		<Name>TR5 From 4</Name>
-		<Val>0</Val>
+		<Val>{tr5_from_4}</Val>
 	</DBL>
 	<DBL>
 		<Name>TR5 To 4</Name>
-		<Val>0</Val>
+		<Val>{tr5_to_4}</Val>
 	</DBL>
 	<DBL>
 		<Name>TR5 Steps 4</Name>
-		<Val>0</Val>
+		<Val>{tr5_steps_4}</Val>
 	</DBL>
 	<U16>
 		<Name>TR5 In Mode 4</Name>
-		<Val>0</Val>
+		<Val>{tr5_mode_4}</Val>
 	</U16>
 	<DBL>
 		<Name>TR5 From 5</Name>
-		<Val>0</Val>
+		<Val>{tr5_from_5}</Val>
 	</DBL>
 	<DBL>
 		<Name>TR5 To 5</Name>
-		<Val>0</Val>
+		<Val>{tr5_to_5}</Val>
 	</DBL>
 	<DBL>
 		<Name>TR5 Steps 5</Name>
-		<Val>0</Val>
+		<Val>{tr5_steps_5}</Val>
 	</DBL>
 	<U16>
 		<Name>TR5 In Mode 5</Name>
-		<Val>0</Val>
+		<Val>{tr5_mode_5}</Val>
 	</U16>
 	<DBL>
 		<Name>TR6 From 1</Name>
-		<Val>0</Val>
+		<Val>{tr6_from_1}</Val>
 	</DBL>
 	<DBL>
 		<Name>TR6 To 1</Name>
-		<Val>0</Val>
+		<Val>{tr6_to_1}</Val>
 	</DBL>
 	<DBL>
 		<Name>TR6 Steps 1</Name>
-		<Val>0</Val>
+		<Val>{tr6_steps_1}</Val>
 	</DBL>
 	<U16>
 		<Name>TR6 In Mode 1</Name>
-		<Val>0</Val>
+		<Val>{tr6_mode_1}</Val>
 	</U16>
 	<DBL>
 		<Name>TR6 From 2</Name>
-		<Val>0</Val>
+		<Val>{tr6_from_2}</Val>
 	</DBL>
 	<DBL>
 		<Name>TR6 To 2</Name>
-		<Val>0</Val>
+		<Val>{tr6_to_2}</Val>
 	</DBL>
 	<DBL>
 		<Name>TR6 Steps 2</Name>
-		<Val>0</Val>
+		<Val>{tr6_steps_2}</Val>
 	</DBL>
 	<U16>
 		<Name>TR6 In Mode 2</Name>
-		<Val>0</Val>
+		<Val>{tr6_mode_2}</Val>
 	</U16>
 	<DBL>
 		<Name>TR6 From 3</Name>
-		<Val>0</Val>
+		<Val>{tr6_from_3}</Val>
 	</DBL>
 	<DBL>
 		<Name>TR6 To 3</Name>
-		<Val>0</Val>
+		<Val>{tr6_to_3}</Val>
 	</DBL>
 	<DBL>
 		<Name>TR6 Steps 3</Name>
-		<Val>0</Val>
+		<Val>{tr6_steps_3}</Val>
 	</DBL>
 	<U16>
 		<Name>TR6 In Mode 3</Name>
-		<Val>0</Val>
+		<Val>{tr6_mode_3}</Val>
 	</U16>
 	<DBL>
 		<Name>TR6 From 4</Name>
-		<Val>0</Val>
+		<Val>{tr6_from_4}</Val>
 	</DBL>
 	<DBL>
 		<Name>TR6 To 4</Name>
-		<Val>0</Val>
+		<Val>{tr6_to_4}</Val>
 	</DBL>
 	<DBL>
 		<Name>TR6 Steps 4</Name>
-		<Val>0</Val>
+		<Val>{tr6_steps_4}</Val>
 	</DBL>
 	<U16>
 		<Name>TR6 In Mode 4</Name>
-		<Val>0</Val>
+		<Val>{tr6_mode_4}</Val>
 	</U16>
 	<DBL>
 		<Name>TR6 From 5</Name>
-		<Val>0</Val>
+		<Val>{tr6_from_5}</Val>
 	</DBL>
 	<DBL>
 		<Name>TR6 To 5</Name>
-		<Val>0</Val>
+		<Val>{tr6_to_5}</Val>
 	</DBL>
 	<DBL>
 		<Name>TR6 Steps 5</Name>
-		<Val>0</Val>
+		<Val>{tr6_steps_5}</Val>
 	</DBL>
 	<U16>
 		<Name>TR6 In Mode 5</Name>
-		<Val>0</Val>
+		<Val>{tr6_mode_5}</Val>
 	</U16>
 </Cluster>
 """
@@ -2024,13 +2031,375 @@ async def test_tcb_settings_get_parsed_correctly():
     expected_calc_method = CalculationMethod.SPECIFY_PARAMETERS
     expected_time_unit = TimeUnit.MICROSECONDS
 
-    tcb_tables = {
+    expected_tr1_from_1 = 0
+    expected_tr1_to_1 = 10
+    expected_tr1_steps_1 = 1
+    expected_tr1_mode_1 = TimeRegimeMode.BLANK
 
+    expected_tr1_from_2 = 11
+    expected_tr1_to_2 = 20
+    expected_tr1_steps_2 = 2
+    expected_tr1_mode_2 = TimeRegimeMode.DT
+
+    expected_tr1_from_3 = 21
+    expected_tr1_to_3 = 30
+    expected_tr1_steps_3 = 3
+    expected_tr1_mode_3 = TimeRegimeMode.DTDIVT
+    expected_tr1_from_4 = 31
+    expected_tr1_to_4 = 40
+    expected_tr1_steps_4 = 4
+    expected_tr1_mode_4 = TimeRegimeMode.DTDIVT2
+
+    expected_tr1_from_5 = 41
+    expected_tr1_to_5 = 50
+    expected_tr1_steps_5 = 5
+    expected_tr1_mode_5 = TimeRegimeMode.SHIFTED
+
+    expected_tr2_from_1 = 51
+    expected_tr2_to_1 = 60
+    expected_tr2_steps_1 = 1
+    expected_tr2_mode_1 = TimeRegimeMode.BLANK
+
+    expected_tr2_from_2 = 61
+    expected_tr2_to_2 = 70
+    expected_tr2_steps_2 = 2
+    expected_tr2_mode_2 = TimeRegimeMode.DT
+
+    expected_tr2_from_3 = 71
+    expected_tr2_to_3 = 80
+    expected_tr2_steps_3 = 3
+    expected_tr2_mode_3 = TimeRegimeMode.DTDIVT
+
+    expected_tr2_from_4 = 81
+    expected_tr2_to_4 = 90
+    expected_tr2_steps_4 = 4
+    expected_tr2_mode_4 = TimeRegimeMode.DTDIVT2
+
+    expected_tr2_from_5 = 91
+    expected_tr2_to_5 = 100
+    expected_tr2_steps_5 = 5
+    expected_tr2_mode_5 = TimeRegimeMode.SHIFTED
+
+    expected_tr3_from_1 = 101
+    expected_tr3_to_1 = 110
+    expected_tr3_steps_1 = 1
+    expected_tr3_mode_1 = TimeRegimeMode.BLANK
+
+    expected_tr3_from_2 = 111
+    expected_tr3_to_2 = 120
+    expected_tr3_steps_2 = 2
+    expected_tr3_mode_2 = TimeRegimeMode.DT
+
+    expected_tr3_from_3 = 121
+    expected_tr3_to_3 = 130
+    expected_tr3_steps_3 = 3
+    expected_tr3_mode_3 = TimeRegimeMode.DTDIVT
+
+    expected_tr3_from_4 = 131
+    expected_tr3_to_4 = 140
+    expected_tr3_steps_4 = 4
+    expected_tr3_mode_4 = TimeRegimeMode.DTDIVT2
+
+    expected_tr3_from_5 = 141
+    expected_tr3_to_5 = 150
+    expected_tr3_steps_5 = 5
+    expected_tr3_mode_5 = TimeRegimeMode.SHIFTED
+
+    expected_tr4_from_1 = 151
+    expected_tr4_to_1 = 160
+    expected_tr4_steps_1 = 1
+    expected_tr4_mode_1 = TimeRegimeMode.BLANK
+
+    expected_tr4_from_2 = 161
+    expected_tr4_to_2 = 170
+    expected_tr4_steps_2 = 2
+    expected_tr4_mode_2 = TimeRegimeMode.DT
+
+    expected_tr4_from_3 = 171
+    expected_tr4_to_3 = 180
+    expected_tr4_steps_3 = 3
+    expected_tr4_mode_3 = TimeRegimeMode.DTDIVT
+
+    expected_tr4_from_4 = 181
+    expected_tr4_to_4 = 190
+    expected_tr4_steps_4 = 4
+    expected_tr4_mode_4 = TimeRegimeMode.DTDIVT2
+
+    expected_tr4_from_5 = 191
+    expected_tr4_to_5 = 200
+    expected_tr4_steps_5 = 5
+    expected_tr4_mode_5 = TimeRegimeMode.SHIFTED
+
+    expected_tr5_from_1 = 201
+    expected_tr5_to_1 = 210
+    expected_tr5_steps_1 = 1
+    expected_tr5_mode_1 = TimeRegimeMode.BLANK
+
+    expected_tr5_from_2 = 211
+    expected_tr5_to_2 = 220
+    expected_tr5_steps_2 = 2
+    expected_tr5_mode_2 = TimeRegimeMode.DT
+
+    expected_tr5_from_3 = 221
+    expected_tr5_to_3 = 230
+    expected_tr5_steps_3 = 3
+    expected_tr5_mode_3 = TimeRegimeMode.DTDIVT
+
+    expected_tr5_from_4 = 231
+    expected_tr5_to_4 = 240
+    expected_tr5_steps_4 = 4
+    expected_tr5_mode_4 = TimeRegimeMode.DTDIVT2
+
+    expected_tr5_from_5 = 241
+    expected_tr5_to_5 = 250
+    expected_tr5_steps_5 = 5
+    expected_tr5_mode_5 = TimeRegimeMode.SHIFTED
+
+    expected_tr6_from_1 = 251
+    expected_tr6_to_1 = 260
+    expected_tr6_steps_1 = 1
+    expected_tr6_mode_1 = TimeRegimeMode.BLANK
+
+    expected_tr6_from_2 = 261
+    expected_tr6_to_2 = 270
+    expected_tr6_steps_2 = 2
+    expected_tr6_mode_2 = TimeRegimeMode.DT
+
+    expected_tr6_from_3 = 271
+    expected_tr6_to_3 = 280
+    expected_tr6_steps_3 = 3
+    expected_tr6_mode_3 = TimeRegimeMode.DTDIVT
+
+    expected_tr6_from_4 = 281
+    expected_tr6_to_4 = 290
+    expected_tr6_steps_4 = 4
+    expected_tr6_mode_4 = TimeRegimeMode.DTDIVT2
+
+    expected_tr6_from_5 = 291
+    expected_tr6_to_5 = 300
+    expected_tr6_steps_5 = 5
+    expected_tr6_mode_5 = TimeRegimeMode.SHIFTED
+
+    tcb_tables = {
+        1: TimeRegime(
+            {
+                1: TimeRegimeRow(
+                    from_=expected_tr1_from_1,
+                    to=expected_tr1_to_1,
+                    steps=expected_tr1_steps_1,
+                    mode=expected_tr1_mode_1,
+                ),
+                2:TimeRegimeRow(
+                    from_=expected_tr1_from_2,
+                    to=expected_tr1_to_2,
+                    steps=expected_tr1_steps_2,
+                    mode=expected_tr1_mode_2,
+                ),
+                3:TimeRegimeRow(
+                    from_=expected_tr1_from_3,
+                    to=expected_tr1_to_3,
+                    steps=expected_tr1_steps_3,
+                    mode=expected_tr1_mode_3,
+                ),
+                4:TimeRegimeRow(
+                    from_=expected_tr1_from_4,
+                    to=expected_tr1_to_4,
+                    steps=expected_tr1_steps_4,
+                    mode=expected_tr1_mode_4,
+                ),
+                5:TimeRegimeRow(
+                    from_=expected_tr1_from_5,
+                    to=expected_tr1_to_5,
+                    steps=expected_tr1_steps_5,
+                    mode=expected_tr1_mode_5,
+                )
+            }
+
+            ),
+
+        2: TimeRegime(
+            {
+                1: TimeRegimeRow(
+                    from_=expected_tr2_from_1,
+                    to=expected_tr2_to_1,
+                    steps=expected_tr2_steps_1,
+                    mode=expected_tr2_mode_1,
+                ),
+                2: TimeRegimeRow(
+                    from_=expected_tr2_from_2,
+                    to=expected_tr2_to_2,
+                    steps=expected_tr2_steps_2,
+                    mode=expected_tr2_mode_2,
+                ),
+                3:TimeRegimeRow(
+                    from_=expected_tr2_from_3,
+                    to=expected_tr2_to_3,
+                    steps=expected_tr2_steps_3,
+                    mode=expected_tr2_mode_3,
+                ),
+                4:TimeRegimeRow(
+                    from_=expected_tr2_from_4,
+                    to=expected_tr2_to_4,
+                    steps=expected_tr2_steps_4,
+                    mode=expected_tr2_mode_4,
+                ),
+                5: TimeRegimeRow(
+                    from_=expected_tr2_from_5,
+                    to=expected_tr2_to_5,
+                    steps=expected_tr2_steps_5,
+                    mode=expected_tr2_mode_5,
+                ),
+            }
+        ),
+        3: TimeRegime(
+            {
+                1: TimeRegimeRow(
+                    from_=expected_tr3_from_1,
+                    to=expected_tr3_to_1,
+                    steps=expected_tr3_steps_1,
+                    mode=expected_tr3_mode_1,
+                ),
+                2: TimeRegimeRow(
+                    from_=expected_tr3_from_2,
+                    to=expected_tr3_to_2,
+                    steps=expected_tr3_steps_2,
+                    mode=expected_tr3_mode_2,
+                ),
+                3: TimeRegimeRow(
+                    from_=expected_tr3_from_3,
+                    to=expected_tr3_to_3,
+                    steps=expected_tr3_steps_3,
+                    mode=expected_tr3_mode_3,
+                ),
+                4: TimeRegimeRow(
+                    from_=expected_tr3_from_4,
+                    to=expected_tr3_to_4,
+                    steps=expected_tr3_steps_4,
+                    mode=expected_tr3_mode_4,
+                ),
+                5: TimeRegimeRow(
+                    from_=expected_tr3_from_5,
+                    to=expected_tr3_to_5,
+                    steps=expected_tr3_steps_5,
+                    mode=expected_tr3_mode_5,
+                ),
+            }
+        ),
+        4: TimeRegime(
+            {
+                1: TimeRegimeRow(
+                    from_=expected_tr4_from_1,
+                    to=expected_tr4_to_1,
+                    steps=expected_tr4_steps_1,
+                    mode=expected_tr4_mode_1,
+                ),
+                2: TimeRegimeRow(
+                    from_=expected_tr4_from_2,
+                    to=expected_tr4_to_2,
+                    steps=expected_tr4_steps_2,
+                    mode=expected_tr4_mode_2,
+                ),
+                3: TimeRegimeRow(
+                    from_=expected_tr4_from_3,
+                    to=expected_tr4_to_3,
+                    steps=expected_tr4_steps_3,
+                    mode=expected_tr4_mode_3,
+                ),
+                4: TimeRegimeRow(
+                    from_=expected_tr4_from_4,
+                    to=expected_tr4_to_4,
+                    steps=expected_tr4_steps_4,
+                    mode=expected_tr4_mode_4,
+                ),
+                5: TimeRegimeRow(
+                    from_=expected_tr4_from_5,
+                    to=expected_tr4_to_5,
+                    steps=expected_tr4_steps_5,
+                    mode=expected_tr4_mode_5,
+                ),
+            }
+        ),
+        5: TimeRegime(
+            {
+                1:TimeRegimeRow(
+                    from_=expected_tr5_from_1,
+                    to=expected_tr5_to_1,
+                    steps=expected_tr5_steps_1,
+                    mode=expected_tr5_mode_1,
+                ),
+                2:TimeRegimeRow(
+                    from_=expected_tr5_from_2,
+                    to=expected_tr5_to_2,
+                    steps=expected_tr5_steps_2,
+                    mode=expected_tr5_mode_2,
+                ),
+                3:TimeRegimeRow(
+                    from_=expected_tr5_from_3,
+                    to=expected_tr5_to_3,
+                    steps=expected_tr5_steps_3,
+                    mode=expected_tr5_mode_3,
+                ),
+                4:TimeRegimeRow(
+                    from_=expected_tr5_from_4,
+                    to=expected_tr5_to_4,
+                    steps=expected_tr5_steps_4,
+                    mode=expected_tr5_mode_4,
+                ),
+                5:TimeRegimeRow(
+                    from_=expected_tr5_from_5,
+                    to=expected_tr5_to_5,
+                    steps=expected_tr5_steps_5,
+                    mode=expected_tr5_mode_5,
+                ),
+            }
+        ),
+        6: TimeRegime(
+            {
+                1: TimeRegimeRow(
+                    from_=expected_tr6_from_1,
+                    to=expected_tr6_to_1,
+                    steps=expected_tr6_steps_1,
+                    mode=expected_tr6_mode_1,
+                ),
+                2: TimeRegimeRow(
+                    from_=expected_tr6_from_2,
+                    to=expected_tr6_to_2,
+                    steps=expected_tr6_steps_2,
+                    mode=expected_tr6_mode_2,
+                ),
+                3: TimeRegimeRow(
+                    from_=expected_tr6_from_3,
+                    to=expected_tr6_to_3,
+                    steps=expected_tr6_steps_3,
+                    mode=expected_tr6_mode_3,
+                ),
+                4: TimeRegimeRow(
+                    from_=expected_tr6_from_4,
+                    to=expected_tr6_to_4,
+                    steps=expected_tr6_steps_4,
+                    mode=expected_tr6_mode_4,
+                ),
+                5: TimeRegimeRow(
+                    from_=expected_tr6_from_5,
+                    to=expected_tr6_to_5,
+                    steps=expected_tr6_steps_5,
+                    mode=expected_tr6_mode_5,
+                ),
+            }
+        ),
     }
-    data = DaeTCBSettingsData(tcb_file=expected_tcb_file,time_unit=expected_time_unit,tcb_tables=tcb_tables, tcb_calculation_method=expected_calc_method)
+
+    data = DaeTCBSettingsData(
+        tcb_file=expected_tcb_file,
+        time_unit=expected_time_unit,
+        tcb_tables=tcb_tables,
+        tcb_calculation_method=expected_calc_method,
+    )
 
     tcbsettings = DaeTCBSettings(MOCK_PREFIX)
     await tcbsettings.tcb_settings.connect(mock=True)
     await tcbsettings.tcb_settings.set(compress_and_hex(initial_tcb_settings).decode())
+
+    await tcbsettings.set(data)
     location = await tcbsettings.locate()
     assert location == {"setpoint": data, "readback": data}
