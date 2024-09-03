@@ -55,7 +55,7 @@ class TimingSource(Enum):
     ISIS_TS1_ONLY = 6
 
 
-@dataclass
+@dataclass(kw_only=True)
 class DaeSettingsData:
     """Dataclass for the general DAE settings."""
 

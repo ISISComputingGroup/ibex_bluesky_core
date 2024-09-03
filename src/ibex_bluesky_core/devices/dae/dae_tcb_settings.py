@@ -49,7 +49,7 @@ class TimeRegimeMode(Enum):
     SHIFTED = 4
 
 
-@dataclass
+@dataclass(kw_only=True)
 class TimeRegimeRow:
     """A single time regime row."""
 
@@ -66,11 +66,11 @@ class TimeRegime:
     rows: Dict[int, TimeRegimeRow]
 
 
-@dataclass
+@dataclass(kw_only=True)
 class DaeTCBSettingsData:
     """Dataclass for the DAE TCB settings."""
 
-    tcb_tables: Dict[int, TimeRegime]
+    tcb_tables: Dict[int, TimeRegime] | None = None
     tcb_file: str | None = None
     time_unit: TimeUnit | None = None
     tcb_calculation_method: CalculationMethod | None = None
@@ -108,12 +108,13 @@ def _convert_tcb_settings_to_xml(current_xml: str, settings: DaeTCBSettingsData)
     set_value_in_dae_xml(elements, TIME_CHANNEL_FILE, settings.tcb_file)
     set_value_in_dae_xml(elements, CALCULATION_METHOD, settings.tcb_calculation_method)
     set_value_in_dae_xml(elements, TIME_UNIT, settings.time_unit)
-    for tr, regime in settings.tcb_tables.items():
-        for r, row in regime.rows.items():
-            set_value_in_dae_xml(elements, f"TR{tr} From {r}", row.from_)
-            set_value_in_dae_xml(elements, f"TR{tr} To {r}", row.to)
-            set_value_in_dae_xml(elements, f"TR{tr} Steps {r}", row.steps)
-            set_value_in_dae_xml(elements, f"TR{tr} In Mode {r}", row.mode)
+    if settings.tcb_tables is not None:
+        for tr, regime in settings.tcb_tables.items():
+            for r, row in regime.rows.items():
+                set_value_in_dae_xml(elements, f"TR{tr} From {r}", row.from_)
+                set_value_in_dae_xml(elements, f"TR{tr} To {r}", row.to)
+                set_value_in_dae_xml(elements, f"TR{tr} Steps {r}", row.steps)
+                set_value_in_dae_xml(elements, f"TR{tr} In Mode {r}", row.mode)
     return tostring(root, encoding="unicode")
 
 

@@ -30,6 +30,8 @@ from ibex_bluesky_core.devices.dae.dae_tcb_settings import (
 )
 from src.ibex_bluesky_core.devices.dae import convert_xml_to_names_and_values, set_value_in_dae_xml
 from src.ibex_bluesky_core.devices.dae.dae_controls import BeginRunExBits
+from src.ibex_bluesky_core.devices.dae.dae_period_settings import _convert_period_settings_to_xml
+from src.ibex_bluesky_core.devices.dae.dae_tcb_settings import _convert_tcb_settings_to_xml
 
 MOCK_PREFIX = "UNITTEST:MOCK:"
 
@@ -2517,3 +2519,13 @@ async def test_tcb_settings_get_parsed_correctly():
     xml_hexed = await tcbsettings.tcb_settings.get_value()
     xml = dehex_and_decompress(xml_hexed.encode()).decode()
     assert ET.canonicalize(xml) == ET.canonicalize(xml_filled_in)
+
+def test_tcb_settings_does_not_set_anything_if_all_none_provided():
+    data = DaeTCBSettingsData()
+    output = _convert_tcb_settings_to_xml(initial_tcb_settings, data)
+    assert ET.canonicalize(initial_tcb_settings) == ET.canonicalize(output)
+
+def test_period_settings_does_not_set_anything_if_all_none_provided():
+    data = DaePeriodSettingsData()
+    output = _convert_period_settings_to_xml(initial_period_settings, data)
+    assert ET.canonicalize(initial_period_settings) == ET.canonicalize(output)
