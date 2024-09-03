@@ -44,6 +44,7 @@ dependencies = [
   "bluesky",
   "ophyd-async[ca]@git+https://github.com/bluesky/ophyd-async.git",
   "matplotlib",
+  "numpy"
 ]
 
 [project.optional-dependencies]

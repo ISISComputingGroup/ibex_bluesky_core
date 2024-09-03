@@ -33,7 +33,9 @@ def _get_names_and_values(element: Element) -> tuple[Any, Any] | tuple[None, Non
     return None, None
 
 
-def set_value_in_dae_xml(elements: List[Element], name: str, value: str | Enum | int) -> None:
+def set_value_in_dae_xml(
+    elements: List[Element], name: str, value: str | Enum | int | None | float
+) -> None:
     """Find and set a value in the DAE XML, given a name and value.
 
     Do nothing (by design) if value is None to leave value unchanged.

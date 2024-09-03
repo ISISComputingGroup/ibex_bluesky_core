@@ -48,7 +48,7 @@ def test_dae_naming(dae: Dae):
 
 def test_dae_runstate_string_repr(dae: Dae):
     expected = "PROCESSING"
-    dae.run_state = RunstateEnum(expected)
+    dae.run_state = RunstateEnum.PROCESSING
     assert str(dae.run_state) == expected
 
 
