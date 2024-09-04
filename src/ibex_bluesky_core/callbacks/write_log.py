@@ -1,7 +1,6 @@
 """Creates a readable .txt file of Bluesky runengine dataset"""
 
 import csv
-import decimal
 from datetime import datetime
 from collections import OrderedDict
 from pathlib import Path
@@ -64,7 +63,7 @@ class OutputLoggingCallback(CallbackBase):
         formatted_event_data = {}
 
         units_dict = OrderedDict({key: value.get('units', 'n/a') for key, value in descriptor_data.items()})
-        units_line = '   '.join(f'{key} ({value})' for key, value in units_dict.items())
+        units_line = '   '.join(f'{key} ({value})' for key, value in (units_dict.items()))
         precision_dict = {key: value.get('precision', 'n/a') for key, value in descriptor_data.items()}
         precision_line = '   '.join(f'{key} ({value})' for key, value in precision_dict.items())
 
@@ -80,7 +79,7 @@ class OutputLoggingCallback(CallbackBase):
 
         with open(self.filename, "a", newline='') as outfile:
             if doc["seq_num"] == 1:
-                outfile.write(f"{units_line}\n")
+                outfile.write(f"\n{units_line}\n")
             writer = csv.DictWriter(outfile, fieldnames=event_data_fieldnames, delimiter='\t')
             writer.writerows(formatted_event_data_list)
         
