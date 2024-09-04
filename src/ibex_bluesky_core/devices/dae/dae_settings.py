@@ -155,18 +155,20 @@ class DaeSettings(Device, Locatable, Movable):
 
         See DaeSettingsData for options.
         """
-        self.dae_settings: SignalRW[str] = isis_epics_signal_rw(str, f"{dae_prefix}DAESETTINGS")
+        self._raw_dae_settings: SignalRW[str] = isis_epics_signal_rw(
+            str, f"{dae_prefix}DAESETTINGS"
+        )
         super().__init__(name=name)
 
     async def locate(self) -> Location[DaeSettingsData]:
         """Retrieve and convert the current XML to DaeSettingsData."""
-        value = await self.dae_settings.get_value()
+        value = await self._raw_dae_settings.get_value()
         period_settings = _convert_xml_to_dae_settings(value)
         return {"setpoint": period_settings, "readback": period_settings}
 
     @AsyncStatus.wrap
     async def set(self, value: DaeSettingsData) -> None:
         """Set any changes in the DAE settings to the XML."""
-        current_xml = await self.dae_settings.get_value()
+        current_xml = await self._raw_dae_settings.get_value()
         to_write = _convert_dae_settings_to_xml(current_xml, value)
-        await self.dae_settings.set(to_write, wait=True)
+        await self._raw_dae_settings.set(to_write, wait=True, timeout=None)

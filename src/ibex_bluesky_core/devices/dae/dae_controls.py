@@ -3,8 +3,8 @@
 from enum import IntFlag
 
 from bluesky.protocols import Movable
-from ophyd_async.core import AsyncStatus, SignalRW, SignalX, StandardReadable
-from ophyd_async.epics.signal import epics_signal_rw, epics_signal_x
+from ophyd_async.core import AsyncStatus, SignalW, SignalX, StandardReadable
+from ophyd_async.epics.signal import epics_signal_w, epics_signal_x
 
 
 class DaeControls(StandardReadable):
@@ -28,8 +28,8 @@ class BeginRunExBits(IntFlag):
     """Bits for BEGINRUNEX."""
 
     NONE = 0
-    BEGINIFPAUSED = 1
-    BEGINIFDELAYED = 2
+    BEGIN_PAUSED = 1
+    BEGIN_DELAYED = 2
 
 
 class BeginRunEx(StandardReadable, Movable):
@@ -37,10 +37,10 @@ class BeginRunEx(StandardReadable, Movable):
 
     def __init__(self, dae_prefix: str, name: str = "") -> None:
         """Set up write-only signal for BEGINRUNEX."""
-        self.begin_run_ex: SignalRW[int] = epics_signal_rw(int, f"{dae_prefix}BEGINRUNEX")
+        self._raw_begin_run_ex: SignalW[int] = epics_signal_w(int, f"{dae_prefix}BEGINRUNEX")
         super().__init__(name=name)
 
     @AsyncStatus.wrap
     async def set(self, value: BeginRunExBits) -> None:
         """Start a run with the specified bits - See BeginRunExBits."""
-        await self.begin_run_ex.set(value, wait=True)
+        await self._raw_begin_run_ex.set(value, wait=True)

@@ -114,20 +114,20 @@ class DaePeriodSettings(Device, Locatable):
 
         See DaePeriodSettingsData for options.
         """
-        self.period_settings: SignalRW[str] = isis_epics_signal_rw(
+        self._raw_period_settings: SignalRW[str] = isis_epics_signal_rw(
             str, f"{dae_prefix}HARDWAREPERIODS"
         )
         super().__init__(name=name)
 
     async def locate(self) -> Location[DaePeriodSettingsData]:
         """Retrieve and convert the current XML to DaePeriodSettingsData."""
-        value = await self.period_settings.get_value()
+        value = await self._raw_period_settings.get_value()
         period_settings = _convert_xml_to_period_settings(value)
         return {"setpoint": period_settings, "readback": period_settings}
 
     @AsyncStatus.wrap
     async def set(self, value: DaePeriodSettingsData) -> None:
         """Set any changes in the period settings to the XML."""
-        current_xml = await self.period_settings.get_value()
+        current_xml = await self._raw_period_settings.get_value()
         to_write = _convert_period_settings_to_xml(current_xml, value)
-        await self.period_settings.set(to_write, wait=True)
+        await self._raw_period_settings.set(to_write, wait=True, timeout=None)
