@@ -43,15 +43,17 @@ classifiers = [
 dependencies = [
   "bluesky",
   "ophyd-async[ca]",
+  "matplotlib",
 ]
 
 [project.optional-dependencies]
 dev = [
-  "ruff",
+  "ruff>=0.6",
   "pyright",
   "pytest",
   "pytest-asyncio",
   "pytest-cov",
+  "pyqt6",  # For dev testing with matplotlib's qt backend.
 ]
 
 [project.urls]
@@ -79,7 +81,17 @@ directory = "coverage_html_report"
 
 [tool.pyright]
 include = ["src", "tests"]
-reportUntypedFunctionDecorator = true
+reportConstantRedefinition = true
+reportDeprecated = true
+reportInconsistentConstructor = true
+reportMissingParameterType = true
+reportMissingTypeArgument = true
+reportUnnecessaryCast = true
+reportUnnecessaryComparison = true
+reportUnnecessaryContains = true
+reportUnnecessaryIsInstance = true
+reportUntypedBaseClass = true
 reportUntypedClassDecorator = true
+reportUntypedFunctionDecorator = true
 
 [tool.setuptools_scm]

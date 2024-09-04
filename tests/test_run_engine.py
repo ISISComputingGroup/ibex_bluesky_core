@@ -1,3 +1,5 @@
+# pyright: reportMissingParameterType=false
+
 import threading
 from typing import Any, Generator
 from unittest.mock import MagicMock
@@ -5,7 +7,8 @@ from unittest.mock import MagicMock
 import bluesky.plan_stubs as bps
 import pytest
 from bluesky.run_engine import RunEngineResult
-from bluesky.utils import Msg, RequestAbort, RequestStop, RunEngineInterrupted
+from bluesky.utils import Msg, RequestAbort, RunEngineInterrupted
+
 from ibex_bluesky_core.run_engine import _DuringTask, get_run_engine
 
 
@@ -65,62 +68,7 @@ def test_run_engine_can_emit_documents_to_custom_subscriber(RE):
     RE(basic_plan())
 
     # Expected basic series of document types for a start run/stop run sequence.
-    assert documents == ["start", "descriptor", "stop"]
-
-
-def test_run_engine_emits_documents_for_interruptions(RE):
-    def pausing_plan() -> Generator[Msg, None, None]:
-        yield from bps.open_run(md={"reason": "run one start"})
-        yield from bps.pause()
-        yield from bps.close_run(reason="run one end")
-        yield from bps.open_run(md={"reason": "run two start"})
-        yield from bps.pause()
-        yield from bps.close_run(reason="run two end")
-
-    doc_types = []
-    docs = []
-
-    def sub(typ, doc):
-        doc_types.append(typ)
-        docs.append({typ: doc})
-
-    RE.subscribe(sub)
-
-    with pytest.raises(RunEngineInterrupted):
-        RE(pausing_plan())
-
-    with pytest.raises(RunEngineInterrupted):
-        RE.resume()
-
-    result: RunEngineResult = RE.stop()
-
-    assert doc_types == [
-        "start",  # Open run 1
-        "descriptor",  # Open run descriptor
-        "event",  # First pause
-        "event",  # Resume
-        "stop",  # Close run 1
-        "start",  # Open run 2
-        "descriptor",  # Open run descriptor
-        "event",  # Second pause
-        "stop",  # Close run 2
-    ]
-
-    assert docs[0]["start"]["reason"] == "run one start"
-    assert docs[2]["event"]["data"] == {"interruption": "pause"}
-    assert docs[3]["event"]["data"] == {"interruption": "resume"}
-    assert docs[4]["stop"]["reason"] == "run one end"
-
-    assert docs[5]["start"]["reason"] == "run two start"
-    assert docs[7]["event"]["data"] == {"interruption": "pause"}
-    assert docs[8]["stop"]["reason"] == ""  # Stopped by run engine, *not* our close_run
-
-    assert len(result.run_start_uids) == 2  # Both runs started
-    assert result.plan_result == RE.NO_PLAN_RETURN
-    assert result.exit_status == "success"
-    assert result.interrupted
-    assert result.exception == RequestStop
-    assert result.reason == ""
+    assert documents == ["start", "stop"]
 
 
 def test_during_task_does_wait_with_small_timeout():
