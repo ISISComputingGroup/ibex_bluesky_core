@@ -29,8 +29,8 @@ def demo_plan() -> Generator[Msg, None, None]:
 
     @subs_decorator(
         [
-            LivePlot(y=dae.name, x=block.name, marker="x", linestyle="none"),
-            LiveTable([block.name, dae.name]),
+            LivePlot(y="DAE-good_uah", x=block.name, marker="x", linestyle="none"),
+            LiveTable([block.name, "DAE-good_uah"]),
         ]
     )
     @run_decorator(md={})
@@ -42,7 +42,7 @@ def demo_plan() -> Generator[Msg, None, None]:
         yield from bps.trigger(dae.controls.end_run, wait=True)
         yield from bps.create()  # Create a bundle of readings
         yield from bps.read(block)
-        yield from bps.read(dae)
+        yield from bps.read(dae.good_uah)
         yield from bps.save()
 
     yield from _inner()

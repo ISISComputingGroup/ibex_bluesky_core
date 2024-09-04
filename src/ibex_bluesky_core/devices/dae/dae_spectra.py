@@ -11,13 +11,25 @@ class DaeSpectra(StandardReadable):
 
     def __init__(self, dae_prefix: str, *, spectra: int, period: int, name: str = "") -> None:
         """Set up signals for a single DAE spectra."""
-        self.x: SignalR[NDArray[float32]] = epics_signal_r(
+        # x-axis; time-of-flight.
+        self.tof: SignalR[NDArray[float32]] = epics_signal_r(
             NDArray[float32], f"{dae_prefix}SPEC:{period}:{spectra}:X"
         )
-        self.y: SignalR[NDArray[float32]] = epics_signal_r(
+
+        # y-axis; counts / tof
+        # This is the number of counts in a ToF bin, normalized by the width of
+        # that ToF bin.
+        # - Unsuitable for summing counts directly.
+        # - Will give a continuous plot for non-uniform bin sizes.
+        self.counts_per_time: SignalR[NDArray[float32]] = epics_signal_r(
             NDArray[float32], f"{dae_prefix}SPEC:{period}:{spectra}:Y"
         )
-        self.yc: SignalR[NDArray[float32]] = epics_signal_r(
+
+        # y-axis; counts
+        # This is unnormalized number of counts per ToF bin.
+        # - Suitable for summing counts
+        # - This will give a discontinuous plot for non-uniform bin sizes.
+        self.counts: SignalR[NDArray[float32]] = epics_signal_r(
             NDArray[float32], f"{dae_prefix}SPEC:{period}:{spectra}:YC"
         )
         super().__init__(name=name)
