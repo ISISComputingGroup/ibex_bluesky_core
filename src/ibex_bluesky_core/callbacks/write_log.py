@@ -54,34 +54,29 @@ class OutputLoggingCallback(CallbackBase):
         self.descriptors[descriptor_id] = doc
 
     def event(self, doc: Event) -> None:
+        formatted_event_data = {}
         descriptor_id = doc["descriptor"]
         event_data = doc["data"]
-        event_data_list = [event_data]
-        event_data_fieldnames = event_data.keys()
         precision = self.descriptors
         descriptor_data = precision[descriptor_id]['data_keys']
-        formatted_event_data = {}
-
-        units_dict = OrderedDict({key: value.get('units', 'n/a') for key, value in descriptor_data.items()})
-        units_line = '   '.join(f'{key} ({value})' for key, value in (units_dict.items()))
+        
         precision_dict = {key: value.get('precision', 'n/a') for key, value in descriptor_data.items()}
-        precision_line = '   '.join(f'{key} ({value})' for key, value in precision_dict.items())
+        units_dict = OrderedDict({key: value.get('units', 'n/a') for key, value in descriptor_data.items()})
+        units_line = '  '.join(f'{key} ({value})' for key, value in (units_dict.items()))
 
-        for key, value in event_data.items():
-            if key in precision_dict and isinstance(value, float):
+        for key in precision_dict.keys():
+            if key in event_data and isinstance(event_data[key], float):
                 if isinstance(precision_dict[key], int):
-                    formatted_value = f"{value:.{precision_dict[key]}f}"
+                    formatted_value = f"{event_data[key]:.{precision_dict[key]}f}"
                     formatted_event_data[key] = formatted_value
                 else: 
-                    formatted_event_data[key] = value
-
-        formatted_event_data_list = [formatted_event_data]
+                    formatted_event_data[key] = event_data[key]
 
         with open(self.filename, "a", newline='') as outfile:
             if doc["seq_num"] == 1:
                 outfile.write(f"\n{units_line}\n")
-            writer = csv.DictWriter(outfile, fieldnames=event_data_fieldnames, delimiter='\t')
-            writer.writerows(formatted_event_data_list)
+            writer = csv.DictWriter(outfile, fieldnames=formatted_event_data, delimiter='\t')
+            writer.writerows([formatted_event_data])
         
     def stop(self, doc: RunStop) -> None:
         self.descriptors.clear()
