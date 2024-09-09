@@ -3,6 +3,7 @@ from enum import Enum
 from xml.etree import ElementTree as ET
 
 import bluesky.plan_stubs as bps
+import numpy as np
 import pytest
 from bluesky.run_engine import RunEngine
 from ophyd_async.core import get_mock_put, set_mock_value
@@ -21,6 +22,7 @@ from ibex_bluesky_core.devices.dae.dae_settings import (
     DaeSettingsData,
     TimingSource,
 )
+from ibex_bluesky_core.devices.dae.dae_spectra import DaeSpectra
 from ibex_bluesky_core.devices.dae.dae_tcb_settings import (
     CalculationMethod,
     DaeTCBSettings,
@@ -941,3 +943,19 @@ def test_empty_dae_settings_dataclass_does_not_change_any_settings(dae: Dae, RE:
     assert before == after
     assert after.wiring_filepath is not None
     assert after.wiring_filepath.endswith("NIMROD84modules+9monitors+LAB5Oct2012Wiring.dat")
+
+
+async def test_read_spectra_correctly_sizes_arrays():
+    spectrum = DaeSpectra(dae_prefix="unittest", spectra=1, period=1)
+    await spectrum.connect(mock=True)
+
+    set_mock_value(spectrum.tof, np.zeros(dtype=np.float32, shape=(1000,)))
+    set_mock_value(spectrum.tof_size, 100)
+    set_mock_value(spectrum.counts, np.zeros(dtype=np.float32, shape=(2000,)))
+    set_mock_value(spectrum.counts_size, 200)
+    set_mock_value(spectrum.counts_per_time, np.zeros(dtype=np.float32, shape=(3000,)))
+    set_mock_value(spectrum.counts_per_time_size, 300)
+
+    assert (await spectrum.read_tof()).shape == (100,)
+    assert (await spectrum.read_counts()).shape == (200,)
+    assert (await spectrum.read_counts_per_time()).shape == (300,)
