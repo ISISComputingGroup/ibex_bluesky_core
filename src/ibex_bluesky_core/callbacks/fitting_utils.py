@@ -4,6 +4,8 @@ from typing import Callable
 import lmfit
 import numpy as np
 import numpy.typing as npt
+from lmfit.models import PolynomialModel
+from numpy import polynomial as p
 
 from ibex_bluesky_core.callbacks.fitting import ModelAndGuess
 
@@ -11,24 +13,24 @@ from ibex_bluesky_core.callbacks.fitting import ModelAndGuess
 class Model(ABC):
     @classmethod
     @abstractmethod
-    def model(cls) -> lmfit.Model:
+    def model(cls, *args: int) -> lmfit.Model:
         pass
 
     @classmethod
     @abstractmethod
     def guess(
-        cls,
+        cls, *args: int
     ) -> Callable[[npt.NDArray[np.float_], npt.NDArray[np.float_]], dict[str, lmfit.Parameter]]:
         pass
 
     @classmethod
-    def fit(cls) -> ModelAndGuess:
-        return ModelAndGuess(model=cls.model(), guess=cls.guess())
+    def fit(cls, *args: int) -> ModelAndGuess:
+        return ModelAndGuess(model=cls.model(*args), guess=cls.guess(*args))
 
 
 class Gaussian(Model):
     @classmethod
-    def model(cls) -> lmfit.Model:
+    def model(cls, *args: int) -> lmfit.Model:
         def model(x: float, amp: float, sigma: float, x0: float) -> float:
             if sigma == 0:
                 return 0
@@ -39,7 +41,7 @@ class Gaussian(Model):
 
     @classmethod
     def guess(
-        cls,
+        cls, *args: int
     ) -> Callable[[npt.NDArray[np.float_], npt.NDArray[np.float_]], dict[str, lmfit.Parameter]]:
         def guess(
             x: npt.NDArray[np.float_], y: npt.NDArray[np.float_]
@@ -72,7 +74,7 @@ class Gaussian(Model):
 
 class Linear(Model):
     @classmethod
-    def model(cls) -> lmfit.Model:
+    def model(cls, *args: int) -> lmfit.Model:
         def model(x: float, m: float, c: float) -> float:
             return m * x + c
 
@@ -80,7 +82,7 @@ class Linear(Model):
 
     @classmethod
     def guess(
-        cls,
+        cls, *args: int
     ) -> Callable[[npt.NDArray[np.float_], npt.NDArray[np.float_]], dict[str, lmfit.Parameter]]:
         def guess(
             x: npt.NDArray[np.float_], y: npt.NDArray[np.float_]
@@ -95,6 +97,39 @@ class Linear(Model):
                 "m": lmfit.Parameter("m", m),
                 "c": lmfit.Parameter("c", c),
             }
+
+            return init_guess
+
+        return guess
+
+
+class Polynomial(Model):
+    @classmethod
+    def __check_degree(cls, args: tuple[int, ...]) -> int:
+        degree = args[0] if args else 7
+        if not (0 <= degree <= 7):
+            raise ValueError("The polynomial degree should be at least 0 and smaller than 8.")
+        return degree
+
+    @classmethod
+    def model(cls, *args: int) -> lmfit.Model:
+        degree = cls.__check_degree(args)
+        return PolynomialModel(degree=degree)
+
+    @classmethod
+    def guess(
+        cls, *args: int
+    ) -> Callable[[npt.NDArray[np.float_], npt.NDArray[np.float_]], dict[str, lmfit.Parameter]]:
+        def guess(
+            x: npt.NDArray[np.float_], y: npt.NDArray[np.float_]
+        ) -> dict[str, lmfit.Parameter]:
+            init_guess = {}
+            degree = cls.__check_degree(args)
+
+            coeffs = p.polynomial.polyfit(x, y, degree)
+
+            for i in range(degree + 1):
+                init_guess[f"c{i}"] = coeffs[i]
 
             return init_guess
 
