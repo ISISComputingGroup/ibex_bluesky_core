@@ -9,24 +9,26 @@ from event_model.documents.event import Event
 from event_model.documents.event_descriptor import EventDescriptor
 from event_model.documents.run_start import RunStart
 from event_model.documents.run_stop import RunStop
+from bluesky.callbacks.core import get_obj_fields
 
-save_path = Path("C:\\") / "instrument" / "var" / "logs" / "bluesky" / "output_files"
+#save_path = Path("C:\\") / "instrument" / "var" / "logs" / "bluesky" / "output_files"
 
 class OutputLoggingCallback(CallbackBase):
     """Description"""
 
-    def __init__(self) -> None:
+    def __init__(self, fields: str, path: str) -> None:
         """Initialise current_start_document and filename"""
-        super().__init__()        
+        super().__init__()
+        self.fields = get_obj_fields(fields)
+        self.save_path = path
         self.current_start_document = None
         self.descriptors = {}
         self.filename = None
 
     def start(self, doc: RunStart) -> None:
-        save_path.mkdir(parents=True, exist_ok=True)
-
+        self.save_path.mkdir(parents=True, exist_ok=True)
         self.current_start_document = doc["uid"] #or would the user prefer scan_id as the name of the log?
-        self.filename = save_path / f"{self.current_start_document}.txt"
+        self.filename = f"{self.save_path}\{self.current_start_document}.txt"
         
         assert self.filename is not None, "Could not create filename."
         assert self.current_start_document is not None, "Saw a non-start document before a start."
@@ -41,7 +43,7 @@ class OutputLoggingCallback(CallbackBase):
         for key in doc: 
             if key not in start_data_reordered:
                 start_data_reordered[key] = doc[key]
-    
+
         with open(self.filename, "a") as outfile:
             for key, value in start_data_reordered.items():
                 outfile.write('%s: %s\n' % (key,value))
@@ -57,11 +59,12 @@ class OutputLoggingCallback(CallbackBase):
         formatted_event_data = {}
         descriptor_id = doc["descriptor"]
         event_data = doc["data"]
+        required_columns = self.fields
         precision = self.descriptors
         descriptor_data = precision[descriptor_id]['data_keys']
         
-        precision_dict = {key: value.get('precision', 'n/a') for key, value in descriptor_data.items()}
-        units_dict = OrderedDict({key: value.get('units', 'n/a') for key, value in descriptor_data.items()})
+        precision_dict = {key: value.get('precision', 'n/a') for key, value in descriptor_data.items() if key in required_columns}
+        units_dict = OrderedDict({key: value.get('units', 'n/a') for key, value in descriptor_data.items() if key in required_columns})
         units_line = '  '.join(f'{key} ({value})' for key, value in (units_dict.items()))
 
         for key in precision_dict.keys():
