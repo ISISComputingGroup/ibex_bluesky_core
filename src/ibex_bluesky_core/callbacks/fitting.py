@@ -17,16 +17,25 @@ from matplotlib.axes import Axes
 
 matplotlib.use("module://genie_python.matplotlib_backend.ibex_websocket_backend")
 
-import dataclasses
+class FitMethod:
 
-
-@dataclasses.dataclass
-class ModelAndGuess:
     model: lmfit.Model | None
     guess: (
         Callable[[npt.NDArray[np.float_], npt.NDArray[np.float_]], dict[str, lmfit.Parameter]]
         | None
     )
+
+    def __init__(self, 
+        model: lmfit.Model | Callable[..., float] | None,
+        guess: Callable[[npt.NDArray[np.float_], npt.NDArray[np.float_]], dict[str, lmfit.Parameter]]
+    ):
+        
+        if callable(model):
+            self.model = lmfit.Model(model)
+        else:
+            self.model = model
+
+        self.guess=guess
 
 
 logger = logging.getLogger(__name__)
@@ -38,27 +47,27 @@ class LiveFit(_DefaultLiveFit):
 
     def __init__(
         self,
-        fit: ModelAndGuess,
-        field_name: str,
-        independent_vars: dict[str, str],
+        method: FitMethod,
+        dependant_var_name: str,
+        independent_var_name: str,
         *,
         update_every: int = 1,
     ) -> None:
-        self.fit = fit
+        self.method = method
 
-        if self.fit.model is None:
+        if self.method.model is None:
             raise ValueError("Model function cannot be None")
 
         super().__init__(
-            model=fit.model,
-            y=field_name,
-            independent_vars=independent_vars,
+            model=method.model,
+            y=dependant_var_name,
+            independent_vars={'x': independent_var_name},
             update_every=update_every,
         )
 
     def update_fit(self) -> None:
-        if self.fit.guess is not None:
-            self.init_guess = self.fit.guess(
+        if self.method.guess is not None:
+            self.init_guess = self.method.guess(
                 np.array(next(iter(self.independent_vars_data.values()))),
                 np.array(self.ydata),
                 # Calls the guess function on the set of data already collected in the run

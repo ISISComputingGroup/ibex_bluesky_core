@@ -7,10 +7,10 @@ import numpy.typing as npt
 from lmfit.models import PolynomialModel
 from numpy import polynomial as p
 
-from ibex_bluesky_core.callbacks.fitting import ModelAndGuess
+from ibex_bluesky_core.callbacks.fitting import FitMethod
 
 
-class Model(ABC):
+class Fit(ABC):
     @classmethod
     @abstractmethod
     def model(cls, *args: int) -> lmfit.Model:
@@ -24,11 +24,11 @@ class Model(ABC):
         pass
 
     @classmethod
-    def fit(cls, *args: int) -> ModelAndGuess:
-        return ModelAndGuess(model=cls.model(*args), guess=cls.guess(*args))
+    def fit(cls, *args: int) -> FitMethod:
+        return FitMethod(model=cls.model(*args), guess=cls.guess(*args))
 
 
-class Gaussian(Model):
+class Gaussian(Fit):
     @classmethod
     def model(cls, *args: int) -> lmfit.Model:
         def model(x: float, amp: float, sigma: float, x0: float) -> float:
@@ -71,7 +71,7 @@ class Gaussian(Model):
         return guess
 
 
-class Lorentzian(Model):
+class Lorentzian(Fit):
     @classmethod
     def model(cls, *args: int) -> lmfit.Model:
         def model(x: float, amp: float, sigma: float, center: float) -> float:
@@ -100,7 +100,7 @@ class Lorentzian(Model):
             amp = y[amp_index]
             center = x[amp_index]
 
-            # Calculating sigma using FWHM
+            # Guessing sigma using FWHM
 
             half_max = amp / 2
             left_side = np.where(x < center)[0]  # x-values left of the peak
@@ -135,7 +135,7 @@ class Lorentzian(Model):
         return guess
 
 
-class Linear(Model):
+class Linear(Fit):
     @classmethod
     def model(cls, *args: int) -> lmfit.Model:
         def model(x: float, m: float, c: float) -> float:
@@ -166,7 +166,7 @@ class Linear(Model):
         return guess
 
 
-class Polynomial(Model):
+class Polynomial(Fit):
     @classmethod
     def __check_degree(cls, args: tuple[int, ...]) -> int:
         degree = args[0] if args else 7
