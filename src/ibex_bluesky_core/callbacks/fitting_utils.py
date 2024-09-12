@@ -46,25 +46,88 @@ class Gaussian(Model):
         def guess(
             x: npt.NDArray[np.float_], y: npt.NDArray[np.float_]
         ) -> dict[str, lmfit.Parameter]:
-            if np.sum(y) == 0:  # No data so guessing standard gaussian
+            if len(y) == 0:  # No data so guessing standard gaussian
                 return {
                     "amp": lmfit.Parameter("A", 1),
                     "sigma": lmfit.Parameter("sigma", x.mean(), min=0),
                     "x0": lmfit.Parameter("x0", 0),
                 }
 
+            amp = np.max(y) if np.max(y) > abs(np.min(y)) else np.min(y)
             mean = np.sum(x * y) / np.sum(y)
             sigma = np.sqrt(np.sum(y * (x - mean) ** 2) / np.sum(y))
 
             if sigma == 0:
                 sigma = 1
 
-            amp = np.max(y) - np.min(y)
-
             init_guess = {
                 "amp": lmfit.Parameter("A", amp),
                 "sigma": lmfit.Parameter("sigma", sigma, min=0),
                 "x0": lmfit.Parameter("x0", mean),
+            }
+
+            return init_guess
+
+        return guess
+
+
+class Lorentzian(Model):
+    @classmethod
+    def model(cls, *args: int) -> lmfit.Model:
+        def model(x: float, amp: float, sigma: float, center: float) -> float:
+            if sigma == 0:
+                return 0
+
+            return amp / (1 + ((x - center) / sigma) ** 2)
+
+        return lmfit.Model(model)
+
+    @classmethod
+    def guess(
+        cls, *args: int
+    ) -> Callable[[npt.NDArray[np.float_], npt.NDArray[np.float_]], dict[str, lmfit.Parameter]]:
+        def guess(
+            x: npt.NDArray[np.float_], y: npt.NDArray[np.float_]
+        ) -> dict[str, lmfit.Parameter]:
+            if len(y) == 0:  # No data so guessing standard lorentzian
+                return {
+                    "amp": lmfit.Parameter("A", 1),
+                    "sigma": lmfit.Parameter("sigma", 1, min=0),
+                    "center": lmfit.Parameter("center", 0),
+                }
+
+            amp_index = np.argmax(y) if np.max(y) > abs(np.min(y)) else np.argmin(y)
+            amp = y[amp_index]
+            center = x[amp_index]
+
+            # Calculating sigma using FWHM
+
+            half_max = amp / 2
+            left_side = np.where(x < center)[0]  # x-values left of the peak
+            right_side = np.where(x > center)[0]  # x-values right of the peak
+
+            # Left side
+            x1_index = (
+                left_side[np.argmin(np.abs(y[left_side] - half_max))]
+                if len(left_side) > 0
+                else 0
+            )
+
+            # Right side
+            x2_index = (
+                right_side[np.argmin(np.abs(y[right_side] - half_max))]
+                if len(right_side) > 0
+                else -1
+            )
+
+            sigma = (x[x2_index] - x[x1_index]) / 2
+            if sigma == 0:
+                sigma = 1
+
+            init_guess = {
+                "amp": lmfit.Parameter("A", amp),
+                "sigma": lmfit.Parameter("sigma", sigma, min=0),
+                "center": lmfit.Parameter("center", center),
             }
 
             return init_guess
