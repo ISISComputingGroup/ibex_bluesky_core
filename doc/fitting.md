@@ -7,11 +7,11 @@ In order to use the wrapper, import `LiveFit` from `ibex_bluesky_core` rather th
 ```py
 from ibex_bluesky_core.callbacks.plotting import LiveFit
 ```
-**Note:** that you do not *need* `LivePlot` for `LiveFit` to work but it may be useful to know visaully how well the model fits to the data.
+**Note:** that you do not *need* `LivePlot` for `LiveFit` to work but it may be useful to know visaully how well the model fits to the raw data.
 
 ## Configuration
 
-Below is a full example showing how to use standard `matplotlib` & `bluesky` functionality to fit a model to a scan, using LivePlot and LiveFit. The fitting callback is set to expect data to take the form of a gaussian.
+Below is a full example showing how to use standard `matplotlib` & `bluesky` functionality to apply fitting to a scan, using LivePlot and LiveFit. The fitting callback is set to expect data to take the form of a gaussian.
 ```py
 import matplotlib.pyplot as plt
 from ibex_bluesky_core.callbacks.plotting import LivePlot, LiveFit
@@ -23,19 +23,19 @@ ax = plt.gca()
 # ax is shared by fit_callback and plot_callback 
 
 plot_callback = LivePlot(y="y_variable", x="x_variable", ax=ax)
-lf = LiveFit(Gaussian.fit(), y="y_variable", x="x_variable", update_every=0.5)
+fit_callback = LiveFit(Gaussian.fit(), y="y_variable", x="x_variable", update_every=0.5)
 # update_every = in seconds, how often to recompute the fit. If `None`, do not compute until the end. Default is 1.
-fit_callback = lf.live_fit_plot(ax=ax, color="r")
+fit_plot_callback = LiveFitPlot(fit_callback, ax=ax, color="r")
 ```
 
-**Note:** that the `LiveFit` object is not in itself a callback; its member function `.live_fit_plot()` must be called to return a `LiveFitPlot` object, which can then be subscribed to the `RunEngine`. See the [Bluesky Documentation](https://blueskyproject.io/bluesky/main/callbacks.html#livefitplot) for information on the various arguments that can be passed to the `LiveFitPlot` class.
+**Note:** that the `LiveFit` callback doesn't directly do the plotting, it will return function parameters of the model its trying to fit to; a `LiveFit` object must be passed to `LiveFitPlot` which can then be subscribed to the `RunEngine`. See the [Bluesky Documentation](https://blueskyproject.io/bluesky/main/callbacks.html#livefitplot) for information on the various arguments that can be passed to the `LiveFitPlot` class.
 
-The `plot_callback` and `fit_callback` objects can then be subscribed to the `RunEngine`, using the same methods as described in [`LivePlot`](./plotting.md). See the following example using `@subs_decorator`:
+The `plot_callback` and `fit_plot_callback` objects can then be subscribed to the `RunEngine`, using the same methods as described in [`LivePlot`](./plotting.md). See the following example using `@subs_decorator`:
 
 ```py
 @subs_decorator(
     [
-        fit_callback,
+        fit_plot_callback,
         plot_callback
     ]
 )
@@ -47,7 +47,7 @@ def plan() -> ...
 
 We support **standard fits** for the following trends in data:
 
-| Trend | Class Name in fitting.py | Arguments | 
+| Trend | Class Name in fitting_utils | Arguments | 
 | ----- | -------------------------| ----------|
 | Linear | Linear | None |
 | Polynomial |Polynomial | Polynomial Degree (int) |
@@ -63,6 +63,8 @@ We support **standard fits** for the following trends in data:
 
 -------
 
+\* some message about com
+
 Each of the above fit classes has a `.fit()` which returns an object of type `FitMethod`. This tells `LiveFit` how to perform fitting on the data. `FitMethod` is defined in `ibex_bluesky_core.callbacks.fitting`.
 
 There are *two* ways that you can choose how to fit a model to your data:
@@ -76,10 +78,17 @@ from ibex_bluesky_core.callbacks.fitting_utils import [FIT]
 # Pass [FIT].fit() to the first parameter of LiveFit
 lf = LiveFit([FIT].fit(), y="y_variable", x="x_variable", update_every=0.5)
 
-# Then subscribe to lf.live_fit_plot()
+# Then subscribe to LiveFitPlot(lf, ...)
 ```
 
 The `[FIT].fit()` function will pass the `FitMethod` object straight to the `LiveFit` class.
+
+**Note:** that for the fits in the above table that require parameters, you will need to pass value(s) to their `.fit` method. For example Polynomial fitting:
+
+```py
+lf = LiveFit(Polynomial.fit(3),  y="y_variable", x="x_variable", update_every=0.5)
+# For a polynomial of degree 3
+```
 
 ### Option 2: Use custom fits
 
@@ -89,7 +98,7 @@ If you wish, you can define your own non-standard `FitMethod` object. The `FitMe
     - A function representing the behaviour of the model.
     - Returns the `y` value (`float`) at the given `x` value and model parameters.
 - `guess` 
-    - This function must be able to take two `np.array` arrays of type `float` as arguments and must return a `dict` in the form `dict[str, lmfit.Parameter]`.
+    - A function that must take two `np.array` arrays of type `float` as arguments and must return a `dict` in the form `dict[str, lmfit.Parameter]`.
     - This will be called to guess the properties of the model, given the data already collected in the Bluesky run.
 
 See the following example on how to define these.
@@ -128,10 +137,10 @@ fit_method = FitMethod(model, guess)
 
 lf = LiveFit(fit_method, y="y_variable", x="x_variable", update_every=0.5)
 
-# Then subscribe to lf.live_fit_plot()
+# Then subscribe to LiveFitPlot(lf, ...)
 ```
 
-**Note:** that the parameters returned from the guess function must allocate to the arguments to the model function, ignoring the independant variable e.g `x` in this case. Array-like structures are not allowed.
+**Note:** that the parameters returned from the guess function must allocate to the arguments to the model function, ignoring the independant variable e.g `x` in this case. Array-like structures are not allowed. See the [lmfit documentation](https://lmfit.github.io/lmfit-py/parameters.html) for more information.
 
 #### Option 2: Continued
 
@@ -153,7 +162,7 @@ fit_method = FitMethod(different_model, Linear.guess())
 
 lf = LiveFit(fit_method, y="y_variable", x="x_variable", update_every=0.5)
 
-# Then subscribe to lf.live_fit_plot()
+# Then subscribe to LiveFitPlot(lf, ...)
 ```
 ... or the other way round ...
 
@@ -178,16 +187,15 @@ fit_method = FitMethod(Linear.model(), different_guess)
 
 lf = LiveFit(fit_method, y="y_variable", x="x_variable", update_every=0.5)
 
-# Then subscribe to lf.live_fit_plot()
+# Then subscribe to LiveFitPlot(lf, ...)
 ```
 
-**Note:** that for some fits, you may need to pass arguments to their respecitive `.fit`, `.model` and `.guess` functions. E.g for `Polynomial` fitting:
+Or you can create a completely user-defined fitting method.
 
-```py
-lf0 = LiveFit(Polynomial.fit(3)) # For a polynomial of degree 3
-```
+**Note:** that for fits that require arguments, you will need to pass values to their respecitive `.model` and `.guess` functions. E.g for `Polynomial` fitting:
+
 ```py
 fit_method = FitMethod(Polynomial.model(3), different_guess) # If using a custom guess function
-lf1 = LiveFit(fit_method, ...)
+lf = LiveFit(fit_method, ...)
 ```
-See the [standard fits](#models) list above for fits which require parameters.
+See the [standard fits](#models) list above for standard fits which require parameters. It gets more complicated if you want to define your own custom model or guess which you want to pass parameters to. You will have to define a function that takes these parameters and returns the model / guess function with the subsituted values.

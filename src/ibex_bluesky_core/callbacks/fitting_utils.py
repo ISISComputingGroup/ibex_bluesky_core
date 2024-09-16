@@ -4,8 +4,9 @@ from typing import Callable
 import lmfit
 import numpy as np
 import numpy.typing as npt
-from lmfit.models import PolynomialModel
+from lmfit.models import PolynomialModel, DampedOscillatorModel
 from numpy import polynomial as p
+from scipy.signal import find_peaks
 
 from ibex_bluesky_core.callbacks.fitting import FitMethod
 
@@ -168,7 +169,7 @@ class Linear(Fit):
 
 class Polynomial(Fit):
     @classmethod
-    def __check_degree(cls, args: tuple[int, ...]) -> int:
+    def _check_degree(cls, args: tuple[int, ...]) -> int:
         degree = args[0] if args else 7
         if not (0 <= degree <= 7):
             raise ValueError("The polynomial degree should be at least 0 and smaller than 8.")
@@ -176,7 +177,7 @@ class Polynomial(Fit):
 
     @classmethod
     def model(cls, *args: int) -> lmfit.Model:
-        degree = cls.__check_degree(args)
+        degree = cls._check_degree(args)
         return PolynomialModel(degree=degree)
 
     @classmethod
@@ -187,12 +188,54 @@ class Polynomial(Fit):
             x: npt.NDArray[np.float_], y: npt.NDArray[np.float_]
         ) -> dict[str, lmfit.Parameter]:
             init_guess = {}
-            degree = cls.__check_degree(args)
+            degree = cls._check_degree(args)
 
             coeffs = p.polynomial.polyfit(x, y, degree)
 
             for i in range(degree + 1):
                 init_guess[f"c{i}"] = coeffs[i]
+
+            return init_guess
+
+        return guess
+
+
+class DampedOsc(Fit):
+
+    @classmethod
+    def model(cls, *args: int) -> lmfit.Model:
+
+        def model(x: float, center: float, amp: float, freq: float, width: float):
+            return amp * np.cos((x - center) * freq) * \
+                np.exp(-((x - center) / width)**2)
+        
+        return lmfit.Model(model)
+
+    @classmethod
+    def guess(
+        cls, *args: int
+    ) -> Callable[[npt.NDArray[np.float_], npt.NDArray[np.float_]], dict[str, lmfit.Parameter]]:
+        def guess(
+            x: npt.NDArray[np.float_], y: npt.NDArray[np.float_]
+        ) -> dict[str, lmfit.Parameter]:
+
+            if len(y) == 0:  # No data so guessing standard DampedOsc
+                return {
+                    "center": lmfit.Parameter("center",0),
+                    "amp": lmfit.Parameter("amp",1),
+                    "freq": lmfit.Parameter("freq", 2 * np.pi),
+                    "width": lmfit.Parameter("width",1) 
+                }
+            
+            peak = x[np.argmax(y)]
+            valley = x[np.argmin(y)]
+
+            init_guess = {
+                "center": lmfit.Parameter("center", peak),
+                "amp": lmfit.Parameter("amp", np.max(y)),
+                "freq": lmfit.Parameter("freq", np.pi / np.abs(peak - valley)),
+                "width": lmfit.Parameter("width", max(x) - min(x)),
+            }
 
             return init_guess
 

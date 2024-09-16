@@ -74,22 +74,4 @@ class LiveFit(_DefaultLiveFit):
             )
 
         super().update_fit()
-
-    def live_fit_plot(
-        self,
-        num_points: int = 100,
-        legend_keys: list[str] | None = None,
-        xlim: tuple[float, float] | None = None,
-        ylim: tuple[float, float] | None = None,
-        ax: Axes | None = None,
-        **kwargs,  # noqa: ANN003 # type: ignore
-    ) -> LiveFitPlot:
-        return LiveFitPlot(
-            livefit=self,
-            num_points=num_points,
-            legend_keys=legend_keys,
-            xlim=xlim,
-            ylim=ylim,
-            ax=ax,
-            **kwargs,
-        )
+        
