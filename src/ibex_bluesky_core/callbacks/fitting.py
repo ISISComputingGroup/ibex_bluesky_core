@@ -8,34 +8,34 @@ import lmfit
 import numpy as np
 import numpy.typing as npt
 from bluesky.callbacks import LiveFit as _DefaultLiveFit
-from bluesky.callbacks import LiveFitPlot
 from bluesky.callbacks.core import make_class_safe
 
 sys.path.append(r"c:\instrument\apps\python3\lib\site-packages")
 import matplotlib
-from matplotlib.axes import Axes
 
 matplotlib.use("module://genie_python.matplotlib_backend.ibex_websocket_backend")
 
-class FitMethod:
 
+class FitMethod:
     model: lmfit.Model | None
     guess: (
-        Callable[[npt.NDArray[np.float_], npt.NDArray[np.float_]], dict[str, lmfit.Parameter]]
+        Callable[[npt.NDArray[np.float64], npt.NDArray[np.float64]], dict[str, lmfit.Parameter]]
         | None
     )
 
-    def __init__(self, 
+    def __init__(
+        self,
         model: lmfit.Model | Callable[..., float] | None,
-        guess: Callable[[npt.NDArray[np.float_], npt.NDArray[np.float_]], dict[str, lmfit.Parameter]]
-    ):
-        
+        guess: Callable[
+            [npt.NDArray[np.float64], npt.NDArray[np.float64]], dict[str, lmfit.Parameter]
+        ],
+    ) -> None:
         if callable(model):
             self.model = lmfit.Model(model)
         else:
             self.model = model
 
-        self.guess=guess
+        self.guess = guess
 
 
 logger = logging.getLogger(__name__)
@@ -61,7 +61,7 @@ class LiveFit(_DefaultLiveFit):
         super().__init__(
             model=method.model,
             y=dependant_var_name,
-            independent_vars={'x': independent_var_name},
+            independent_vars={"x": independent_var_name},
             update_every=update_every,
         )
 
@@ -74,4 +74,3 @@ class LiveFit(_DefaultLiveFit):
             )
 
         super().update_fit()
-        

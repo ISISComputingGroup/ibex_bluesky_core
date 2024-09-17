@@ -4,9 +4,8 @@ from typing import Callable
 import lmfit
 import numpy as np
 import numpy.typing as npt
-from lmfit.models import PolynomialModel, DampedOscillatorModel
+from lmfit.models import PolynomialModel
 from numpy import polynomial as p
-from scipy.signal import find_peaks
 
 from ibex_bluesky_core.callbacks.fitting import FitMethod
 
@@ -21,7 +20,7 @@ class Fit(ABC):
     @abstractmethod
     def guess(
         cls, *args: int
-    ) -> Callable[[npt.NDArray[np.float_], npt.NDArray[np.float_]], dict[str, lmfit.Parameter]]:
+    ) -> Callable[[npt.NDArray[np.float64], npt.NDArray[np.float64]], dict[str, lmfit.Parameter]]:
         pass
 
     @classmethod
@@ -32,9 +31,11 @@ class Fit(ABC):
 class Gaussian(Fit):
     @classmethod
     def model(cls, *args: int) -> lmfit.Model:
-        def model(x: float, amp: float, sigma: float, x0: float) -> float:
+        def model(
+            x: npt.NDArray[np.float_], amp: float, sigma: float, x0: float
+        ) -> npt.NDArray[np.float_]:
             if sigma == 0:
-                return 0
+                sigma = 1
 
             return amp * np.exp(-((x - x0) ** 2) / (2 * sigma**2))
 
@@ -43,9 +44,9 @@ class Gaussian(Fit):
     @classmethod
     def guess(
         cls, *args: int
-    ) -> Callable[[npt.NDArray[np.float_], npt.NDArray[np.float_]], dict[str, lmfit.Parameter]]:
+    ) -> Callable[[npt.NDArray[np.float64], npt.NDArray[np.float64]], dict[str, lmfit.Parameter]]:
         def guess(
-            x: npt.NDArray[np.float_], y: npt.NDArray[np.float_]
+            x: npt.NDArray[np.float64], y: npt.NDArray[np.float64]
         ) -> dict[str, lmfit.Parameter]:
             if len(y) == 0:  # No data so guessing standard gaussian
                 return {
@@ -75,9 +76,11 @@ class Gaussian(Fit):
 class Lorentzian(Fit):
     @classmethod
     def model(cls, *args: int) -> lmfit.Model:
-        def model(x: float, amp: float, sigma: float, center: float) -> float:
+        def model(
+            x: npt.NDArray[np.float_], amp: float, sigma: float, center: float
+        ) -> npt.NDArray[np.float_]:
             if sigma == 0:
-                return 0
+                sigma = 1
 
             return amp / (1 + ((x - center) / sigma) ** 2)
 
@@ -86,9 +89,9 @@ class Lorentzian(Fit):
     @classmethod
     def guess(
         cls, *args: int
-    ) -> Callable[[npt.NDArray[np.float_], npt.NDArray[np.float_]], dict[str, lmfit.Parameter]]:
+    ) -> Callable[[npt.NDArray[np.float64], npt.NDArray[np.float64]], dict[str, lmfit.Parameter]]:
         def guess(
-            x: npt.NDArray[np.float_], y: npt.NDArray[np.float_]
+            x: npt.NDArray[np.float64], y: npt.NDArray[np.float64]
         ) -> dict[str, lmfit.Parameter]:
             if len(y) == 0:  # No data so guessing standard lorentzian
                 return {
@@ -109,9 +112,7 @@ class Lorentzian(Fit):
 
             # Left side
             x1_index = (
-                left_side[np.argmin(np.abs(y[left_side] - half_max))]
-                if len(left_side) > 0
-                else 0
+                left_side[np.argmin(np.abs(y[left_side] - half_max))] if len(left_side) > 0 else 0
             )
 
             # Right side
@@ -139,7 +140,7 @@ class Lorentzian(Fit):
 class Linear(Fit):
     @classmethod
     def model(cls, *args: int) -> lmfit.Model:
-        def model(x: float, m: float, c: float) -> float:
+        def model(x: npt.NDArray[np.float_], m: float, c: float) -> npt.NDArray[np.float_]:
             return m * x + c
 
         return lmfit.Model(model)
@@ -147,9 +148,9 @@ class Linear(Fit):
     @classmethod
     def guess(
         cls, *args: int
-    ) -> Callable[[npt.NDArray[np.float_], npt.NDArray[np.float_]], dict[str, lmfit.Parameter]]:
+    ) -> Callable[[npt.NDArray[np.float64], npt.NDArray[np.float64]], dict[str, lmfit.Parameter]]:
         def guess(
-            x: npt.NDArray[np.float_], y: npt.NDArray[np.float_]
+            x: npt.NDArray[np.float64], y: npt.NDArray[np.float64]
         ) -> dict[str, lmfit.Parameter]:
             numerator = sum(x * y) - sum(x) * sum(y)
             denominator = sum(x**2) - sum(x) ** 2
@@ -183,9 +184,9 @@ class Polynomial(Fit):
     @classmethod
     def guess(
         cls, *args: int
-    ) -> Callable[[npt.NDArray[np.float_], npt.NDArray[np.float_]], dict[str, lmfit.Parameter]]:
+    ) -> Callable[[npt.NDArray[np.float64], npt.NDArray[np.float64]], dict[str, lmfit.Parameter]]:
         def guess(
-            x: npt.NDArray[np.float_], y: npt.NDArray[np.float_]
+            x: npt.NDArray[np.float64], y: npt.NDArray[np.float64]
         ) -> dict[str, lmfit.Parameter]:
             init_guess = {}
             degree = cls._check_degree(args)
@@ -201,32 +202,30 @@ class Polynomial(Fit):
 
 
 class DampedOsc(Fit):
-
     @classmethod
     def model(cls, *args: int) -> lmfit.Model:
+        def model(
+            x: npt.NDArray[np.float_], center: float, amp: float, freq: float, width: float
+        ) -> npt.NDArray[np.float_]:
+            return amp * np.cos((x - center) * freq) * np.exp(-(((x - center) / width) ** 2))
 
-        def model(x: float, center: float, amp: float, freq: float, width: float):
-            return amp * np.cos((x - center) * freq) * \
-                np.exp(-((x - center) / width)**2)
-        
         return lmfit.Model(model)
 
     @classmethod
     def guess(
         cls, *args: int
-    ) -> Callable[[npt.NDArray[np.float_], npt.NDArray[np.float_]], dict[str, lmfit.Parameter]]:
+    ) -> Callable[[npt.NDArray[np.float64], npt.NDArray[np.float64]], dict[str, lmfit.Parameter]]:
         def guess(
-            x: npt.NDArray[np.float_], y: npt.NDArray[np.float_]
+            x: npt.NDArray[np.float64], y: npt.NDArray[np.float64]
         ) -> dict[str, lmfit.Parameter]:
-
             if len(y) == 0:  # No data so guessing standard DampedOsc
                 return {
-                    "center": lmfit.Parameter("center",0),
-                    "amp": lmfit.Parameter("amp",1),
+                    "center": lmfit.Parameter("center", 0),
+                    "amp": lmfit.Parameter("amp", 1),
                     "freq": lmfit.Parameter("freq", 2 * np.pi),
-                    "width": lmfit.Parameter("width",1) 
+                    "width": lmfit.Parameter("width", 1),
                 }
-            
+
             peak = x[np.argmax(y)]
             valley = x[np.argmin(y)]
 
@@ -238,5 +237,106 @@ class DampedOsc(Fit):
             }
 
             return init_guess
+
+        return guess
+
+
+class SlitScan(Fit):
+    @classmethod
+    def _check_input(
+        cls,
+        background: float,
+        inflection_1: float,
+        gradient: float,
+        inflection_2: float,
+        asymptote: float,
+    ) -> float:
+        if gradient < 0:
+            return 0
+
+        elif inflection_2 <= inflection_1:
+            return 0
+
+        baseline = gradient * (inflection_2 - inflection_1) + background - asymptote
+
+        if baseline >= 0:
+            return 0
+
+        return baseline
+
+    @classmethod
+    def model(cls, *args: int) -> lmfit.Model:
+        def model(
+            x: npt.NDArray[np.float_],
+            background: float,
+            inflection_1: float,
+            gradient: float,
+            inflection_2: float,
+            asymptote: float,
+        ) -> npt.NDArray[np.float_]:
+            baseline = cls._check_input(background, inflection_1, gradient, inflection_2, asymptote)
+
+            y = np.zeros_like(x)
+
+            if baseline == 0:
+                y.fill(background)
+                return y
+
+            for i, xi in enumerate(x):
+                if xi <= inflection_1:
+                    y[i] = background
+
+                elif inflection_1 < xi <= inflection_2:
+                    y[i] = gradient * (xi - inflection_1) + background
+
+                elif xi > inflection_2:
+                    y[i] = asymptote + baseline * np.e ** (
+                        (gradient / baseline) * (xi - inflection_2)
+                    )
+
+            return y
+
+        return lmfit.Model(model)
+
+    @classmethod
+    def guess(
+        cls, *args: int
+    ) -> Callable[[npt.NDArray[np.float64], npt.NDArray[np.float64]], dict[str, lmfit.Parameter]]:
+        def guess(
+            x: npt.NDArray[np.float64], y: npt.NDArray[np.float64]
+        ) -> dict[str, lmfit.Parameter]:
+            dy = np.gradient(y)
+            max_dy = np.max(dy)
+            dx = np.mean(np.diff(x))
+            gradient = max_dy / dx
+
+            d2y = np.diff(dy)
+            inflection_2x = x[np.argmin(d2y)]
+
+            background = min(y)
+            inflection_1x = inflection_2x + (background - y[np.argmax(y)]) / gradient
+
+            asymptote = np.max(y) + (y[-1] - y[-2])
+
+            baseline = cls._check_input(
+                background, inflection_1x, gradient, inflection_2x, asymptote
+            )
+
+            if baseline == 0:
+                return {
+                    "background": lmfit.Parameter("background", 0),
+                    "inflection_1": lmfit.Parameter("inflection_1", 1),
+                    "gradient": lmfit.Parameter("gradient", 1),
+                    "inflection_2": lmfit.Parameter("inflection_2", 10),
+                    "asymptote": lmfit.Parameter("asymptote", 11),
+                }
+
+            return {
+                "background": lmfit.Parameter("background", background),
+                "inflection_1": lmfit.Parameter("inflection_1", inflection_1x),
+                "gradient": lmfit.Parameter("gradient", gradient),
+                "inflection_2": lmfit.Parameter("inflection_2", inflection_2x),
+                "asymptote": lmfit.Parameter("asymptote", np.max(y) + (y[-1] - y[-2])),
+            }
 
         return guess
