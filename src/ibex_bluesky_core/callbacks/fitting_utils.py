@@ -4,6 +4,8 @@ from typing import Callable
 import lmfit
 import numpy as np
 import numpy.typing as npt
+import scipy
+import scipy.special
 from lmfit.models import PolynomialModel
 from numpy import polynomial as p
 
@@ -152,7 +154,6 @@ class Linear(Fit):
         def guess(
             x: npt.NDArray[np.float64], y: npt.NDArray[np.float64]
         ) -> dict[str, lmfit.Parameter]:
-            
             # Linear Regression
             numerator = sum(x * y) - sum(x) * sum(y)
             denominator = sum(x**2) - sum(x) ** 2
@@ -267,7 +268,7 @@ class SlitScan(Fit):
             return 0
 
         baseline = gradient * (inflection_2 - inflection_1) + background - asymptote
-        # What y value should the function start from 
+        # What y value should the function start from
 
         if baseline >= 0:
             return 0
@@ -284,8 +285,9 @@ class SlitScan(Fit):
             inflection_2: float,
             asymptote: float,
         ) -> npt.NDArray[np.float_]:
-            
-            baseline = cls._check_params(background, inflection_1, gradient, inflection_2, asymptote)
+            baseline = cls._check_params(
+                background, inflection_1, gradient, inflection_2, asymptote
+            )
 
             y = np.zeros_like(x)
 
@@ -294,13 +296,15 @@ class SlitScan(Fit):
                 return y
 
             for i, xi in enumerate(x):
-                if xi <= inflection_1: # Flat part before inflection_1
+                if xi <= inflection_1:  # Flat part before inflection_1
                     y[i] = background
 
-                elif inflection_1 < xi <= inflection_2: # Sloped linear part between inflection_1 and inflection_2
+                elif (
+                    inflection_1 < xi <= inflection_2
+                ):  # Sloped linear part between inflection_1 and inflection_2
                     y[i] = gradient * (xi - inflection_1) + background
 
-                elif xi > inflection_2: # Curved part converging to a y value after inflection_2
+                elif xi > inflection_2:  # Curved part converging to a y value after inflection_2
                     y[i] = asymptote + baseline * np.e ** (
                         (gradient / baseline) * (xi - inflection_2)
                     )
@@ -316,19 +320,20 @@ class SlitScan(Fit):
         def guess(
             x: npt.NDArray[np.float64], y: npt.NDArray[np.float64]
         ) -> dict[str, lmfit.Parameter]:
-            
             max_slit_size = cls._check_input(args)
 
             # Guessing gradient of linear-slope part of function
-            dy = np.gradient(y) # Return array of differences in y
-            max_dy = np.max(dy) # Return max y difference, this will always be on the upwards slope
-            dx = x[1] - x[0] # Find x step 
+            dy = np.gradient(y)  # Return array of differences in y
+            max_dy = np.max(dy)  # Return max y difference, this will always be on the upwards slope
+            dx = x[1] - x[0]  # Find x step
             gradient = max_dy / dx
 
-            d2y = np.diff(dy) # Double differentiate y to find how gradients change
-            inflection_2x = x[np.argmin(d2y)] # Where there is negative gradient change ~ inflection pt2
+            d2y = np.diff(dy)  # Double differentiate y to find how gradients change
+            inflection_2x = x[
+                np.argmin(d2y)
+            ]  # Where there is negative gradient change ~ inflection pt2
 
-            background = min(y) # The lowest y value is the background
+            background = min(y)  # The lowest y value is the background
             inflection_1x = inflection_2x + (background - y[np.argmax(y)]) / gradient
             # As linear, using y - y1 = m(x - x1) -> x = (y - y1) / gradient - x1
             # To find inflection pt1
@@ -338,7 +343,7 @@ class SlitScan(Fit):
 
             baseline = cls._check_params(
                 background, inflection_1x, gradient, inflection_2x, asymptote
-            ) # Check that params produce a value function output
+            )  # Check that params produce a value function output
 
             if baseline == 0:
                 return {
@@ -353,8 +358,39 @@ class SlitScan(Fit):
                 "background": lmfit.Parameter("background", background),
                 "inflection_1": lmfit.Parameter("inflection_1", inflection_1x),
                 "gradient": lmfit.Parameter("gradient", gradient),
-                "inflection_2": lmfit.Parameter("inflection_2", inflection_2x, min=inflection_1x + max_slit_size),
+                "inflection_2": lmfit.Parameter(
+                    "inflection_2", inflection_2x, min=inflection_1x + max_slit_size
+                ),
                 "asymptote": lmfit.Parameter("asymptote", np.max(y) + (y[-1] - y[-2])),
             }
+
+        return guess
+
+
+class ERF(Fit):
+    @classmethod
+    def model(cls, *args: int) -> lmfit.Model:
+        def model(
+            x: npt.NDArray[np.float_], cen: float, stretch: float, scale: float, background: float
+        ) -> npt.NDArray[np.float_]:
+            return background + scale * scipy.special.erf(stretch * (x - cen))
+
+        return lmfit.Model(model)
+
+    @classmethod
+    def guess(
+        cls, *args: int
+    ) -> Callable[[npt.NDArray[np.float64], npt.NDArray[np.float64]], dict[str, lmfit.Parameter]]:
+        def guess(
+            x: npt.NDArray[np.float64], y: npt.NDArray[np.float64]
+        ) -> dict[str, lmfit.Parameter]:
+            init_guess = {
+                "cen": lmfit.Parameter("cen", np.mean(x)),
+                "stretch": lmfit.Parameter("stretch", (max(x) - min(x)) / 2),
+                "scale": lmfit.Parameter("scale", (max(y) - min(y)) / 2),
+                "background": lmfit.Parameter("background", min(y)),
+            }
+
+            return init_guess
 
         return guess
