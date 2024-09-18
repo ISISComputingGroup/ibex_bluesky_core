@@ -44,7 +44,8 @@ dependencies = [
   "bluesky",
   "ophyd-async[ca]",
   "matplotlib",
-  "numpy"
+  "numpy",
+  "scipp",
 ]
 
 [project.optional-dependencies]
@@ -76,6 +77,12 @@ omit = [
 
 [tool.coverage.report]
 fail_under = 100
+exclude_lines = [
+  "pragma: no cover",
+  "if TYPE_CHECKING:",
+  "if typing.TYPE_CHECKING:",
+  "@abstractmethod",
+]
 
 [tool.coverage.html]
 directory = "coverage_html_report"

@@ -1,10 +1,13 @@
 # pyright: reportMissingParameterType=false
 from enum import Enum
+from unittest.mock import AsyncMock
 from xml.etree import ElementTree as ET
 
 import bluesky.plan_stubs as bps
 import numpy as np
 import pytest
+import scipp as sc
+import scipp.testing
 from bluesky.run_engine import RunEngine
 from ophyd_async.core import get_mock_put, set_mock_value
 
@@ -53,6 +56,13 @@ async def dae() -> Dae:
     dae = Dae("UNITTEST:MOCK:")
     await dae.connect(mock=True)
     return dae
+
+
+@pytest.fixture
+async def spectrum() -> DaeSpectra:
+    spectrum = DaeSpectra(dae_prefix="UNITTEST:MOCK:", spectra=1, period=1)
+    await spectrum.connect(mock=True)
+    return spectrum
 
 
 def test_dae_naming(dae: Dae):
@@ -945,17 +955,70 @@ def test_empty_dae_settings_dataclass_does_not_change_any_settings(dae: Dae, RE:
     assert after.wiring_filepath.endswith("NIMROD84modules+9monitors+LAB5Oct2012Wiring.dat")
 
 
-async def test_read_spectra_correctly_sizes_arrays():
-    spectrum = DaeSpectra(dae_prefix="unittest", spectra=1, period=1)
-    await spectrum.connect(mock=True)
-
+async def test_read_spectra_correctly_sizes_arrays(spectrum: DaeSpectra):
     set_mock_value(spectrum.tof, np.zeros(dtype=np.float32, shape=(1000,)))
     set_mock_value(spectrum.tof_size, 100)
     set_mock_value(spectrum.counts, np.zeros(dtype=np.float32, shape=(2000,)))
     set_mock_value(spectrum.counts_size, 200)
     set_mock_value(spectrum.counts_per_time, np.zeros(dtype=np.float32, shape=(3000,)))
     set_mock_value(spectrum.counts_per_time_size, 300)
+    set_mock_value(spectrum.tof_edges, np.zeros(dtype=np.float32, shape=(4000,)))
+    set_mock_value(spectrum.tof_edges_size, 400)
 
     assert (await spectrum.read_tof()).shape == (100,)
     assert (await spectrum.read_counts()).shape == (200,)
     assert (await spectrum.read_counts_per_time()).shape == (300,)
+    assert (await spectrum.read_tof_edges()).shape == (400,)
+
+
+async def test_read_spectrum_dataarray(spectrum: DaeSpectra):
+    set_mock_value(spectrum.counts, np.array([1000, 2000, 3000], dtype=np.float32))
+    set_mock_value(spectrum.counts_size, 3)
+    set_mock_value(spectrum.tof_edges, np.array([0, 1, 2, 3], dtype=np.float32))
+    set_mock_value(spectrum.tof_edges_size, 4)
+
+    spectrum.tof_edges.describe = AsyncMock(return_value={spectrum.tof_edges.name: {"units": "us"}})
+    da = await spectrum.read_spectrum_dataarray()
+
+    scipp.testing.assert_identical(
+        da,
+        sc.DataArray(
+            data=sc.Variable(
+                dims=["tof"],
+                values=[1000, 2000, 3000],
+                variances=[1000, 2000, 3000],
+                unit=sc.units.counts,
+                dtype="float32",
+            ),
+            coords={
+                "tof": sc.Variable(
+                    dims=["tof"], values=[0, 1, 2, 3], dtype="float32", unit=sc.units.us
+                )
+            },
+        ),
+    )
+
+
+async def test_if_tof_edges_doesnt_have_enough_points_then_read_spec_dataarray_gives_error(
+    spectrum: DaeSpectra,
+):
+    set_mock_value(spectrum.counts, np.array([0]))
+    set_mock_value(spectrum.counts_size, 1)
+    set_mock_value(spectrum.tof_edges, np.array([0]))
+    set_mock_value(spectrum.tof_edges_size, 1)
+
+    with pytest.raises(ValueError, match="Time-of-flight edges must have size"):
+        await spectrum.read_spectrum_dataarray()
+
+
+async def test_if_tof_edges_has_no_units_then_read_spec_dataarray_gives_error(
+    spectrum: DaeSpectra,
+):
+    set_mock_value(spectrum.counts, np.array([0]))
+    set_mock_value(spectrum.counts_size, 1)
+    set_mock_value(spectrum.tof_edges, np.array([0, 0]))
+    set_mock_value(spectrum.tof_edges_size, 2)
+    spectrum.tof_edges.describe = AsyncMock(return_value={spectrum.tof_edges.name: {"units": None}})
+
+    with pytest.raises(ValueError, match="Could not determine engineering units"):
+        await spectrum.read_spectrum_dataarray()
