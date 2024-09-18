@@ -423,3 +423,41 @@ class ERFC(Fit):
             return init_guess
 
         return guess
+
+
+class TopHat(Fit):
+    @classmethod
+    def model(cls, *args: int) -> lmfit.Model:
+        def model(
+            x: npt.NDArray[np.float_], cen: float, width: float, height: float, background: float
+        ) -> npt.NDArray[np.float_]:
+            y = x * 0
+            y[np.abs(x - cen) < width / 2] = height
+            return background + y
+
+        return lmfit.Model(model)
+
+    @classmethod
+    def guess(
+        cls, *args: int
+    ) -> Callable[[npt.NDArray[np.float64], npt.NDArray[np.float64]], dict[str, lmfit.Parameter]]:
+        def guess(
+            x: npt.NDArray[np.float64], y: npt.NDArray[np.float64]
+        ) -> dict[str, lmfit.Parameter]:
+            top = np.where(y > np.mean(y))[0]
+
+            if len(top) > 0:
+                width = x[np.max(top)] - x[np.min(top)]
+            else:
+                width = (max(x) - min(x)) / 2
+
+            init_guess = {
+                "cen": lmfit.Parameter("cen", np.mean(x)),
+                "width": lmfit.Parameter("width", width),
+                "height": lmfit.Parameter("height", (max(y) - min(y))),
+                "background": lmfit.Parameter("background", min(y)),
+            }
+
+            return init_guess
+
+        return guess
