@@ -53,12 +53,12 @@ We support **standard fits** for the following trends in data:
 | Polynomial |Polynomial | Polynomial Degree (int) |
 | Gaussian | Gaussian | None |
 | Lorentzian | Lorentzian | None |
-| Damped Oscillator | DampedOsc | - |
-| Slit Scan Fit | SlitScan | - |
-| Error Function | ERF | - |
-| Complementary Error Function | CERF| - |
-| Top Hat | TopHat | - |
-| Trapezoid | Trapezoid | - |
+| Damped Oscillator | DampedOsc | None |
+| Slit Scan Fit | SlitScan | Max Slit Width (int) |
+| Error Function | ERF | None |
+| Complementary Error Function | ERFC | None |
+| Top Hat | TopHat | None |
+| Trapezoid | Trapezoid | None |
 | Centre of Mass* | COM | - |
 
 -------
