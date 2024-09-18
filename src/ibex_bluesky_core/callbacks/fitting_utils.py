@@ -394,3 +394,32 @@ class ERF(Fit):
             return init_guess
 
         return guess
+
+
+class ERFC(Fit):
+    @classmethod
+    def model(cls, *args: int) -> lmfit.Model:
+        def model(
+            x: npt.NDArray[np.float_], cen: float, stretch: float, scale: float, background: float
+        ) -> npt.NDArray[np.float_]:
+            return background + scale * scipy.special.erfc(stretch * (x - cen))
+
+        return lmfit.Model(model)
+
+    @classmethod
+    def guess(
+        cls, *args: int
+    ) -> Callable[[npt.NDArray[np.float64], npt.NDArray[np.float64]], dict[str, lmfit.Parameter]]:
+        def guess(
+            x: npt.NDArray[np.float64], y: npt.NDArray[np.float64]
+        ) -> dict[str, lmfit.Parameter]:
+            init_guess = {
+                "cen": lmfit.Parameter("cen", np.mean(x)),
+                "stretch": lmfit.Parameter("stretch", (max(x) - min(x)) / 2),
+                "scale": lmfit.Parameter("scale", (max(y) - min(y)) / 2),
+                "background": lmfit.Parameter("background", min(y)),
+            }
+
+            return init_guess
+
+        return guess
