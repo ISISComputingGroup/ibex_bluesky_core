@@ -95,13 +95,6 @@ class Lorentzian(Fit):
         def guess(
             x: npt.NDArray[np.float64], y: npt.NDArray[np.float64]
         ) -> dict[str, lmfit.Parameter]:
-            if len(y) == 0:  # No data so guessing standard lorentzian
-                return {
-                    "amp": lmfit.Parameter("A", 1),
-                    "sigma": lmfit.Parameter("sigma", 1, min=0),
-                    "center": lmfit.Parameter("center", 0),
-                }
-
             amp_index = np.argmax(y) if np.max(y) > abs(np.min(y)) else np.argmin(y)
             amp = y[amp_index]
             center = x[amp_index]
@@ -221,14 +214,6 @@ class DampedOsc(Fit):
         def guess(
             x: npt.NDArray[np.float64], y: npt.NDArray[np.float64]
         ) -> dict[str, lmfit.Parameter]:
-            if len(y) == 0:  # No data so guessing standard DampedOsc
-                return {
-                    "center": lmfit.Parameter("center", 0),
-                    "amp": lmfit.Parameter("amp", 1),
-                    "freq": lmfit.Parameter("freq", 2 * np.pi),
-                    "width": lmfit.Parameter("width", 1),
-                }
-
             peak = x[np.argmax(y)]
             valley = x[np.argmin(y)]
 
@@ -361,7 +346,7 @@ class SlitScan(Fit):
                 "inflection_2": lmfit.Parameter(
                     "inflection_2", inflection_2x, min=inflection_1x + max_slit_size
                 ),
-                "asymptote": lmfit.Parameter("asymptote", np.max(y) + (y[-1] - y[-2])),
+                "asymptote": lmfit.Parameter("asymptote", asymptote),
             }
 
         return guess
@@ -445,6 +430,7 @@ class TopHat(Fit):
             x: npt.NDArray[np.float64], y: npt.NDArray[np.float64]
         ) -> dict[str, lmfit.Parameter]:
             top = np.where(y > np.mean(y))[0]
+            # Guess that any value above the mean is the top part
 
             if len(top) > 0:
                 width = x[np.max(top)] - x[np.min(top)]
@@ -454,6 +440,107 @@ class TopHat(Fit):
             init_guess = {
                 "cen": lmfit.Parameter("cen", np.mean(x)),
                 "width": lmfit.Parameter("width", width),
+                "height": lmfit.Parameter("height", (max(y) - min(y))),
+                "background": lmfit.Parameter("background", min(y)),
+            }
+
+            return init_guess
+
+        return guess
+
+
+class Trapezoid(Fit):
+    @classmethod
+    def _check_params(
+        cls,
+        x0: float,
+        y_intercept0: float,
+        width_top: float,
+        width_bottom: float,
+        background: float,
+        gradient: float,
+    ) -> float:
+        y = gradient * x0 + y_intercept0
+
+        if y > background:
+            return False
+
+        elif width_bottom < width_top:
+            return False
+
+        return True
+
+    @classmethod
+    def model(cls, *args: int) -> lmfit.Model:
+        def model(
+            x: npt.NDArray[np.float_],
+            cen: float,
+            width_top: float,
+            width_bottom: float,
+            height: float,
+            background: float,
+        ) -> npt.NDArray[np.float_]:
+            y = np.empty_like(x)
+            y.fill(background)
+
+            #                x1______x2
+            #               /          \
+            #              /            \
+            #             /              \
+            #    ________/                \________
+            #          x0                  x3
+
+            x0 = cen - width_bottom / 2
+            x1 = cen - width_top / 2
+            x2 = cen + width_top / 2
+            x3 = cen + width_bottom / 2
+
+            dx = x1 - x0
+            gradient = height / dx  # Gradient of slope
+            y_intercept0 = background - gradient * x0  # To find the slope function
+            y_intercept1 = background + gradient * x3
+
+            if cls._check_params(x0, y_intercept0, width_top, width_bottom, background, gradient):
+                for i, xi in enumerate(x):
+                    if x0 <= xi < x1:  # First slope
+                        y[i] = gradient * x[i] + y_intercept0
+
+                    elif x1 <= xi < x2:  # Top
+                        y[i] = height + background
+
+                    elif x2 <= xi < x3:  # Second slope
+                        y[i] = (-gradient) * x[i] + y_intercept1
+
+            return y
+
+        return lmfit.Model(model)
+
+    @classmethod
+    def guess(
+        cls, *args: int
+    ) -> Callable[[npt.NDArray[np.float64], npt.NDArray[np.float64]], dict[str, lmfit.Parameter]]:
+        def guess(
+            x: npt.NDArray[np.float64], y: npt.NDArray[np.float64]
+        ) -> dict[str, lmfit.Parameter]:
+            top = np.where(y > np.mean(y))[0]
+            # Guess that any value above the mean is the top part
+
+            if len(top) > 0:
+                width_top = x[np.max(top)] - x[np.min(top)]
+            else:
+                width_top = (max(x) - min(x)) / 2
+
+            cen = np.mean(x)
+            x1 = cen - width_top / 2
+            x0 = 0.5 * (np.min(x) + x1)  # Guess that x0 is half way between min(x) and x1
+            x2 = cen + width_top / 2
+            x3 = 0.5 * (np.max(x) + x2)  # Guess that x3 is half way between max(x) and x2
+            width_bottom = x3 - x0
+
+            init_guess = {
+                "cen": lmfit.Parameter("cen", cen),
+                "width_top": lmfit.Parameter("width_top", width_top, max=width_bottom),
+                "width_bottom": lmfit.Parameter("width_bottom", width_bottom, min=width_top),
                 "height": lmfit.Parameter("height", (max(y) - min(y))),
                 "background": lmfit.Parameter("background", min(y)),
             }
