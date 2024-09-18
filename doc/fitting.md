@@ -59,11 +59,11 @@ We support **standard fits** for the following trends in data:
 | Complementary Error Function | ERFC | None |
 | Top Hat | TopHat | None |
 | Trapezoid | Trapezoid | None |
-| Centre of Mass* | COM | - |
+| PeakStats (COM) **\*** | - | - 
+
+\* Native to Bluesky there is support for `PeakStats` which "computes peak statsitics after a run finishes." See [Bluesky docs](https://blueskyproject.io/bluesky/main/callbacks.html#peakstats) for more information on this. Similar to `LiveFit` and `LiveFitPLot`, `PeakStats` is a callback and must be passed to `PeakStatsPlot` to be plotted on a set of axes, which is subscribed to by the `RunEngine`.
 
 -------
-
-\* some message about com
 
 Each of the above fit classes has a `.fit()` which returns an object of type `FitMethod`. This tells `LiveFit` how to perform fitting on the data. `FitMethod` is defined in `ibex_bluesky_core.callbacks.fitting`.
 
