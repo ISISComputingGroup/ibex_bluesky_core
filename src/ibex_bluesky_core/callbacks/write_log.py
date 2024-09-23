@@ -30,7 +30,7 @@ class OutputLoggingCallback(CallbackBase):
         def file_creation():
             self.save_path.mkdir(parents=True, exist_ok=True)
             self.current_start_document = doc["uid"]
-            self.filename = f"{self.save_path}\{self.current_start_document}.txt"
+            self.filename = self.save_path / f"{self.current_start_document}.txt"
         
             assert self.filename is not None, "Could not create filename."
             assert self.current_start_document is not None, "Saw a non-start document before a start."
@@ -47,7 +47,7 @@ class OutputLoggingCallback(CallbackBase):
                 if key not in start_data_reordered:
                     start_data_reordered[key] = doc[key]
             
-            start_data_write(start_data_reordered)
+            return start_data_reordered
 
         def start_data_write(start_data_reordered: str):
             with open(self.filename, "a") as outfile:
@@ -55,8 +55,9 @@ class OutputLoggingCallback(CallbackBase):
                     outfile.write('%s: %s\n' % (key,value))
 
         file_creation()
-        start_data_str()
-
+        start_data_reordered = start_data_str()
+        start_data_write(start_data_reordered)
+        
     def descriptor(self, doc: EventDescriptor) -> None:
         def descriptor_data_str():
             if doc['name'] != 'primary':
@@ -64,7 +65,7 @@ class OutputLoggingCallback(CallbackBase):
             
             descriptor_id = doc['uid']
             self.descriptors[descriptor_id] = doc
-        
+
         descriptor_data_str()
 
     def event(self, doc: Event) -> None:
@@ -87,6 +88,11 @@ class OutputLoggingCallback(CallbackBase):
                         formatted_event_data[key] = formatted_value
                     else: 
                         formatted_event_data[key] = event_data[key]
+            
+            with open(self.filename, "a", newline='') as outfile:
+                if doc["seq_num"] == 1:
+                    outfile.write(f"\ndescriptor_id{descriptor_id}\n")
+                    outfile.write(f"\nevent_data{event_data}\n")
 
             event_data_write(units_line, formatted_event_data)
 
