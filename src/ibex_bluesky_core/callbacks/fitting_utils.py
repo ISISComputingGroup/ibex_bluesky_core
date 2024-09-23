@@ -246,61 +246,31 @@ class SlitScan(Fit):
         return max_slit_gap
 
     @classmethod
-    def _check_params(
-        cls,
-        background: float,
-        inflection_1: float,
-        gradient: float,
-        inflection_2: float,
-        asymptote: float,
-    ) -> float:
-        if gradient < 0:
-            return 0
-
-        elif inflection_2 <= inflection_1:
-            return 0
-
-        baseline = gradient * (inflection_2 - inflection_1) + background - asymptote
-        # What y value should the function start from
-
-        if baseline >= 0:
-            return 0
-
-        return baseline
-
-    @classmethod
     def model(cls, *args: int) -> lmfit.Model:
         def model(
             x: npt.NDArray[np.float_],
             background: float,
-            inflection_1: float,
+            inflection0: float,
             gradient: float,
-            inflection_2: float,
-            asymptote: float,
+            inflections_diff: float,
+            height: float,
         ) -> npt.NDArray[np.float_]:
-            baseline = cls._check_params(
-                background, inflection_1, gradient, inflection_2, asymptote
+            linear_seg = background + gradient * (x - inflection0)
+
+            stretch = height - gradient * inflections_diff
+            exp_seg = (
+                stretch
+                * scipy.special.erf(
+                    gradient * np.sqrt(np.pi) / (2 * stretch) * (x - inflection0 - inflections_diff)
+                )
+                + gradient * inflections_diff
+                + background
             )
 
-            y = np.zeros_like(x)
+            linear_seg = np.maximum(linear_seg, background)
+            exp_seg = np.maximum(exp_seg, background)
 
-            if baseline == 0:
-                y.fill(background)
-                return y
-
-            for i, xi in enumerate(x):
-                if xi <= inflection_1:  # Flat part before inflection_1
-                    y[i] = background
-
-                elif (
-                    inflection_1 < xi <= inflection_2
-                ):  # Sloped linear part between inflection_1 and inflection_2
-                    y[i] = gradient * (xi - inflection_1) + background
-
-                elif xi > inflection_2:  # Curved part converging to a y value after inflection_2
-                    y[i] = asymptote + baseline * np.e ** (
-                        (gradient / baseline) * (xi - inflection_2)
-                    )
+            y = np.minimum(linear_seg, exp_seg)
 
             return y
 
@@ -322,40 +292,26 @@ class SlitScan(Fit):
             gradient = max_dy / dx
 
             d2y = np.diff(dy)  # Double differentiate y to find how gradients change
-            inflection_2x = x[
-                np.argmin(d2y)
-            ]  # Where there is negative gradient change ~ inflection pt2
+            inflection0 = x[np.argmax(d2y)]  # Where there is positive gradient change
 
             background = min(y)  # The lowest y value is the background
-            inflection_1x = inflection_2x + (background - y[np.argmax(y)]) / gradient
+            inflections_diff = -(background - y[np.argmax(y)]) / gradient
             # As linear, using y - y1 = m(x - x1) -> x = (y - y1) / gradient - x1
-            # To find inflection pt1
 
             # The highest y value + slightly more to account for further convergence
-            asymptote = np.max(y) + (y[-1] - y[-2])
+            height = np.max(y) + (y[-1] - y[-2]) - background
 
-            baseline = cls._check_params(
-                background, inflection_1x, gradient, inflection_2x, asymptote
-            )  # Check that params produce a value function output
-
-            if baseline == 0:
-                return {
-                    "background": lmfit.Parameter("background", 0),
-                    "inflection_1": lmfit.Parameter("inflection_1", 1),
-                    "gradient": lmfit.Parameter("gradient", 1),
-                    "inflection_2": lmfit.Parameter("inflection_2", 10),
-                    "asymptote": lmfit.Parameter("asymptote", 11),
-                }
-
-            return {
+            init_guess = {
                 "background": lmfit.Parameter("background", background),
-                "inflection_1": lmfit.Parameter("inflection_1", inflection_1x),
-                "gradient": lmfit.Parameter("gradient", gradient),
-                "inflection_2": lmfit.Parameter(
-                    "inflection_2", inflection_2x, min=inflection_1x + max_slit_size
+                "inflection0": lmfit.Parameter("inflection0", inflection0),
+                "gradient": lmfit.Parameter("gradient", gradient, min=0),
+                "inflections_diff": lmfit.Parameter(
+                    "inflections_diff", inflections_diff, min=max_slit_size
                 ),
-                "asymptote": lmfit.Parameter("asymptote", asymptote),
+                "height": lmfit.Parameter("height", height),
             }
+
+            return init_guess
 
         return guess
 
