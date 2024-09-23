@@ -48,8 +48,8 @@ class LiveFit(_DefaultLiveFit):
     def __init__(
         self,
         method: FitMethod,
-        dependant_var_name: str,
-        independent_var_name: str,
+        y: str,
+        x: str,
         *,
         update_every: int = 1,
     ) -> None:
@@ -60,13 +60,15 @@ class LiveFit(_DefaultLiveFit):
 
         super().__init__(
             model=method.model,
-            y=dependant_var_name,
-            independent_vars={"x": independent_var_name},
+            y=y,
+            independent_vars={"x": x},
             update_every=update_every,
         )
 
     def update_fit(self) -> None:
+        print("here")
         if self.method.guess is not None:
+            print(f"x: {self.independent_vars_data.values()}, y: {self.ydata}")
             self.init_guess = self.method.guess(
                 np.array(next(iter(self.independent_vars_data.values()))),
                 np.array(self.ydata),

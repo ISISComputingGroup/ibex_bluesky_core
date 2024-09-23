@@ -28,7 +28,7 @@ class Fit(ABC):
     @classmethod
     def fit(cls, *args: int) -> FitMethod:
         return FitMethod(model=cls.model(*args), guess=cls.guess(*args))
-
+        
 
 class Gaussian(Fit):
     @classmethod
