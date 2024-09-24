@@ -33,9 +33,9 @@ This documentation contains information for the bluesky plan stubs & devices for
 
    architectural_decisions/*
 
-API Reference
-=============
+
 .. toctree::
    :maxdepth: 2
+   :caption: API reference
 
    _api
