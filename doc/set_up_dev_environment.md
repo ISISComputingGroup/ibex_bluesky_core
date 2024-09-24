@@ -10,6 +10,7 @@ git clone https://github.com/ISISComputingGroup/ibex_bluesky_core.git
 ### Create & activate a python virtual environment (windows):
 
 ```
+cd c:\Instrument\Dev\ibex_bluesky_core
 python -m venv .venv
 .venv\Scripts\activate
 ```
