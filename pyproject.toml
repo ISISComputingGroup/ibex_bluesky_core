@@ -55,6 +55,11 @@ dev = [
   "pytest-cov",
   "pyqt6",  # For dev testing with matplotlib's qt backend.
 ]
+doc = [
+  "sphinx", 
+  "sphinx_rtd_theme", 
+  "myst_parser",
+]
 
 [project.urls]
 "Homepage" = "https://github.com/isiscomputinggroup/ibex_bluesky_core"
