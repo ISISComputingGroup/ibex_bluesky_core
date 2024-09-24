@@ -11,7 +11,7 @@ scientifically interesting PV.
 
 > **_ℹ️_**  
 > All signals, including blocks, in bluesky have a strong type. This must match
-> the underlying EPICS type of the PV, which helps to catch problems up-front rather than
+>  the underlying EPICS type of the PV, which helps to catch problems up-front rather than
 >  the middle of a plan. Example error at the start of a plan, from trying to connect a `str` block to a `float` PV:
 > ```
 > ophyd_async.core._utils.NotConnected:
