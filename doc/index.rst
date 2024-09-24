@@ -35,8 +35,7 @@ This documentation contains information for the bluesky plan stubs & devices for
 
 API Reference
 =============
-.. autosummary::
-   :toctree: generated
+.. toctree::
+   :maxdepth: 2
 
-   ibex_bluesky_core
-
+   _api

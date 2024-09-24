@@ -31,8 +31,8 @@ extensions = [
     # Add links to source code in API docs
     "sphinx.ext.viewcode",
 ]
-napoleon_google_docstring = True
-napoleon_numpy_docstring = False
+napoleon_google_docstring = False
+napoleon_numpy_docstring = True
 
 templates_path = ["_templates"]
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
