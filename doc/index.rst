@@ -1,13 +1,42 @@
 
 
 Welcome to ibex_bluesky_core's documentation!
-===================================
+=============================================
+
+This documentation contains information for the bluesky plan stubs & devices for use at ISIS.
 
 .. toctree::
    :maxdepth: 2
-   :caption: Contents:
+   :caption: Devices
+   :glob:
+   
+   devices/*
 
-   blocks.md
-   plotting.md
-   docs_logging_callback.md
-   set_up_dev_environment.md
+.. toctree::
+   :maxdepth: 2
+   :caption: Callbacks
+   :glob:
+
+   callbacks/*
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Developer information
+   :glob:
+
+   dev/*
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Architectural decisions
+   :glob:
+
+   architectural_decisions/*
+
+API Reference
+=============
+.. autosummary::
+   :toctree: generated
+
+   ibex_bluesky_core
+
