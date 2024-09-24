@@ -159,5 +159,6 @@ cython_debug/
 
 coverage_html_report/
 
+# Sphinx generated
 doc/generated/*
 _build/
