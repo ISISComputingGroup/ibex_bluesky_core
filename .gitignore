@@ -158,3 +158,6 @@ cython_debug/
 .vscode/
 
 coverage_html_report/
+
+doc/generated/*
+_build/
