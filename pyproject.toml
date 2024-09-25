@@ -47,18 +47,19 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+doc = [
+  "sphinx", 
+  "sphinx_rtd_theme", 
+  "myst_parser",
+]
 dev = [
+  "ibex_bluesky_core[doc]",
   "ruff>=0.6",
   "pyright",
   "pytest",
   "pytest-asyncio",
   "pytest-cov",
   "pyqt6",  # For dev testing with matplotlib's qt backend.
-]
-doc = [
-  "sphinx", 
-  "sphinx_rtd_theme", 
-  "myst_parser",
 ]
 
 [project.urls]
