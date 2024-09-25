@@ -48,7 +48,7 @@ class BlockWriteConfig(Generic[T]):
         should return true if the value has successfully set and is "ready", or False otherwise.
 
         This can be used to implement arbitrary tolerance behaviour. For example::
-        
+
             def check(setpoint: T, actual: T) -> bool:
                 return setpoint - 0.1 <= actual <= setpoint + 0.1
 
@@ -154,7 +154,7 @@ class BlockRw(BlockR[T], Movable):
         functionality is desired, BlockRwRbv is a more suitable type.
 
         If you *explicitly* need to read the setpoint from a BlockRw, you can do so in a plan with::
-        
+
             import bluesky.plan_stubs as bps
             block: BlockRw = ...
             bps.read(block.setpoint)

@@ -58,7 +58,7 @@ def get_run_engine() -> RunEngine:
         RE.resume()  # Resume running a previously-paused plan.
 
     - Subscribe to data emitted by this run engine::
-    
+
         RE.subscribe(lambda name, document: ...)
 
     For full documentation about the run engine, see:
