@@ -62,3 +62,7 @@ set "EPICS_CA_AUTO_ADDR_LIST=NO"
 - You have an IBEX server running with a DAE in setup state, which can begin a simulated run
 - You have a readable & writable block named "mot" in the current configuration pointing at 
 the type of block expected by `demo_plan`
+
+### Build docs locally
+
+To build the sphinx documentation locally run `sphinx-build doc _build` from the root of the repo. The generated output will be in the _build directory.
