@@ -47,9 +47,10 @@ class BlockWriteConfig(Generic[T]):
         set successfully yet or not. The function takes (setpoint, actual) as arguments and
         should return true if the value has successfully set and is "ready", or False otherwise.
 
-        This can be used to implement arbitrary tolerance behaviour. For example:
-        >>> def check(setpoint: T, actual: T) -> bool:
-        >>>     return setpoint - 0.1 <= actual <= setpoint + 0.1
+        This can be used to implement arbitrary tolerance behaviour. For example::
+        
+            def check(setpoint: T, actual: T) -> bool:
+                return setpoint - 0.1 <= actual <= setpoint + 0.1
 
         If use_completion_callback is True, the completion callback must complete before
         set_success_func is ever called.
@@ -152,10 +153,11 @@ class BlockRw(BlockR[T], Movable):
         The setpoint is not added to read() by default. For most cases where setpoint readback
         functionality is desired, BlockRwRbv is a more suitable type.
 
-        If you *explicitly* need to read the setpoint from a BlockRw, you can do so in a plan with:
-        >>> import bluesky.plan_stubs as bps
-        >>> block: BlockRw = ...
-        >>> bps.read(block.setpoint)
+        If you *explicitly* need to read the setpoint from a BlockRw, you can do so in a plan with::
+        
+            import bluesky.plan_stubs as bps
+            block: BlockRw = ...
+            bps.read(block.setpoint)
 
         But note that this does not read back the setpoint from hardware, but rather the setpoint
         which was last sent by EPICS.
