@@ -9,17 +9,19 @@ scientifically interesting PV.
 - Read/write with setpoint readback
 - Motors
 
-> **_ℹ️_**  
-> All signals, including blocks, in bluesky have a strong type. This must match
-> the underlying EPICS type of the PV, which helps to catch problems up-front rather than
->  the middle of a plan. Example error at the start of a plan, from trying to connect a `str` block to a `float` PV:
-> ```
-> ophyd_async.core._utils.NotConnected:
-> mot: NotConnected:
->     setpoint_readback: TypeError: TE:NDW2922:CS:SB:mot:SP:RBV has type float not str
->     setpoint: TypeError: TE:NDW2922:CS:SB:mot:SP has type float not str
->     readback: TypeError: TE:NDW2922:CS:SB:mot has type float not str
-> ```
+```{note}
+All signals, including blocks, in bluesky have a strong type. This must match
+the underlying EPICS type of the PV, which helps to catch problems up-front rather than
+ the middle of a plan. Example error at the start of a plan, from trying to connect a `str` block to a `float` PV:
+```{code}
+ophyd_async.core._utils.NotConnected:
+mot: NotConnected:
+    setpoint_readback: TypeError: TE:NDW2922:CS:SB:mot:SP:RBV has type float not str
+    setpoint: TypeError: TE:NDW2922:CS:SB:mot:SP has type float not str
+    readback: TypeError: TE:NDW2922:CS:SB:mot has type float not str
+```
+
+
 
 ## Block types
 
@@ -54,13 +56,14 @@ stubs such as `bluesky.plan_stubs.mv()` or `bluesky.plan_stubs.abs_set()`.
 
 It can also be used as the `Movable` in full plans like `bluesky.plans.scan()`.
 
-> **_ℹ️_**  
-> In bluesky terminology, any object with a `set()` method is `Movable`. Therefore, a
-> temperature controller is "moved" from one temperature to another, and a run title
-> may equally be "moved" from one title to another.
-> 
-> This is simply a matter of terminology - bluesky fully supports moving things which
-> are not motors, even if the documentation tends to use motors as the examples.
+```{note}
+ In bluesky terminology, any object with a `set()` method is `Movable`. Therefore, a
+ temperature controller is "moved" from one temperature to another, and a run title
+ may equally be "moved" from one title to another.
+ 
+ This is simply a matter of terminology - bluesky fully supports moving things which
+ are not motors, even if the documentation tends to use motors as the examples.
+```
 
 Like `block_r`, a simple constructor is available:
 
@@ -74,6 +77,7 @@ writable_block = block_rw(
     write_config=BlockWriteConfig(settle_time_s=5.0)
 )
 ```
+
 
 ### `block_rw_rbv` (read, write, setpoint readback)
 
@@ -141,5 +145,6 @@ Run control information is available via the `block.run_control` sub-device.
 
 Both configuring and reading the current status of run control are permitted.
 
-> **_ℹ️_**  
-> Run control limits are always `float`, regardless of the datatype of the block.
+```{note}
+    Run control limits are always `float`, regardless of the datatype of the block.
+```
