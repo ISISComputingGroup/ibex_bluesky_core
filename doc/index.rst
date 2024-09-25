@@ -25,17 +25,16 @@ This documentation contains information for the bluesky plan stubs & devices for
    :glob:
 
    dev/*
-
+   
 .. toctree::
-   :maxdepth: 2
+   :titlesonly:
    :caption: Architectural decisions
    :glob:
 
    architectural_decisions/*
 
-
 .. toctree::
-   :maxdepth: 2
+   :titlesonly:
    :caption: API reference
 
    _api
