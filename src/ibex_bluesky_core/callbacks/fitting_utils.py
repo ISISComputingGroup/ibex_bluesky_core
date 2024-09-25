@@ -28,7 +28,7 @@ class Fit(ABC):
     @classmethod
     def fit(cls, *args: int) -> FitMethod:
         return FitMethod(model=cls.model(*args), guess=cls.guess(*args))
-        
+
 
 class Gaussian(Fit):
     @classmethod
@@ -59,11 +59,8 @@ class Gaussian(Fit):
             else:
                 amp = np.min(y) + background
 
-            if sigma == 0:
-                sigma = 1
-
             init_guess = {
-                "amp": lmfit.Parameter("A", amp),
+                "amp": lmfit.Parameter("amp", amp),
                 "sigma": lmfit.Parameter("sigma", sigma, min=0),
                 "x0": lmfit.Parameter("x0", mean),
                 "background": lmfit.Parameter("background", background),
@@ -102,7 +99,7 @@ class Lorentzian(Fit):
 
             else:
                 amp_index = np.argmin(y)
-                amp = y[amp_index] + -background
+                amp = y[amp_index] + background
 
             center = x[amp_index]
 
@@ -125,11 +122,9 @@ class Lorentzian(Fit):
             )
 
             sigma = (x[x2_index] - x[x1_index]) / 2
-            if sigma == 0:
-                sigma = 1
 
             init_guess = {
-                "amp": lmfit.Parameter("A", amp),
+                "amp": lmfit.Parameter("amp", amp),
                 "sigma": lmfit.Parameter("sigma", sigma, min=0),
                 "center": lmfit.Parameter("center", center),
                 "background": lmfit.Parameter("background", background),

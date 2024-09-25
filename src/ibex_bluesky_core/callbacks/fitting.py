@@ -17,15 +17,12 @@ matplotlib.use("module://genie_python.matplotlib_backend.ibex_websocket_backend"
 
 
 class FitMethod:
-    model: lmfit.Model | None
-    guess: (
-        Callable[[npt.NDArray[np.float64], npt.NDArray[np.float64]], dict[str, lmfit.Parameter]]
-        | None
-    )
+    model: lmfit.Model
+    guess: Callable[[npt.NDArray[np.float64], npt.NDArray[np.float64]], dict[str, lmfit.Parameter]]
 
     def __init__(
         self,
-        model: lmfit.Model | Callable[..., float] | None,
+        model: lmfit.Model | Callable[[npt.NDArray[np.float_]], npt.NDArray[np.float_]],
         guess: Callable[
             [npt.NDArray[np.float64], npt.NDArray[np.float64]], dict[str, lmfit.Parameter]
         ],
@@ -55,9 +52,6 @@ class LiveFit(_DefaultLiveFit):
     ) -> None:
         self.method = method
 
-        if self.method.model is None:
-            raise ValueError("Model function cannot be None")
-
         super().__init__(
             model=method.model,
             y=y,
@@ -67,12 +61,11 @@ class LiveFit(_DefaultLiveFit):
 
     def update_fit(self) -> None:
         print("here")
-        if self.method.guess is not None:
-            print(f"x: {self.independent_vars_data.values()}, y: {self.ydata}")
-            self.init_guess = self.method.guess(
-                np.array(next(iter(self.independent_vars_data.values()))),
-                np.array(self.ydata),
-                # Calls the guess function on the set of data already collected in the run
-            )
+
+        self.init_guess = self.method.guess(
+            np.array(next(iter(self.independent_vars_data.values()))),
+            np.array(self.ydata),
+            # Calls the guess function on the set of data already collected in the run
+        )
 
         super().update_fit()
