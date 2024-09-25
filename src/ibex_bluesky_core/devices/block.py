@@ -40,10 +40,12 @@ __all__ = [
 class BlockWriteConfig(Generic[T]):
     """Configuration settings for writing to blocks.
 
-    use_completion_callback: Whether to wait for an EPICS completion callback while setting
+    use_completion_callback:
+        Whether to wait for an EPICS completion callback while setting
         this block. Defaults to true, which is appropriate for most blocks.
 
-    set_success_func: An arbitrary function which is called to decide whether the block has
+    set_success_func:
+        An arbitrary function which is called to decide whether the block has
         set successfully yet or not. The function takes (setpoint, actual) as arguments and
         should return true if the value has successfully set and is "ready", or False otherwise.
 
@@ -60,13 +62,15 @@ class BlockWriteConfig(Generic[T]):
 
         Defaults to None, which means no check is applied.
 
-    set_timeout_s: A timeout, in seconds, on the value being set successfully. The timeout
+    set_timeout_s:
+        A timeout, in seconds, on the value being set successfully. The timeout
         applies to the EPICS completion callback (if enabled) and the set success function
         (if provided), and excludes any configured settle time.
 
         Defaults to None, which means no timeout.
 
-    settle_time_s: A wait time, in seconds, which is unconditionally applied just before the set
+    settle_time_s:
+        A wait time, in seconds, which is unconditionally applied just before the set
         status is marked as complete. Defaults to zero.
 
     """

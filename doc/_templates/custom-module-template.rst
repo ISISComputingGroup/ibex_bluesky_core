@@ -11,6 +11,7 @@
 
 .. automodule:: {{ fullname }}
     :members:
+    :show-inheritance:
 
     {% block modules %}
     {% if modules %}
