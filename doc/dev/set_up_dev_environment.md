@@ -66,3 +66,5 @@ the type of block expected by `demo_plan`
 ## Build docs locally
 
 To build the sphinx documentation locally run `sphinx-build doc _build` from the root of the repo. The generated output will be in the _build directory.
+
+If you want to preview changes live, you can run `sphinx-autobuild doc _build` from the root of the repo instead which will start a local, hot-reloadable web server. 
