@@ -18,8 +18,7 @@ def convert_xml_to_names_and_values(xml: Element) -> Dict[str, str]:
 
 def get_all_elements_in_xml_with_child_called_name(xml: Element) -> List[Element]:
     """Find all elements with a "name" element, but ignore the first one as it's the root."""
-    cluster = xml.find(".")
-    elements = cluster.findall("*/Name/..")  # pyright: ignore [reportOptionalMemberAccess]
+    elements = xml.findall("*/Name/..")
     return elements
 
 
