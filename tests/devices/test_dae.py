@@ -176,16 +176,13 @@ def test_get_names_and_values_from_xml():
 
 def test_get_names_and_values_without_name_does_not_get_parsed():
     test_xml = """
-        <element>
-            <child>
-                <Name>Cluster</Name>
-                <Val>2</Val>
-            </child>
+        <Cluster>
+            <Name>Cluster</Name>
             <child>
                 <Name/>
                 <Val/>
             </child>
-        </element>
+        </Cluster>
         """
     root = ET.fromstring(test_xml)
     ret = convert_xml_to_names_and_values(root)
@@ -194,16 +191,13 @@ def test_get_names_and_values_without_name_does_not_get_parsed():
 
 def test_get_names_and_values_without_value_does_not_get_parsed():
     test_xml = """
-        <element>
-            <child>
-                <Name>Cluster</Name>
-                <Val>2</Val>
-            </child>
+        <Cluster>
+        <Name>Some cluster name</Name>
             <child>
                 <Name>test</Name>
                 <Val/>
             </child>
-        </element>
+        </Cluster>
         """
     root = ET.fromstring(test_xml)
     ret = convert_xml_to_names_and_values(root)
