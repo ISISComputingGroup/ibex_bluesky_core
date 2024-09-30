@@ -13,7 +13,7 @@ from ophyd_async.plan_stubs import ensure_connected
 from ibex_bluesky_core.callbacks.plotting import LivePlot
 from ibex_bluesky_core.devices import get_pv_prefix
 from ibex_bluesky_core.devices.block import block_rw_rbv
-from ibex_bluesky_core.devices.dae import Dae
+from ibex_bluesky_core.devices.dae.dae import Dae
 from ibex_bluesky_core.run_engine import get_run_engine
 
 __all__ = ["demo_plan"]
@@ -29,24 +29,20 @@ def demo_plan() -> Generator[Msg, None, None]:
 
     @subs_decorator(
         [
-            LivePlot(y=dae.name, x=block.name, marker="x", linestyle="none"),
-            LiveTable([block.name, dae.name]),
+            LivePlot(y="DAE-good_uah", x=block.name, marker="x", linestyle="none"),
+            LiveTable([block.name, "DAE-good_uah"]),
         ]
     )
     @run_decorator(md={})
     def _inner() -> Generator[Msg, None, None]:
-        # A "simple" acquisition using trigger_and_read.
-        yield from bps.abs_set(block, 1.0, wait=True)
-        yield from bps.trigger_and_read([block, dae])
-
-        # More complicated acquisition showing arbitrary DAE control to support complex use-cases.
+        # Acquisition showing arbitrary DAE control to support complex use-cases.
         yield from bps.abs_set(block, 2.0, wait=True)
-        yield from bps.trigger(dae.begin_run, wait=True)
+        yield from bps.trigger(dae.controls.begin_run, wait=True)
         yield from bps.sleep(5)  # ... some complicated logic ...
-        yield from bps.trigger(dae.end_run, wait=True)
+        yield from bps.trigger(dae.controls.end_run, wait=True)
         yield from bps.create()  # Create a bundle of readings
         yield from bps.read(block)
-        yield from bps.read(dae)
+        yield from bps.read(dae.good_uah)
         yield from bps.save()
 
     yield from _inner()

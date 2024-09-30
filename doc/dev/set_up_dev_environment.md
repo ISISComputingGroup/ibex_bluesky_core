@@ -24,6 +24,8 @@ python -m pip install -e .[dev]
 ```
 python -m pytest
 ```
+> [!TIP]  
+> To debug the tests in pycharm, use `--no-cov` as an additional option to your run configuration. There is a conflict [issue](https://youtrack.jetbrains.com/issue/PY-20186/debugging-of-py.test-does-not-stop-on-breakpoints-if-coverage-plugin-enabled) with the pytest-cov module which breaks the debugger.
 
 ## Run lints:
 ```
