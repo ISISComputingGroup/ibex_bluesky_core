@@ -60,8 +60,6 @@ class LiveFit(_DefaultLiveFit):
         )
 
     def update_fit(self) -> None:
-        print("here")
-
         self.init_guess = self.method.guess(
             np.array(next(iter(self.independent_vars_data.values()))),
             np.array(self.ydata),

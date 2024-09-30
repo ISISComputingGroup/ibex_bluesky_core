@@ -248,19 +248,23 @@ class SlitScan(Fit):
             inflection0: float,
             gradient: float,
             inflections_diff: float,
-            height: float,
+            height_above_inflection1: float,
         ) -> npt.NDArray[np.float_]:
             linear_seg = background + gradient * (x - inflection0)
 
-            stretch = height - gradient * inflections_diff
-            exp_seg = (
-                stretch
-                * scipy.special.erf(
-                    gradient * np.sqrt(np.pi) / (2 * stretch) * (x - inflection0 - inflections_diff)
+            if height_above_inflection1 == 0:
+                exp_seg = gradient * inflections_diff + background
+            else:
+                exp_seg = (
+                    height_above_inflection1
+                    * scipy.special.erf(
+                        gradient
+                        * (np.sqrt(np.pi) / (2 * height_above_inflection1))
+                        * (x - inflection0 - inflections_diff)
+                    )
+                    + gradient * inflections_diff
+                    + background
                 )
-                + gradient * inflections_diff
-                + background
-            )
 
             linear_seg = np.maximum(linear_seg, background)
             exp_seg = np.maximum(exp_seg, background)
@@ -294,7 +298,8 @@ class SlitScan(Fit):
             # As linear, using y - y1 = m(x - x1) -> x = (y - y1) / gradient - x1
 
             # The highest y value + slightly more to account for further convergence
-            height = np.max(y) + (y[-1] - y[-2]) - background
+            # - y distance travelled from inflection0 to inflection1
+            height_above_inflection1 = np.max(y) + (y[-1] - y[-2]) - (gradient * inflections_diff)
 
             init_guess = {
                 "background": lmfit.Parameter("background", background),
@@ -303,7 +308,9 @@ class SlitScan(Fit):
                 "inflections_diff": lmfit.Parameter(
                     "inflections_diff", inflections_diff, min=max_slit_size
                 ),
-                "height": lmfit.Parameter("height", height),
+                "height_above_inflection1": lmfit.Parameter(
+                    "height_above_inflection1", height_above_inflection1, min=0
+                ),
             }
 
             return init_guess
@@ -332,7 +339,7 @@ class ERF(Fit):
                 "cen": lmfit.Parameter("cen", np.mean(x)),
                 "stretch": lmfit.Parameter("stretch", (max(x) - min(x)) / 2),
                 "scale": lmfit.Parameter("scale", (max(y) - min(y)) / 2),
-                "background": lmfit.Parameter("background", min(y)),
+                "background": lmfit.Parameter("background", np.mean(y)),
             }
 
             return init_guess
@@ -361,7 +368,7 @@ class ERFC(Fit):
                 "cen": lmfit.Parameter("cen", np.mean(x)),
                 "stretch": lmfit.Parameter("stretch", (max(x) - min(x)) / 2),
                 "scale": lmfit.Parameter("scale", (max(y) - min(y)) / 2),
-                "background": lmfit.Parameter("background", min(y)),
+                "background": lmfit.Parameter("background", np.min(y)),
             }
 
             return init_guess
@@ -417,7 +424,7 @@ class Trapezoid(Fit):
             gradient: float,
             height: float,
             background: float,
-            y_offset: float,
+            y_offset: float,  # Acts as a width multiplier
         ) -> npt.NDArray[np.float_]:
             y = y_offset + height + background - gradient * np.abs(x - cen)
             y = np.maximum(y, background)
@@ -437,8 +444,8 @@ class Trapezoid(Fit):
             # Guess that any value above the y mean is the top part
 
             cen = np.mean(x)
-            height = max(y) - min(y)
             background = min(y)
+            height = max(y) - background
 
             if len(top) > 0:
                 x1 = x[np.min(top)]  # x1 is the left of the top part
@@ -448,10 +455,14 @@ class Trapezoid(Fit):
 
             x0 = 0.5 * (np.min(x) + x1)  # Guess that x0 is half way between min(x) and x1
 
-            gradient = (x1 - x0) / height
+            if height == 0.0:
+                gradient = 0.0
+            else:
+                gradient = (x1 - x0) / height
 
             y_intercept0 = background - gradient * x0  # To find the slope function
             y_tip = gradient * cen + y_intercept0
+            print(f"y_tip:{y_tip} grad:{gradient}")
             y_offset = y_tip - height
 
             init_guess = {
