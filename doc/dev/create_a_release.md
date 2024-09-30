@@ -1,4 +1,4 @@
-### Release Process
+# Release Process
 
 Releases are created automatically via a github action. 
 
