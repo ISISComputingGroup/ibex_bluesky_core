@@ -5,7 +5,7 @@ This repository uses sphinx with some addons to build documentation and then dep
 We use the [MyST](https://myst-parser.readthedocs.io/en/latest/index.html) parser which lets us use a mixture of markdown and reStructuredText in documentation - though the latter is preferred by sphinx. 
 
 ## Using MyST admonitions
-To use [MyST admonitions](https://myst-parser.readthedocs.io/en/latest/sphinx_admonitions.html), you need to use backticks instead of triple colons, ie. 
+To use [MyST admonitions](https://myst-parser.readthedocs.io/en/latest/syntax/admonitions.html), you need to use backticks instead of triple colons, ie. 
 
 \`\`\`{tip}\
 Let's give readers a helpful hint!\
