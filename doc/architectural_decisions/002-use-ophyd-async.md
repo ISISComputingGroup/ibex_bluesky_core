@@ -1,10 +1,10 @@
 # Use `ophyd-async`
 
-### Status
+## Status
 
 Current
 
-### Context
+## Context
 
 We need to decide whether to use `ophyd` or `ophyd-async` as our bluesky
 device abstraction layer.
@@ -20,15 +20,15 @@ The *primary* differences are:
 - `ophyd-async` has better support for non-channel-access backends (notably, PVA)
 - Reduction in boilerplate
 
-### Present
+## Present
 
 Tom & Kathryn
 
-### Decision
+## Decision
 
 We will use `ophyd-async`.
 
-### Consequences
+## Consequences
 
 - `ophyd-async` will allow us to use PVAccess easily.
 - `ophyd-async` will allow us to do fly scanning, if required in future, more easily than `ophyd`

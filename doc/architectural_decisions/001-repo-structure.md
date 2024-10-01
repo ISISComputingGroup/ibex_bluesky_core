@@ -1,19 +1,19 @@
 # Repository structure
 
-### Status
+## Status
 
 Current
 
-### Context
+## Context
 
 We need to decide how to structure our bluesky and scans code, in 
 terms of technical repository layout.
 
-### Present
+## Present
 
 Tom & Kathryn
 
-### Decision
+## Decision
 
 We will create a `core` repository, and publish it on PyPI.
 
@@ -31,7 +31,7 @@ depend on this repository.
 This `core` repository is analogous to a similar repo, `dodal`, being used at
 Diamond.
 
-### Consequences
+## Consequences
 
 - We will have some bluesky code across multiple repositories.
 - Other groups should be able to:
