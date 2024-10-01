@@ -45,7 +45,7 @@ def plan() -> ...
 
 ## Models
 
-We support **standard fits** for the following trends in data:
+We support **standard fits** for the following trends in data. See [Standard Fits](./standard_fits.md) for more infomation on the behaviour of these fits.
 
 | Trend | Class Name in fitting_utils | Arguments | 
 | ----- | -------------------------| ----------|
@@ -54,7 +54,7 @@ We support **standard fits** for the following trends in data:
 | Gaussian | Gaussian | None |
 | Lorentzian | Lorentzian | None |
 | Damped Oscillator | DampedOsc | None |
-| Slit Scan Fit | SlitScan | Max Slit Width (int) |
+| Slit Scan Fit | SlitScan | Max Slit Size (int) |
 | Error Function | ERF | None |
 | Complementary Error Function | ERFC | None |
 | Top Hat | TopHat | None |
