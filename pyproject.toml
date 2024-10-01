@@ -49,7 +49,14 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+doc = [
+  "sphinx", 
+  "sphinx_rtd_theme", 
+  "myst_parser",
+  "sphinx-autobuild",
+]
 dev = [
+  "ibex_bluesky_core[doc]",
   "ruff>=0.6",
   "pyright",
   "pytest",

@@ -6,7 +6,7 @@ from enum import Enum
 from typing import List
 from xml.etree.ElementTree import tostring
 
-from bluesky.protocols import Locatable, Location
+from bluesky.protocols import Locatable, Location, Movable
 from ophyd_async.core import AsyncStatus, Device, SignalRW
 
 from ibex_bluesky_core.devices import (
@@ -106,7 +106,7 @@ def _convert_period_settings_to_xml(current_xml: str, value: DaePeriodSettingsDa
     return tostring(root, encoding="unicode")
 
 
-class DaePeriodSettings(Device, Locatable):
+class DaePeriodSettings(Device, Locatable, Movable):
     """Subdevice for the DAE hardware period settings."""
 
     def __init__(self, dae_prefix: str, name: str = "") -> None:

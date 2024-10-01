@@ -30,6 +30,9 @@ ignore = [
     "D",   # Don't require method documentation for test methods
     "ANN"  # Don't require tests to use type annotations
 ]
+"doc/conf.py" = [
+    "D100"
+]
 
 [lint.pep8-naming]
 extend-ignore-names = ["RE"]  # Conventional name used for RunEngine
