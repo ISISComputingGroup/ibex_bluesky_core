@@ -2,6 +2,7 @@
 
 import asyncio
 from functools import cache
+from pathlib import Path
 from threading import Event
 
 import matplotlib
@@ -9,6 +10,7 @@ from bluesky.run_engine import RunEngine
 from bluesky.utils import DuringTask
 
 from ibex_bluesky_core.callbacks.document_logger import DocLoggingCallback
+from ibex_bluesky_core.callbacks.file_logger import HumanReadableOutputFileLoggingCallback
 
 __all__ = ["get_run_engine"]
 

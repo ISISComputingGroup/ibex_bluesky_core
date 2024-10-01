@@ -1,5 +1,6 @@
 """Demonstration plan showing basic bluesky functionality."""
 
+from pathlib import Path
 from typing import Generator
 
 import bluesky.plan_stubs as bps
@@ -11,6 +12,7 @@ from bluesky.utils import Msg
 from ophyd_async.plan_stubs import ensure_connected
 
 from ibex_bluesky_core.callbacks.plotting import LivePlot
+from ibex_bluesky_core.callbacks.file_logger import HumanReadableOutputFileLoggingCallback
 from ibex_bluesky_core.devices import get_pv_prefix
 from ibex_bluesky_core.devices.block import block_rw_rbv
 from ibex_bluesky_core.devices.dae.dae import Dae
@@ -31,12 +33,25 @@ def demo_plan() -> Generator[Msg, None, None]:
         [
             LivePlot(y="DAE-good_uah", x=block.name, marker="x", linestyle="none"),
             LiveTable([block.name, "DAE-good_uah"]),
+            HumanReadableOutputFileLoggingCallback(
+                [block.name, "DAE-good_uah"],
+                Path("C:\\") / "instrument" / "var" / "logs" / "bluesky" / "output_files",
+            ),
         ]
     )
     @run_decorator(md={})
     def _inner() -> Generator[Msg, None, None]:
         # Acquisition showing arbitrary DAE control to support complex use-cases.
         yield from bps.abs_set(block, 2.0, wait=True)
+        yield from bps.trigger(dae.controls.begin_run, wait=True)
+        yield from bps.sleep(5)  # ... some complicated logic ...
+        yield from bps.trigger(dae.controls.end_run, wait=True)
+        yield from bps.create()  # Create a bundle of readings
+        yield from bps.read(block)
+        yield from bps.read(dae.good_uah)
+        yield from bps.save()
+
+        yield from bps.abs_set(block, 3.0, wait=True)
         yield from bps.trigger(dae.controls.begin_run, wait=True)
         yield from bps.sleep(5)  # ... some complicated logic ...
         yield from bps.trigger(dae.controls.end_run, wait=True)
@@ -53,5 +68,5 @@ if __name__ == "__main__":
         matplotlib.use("qtagg")
         plt.ion()
     RE = get_run_engine()
-    RE(demo_plan())
+    RE(demo_plan(), testing123="yes")
     input("plan complete, press return to continue.")
