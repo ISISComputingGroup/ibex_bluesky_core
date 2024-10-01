@@ -34,8 +34,12 @@ def demo_plan() -> Generator[Msg, None, None]:
             LivePlot(y="DAE-good_uah", x=block.name, marker="x", linestyle="none"),
             LiveTable([block.name, "DAE-good_uah"]),
             HumanReadableOutputFileLoggingCallback(
-                [block.name, "DAE-good_uah"],
                 Path("C:\\") / "instrument" / "var" / "logs" / "bluesky" / "output_files",
+                [block.name, "DAE-good_uah"],
+
+            ),
+            HumanReadableOutputFileLoggingCallback(
+                Path("C:\\") / "instrument" / "var" / "logs" / "bluesky" / "output_files" / "hintedfields"
             ),
         ]
     )

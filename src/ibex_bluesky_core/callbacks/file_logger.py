@@ -15,10 +15,10 @@ from event_model.documents.run_stop import RunStop
 class HumanReadableOutputFileLoggingCallback(CallbackBase):
     """Outputs bluesky runs to human-readable output files in the specified directory path."""
 
-    def __init__(self, fields: list[str], output_dir: Path) -> None:
-        """Initialise current_start_document and filename"""
+    def __init__(self, output_dir: Path, fields: Optional[list[str]] = None ) -> None:
+        """Outputs human-readable output files of bluesky runs. If fields are given, just output those, otherwise output all hinted signals """
         super().__init__()
-        self.fields: list[str] = fields
+        self.fields: list[str] | None = fields
         self.output_dir: Path = output_dir
         self.current_start_document: Optional[str] = None
         self.descriptors: dict[str, EventDescriptor] = {}
@@ -60,7 +60,7 @@ class HumanReadableOutputFileLoggingCallback(CallbackBase):
         descriptor_data = self.descriptors[descriptor_id]["data_keys"]
 
         for data_key, data_value in event_data.items():
-            if data_key in self.fields:
+            if self.fields is None or data_key in self.fields:
                 formatted_event_data[data_key] = (
                     f"{data_value:.{descriptor_data[data_key]['precision']}f}"
                     if "precision" in descriptor_data[data_key] and isinstance(data_value, float)
@@ -74,7 +74,7 @@ class HumanReadableOutputFileLoggingCallback(CallbackBase):
                     {
                         key: value.get("units", "n/a")
                         for key, value in descriptor_data.items()
-                        if key in self.fields
+                        if self.fields is None or key in self.fields
                     }
                 )
                 units_line = "  ".join(f"{key} ({value})" for key, value in (units_dict.items()))

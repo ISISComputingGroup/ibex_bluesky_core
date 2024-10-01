@@ -30,7 +30,7 @@ doc = {
 
 @pytest.fixture
 def cb() -> HumanReadableOutputFileLoggingCallback:
-    return HumanReadableOutputFileLoggingCallback(["block", "dae"], save_path)
+    return HumanReadableOutputFileLoggingCallback(save_path, ["block", "dae"] )
 
 
 def test_start_data(cb):
