@@ -11,7 +11,7 @@ import scipy.special
 from lmfit.models import PolynomialModel
 from numpy import polynomial as p
 
-from ibex_bluesky_core.callbacks.fitting import FitMethod
+from ibex_bluesky_core.fitting.fitting import FitMethod
 
 
 class Fit(ABC):
