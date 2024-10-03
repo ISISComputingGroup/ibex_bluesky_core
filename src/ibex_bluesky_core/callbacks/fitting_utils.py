@@ -440,17 +440,19 @@ class Trapezoid(Fit):
         def guess(
             x: npt.NDArray[np.float64], y: npt.NDArray[np.float64]
         ) -> dict[str, lmfit.Parameter]:
-            top = np.where(y > np.mean(y))[0]
+            top = np.where(y > np.mean(y))
             # Guess that any value above the y mean is the top part
 
             cen = np.mean(x)
-            background = min(y)
-            height = max(y) - background
+            background = np.min(y)
+            height = np.max(y) - background
+
 
             if len(top) > 0:
-                x1 = x[np.min(top)]  # x1 is the left of the top part
+                i = np.min(top)
+                x1 = x[i] # x1 is the left of the top part
             else:
-                width_top = (max(x) - min(x)) / 2
+                width_top = (np.max(x) - np.min(x)) / 2
                 x1 = cen - width_top / 2
 
             x0 = 0.5 * (np.min(x) + x1)  # Guess that x0 is half way between min(x) and x1
@@ -458,12 +460,11 @@ class Trapezoid(Fit):
             if height == 0.0:
                 gradient = 0.0
             else:
-                gradient = (x1 - x0) / height
+                gradient = height / (x1 - x0)
 
-            y_intercept0 = background - gradient * x0  # To find the slope function
+            y_intercept0 = np.max(y) - gradient * x1  # To find the slope function
             y_tip = gradient * cen + y_intercept0
-            print(f"y_tip:{y_tip} grad:{gradient}")
-            y_offset = y_tip - height
+            y_offset = y_tip - height - background
 
             init_guess = {
                 "cen": lmfit.Parameter("cen", cen),

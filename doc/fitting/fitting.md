@@ -1,6 +1,6 @@
 # Fitting Callback
 
-Similar to [`LivePlot`](./plotting.md), `ibex_bluesky_core` provides a thin wrapper around bluesky's `LiveFit` class, whilst adding a wide selection of models to fit your data on. 
+Similar to [`LivePlot`](../callbacks/plotting.md), `ibex_bluesky_core` provides a thin wrapper around Bluesky's LiveFit class, enhancing it with additional functionality to better support real-time data fitting. This wrapper not only offers a wide selection of models to fit your data on, but also introduces guess generation for fit parameters. As new data points are acquired, the wrapper refines these guesses dynamically, improving the accuracy of the fit with each additional piece of data, allowing for more efficient and adaptive real-time fitting workflows.
 
 In order to use the wrapper, import `LiveFit` from `ibex_bluesky_core` rather than 
 `bluesky` directly:
@@ -49,17 +49,17 @@ We support **standard fits** for the following trends in data. See [Standard Fit
 
 | Trend | Class Name in fitting_utils | Arguments | 
 | ----- | -------------------------| ----------|
-| Linear | Linear | None |
-| Polynomial |Polynomial | Polynomial Degree (int) |
-| Gaussian | Gaussian | None |
-| Lorentzian | Lorentzian | None |
-| Damped Oscillator | DampedOsc | None |
-| Slit Scan Fit | SlitScan | Max Slit Size (int) |
-| Error Function | ERF | None |
-| Complementary Error Function | ERFC | None |
-| Top Hat | TopHat | None |
-| Trapezoid | Trapezoid | None |
-| PeakStats (COM) **\*** | - | - 
+| Linear | [Linear](./standard_fits.md/#linear) | None |
+| Polynomial | [Polynomial](./standard_fits.md/#polynomial) | Polynomial Degree (int) |
+| Gaussian | [Gaussian](./standard_fits.md/#gaussian) | None |
+| Lorentzian | [Lorentzian](./standard_fits.md/#lorentzian) | None |
+| Damped Oscillator | [DampedOsc](./standard_fits.md/#damped-oscillator-dampedosc) | None |
+| Slit Scan Fit | [SlitScan](./standard_fits.md/#slit-scan-slitscan) | Max Slit Size (int) |
+| Error Function | [ERF](./standard_fits.md/#error-function-erf) | None |
+| Complementary Error Function | [ERFC](./standard_fits.md/#complementary-error-function-erfc) | None |
+| Top Hat | [TopHat](./standard_fits.md/#top-hat-tophat) | None |
+| Trapezoid | [Trapezoid](./standard_fits.md/#trapezoid) | None |
+| PeakStats (COM) **\*** | - | -
 
 \* Native to Bluesky there is support for `PeakStats` which "computes peak statsitics after a run finishes." See [Bluesky docs](https://blueskyproject.io/bluesky/main/callbacks.html#peakstats) for more information on this. Similar to `LiveFit` and `LiveFitPLot`, `PeakStats` is a callback and must be passed to `PeakStatsPlot` to be plotted on a set of axes, which is subscribed to by the `RunEngine`.
 
@@ -98,7 +98,7 @@ If you wish, you can define your own non-standard `FitMethod` object. The `FitMe
     - A function representing the behaviour of the model.
     - Returns the `y` value (`float`) at the given `x` value and model parameters.
 - `guess` 
-    - A function that must take two `np.array` arrays of type `float` as arguments and must return a `dict` in the form `dict[str, lmfit.Parameter]`.
+    - A function that must take two `np.array` arrays, representing `x` data and respective `y` data, of type `float` as arguments and must return a `dict` in the form `dict[str, lmfit.Parameter]`.
     - This will be called to guess the properties of the model, given the data already collected in the Bluesky run.
 
 See the following example on how to define these.
