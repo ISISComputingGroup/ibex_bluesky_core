@@ -7,6 +7,7 @@ import numpy as np
 import numpy.typing as npt
 import pytest
 import scipy.signal as scsi
+
 from ibex_bluesky_core.callbacks.fitting import LiveFit
 from ibex_bluesky_core.callbacks.fitting_utils import (
     ERF,
@@ -272,7 +273,7 @@ class TestPolynomial:
 
         @pytest.mark.parametrize("deg", [2, 7])
         def test_polynomial_guess(self, deg: int):
-            warnings.simplefilter("ignore", np.exceptions.RankWarning)
+            warnings.simplefilter("ignore", np.RankWarning)
 
             x = np.array([-1.0, 0.0, 1.0])
             y = np.array([1.0, 0.0, 1.0])
