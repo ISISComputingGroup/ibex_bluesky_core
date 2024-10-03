@@ -273,7 +273,8 @@ class TestPolynomial:
 
         @pytest.mark.parametrize("deg", [2, 7])
         def test_polynomial_guess(self, deg: int):
-            warnings.simplefilter("ignore", np.RankWarning)
+            warnings.filterwarnings("ignore")
+            # Suppress a rank warning, but np.RankWarning is deprecated
 
             x = np.array([-1.0, 0.0, 1.0])
             y = np.array([1.0, 0.0, 1.0])
