@@ -43,4 +43,4 @@ class BeginRunEx(StandardReadable, Movable):
     @AsyncStatus.wrap
     async def set(self, value: BeginRunExBits) -> None:
         """Start a run with the specified bits - See BeginRunExBits."""
-        await self._raw_begin_run_ex.set(value, wait=True)
+        await self._raw_begin_run_ex.set(value, wait=True, timeout=None)

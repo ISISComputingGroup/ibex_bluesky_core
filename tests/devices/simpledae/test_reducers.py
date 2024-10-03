@@ -1,0 +1,131 @@
+from unittest.mock import AsyncMock
+
+import pytest
+import scipp as sc
+from ophyd_async.core import set_mock_value
+
+from ibex_bluesky_core.devices.simpledae import SimpleDae
+from ibex_bluesky_core.devices.simpledae.reducers import (
+    GoodFramesNormalizer,
+    MonitorNormalizer,
+    PeriodGoodFramesNormalizer,
+)
+
+
+@pytest.fixture
+async def period_good_frames_reducer() -> PeriodGoodFramesNormalizer:
+    reducer = PeriodGoodFramesNormalizer(prefix="", detector_spectra=[1, 2])
+    await reducer.connect(mock=True)
+    return reducer
+
+
+@pytest.fixture
+async def good_frames_reducer() -> GoodFramesNormalizer:
+    reducer = GoodFramesNormalizer(prefix="", detector_spectra=[1, 2])
+    await reducer.connect(mock=True)
+    return reducer
+
+
+@pytest.fixture
+async def monitor_normalizer() -> MonitorNormalizer:
+    reducer = MonitorNormalizer(prefix="", detector_spectra=[1], monitor_spectra=[2])
+    await reducer.connect(mock=True)
+    return reducer
+
+
+class FakePeriod:
+    def __init__(self):
+        self.good_frames = object()
+
+
+class FakeDae:
+    def __init__(self):
+        self.good_uah = object()
+        self.good_frames = object()
+        self.period = FakePeriod()
+
+
+async def test_period_good_frames_normalizer_publishes_period_good_frames(
+    period_good_frames_reducer: PeriodGoodFramesNormalizer,
+):
+    fake_dae: SimpleDae = FakeDae()  # type: ignore
+    readables = period_good_frames_reducer.additional_readable_signals(fake_dae)
+    assert fake_dae.good_uah not in readables
+    assert fake_dae.period.good_frames in readables
+
+    assert period_good_frames_reducer.denominator(fake_dae) == fake_dae.period.good_frames
+
+
+async def test_good_frames_normalizer_publishes_good_frames(
+    good_frames_reducer: GoodFramesNormalizer,
+):
+    fake_dae: SimpleDae = FakeDae()  # type: ignore
+    readables = good_frames_reducer.additional_readable_signals(fake_dae)
+    assert fake_dae.good_uah not in readables
+    assert fake_dae.good_frames in readables
+
+    assert good_frames_reducer.denominator(fake_dae) == fake_dae.good_frames
+
+
+async def test_period_good_frames_normalizer(
+    simpledae: SimpleDae,
+    period_good_frames_reducer: PeriodGoodFramesNormalizer,
+):
+    set_mock_value(simpledae.period.good_frames, 123)
+
+    period_good_frames_reducer.detectors[1].read_spectrum_dataarray = AsyncMock(
+        return_value=sc.DataArray(
+            data=sc.Variable(dims=["tof"], values=[1000.0, 2000.0, 3000.0], unit=sc.units.counts),
+            coords={"tof": sc.array(dims=["tof"], values=[0, 1, 2, 3])},
+        )
+    )
+    period_good_frames_reducer.detectors[2].read_spectrum_dataarray = AsyncMock(
+        return_value=sc.DataArray(
+            data=sc.Variable(dims=["tof"], values=[4000.0, 5000.0, 6000.0], unit=sc.units.counts),
+            coords={"tof": sc.array(dims=["tof"], values=[0, 1, 2, 3])},
+        )
+    )
+
+    await period_good_frames_reducer.reduce_data(simpledae)
+
+    det_counts = await period_good_frames_reducer.det_counts.get_value()
+    intensity = await period_good_frames_reducer.intensity.get_value()
+
+    assert det_counts == 21000
+    # (21000 det counts) / (123 good frames)
+    assert intensity == pytest.approx(170.731707317)
+
+
+async def test_monitor_normalizer(simpledae: SimpleDae, monitor_normalizer: MonitorNormalizer):
+    monitor_normalizer.detectors[1].read_spectrum_dataarray = AsyncMock(
+        return_value=sc.DataArray(
+            data=sc.Variable(dims=["tof"], values=[1000.0, 2000.0, 3000.0], unit=sc.units.counts),
+            coords={"tof": sc.array(dims=["tof"], values=[0, 1, 2, 3])},
+        )
+    )
+    monitor_normalizer.monitors[2].read_spectrum_dataarray = AsyncMock(
+        return_value=sc.DataArray(
+            data=sc.Variable(dims=["tof"], values=[4000.0, 5000.0, 6000.0], unit=sc.units.counts),
+            coords={"tof": sc.array(dims=["tof"], values=[0, 1, 2, 3])},
+        )
+    )
+
+    await monitor_normalizer.reduce_data(simpledae)
+
+    det_counts = await monitor_normalizer.det_counts.get_value()
+    mon_counts = await monitor_normalizer.mon_counts.get_value()
+    intensity = await monitor_normalizer.intensity.get_value()
+
+    assert det_counts == 6000
+    assert mon_counts == 15000
+    assert intensity == pytest.approx(6000 / 15000)
+
+
+async def test_monitor_normalizer_publishes_raw_and_normalized_counts(
+    simpledae: SimpleDae,
+    monitor_normalizer: MonitorNormalizer,
+):
+    readables = monitor_normalizer.additional_readable_signals(simpledae)
+    assert monitor_normalizer.intensity in readables
+    assert monitor_normalizer.det_counts in readables
+    assert monitor_normalizer.mon_counts in readables
