@@ -56,8 +56,16 @@ class Dae(StandardReadable):
         self.good_frames: SignalR[int] = epics_signal_r(int, f"{dae_prefix}GOODFRAMES")
         self.raw_frames: SignalR[int] = epics_signal_r(int, f"{dae_prefix}RAWFRAMES")
         self.total_counts: SignalR[int] = epics_signal_r(int, f"{dae_prefix}TOTALCOUNTS")
-        self.run_number: SignalR[int] = epics_signal_r(int, f"{dae_prefix}IRUNNUMBER")
-        self.run_number_str: SignalR[str] = epics_signal_r(str, f"{dae_prefix}RUNNUMBER")
+
+        # Beware that this increments just after a run is ended. So it is generally not correct to
+        # read this just after a DAE run has been ended().
+        self.current_or_next_run_number: SignalR[int] = epics_signal_r(
+            int, f"{dae_prefix}IRUNNUMBER"
+        )
+        self.current_or_next_run_number_str: SignalR[str] = epics_signal_r(
+            str, f"{dae_prefix}RUNNUMBER"
+        )
+
         self.cycle_number: SignalR[str] = epics_signal_r(str, f"{dae_prefix}ISISCYCLE")
         self.inst_name: SignalR[str] = epics_signal_r(str, f"{dae_prefix}INSTNAME")
         self.run_start_time: SignalR[str] = epics_signal_r(str, f"{dae_prefix}STARTTIME")

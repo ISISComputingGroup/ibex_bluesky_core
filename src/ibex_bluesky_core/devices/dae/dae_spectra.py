@@ -2,6 +2,8 @@
 
 import asyncio
 
+import scipp as sc
+from event_model.documents.event_descriptor import DataKey
 from numpy import float32
 from numpy.typing import NDArray
 from ophyd_async.core import SignalR, StandardReadable
@@ -20,6 +22,15 @@ class DaeSpectra(StandardReadable):
         )
         self.tof_size: SignalR[int] = epics_signal_r(
             int, f"{dae_prefix}SPEC:{period}:{spectra}:X.NORD"
+        )
+
+        # x-axis; time-of-flight.
+        # These are bin-edge coordinates, with a size one more than the corresponding data.
+        self.tof_edges: SignalR[NDArray[float32]] = epics_signal_r(
+            NDArray[float32], f"{dae_prefix}SPEC:{period}:{spectra}:XE"
+        )
+        self.tof_edges_size: SignalR[int] = epics_signal_r(
+            int, f"{dae_prefix}SPEC:{period}:{spectra}:XE.NORD"
         )
 
         # y-axis; counts / tof
@@ -57,6 +68,10 @@ class DaeSpectra(StandardReadable):
         """Read a correctly-sized time-of-flight (x) array representing bin centres."""
         return await self._read_sized(self.tof, self.tof_size)
 
+    async def read_tof_edges(self) -> NDArray[float32]:
+        """Read a correctly-sized time-of-flight (x) array representing bin edges."""
+        return await self._read_sized(self.tof_edges, self.tof_edges_size)
+
     async def read_counts(self) -> NDArray[float32]:
         """Read a correctly-sized array of counts."""
         return await self._read_sized(self.counts, self.counts_size)
@@ -64,3 +79,35 @@ class DaeSpectra(StandardReadable):
     async def read_counts_per_time(self) -> NDArray[float32]:
         """Read a correctly-sized array of counts divided by bin width."""
         return await self._read_sized(self.counts_per_time, self.counts_per_time_size)
+
+    async def read_spectrum_dataarray(self) -> sc.DataArray:
+        """Get a scipp DataArray containing the current data from this spectrum.
+
+        Variances are set to the counts - i.e. the standard deviation is sqrt(N), which is typical
+        for counts data.
+
+        Data is returned along dimension "tof", which has bin-edge coordinates and units set from
+        the units of the underlying PVs.
+        """
+        tof_edges, tof_edges_descriptor, counts = await asyncio.gather(
+            self.read_tof_edges(),
+            self.tof_edges.describe(),
+            self.read_counts(),
+        )
+
+        if tof_edges.size != counts.size + 1:
+            raise ValueError(
+                "Time-of-flight edges must have size one more than the data. "
+                "You may be trying to read too many time channels. "
+                f"Edges size was {tof_edges.size}, counts size was {counts.size}."
+            )
+
+        datakey: DataKey = tof_edges_descriptor[self.tof_edges.name]
+        unit = datakey.get("units", None)
+        if unit is None:
+            raise ValueError("Could not determine engineering units of tof edges.")
+
+        return sc.DataArray(
+            data=sc.Variable(dims=["tof"], values=counts, variances=counts, unit=sc.units.counts),
+            coords={"tof": sc.array(dims=["tof"], values=tof_edges, unit=sc.Unit(unit))},
+        )
