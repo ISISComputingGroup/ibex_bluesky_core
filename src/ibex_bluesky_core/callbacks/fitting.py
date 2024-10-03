@@ -17,16 +17,29 @@ matplotlib.use("module://genie_python.matplotlib_backend.ibex_websocket_backend"
 
 
 class FitMethod:
+    """Tell LiveFit how to fit to a scan. Has a Model function and a Guess function.
+
+    Model - Takes x values and a set of parameters to return y values.
+    Guess - Takes x and y values and returns a rough 'guess' of the original parameters.
+    """
+
     model: lmfit.Model
     guess: Callable[[npt.NDArray[np.float64], npt.NDArray[np.float64]], dict[str, lmfit.Parameter]]
 
     def __init__(
         self,
-        model: lmfit.Model | Callable[[npt.NDArray[np.float_]], npt.NDArray[np.float_]],
+        model: lmfit.Model | Callable[[npt.NDArray[np.float64]], npt.NDArray[np.float64]],
         guess: Callable[
             [npt.NDArray[np.float64], npt.NDArray[np.float64]], dict[str, lmfit.Parameter]
         ],
     ) -> None:
+        """Assign model and guess functions.
+
+        Args:
+            model (lmfit.Model | Callable): The model function to use.
+            guess (Callable): The guess function to use.
+
+        """
         if callable(model):
             self.model = lmfit.Model(model)
         else:
@@ -50,6 +63,15 @@ class LiveFit(_DefaultLiveFit):
         *,
         update_every: int = 1,
     ) -> None:
+        """Call Bluesky LiveFit with assumption that there is only one independant variable.
+
+        Args:
+            method (FitMethod): The FitMethod (Model & Guess) to use when fitting.
+            y (str): The name of the dependant variable.
+            x (str): The name of the independant variable.
+            update_every (int): How often to update the fit. (seconds)
+
+        """
         self.method = method
 
         super().__init__(
@@ -60,6 +82,15 @@ class LiveFit(_DefaultLiveFit):
         )
 
     def update_fit(self) -> None:
+        """Use the provided guess function with the most recent x and y values after every update.
+
+        Args:
+            None
+
+        Returns:
+            None
+
+        """
         self.init_guess = self.method.guess(
             np.array(next(iter(self.independent_vars_data.values()))),
             np.array(self.ydata),

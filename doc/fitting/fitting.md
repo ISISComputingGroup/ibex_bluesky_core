@@ -112,7 +112,7 @@ def model(x: float, m: float, c: float) -> float:
     
     return m * x + c # y = mx + c
 
-def guess(x: npt.NDArray[np.float_], y: npt.NDArray[np.float_]) -> dict[str, lmfit.Parameter]:
+def guess(x: npt.NDArray[np.float64], y: npt.NDArray[np.float64]) -> dict[str, lmfit.Parameter]:
 
     # Linear regression calculation
     # x = set of x data
@@ -158,7 +158,7 @@ def different_model(x: float, m: float, c: float) -> float:
 
 
 fit_method = FitMethod(different_model, Linear.guess())
-# Uses the user defined model and the standard guessing function for linear models
+# Uses the user defined model and the standard Guessing. function for linear models
 
 lf = LiveFit(fit_method, y="y_variable", x="x_variable", update_every=0.5)
 
@@ -170,7 +170,7 @@ lf = LiveFit(fit_method, y="y_variable", x="x_variable", update_every=0.5)
 import lmfit
 from ibex_bluesky_core.callbacks.fitting_utils import Linear
 
-# This guessing function isn't very good because it's return values don't change on the data already collected in the Bluesky run
+# This Guessing. function isn't very good because it's return values don't change on the data already collected in the Bluesky run
 # It always guesses that the linear function is y = x
 
 def different_guess(x: float, m: float, c: float) -> float:
@@ -183,7 +183,7 @@ def different_guess(x: float, m: float, c: float) -> float:
     return init_guess
 
 fit_method = FitMethod(Linear.model(), different_guess)
-# Uses the standard linear model and the user defined guessing function
+# Uses the standard linear model and the user defined Guessing. function
 
 lf = LiveFit(fit_method, y="y_variable", x="x_variable", update_every=0.5)
 

@@ -7,7 +7,6 @@ import numpy as np
 import numpy.typing as npt
 import pytest
 import scipy.signal as scsi
-
 from ibex_bluesky_core.callbacks.fitting import LiveFit
 from ibex_bluesky_core.callbacks.fitting_utils import (
     ERF,
@@ -34,7 +33,7 @@ class MockFit(Fit):
 
     @classmethod
     def model(cls, *args: int) -> lmfit.Model:
-        def model(x: npt.NDArray[np.float_], offset: float) -> npt.NDArray[np.float_]:
+        def model(x: npt.NDArray[np.float64], offset: float) -> npt.NDArray[np.float64]:
             cls.mock_model()
             return x + offset
 
@@ -259,7 +258,7 @@ class TestPolynomial:
             # -1 and 8 are both invalid polynomial degrees
             x = np.zeros(3)
 
-            with pytest.raises(Exception):
+            with pytest.raises(ValueError):
                 Polynomial.model(deg).func(x)
 
         def test_polynomial_model(self):
@@ -273,7 +272,7 @@ class TestPolynomial:
 
         @pytest.mark.parametrize("deg", [2, 7])
         def test_polynomial_guess(self, deg: int):
-            warnings.simplefilter("ignore", np.RankWarning)
+            warnings.simplefilter("ignore", np.exceptions.RankWarning)
 
             x = np.array([-1.0, 0.0, 1.0])
             y = np.array([1.0, 0.0, 1.0])
@@ -293,7 +292,7 @@ class TestPolynomial:
             y = np.array([1.0, 0.0, 1.0])
 
             # -1 and 8 are both invalid polynomial degrees
-            with pytest.raises(Exception):
+            with pytest.raises(ValueError):
                 Polynomial.guess(deg)(x, y)
 
 
@@ -361,7 +360,7 @@ class TestSlitScan:
         y = np.zeros(10)
 
         # -1 is not a valid max slit gap
-        with pytest.raises(Exception):
+        with pytest.raises(ValueError):
             SlitScan.guess(-1)(x, y)
 
     class TestSlitScanModel:

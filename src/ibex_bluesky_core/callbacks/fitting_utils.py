@@ -1,3 +1,5 @@
+"""Defines the standard fits. The model and guess functions for each fit."""
+
 from abc import ABC, abstractmethod
 from typing import Callable
 
@@ -13,9 +15,21 @@ from ibex_bluesky_core.callbacks.fitting import FitMethod
 
 
 class Fit(ABC):
+    """Base class for all fits."""
+
     @classmethod
     @abstractmethod
     def model(cls, *args: int) -> lmfit.Model:
+        """Outline base model function.
+
+        Args:
+            *args (int): Any extra parameters required for fitting.
+
+        Returns:
+            lmfit.Model: Model function
+            (x-values: NDArray, parameters: np.float64 -> y-values: NDArray)
+
+        """
         pass
 
     @classmethod
@@ -23,19 +37,34 @@ class Fit(ABC):
     def guess(
         cls, *args: int
     ) -> Callable[[npt.NDArray[np.float64], npt.NDArray[np.float64]], dict[str, lmfit.Parameter]]:
+        """Outline base Guessing. method.
+
+        Args:
+            *args (int): Any extra parameters required for fitting.
+
+        Returns:
+            Callable: Guess function
+            (x-values: NDArray, y-values: NDArray -> parameters: Dict[str, lmfit.Parameter])
+
+        """
         pass
 
     @classmethod
     def fit(cls, *args: int) -> FitMethod:
+        """Return a FitMethod given model and guess functions to pass to LiveFit."""
         return FitMethod(model=cls.model(*args), guess=cls.guess(*args))
 
 
 class Gaussian(Fit):
+    """Gaussian Fitting."""
+
     @classmethod
     def model(cls, *args: int) -> lmfit.Model:
+        """Gaussian Model."""
+
         def model(
-            x: npt.NDArray[np.float_], amp: float, sigma: float, x0: float, background: float
-        ) -> npt.NDArray[np.float_]:
+            x: npt.NDArray[np.float64], amp: float, sigma: float, x0: float, background: float
+        ) -> npt.NDArray[np.float64]:
             if sigma == 0:
                 sigma = 1
 
@@ -47,6 +76,8 @@ class Gaussian(Fit):
     def guess(
         cls, *args: int
     ) -> Callable[[npt.NDArray[np.float64], npt.NDArray[np.float64]], dict[str, lmfit.Parameter]]:
+        """Gaussian Guessing."""
+
         def guess(
             x: npt.NDArray[np.float64], y: npt.NDArray[np.float64]
         ) -> dict[str, lmfit.Parameter]:
@@ -72,11 +103,15 @@ class Gaussian(Fit):
 
 
 class Lorentzian(Fit):
+    """Lorentzian Fitting."""
+
     @classmethod
     def model(cls, *args: int) -> lmfit.Model:
+        """Lorentzian Model."""
+
         def model(
-            x: npt.NDArray[np.float_], amp: float, sigma: float, center: float, background: float
-        ) -> npt.NDArray[np.float_]:
+            x: npt.NDArray[np.float64], amp: float, sigma: float, center: float, background: float
+        ) -> npt.NDArray[np.float64]:
             if sigma == 0:
                 sigma = 1
 
@@ -88,6 +123,8 @@ class Lorentzian(Fit):
     def guess(
         cls, *args: int
     ) -> Callable[[npt.NDArray[np.float64], npt.NDArray[np.float64]], dict[str, lmfit.Parameter]]:
+        """Lorentzian Guessing."""
+
         def guess(
             x: npt.NDArray[np.float64], y: npt.NDArray[np.float64]
         ) -> dict[str, lmfit.Parameter]:
@@ -103,7 +140,7 @@ class Lorentzian(Fit):
 
             center = x[amp_index]
 
-            # Guessing sigma using FWHM
+            # Guessing. sigma using FWHM
 
             half_max = amp / 2
             left_side = np.where(x < center)[0]  # x-values left of the peak
@@ -136,9 +173,13 @@ class Lorentzian(Fit):
 
 
 class Linear(Fit):
+    """Linear Fitting."""
+
     @classmethod
     def model(cls, *args: int) -> lmfit.Model:
-        def model(x: npt.NDArray[np.float_], m: float, c: float) -> npt.NDArray[np.float_]:
+        """Linear Model."""
+
+        def model(x: npt.NDArray[np.float64], m: float, c: float) -> npt.NDArray[np.float64]:
             return m * x + c
 
         return lmfit.Model(model)
@@ -147,6 +188,8 @@ class Linear(Fit):
     def guess(
         cls, *args: int
     ) -> Callable[[npt.NDArray[np.float64], npt.NDArray[np.float64]], dict[str, lmfit.Parameter]]:
+        """Linear Guessing."""
+
         def guess(
             x: npt.NDArray[np.float64], y: npt.NDArray[np.float64]
         ) -> dict[str, lmfit.Parameter]:
@@ -168,8 +211,11 @@ class Linear(Fit):
 
 
 class Polynomial(Fit):
+    """Polynomial Fitting."""
+
     @classmethod
     def _check_degree(cls, args: tuple[int, ...]) -> int:
+        """Check that polynomial degree is valid."""
         degree = args[0] if args else 7
         if not (0 <= degree <= 7):
             raise ValueError("The polynomial degree should be at least 0 and smaller than 8.")
@@ -177,6 +223,7 @@ class Polynomial(Fit):
 
     @classmethod
     def model(cls, *args: int) -> lmfit.Model:
+        """Polynomial Model."""
         degree = cls._check_degree(args)
         return PolynomialModel(degree=degree)
 
@@ -184,6 +231,8 @@ class Polynomial(Fit):
     def guess(
         cls, *args: int
     ) -> Callable[[npt.NDArray[np.float64], npt.NDArray[np.float64]], dict[str, lmfit.Parameter]]:
+        """Polynomial Guessing."""
+
         def guess(
             x: npt.NDArray[np.float64], y: npt.NDArray[np.float64]
         ) -> dict[str, lmfit.Parameter]:
@@ -201,11 +250,15 @@ class Polynomial(Fit):
 
 
 class DampedOsc(Fit):
+    """Damped Oscillator Fitting."""
+
     @classmethod
     def model(cls, *args: int) -> lmfit.Model:
+        """Damped Oscillator Model."""
+
         def model(
-            x: npt.NDArray[np.float_], center: float, amp: float, freq: float, width: float
-        ) -> npt.NDArray[np.float_]:
+            x: npt.NDArray[np.float64], center: float, amp: float, freq: float, width: float
+        ) -> npt.NDArray[np.float64]:
             return amp * np.cos((x - center) * freq) * np.exp(-(((x - center) / width) ** 2))
 
         return lmfit.Model(model)
@@ -214,6 +267,8 @@ class DampedOsc(Fit):
     def guess(
         cls, *args: int
     ) -> Callable[[npt.NDArray[np.float64], npt.NDArray[np.float64]], dict[str, lmfit.Parameter]]:
+        """Damped Oscillator Guessing."""
+
         def guess(
             x: npt.NDArray[np.float64], y: npt.NDArray[np.float64]
         ) -> dict[str, lmfit.Parameter]:
@@ -233,8 +288,11 @@ class DampedOsc(Fit):
 
 
 class SlitScan(Fit):
+    """Slit Scan Fitting."""
+
     @classmethod
     def _check_input(cls, args: tuple[int, ...]) -> int:
+        """Check that provided maximum slit size is atleast 0."""
         max_slit_gap = args[0] if args else 1
         if not (0 <= max_slit_gap):
             raise ValueError("The slit gap should be atleast 0.")
@@ -242,14 +300,16 @@ class SlitScan(Fit):
 
     @classmethod
     def model(cls, *args: int) -> lmfit.Model:
+        """Slit Scan Model."""
+
         def model(
-            x: npt.NDArray[np.float_],
+            x: npt.NDArray[np.float64],
             background: float,
             inflection0: float,
             gradient: float,
             inflections_diff: float,
             height_above_inflection1: float,
-        ) -> npt.NDArray[np.float_]:
+        ) -> npt.NDArray[np.float64]:
             linear_seg = background + gradient * (x - inflection0)
 
             if height_above_inflection1 == 0:
@@ -279,12 +339,14 @@ class SlitScan(Fit):
     def guess(
         cls, *args: int
     ) -> Callable[[npt.NDArray[np.float64], npt.NDArray[np.float64]], dict[str, lmfit.Parameter]]:
+        """Slit Scan Guessing."""
+
         def guess(
             x: npt.NDArray[np.float64], y: npt.NDArray[np.float64]
         ) -> dict[str, lmfit.Parameter]:
             max_slit_size = cls._check_input(args)
 
-            # Guessing gradient of linear-slope part of function
+            # Guessing. gradient of linear-slope part of function
             dy = np.gradient(y)  # Return array of differences in y
             max_dy = np.max(dy)  # Return max y difference, this will always be on the upwards slope
             dx = x[1] - x[0]  # Find x step
@@ -319,11 +381,15 @@ class SlitScan(Fit):
 
 
 class ERF(Fit):
+    """Error Function Fitting."""
+
     @classmethod
     def model(cls, *args: int) -> lmfit.Model:
+        """Error Function Model."""
+
         def model(
-            x: npt.NDArray[np.float_], cen: float, stretch: float, scale: float, background: float
-        ) -> npt.NDArray[np.float_]:
+            x: npt.NDArray[np.float64], cen: float, stretch: float, scale: float, background: float
+        ) -> npt.NDArray[np.float64]:
             return background + scale * scipy.special.erf(stretch * (x - cen))
 
         return lmfit.Model(model)
@@ -332,6 +398,8 @@ class ERF(Fit):
     def guess(
         cls, *args: int
     ) -> Callable[[npt.NDArray[np.float64], npt.NDArray[np.float64]], dict[str, lmfit.Parameter]]:
+        """Error Function Guessing."""
+
         def guess(
             x: npt.NDArray[np.float64], y: npt.NDArray[np.float64]
         ) -> dict[str, lmfit.Parameter]:
@@ -348,11 +416,15 @@ class ERF(Fit):
 
 
 class ERFC(Fit):
+    """Complementary Error Function Fitting."""
+
     @classmethod
     def model(cls, *args: int) -> lmfit.Model:
+        """Complementary Error Function Model."""
+
         def model(
-            x: npt.NDArray[np.float_], cen: float, stretch: float, scale: float, background: float
-        ) -> npt.NDArray[np.float_]:
+            x: npt.NDArray[np.float64], cen: float, stretch: float, scale: float, background: float
+        ) -> npt.NDArray[np.float64]:
             return background + scale * scipy.special.erfc(stretch * (x - cen))
 
         return lmfit.Model(model)
@@ -361,6 +433,8 @@ class ERFC(Fit):
     def guess(
         cls, *args: int
     ) -> Callable[[npt.NDArray[np.float64], npt.NDArray[np.float64]], dict[str, lmfit.Parameter]]:
+        """Complementary Error Function Guessing."""
+
         def guess(
             x: npt.NDArray[np.float64], y: npt.NDArray[np.float64]
         ) -> dict[str, lmfit.Parameter]:
@@ -377,11 +451,15 @@ class ERFC(Fit):
 
 
 class TopHat(Fit):
+    """Top Hat Fitting."""
+
     @classmethod
     def model(cls, *args: int) -> lmfit.Model:
+        """Top Hat Model."""
+
         def model(
-            x: npt.NDArray[np.float_], cen: float, width: float, height: float, background: float
-        ) -> npt.NDArray[np.float_]:
+            x: npt.NDArray[np.float64], cen: float, width: float, height: float, background: float
+        ) -> npt.NDArray[np.float64]:
             y = x * 0
             y[np.abs(x - cen) < width / 2] = height
             return background + y
@@ -392,6 +470,8 @@ class TopHat(Fit):
     def guess(
         cls, *args: int
     ) -> Callable[[npt.NDArray[np.float64], npt.NDArray[np.float64]], dict[str, lmfit.Parameter]]:
+        """Top Hat Guessing."""
+
         def guess(
             x: npt.NDArray[np.float64], y: npt.NDArray[np.float64]
         ) -> dict[str, lmfit.Parameter]:
@@ -416,16 +496,20 @@ class TopHat(Fit):
 
 
 class Trapezoid(Fit):
+    """Trapezoid Fitting."""
+
     @classmethod
     def model(cls, *args: int) -> lmfit.Model:
+        """Trapezoid Model."""
+
         def model(
-            x: npt.NDArray[np.float_],
+            x: npt.NDArray[np.float64],
             cen: float,
             gradient: float,
             height: float,
             background: float,
             y_offset: float,  # Acts as a width multiplier
-        ) -> npt.NDArray[np.float_]:
+        ) -> npt.NDArray[np.float64]:
             y = y_offset + height + background - gradient * np.abs(x - cen)
             y = np.maximum(y, background)
             y = np.minimum(y, background + height)
@@ -437,6 +521,8 @@ class Trapezoid(Fit):
     def guess(
         cls, *args: int
     ) -> Callable[[npt.NDArray[np.float64], npt.NDArray[np.float64]], dict[str, lmfit.Parameter]]:
+        """Trapezoid Guessing."""
+
         def guess(
             x: npt.NDArray[np.float64], y: npt.NDArray[np.float64]
         ) -> dict[str, lmfit.Parameter]:
@@ -455,10 +541,6 @@ class Trapezoid(Fit):
                 x1 = cen - width_top / 2
 
             x0 = 0.5 * (np.min(x) + x1)  # Guess that x0 is half way between min(x) and x1
-
-            print(x0)
-            print(x1)
-            print(height)
 
             if height == 0.0:
                 gradient = 0.0
