@@ -440,22 +440,25 @@ class Trapezoid(Fit):
         def guess(
             x: npt.NDArray[np.float64], y: npt.NDArray[np.float64]
         ) -> dict[str, lmfit.Parameter]:
-            top = np.where(y > np.mean(y))
+            top = np.where(y > np.mean(y))[0]
             # Guess that any value above the y mean is the top part
 
             cen = np.mean(x)
             background = np.min(y)
             height = np.max(y) - background
 
-
-            if len(top) > 0:
+            if top.size > 0:
                 i = np.min(top)
-                x1 = x[i] # x1 is the left of the top part
+                x1 = x[i]  # x1 is the left of the top part
             else:
                 width_top = (np.max(x) - np.min(x)) / 2
                 x1 = cen - width_top / 2
 
             x0 = 0.5 * (np.min(x) + x1)  # Guess that x0 is half way between min(x) and x1
+
+            print(x0)
+            print(x1)
+            print(height)
 
             if height == 0.0:
                 gradient = 0.0

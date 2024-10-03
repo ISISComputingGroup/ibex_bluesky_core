@@ -3,6 +3,7 @@ from unittest import mock
 import lmfit
 import numpy as np
 import numpy.typing as npt
+
 from ibex_bluesky_core.callbacks.fitting import FitMethod, LiveFit
 
 
