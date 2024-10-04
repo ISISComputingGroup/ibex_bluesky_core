@@ -30,7 +30,7 @@ fit_plot_callback = LiveFitPlot(fit_callback, ax=ax, color="r")
 
 **Note:** that the `LiveFit` callback doesn't directly do the plotting, it will return function parameters of the model its trying to fit to; a `LiveFit` object must be passed to `LiveFitPlot` which can then be subscribed to the `RunEngine`. See the [Bluesky Documentation](https://blueskyproject.io/bluesky/main/callbacks.html#livefitplot) for information on the various arguments that can be passed to the `LiveFitPlot` class.
 
-The `plot_callback` and `fit_plot_callback` objects can then be subscribed to the `RunEngine`, using the same methods as described in [`LivePlot`](./plotting.md). See the following example using `@subs_decorator`:
+The `plot_callback` and `fit_plot_callback` objects can then be subscribed to the `RunEngine`, using the same methods as described in [`LivePlot`](../callbacks/plotting.md). See the following example using `@subs_decorator`:
 
 ```py
 @subs_decorator(
@@ -49,16 +49,16 @@ We support **standard fits** for the following trends in data. See [Standard Fit
 
 | Trend | Class Name in fitting_utils | Arguments | 
 | ----- | -------------------------| ----------|
-| Linear | [Linear](./standard_fits.md/#linear) | None |
-| Polynomial | [Polynomial](./standard_fits.md/#polynomial) | Polynomial Degree (int) |
-| Gaussian | [Gaussian](./standard_fits.md/#gaussian) | None |
-| Lorentzian | [Lorentzian](./standard_fits.md/#lorentzian) | None |
-| Damped Oscillator | [DampedOsc](./standard_fits.md/#damped-oscillator-dampedosc) | None |
-| Slit Scan Fit | [SlitScan](./standard_fits.md/#slit-scan-slitscan) | Max Slit Size (int) |
-| Error Function | [ERF](./standard_fits.md/#error-function-erf) | None |
+| Linear | [Linear](./standard_fits.md#linear) | None |
+| Polynomial | [Polynomial](./standard_fits.md#polynomial) | Polynomial Degree (int) |
+| Gaussian | [Gaussian](./standard_fits.md#gaussian) | None |
+| Lorentzian | [Lorentzian](./standard_fits.md#lorentzian) | None |
+| Damped Oscillator | [DampedOsc](./standard_fits.md#damped-oscillator-dampedosc) | None |
+| Slit Scan Fit | [SlitScan](./standard_fits.md#slit-scan-slitscan) | Max Slit Size (int) |
+| Error Function | [ERF](./standard_fits.md#error-function-erf) | None |
 | Complementary Error Function | [ERFC](./standard_fits.md/#complementary-error-function-erfc) | None |
-| Top Hat | [TopHat](./standard_fits.md/#top-hat-tophat) | None |
-| Trapezoid | [Trapezoid](./standard_fits.md/#trapezoid) | None |
+| Top Hat | [TopHat](./standard_fits.md#top-hat-tophat) | None |
+| Trapezoid | [Trapezoid](./standard_fits.md#trapezoid) | None |
 | PeakStats (COM) **\*** | - | -
 
 \* Native to Bluesky there is support for `PeakStats` which "computes peak statsitics after a run finishes." See [Bluesky docs](https://blueskyproject.io/bluesky/main/callbacks.html#peakstats) for more information on this. Similar to `LiveFit` and `LiveFitPLot`, `PeakStats` is a callback and must be passed to `PeakStatsPlot` to be plotted on a set of axes, which is subscribed to by the `RunEngine`.
