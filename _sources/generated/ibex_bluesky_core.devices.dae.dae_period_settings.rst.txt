@@ -1,0 +1,32 @@
+
+
+``ibex_bluesky_core.devices.dae.dae_period_settings``
+=====================================================
+        
+        
+        
+        
+        
+
+.. automodule:: ibex_bluesky_core.devices.dae.dae_period_settings
+    :members:
+    :show-inheritance:
+
+    
+    
+    
+
+    
+    
+    .. rubric:: Members
+
+    .. autosummary::
+        :nosignatures:
+    
+        DaePeriodSettings
+        DaePeriodSettingsData
+        PeriodSource
+        PeriodType
+        SinglePeriodSettings
+    
+    
