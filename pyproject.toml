@@ -80,9 +80,6 @@ addopts = "--cov --cov-report=html -vv"
 [tool.coverage.run]
 branch = true
 source = ["src"]
-omit = [
-  "src/ibex_bluesky_core/demo_plan.py"  # Demo code only
-]
 
 [tool.coverage.report]
 fail_under = 100
