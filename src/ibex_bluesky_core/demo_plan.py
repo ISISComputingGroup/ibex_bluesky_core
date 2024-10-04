@@ -58,16 +58,13 @@ def demo_plan() -> Generator[Msg, None, None]:
         [
             HumanReadableOutputFileLoggingCallback(
                 Path("C:\\") / "instrument" / "var" / "logs" / "bluesky" / "output_files",
-                [block.name, "DAE-good_uah"],
-            ),
-            HumanReadableOutputFileLoggingCallback(
-                Path("C:\\")
-                / "instrument"
-                / "var"
-                / "logs"
-                / "bluesky"
-                / "output_files"
-                / "hintedfields"
+                [
+                    block.name,
+                    controller.run_number.name,
+                    reducer.intensity.name,
+                    reducer.det_counts.name,
+                    dae.good_frames.name,
+                ],
             ),
             LivePlot(y=reducer.intensity.name, x=block.name, marker="x", linestyle="none"),
             LiveTable(
