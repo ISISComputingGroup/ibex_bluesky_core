@@ -4,7 +4,7 @@ import lmfit
 import numpy as np
 import numpy.typing as npt
 
-from ibex_bluesky_core.fitting.fitting import FitMethod, LiveFit
+from ibex_bluesky_core.callbacks.fitting import FitMethod, LiveFit
 
 
 def test_guess_called():

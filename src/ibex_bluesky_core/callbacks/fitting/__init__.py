@@ -1,7 +1,6 @@
-"""IBEX line fitting callbacks."""
+"""For IBEX Bluesky scan fitting."""
 
 import logging
-import sys
 from typing import Callable
 
 import lmfit
@@ -9,11 +8,6 @@ import numpy as np
 import numpy.typing as npt
 from bluesky.callbacks import LiveFit as _DefaultLiveFit
 from bluesky.callbacks.core import make_class_safe
-
-sys.path.append(r"c:\instrument\apps\python3\lib\site-packages")
-import matplotlib
-
-matplotlib.use("module://genie_python.matplotlib_backend.ibex_websocket_backend")
 
 
 class FitMethod:
