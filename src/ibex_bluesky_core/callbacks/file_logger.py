@@ -15,8 +15,8 @@ from event_model.documents.run_stop import RunStop
 class HumanReadableOutputFileLoggingCallback(CallbackBase):
     """Outputs bluesky runs to human-readable output files in the specified directory path."""
 
-    def __init__(self, output_dir: Path, fields: Optional[list[str]] = None ) -> None:
-        """Outputs human-readable output files of bluesky runs. If fields are given, just output those, otherwise output all hinted signals """
+    def __init__(self, output_dir: Path, fields: Optional[list[str]] = None) -> None:
+        """Outputs human-readable output files of bluesky runs. If fields are given, just output those, otherwise output all hinted signals"""
         super().__init__()
         self.fields: list[str] | None = fields
         self.output_dir: Path = output_dir
@@ -34,7 +34,7 @@ class HumanReadableOutputFileLoggingCallback(CallbackBase):
         assert self.filename is not None, "Could not create filename."
         assert self.current_start_document is not None, "Saw a non-start document before a start."
 
-        exclude_list = ["time", "plan_name", "plan_type", "scan_id", "versions"]
+        exclude_list = ["time", "plan_name", "plan_type", "scan_id", "versions", "plan_pattern", "plan_pattern_module", "plan_pattern_args"]
         header_data = {k: v for k, v in doc.items() if k not in exclude_list}
 
         datetime_obj = datetime.fromtimestamp(doc["time"])
@@ -61,11 +61,16 @@ class HumanReadableOutputFileLoggingCallback(CallbackBase):
 
         for data_key, data_value in event_data.items():
             if self.fields is None or data_key in self.fields:
-                formatted_event_data[data_key] = (
-                    f"{data_value:.{descriptor_data[data_key]['precision']}f}"
-                    if "precision" in descriptor_data[data_key] and isinstance(data_value, float)
-                    else data_value
-                )
+                if (
+                    "precision" in descriptor_data[data_key]
+                    and descriptor_data[data_key]["precision"] is not None
+                ):
+                    formatted_event_data[data_key] = (
+                        f"{data_value:.{descriptor_data[data_key]['precision']}f}"
+                        if "precision" in descriptor_data[data_key]
+                        and isinstance(data_value, float)
+                        else data_value
+                    )
 
         with open(self.filename, "a", newline="") as outfile:
             if doc["seq_num"] == 1:
