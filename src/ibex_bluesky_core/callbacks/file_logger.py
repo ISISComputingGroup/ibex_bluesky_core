@@ -1,11 +1,10 @@
-"""Creates a readable .txt file of Bluesky runengine dataset"""
+"""Creates a readable .txt file of Bluesky runengine dataset."""
 
 import csv
 from datetime import datetime
-from collections import OrderedDict
-from os import truncate
-from typing import Optional, Any
 from pathlib import Path
+from typing import Optional
+
 from bluesky.callbacks import CallbackBase
 from event_model.documents.event import Event
 from event_model.documents.event_descriptor import EventDescriptor
@@ -28,7 +27,10 @@ class HumanReadableOutputFileLoggingCallback(CallbackBase):
     """Outputs bluesky runs to human-readable output files in the specified directory path."""
 
     def __init__(self, output_dir: Path, fields: list[str]) -> None:
-        """Outputs human-readable output files of bluesky runs. If fields are given, just output those, otherwise output all hinted signals"""
+        """Output human-readable output files of bluesky runs.
+
+        If fields are given, just output those, otherwise output all hinted signals.
+        """
         super().__init__()
         self.fields: list[str] = fields
         self.output_dir: Path = output_dir
@@ -37,8 +39,11 @@ class HumanReadableOutputFileLoggingCallback(CallbackBase):
         self.filename: Optional[str] = None
 
     def start(self, doc: RunStart) -> None:
-        """Start writing an output file. This involves creating the file if it doesn't already exist
-        then putting the metadata ie. start time, uid in the header."""
+        """Start writing an output file.
+
+        This involves creating the file if it doesn't already exist
+        then putting the metadata ie. start time, uid in the header.
+        """
         self.output_dir.mkdir(parents=True, exist_ok=True)
         self.current_start_document = doc[UID]
         self.filename = self.output_dir / f"{self.current_start_document}.txt"
@@ -64,14 +69,15 @@ class HumanReadableOutputFileLoggingCallback(CallbackBase):
                 outfile.write(f"{key}: {value}\n")
 
     def descriptor(self, doc: EventDescriptor) -> None:
-        if doc[NAME] != "primary":
+        """Add the descriptor data to descriptors."""
+        if not doc[NAME] or doc[NAME] != "primary":
             return
 
         descriptor_id = doc[UID]
         self.descriptors[descriptor_id] = doc
 
     def event(self, doc: Event) -> None:
-        """Append an event's output to the file"""
+        """Append an event's output to the file."""
         formatted_event_data = {}
         descriptor_id = doc[DESCRIPTOR]
         event_data = doc[DATA]
@@ -91,13 +97,14 @@ class HumanReadableOutputFileLoggingCallback(CallbackBase):
             if doc[SEQ_NUM] == 1:
                 # If this is the first event, write out the units before writing event data.
                 units_line = "\t".join(
-                    f"{field_name}{f'({descriptor_data[field_name].get(UNITS, None)})' if descriptor_data[field_name].get(UNITS, None) else ''}"
+                    f"{field_name}{f'({descriptor_data[field_name].get(UNITS, None)})' if descriptor_data[field_name].get(UNITS, None) else ''}"  # noqa: E501
                     for field_name in self.fields
                 )
                 outfile.write(f"\n{units_line}\n")
             writer = csv.DictWriter(outfile, fieldnames=formatted_event_data, delimiter="\t")
             writer.writerows([formatted_event_data])
 
-    def stop(self, doc: RunStop) -> None:
+    def stop(self, doc: RunStop) -> RunStop | None:
+        """Clear descriptors."""
         self.descriptors.clear()
         return super().stop(doc)

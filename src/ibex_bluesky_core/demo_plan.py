@@ -12,8 +12,8 @@ from bluesky.preprocessors import subs_decorator
 from bluesky.utils import Msg
 from ophyd_async.plan_stubs import ensure_connected
 
-from ibex_bluesky_core.callbacks.plotting import LivePlot
 from ibex_bluesky_core.callbacks.file_logger import HumanReadableOutputFileLoggingCallback
+from ibex_bluesky_core.callbacks.plotting import LivePlot
 from ibex_bluesky_core.devices import get_pv_prefix
 from ibex_bluesky_core.devices.block import block_rw_rbv
 from ibex_bluesky_core.devices.simpledae import SimpleDae

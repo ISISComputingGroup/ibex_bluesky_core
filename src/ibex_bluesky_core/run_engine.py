@@ -3,19 +3,18 @@
 import asyncio
 import functools
 from functools import cache
-from pathlib import Path
 from threading import Event
 from typing import Generator
 
+import bluesky.plan_stubs as bps
+import bluesky.preprocessors as bpp
 import matplotlib
 from bluesky.run_engine import RunEngine
 from bluesky.utils import DuringTask, Msg
 from ophyd_async.epics.signal import epics_signal_r
 from ophyd_async.plan_stubs import ensure_connected
-import bluesky.plan_stubs as bps
-import bluesky.preprocessors as bpp
+
 from ibex_bluesky_core.callbacks.document_logger import DocLoggingCallback
-from ibex_bluesky_core.callbacks.file_logger import HumanReadableOutputFileLoggingCallback
 
 __all__ = ["get_run_engine"]
 

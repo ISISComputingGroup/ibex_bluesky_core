@@ -1,15 +1,13 @@
 # pyright: reportMissingParameterType=false
 
-import pytest
-from unittest.mock import mock_open, MagicMock, patch
 from pathlib import Path
+from unittest.mock import call, mock_open, patch
 
-from event_model import EventDescriptor, RunStart, Event
+import pytest
+from event_model import DataKey, Event, EventDescriptor, RunStart
 
 from ibex_bluesky_core.callbacks.file_logger import HumanReadableOutputFileLoggingCallback
 
-
-m = mock_open()
 save_path = Path("C:\\") / "instrument" / "var" / "logs" / "bluesky" / "output_files"
 
 
@@ -24,7 +22,7 @@ def test_header_data_all_available_on_start(_, cb):
     uid = "test123"
     scan_id = 1234
     run_start = RunStart(time=time, uid=uid, scan_id=scan_id)
-    with patch("ibex_bluesky_core.callbacks.file_logger.open", m) as mock_file:
+    with patch("ibex_bluesky_core.callbacks.file_logger.open", mock_open()) as mock_file:
         cb.start(run_start)
         result = save_path / f"{run_start['uid']}.txt"
 
@@ -35,7 +33,8 @@ def test_header_data_all_available_on_start(_, cb):
 
     mock_file().write.assert_any_call(f"uid: {uid}\n")
 
-    # scan id is in the exclude list should not have been written, therefore call count should only be 2
+    # scan id is in the exclude list should not have been written,
+    # therefore call count should only be 2
     assert mock_file().write.call_count == 2
 
 
@@ -56,34 +55,78 @@ def test_descriptor_adds_descriptor_if_name_primary(cb):
     assert cb.descriptors[desc["uid"]] == desc
 
 
-def test_event_respects_precision_of_value():
-    desc = EventDescriptor()
-    event = Event()
-    pass
+def test_event_prints_header_with_units_and_respects_precision_of_value_on_first_message():
+    field_name = "test"
+    cb = HumanReadableOutputFileLoggingCallback(save_path, [field_name])
+    # This actually contains the precision
+    expected_value = 1.2345
+    units = "mm"
+    prec = 4
+    descriptor = "somedescriptor"
+    uid = "123456"
+    desc = EventDescriptor(uid=uid, data_keys={field_name: DataKey(precision=prec, units=units)})
+    cb.descriptors[descriptor] = desc
+
+    # This just contains the value
+    event = Event(uid=uid, data={field_name: expected_value}, descriptor=descriptor, seq_num=1)
+    with patch("ibex_bluesky_core.callbacks.file_logger.open", mock_open()) as mock_file:
+        cb.event(event)
+
+    mock_file.assert_called_with(None, "a", newline="")
+    first_call = call(f"\n{field_name}({units})\n")
+    second_call = call(f"{expected_value:.{prec}f}\r\n")
+    assert mock_file().write.has_calls(first_call, second_call)
+    assert mock_file().write.call_count == 2
 
 
-def test_event_gives_raw_value_without_precision():
-    desc = EventDescriptor()
-    event = Event()
-    pass
+def test_event_prints_header_without_units_and_does_not_truncate_precision_if_no_precision():
+    field_name = "test"
+    cb = HumanReadableOutputFileLoggingCallback(save_path, [field_name])
+    # This actually contains the precision
+    expected_value = 1.2345
+    units = None
+    prec = None
+    descriptor = "somedescriptor"
+    uid = "123456"
+    desc = EventDescriptor(uid=uid, data_keys={field_name: DataKey(precision=prec, units=units)})
+    cb.descriptors[descriptor] = desc
+
+    # This just contains the value
+    event = Event(uid=uid, data={field_name: expected_value}, descriptor=descriptor, seq_num=1)
+    with patch("ibex_bluesky_core.callbacks.file_logger.open", mock_open()) as mock_file:
+        cb.event(event)
+
+    mock_file.assert_called_with(None, "a", newline="")
+    first_call = call(f"\n{field_name}({units})\n")
+    second_call = call(f"{expected_value}\r\n")
+    assert mock_file().write.has_calls(first_call, second_call)
+    assert mock_file().write.call_count == 2
 
 
-def test_event_ignores_precision_if_value_not_float():
-    desc = EventDescriptor()
-    event = Event()
-    pass
+def test_event_prints_header_only_on_first_event_and_does_not_truncate_if_not_float_value():
+    field_name = "test"
+    cb = HumanReadableOutputFileLoggingCallback(save_path, [field_name])
+    # This actually contains the precision
+    expected_value = 12345
+    units = "mm"
+    prec = 3
+    descriptor = "somedescriptor"
+    uid = "123456"
+    desc = EventDescriptor(uid=uid, data_keys={field_name: DataKey(precision=prec, units=units)})
+    cb.descriptors[descriptor] = desc
 
+    # This just contains the value
+    second_event = Event(
+        uid=uid, data={field_name: expected_value}, descriptor=descriptor, seq_num=2
+    )
 
-def test_event_writes_units_line_followed_by_data_with_units_specified():
-    desc = EventDescriptor()
-    event = Event()
-    pass
+    with patch("ibex_bluesky_core.callbacks.file_logger.open", mock_open()) as mock_file:
+        cb.event(second_event)
 
+    mock_file.assert_called_with(None, "a", newline="")
 
-def test_event_writes_units_line_followed_by_data_with_units_not_specified():
-    desc = EventDescriptor()
-    event = Event()
-    pass
+    mock_file().write.assert_called_once_with(f"{expected_value}\r\n")
+    assert mock_file().write.call_count == 1
 
 
 def test_stop_clears_descriptors(cb):
