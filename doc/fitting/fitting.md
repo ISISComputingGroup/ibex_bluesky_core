@@ -65,15 +65,15 @@ We support **standard fits** for the following trends in data. See [Standard Fit
 
 -------
 
-Each of the above fit classes has a `.fit()` which returns an object of type `FitMethod`. This tells `LiveFit` how to perform fitting on the data. `FitMethod` is defined in `ibex_bluesky_core.fitting.fitting`.
+Each of the above fit classes has a `.fit()` which returns an object of type `FitMethod`. This tells `LiveFit` how to perform fitting on the data. `FitMethod` is defined in `ibex_bluesky_core.callbacks.fitting`.
 
 There are *two* ways that you can choose how to fit a model to your data:
 
 ### Option 1: Use the standard fits
-When only using the standard fits provided by `ibex_bluesky_core`, the following syntax can be used, replacing `[FIT]` with your chosen one from `ibex_bluesky_core.fitting.fitting_utils`:
+When only using the standard fits provided by `ibex_bluesky_core`, the following syntax can be used, replacing `[FIT]` with your chosen one from `ibex_bluesky_core.callbacks.fitting.fitting_utils`:
 
 ```py
-from ibex_bluesky_core.fitting.fitting_utils import [FIT]
+from ibex_bluesky_core.callbacks.fitting.fitting_utils import [FIT]
 
 # Pass [FIT].fit() to the first parameter of LiveFit
 lf = LiveFit([FIT].fit(), y="y_variable", x="x_variable", update_every=0.5)
@@ -144,13 +144,13 @@ lf = LiveFit(fit_method, y="y_variable", x="x_variable", update_every=0.5)
 
 #### Option 2: Continued
 
-Each `Fit` in `ibex_bluesky_core.fitting.fitting` has a `.model()` and `.guess()`, which make up their fitting method. These are publically accessible class methods.
+Each `Fit` in `ibex_bluesky_core.callbacks.fitting` has a `.model()` and `.guess()`, which make up their fitting method. These are publically accessible class methods.
 
 This means that aslong as the parameters returned from the guess function match to the arguments of the model function, you may mix and match user-made and standard, models and guess functions in the following manner:
 
 ```py
 import lmfit
-from ibex_bluesky_core.fitting.fitting_utils import Linear
+from ibex_bluesky_core.callbacks.fitting.fitting_utils import Linear
 
 def different_model(x: float, m: float, c: float) -> float:
     
@@ -168,7 +168,7 @@ lf = LiveFit(fit_method, y="y_variable", x="x_variable", update_every=0.5)
 
 ```py
 import lmfit
-from ibex_bluesky_core.fitting.fitting_utils import Linear
+from ibex_bluesky_core.callbacks.fitting.fitting_utils import Linear
 
 # This Guessing. function isn't very good because it's return values don't change on the data already collected in the Bluesky run
 # It always guesses that the linear function is y = x
