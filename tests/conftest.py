@@ -7,4 +7,7 @@ from ibex_bluesky_core.run_engine import get_run_engine
 @pytest.fixture
 def RE() -> RunEngine:
     get_run_engine.cache_clear()
-    return get_run_engine()
+    re =  get_run_engine()
+    re.preprocessors.clear()
+
+    return re
