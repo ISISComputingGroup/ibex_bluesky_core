@@ -1,7 +1,7 @@
 """Demonstration plan showing basic bluesky functionality."""
 
-from pathlib import Path
 import os
+from pathlib import Path
 from typing import Generator
 
 import bluesky.plan_stubs as bps
