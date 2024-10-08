@@ -4,7 +4,7 @@ from pathlib import Path
 from unittest.mock import call, mock_open, patch
 
 import pytest
-from event_model import DataKey, Event, EventDescriptor, RunStart
+from event_model import DataKey, Event, EventDescriptor, RunStart, RunStop
 
 from ibex_bluesky_core.callbacks.file_logger import HumanReadableOutputFileLoggingCallback
 
@@ -66,13 +66,14 @@ def test_event_prints_header_with_units_and_respects_precision_of_value_on_first
     uid = "123456"
     desc = EventDescriptor(uid=uid, data_keys={field_name: DataKey(precision=prec, units=units)})
     cb.descriptors[descriptor] = desc
+    cb.filename = Path("test")
 
     # This just contains the value
     event = Event(uid=uid, data={field_name: expected_value}, descriptor=descriptor, seq_num=1)
     with patch("ibex_bluesky_core.callbacks.file_logger.open", mock_open()) as mock_file:
         cb.event(event)
 
-    mock_file.assert_called_with(None, "a", newline="")
+    mock_file.assert_called_with(cb.filename, "a", newline="")
     first_call = call(f"\n{field_name}({units})\n")
     second_call = call(f"{expected_value:.{prec}f}\r\n")
     assert mock_file().write.has_calls(first_call, second_call)
@@ -90,13 +91,14 @@ def test_event_prints_header_without_units_and_does_not_truncate_precision_if_no
     uid = "123456"
     desc = EventDescriptor(uid=uid, data_keys={field_name: DataKey(precision=prec, units=units)})
     cb.descriptors[descriptor] = desc
+    cb.filename = Path("test")
 
     # This just contains the value
     event = Event(uid=uid, data={field_name: expected_value}, descriptor=descriptor, seq_num=1)
     with patch("ibex_bluesky_core.callbacks.file_logger.open", mock_open()) as mock_file:
         cb.event(event)
 
-    mock_file.assert_called_with(None, "a", newline="")
+    mock_file.assert_called_with(cb.filename, "a", newline="")
     first_call = call(f"\n{field_name}({units})\n")
     second_call = call(f"{expected_value}\r\n")
     assert mock_file().write.has_calls(first_call, second_call)
@@ -104,6 +106,33 @@ def test_event_prints_header_without_units_and_does_not_truncate_precision_if_no
 
 
 def test_event_prints_header_only_on_first_event_and_does_not_truncate_if_not_float_value():
+    field_name = "test"
+    cb = HumanReadableOutputFileLoggingCallback(save_path, [field_name])
+    # This actually contains the precision
+    expected_value = 12345
+    units = "mm"
+    prec = 3
+    descriptor = "somedescriptor"
+    uid = "123456"
+    desc = EventDescriptor(uid=uid, data_keys={field_name: DataKey(precision=prec, units=units)})
+    cb.descriptors[descriptor] = desc
+    cb.filename = Path("test")
+
+    # This just contains the value
+    second_event = Event(
+        uid=uid, data={field_name: expected_value}, descriptor=descriptor, seq_num=2
+    )
+
+    with patch("ibex_bluesky_core.callbacks.file_logger.open", mock_open()) as mock_file:
+        cb.event(second_event)
+
+    mock_file.assert_called_with(cb.filename, "a", newline="")
+
+    mock_file().write.assert_called_once_with(f"{expected_value}\r\n")
+    assert mock_file().write.call_count == 1
+
+
+def test_event_called_before_filename_specified_does_nothing():
     field_name = "test"
     cb = HumanReadableOutputFileLoggingCallback(save_path, [field_name])
     # This actually contains the precision
@@ -123,15 +152,11 @@ def test_event_prints_header_only_on_first_event_and_does_not_truncate_if_not_fl
     with patch("ibex_bluesky_core.callbacks.file_logger.open", mock_open()) as mock_file:
         cb.event(second_event)
 
-    mock_file.assert_called_with(None, "a", newline="")
-
-    mock_file().write.assert_called_once_with(f"{expected_value}\r\n")
-    assert mock_file().write.call_count == 1
-
+    mock_file.assert_not_called()
 
 def test_stop_clears_descriptors(cb):
     cb.descriptors["test"] = EventDescriptor(uid="test", run_start="", time=0.1, data_keys={})
 
-    cb.stop(EventDescriptor(uid="test1", run_start="", time=0.2, data_keys={}))
+    cb.stop(RunStop(uid="test", run_start="",time=0.1,exit_status="success"))
 
     assert not cb.descriptors

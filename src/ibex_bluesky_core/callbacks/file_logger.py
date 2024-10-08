@@ -36,7 +36,7 @@ class HumanReadableOutputFileLoggingCallback(CallbackBase):
         self.output_dir: Path = output_dir
         self.current_start_document: Optional[str] = None
         self.descriptors: dict[str, EventDescriptor] = {}
-        self.filename: Optional[str] = None
+        self.filename: Optional[Path] = None
 
     def start(self, doc: RunStart) -> None:
         """Start writing an output file.
@@ -70,14 +70,17 @@ class HumanReadableOutputFileLoggingCallback(CallbackBase):
 
     def descriptor(self, doc: EventDescriptor) -> None:
         """Add the descriptor data to descriptors."""
-        if not doc[NAME] or doc[NAME] != "primary":
+        if NAME not in doc or not doc[NAME] or doc[NAME] != "primary":
             return
 
         descriptor_id = doc[UID]
         self.descriptors[descriptor_id] = doc
 
-    def event(self, doc: Event) -> None:
+    def event(self, doc: Event) -> Event:
         """Append an event's output to the file."""
+        if not self.filename :
+            print("File has not been started yet - doing nothing")
+            return doc
         formatted_event_data = {}
         descriptor_id = doc[DESCRIPTOR]
         event_data = doc[DATA]
@@ -103,6 +106,7 @@ class HumanReadableOutputFileLoggingCallback(CallbackBase):
                 outfile.write(f"\n{units_line}\n")
             writer = csv.DictWriter(outfile, fieldnames=formatted_event_data, delimiter="\t")
             writer.writerows([formatted_event_data])
+        return doc
 
     def stop(self, doc: RunStop) -> RunStop | None:
         """Clear descriptors."""
