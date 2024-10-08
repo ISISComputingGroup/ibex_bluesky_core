@@ -6,7 +6,7 @@ import scipp as sc
 from event_model.documents.event_descriptor import DataKey
 from numpy import float32
 from numpy.typing import NDArray
-from ophyd_async.core import SignalR, StandardReadable
+from ophyd_async.core import SignalR, StandardReadable, soft_signal_r_and_setter
 from ophyd_async.epics.signal import epics_signal_r
 
 
@@ -56,6 +56,8 @@ class DaeSpectra(StandardReadable):
             int, f"{dae_prefix}SPEC:{period}:{spectra}:YC.NORD"
         )
 
+        self.stddev, self._stddev_setter = soft_signal_r_and_setter(NDArray[float32], [0.0])
+
         super().__init__(name=name)
 
     async def _read_sized(
@@ -79,6 +81,11 @@ class DaeSpectra(StandardReadable):
     async def read_counts_per_time(self) -> NDArray[float32]:
         """Read a correctly-sized array of counts divided by bin width."""
         return await self._read_sized(self.counts_per_time, self.counts_per_time_size)
+    
+    async def read_counts_uncertainties(self) -> NDArray[float32]:
+        """Read a correctly-sized array of uncertainties for each count."""
+        
+        return await self._read_sized(self.stddev, self.counts_size) # type: ignore
 
     async def read_spectrum_dataarray(self) -> sc.DataArray:
         """Get a scipp DataArray containing the current data from this spectrum.

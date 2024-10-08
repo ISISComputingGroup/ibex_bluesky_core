@@ -2,9 +2,11 @@
 
 import asyncio
 from abc import ABCMeta, abstractmethod
-from typing import TYPE_CHECKING, Collection, Sequence
+from typing import TYPE_CHECKING, Collection, Sequence, Tuple
 
+import numpy as np
 import scipp as sc
+import math
 from ophyd_async.core import (
     Device,
     DeviceVector,
@@ -53,6 +55,9 @@ class ScalarNormalizer(Reducer, StandardReadable, metaclass=ABCMeta):
         self.det_counts, self._det_counts_setter = soft_signal_r_and_setter(float, 0.0)
         self.intensity, self._intensity_setter = soft_signal_r_and_setter(float, 0.0, precision=6)
 
+        self.det_counts_stddev, self._det_counts_stddev_setter = soft_signal_r_and_setter(float, 0.0)
+        self.intensity_stddev, self._intensity_stddev_setter = soft_signal_r_and_setter(float, 0.0, precision=6)
+
         super().__init__(name="")
 
     @abstractmethod
@@ -68,6 +73,18 @@ class ScalarNormalizer(Reducer, StandardReadable, metaclass=ABCMeta):
         self._det_counts_setter(float(summed_counts.value))
         self._intensity_setter(float(summed_counts.value) / denominator)
 
+        detector_counts_var = 0.0 if summed_counts.variance is None else summed_counts.variance
+
+        var_temp = (summed_counts / denominator).variance
+        intensity_var = var_temp if var_temp is not None else 0.0
+
+        self._det_counts_stddev_setter(math.sqrt(detector_counts_var))
+        self._intensity_stddev_setter(math.sqrt(intensity_var))
+
+        for spec in self.detectors.values():
+            stddev = await spec.read_counts()
+            spec._stddev_setter(np.sqrt(stddev))
+
     def additional_readable_signals(self, dae: "SimpleDae") -> list[Device]:
         """Publish interesting signals derived or used by this reducer."""
         return [
@@ -75,6 +92,18 @@ class ScalarNormalizer(Reducer, StandardReadable, metaclass=ABCMeta):
             self.intensity,
             self.denominator(dae),
         ]
+    
+    def additional_readable_signals_uncertainties(self, dae: "SimpleDae") -> list[Device]:
+        """Publish interesting signals derived or used by this reducer, including respective uncertainties."""
+        return [
+            self.det_counts_stddev,
+            self.intensity_stddev,
+        ]
+    
+    def readable_detector_count_uncertainties(self, dae: "SimpleDae") -> list[Device]:
+        """Publish individual uncertainty signals for all detectors."""
+
+        return [self.detectors[i].stddev for i in self.detectors]
 
 
 class PeriodGoodFramesNormalizer(ScalarNormalizer):
@@ -119,6 +148,10 @@ class MonitorNormalizer(Reducer, StandardReadable):
         self.mon_counts, self._mon_counts_setter = soft_signal_r_and_setter(float, 0.0)
         self.intensity, self._intensity_setter = soft_signal_r_and_setter(float, 0.0, precision=6)
 
+        self.det_counts_stddev, self._det_counts_stddev_setter = soft_signal_r_and_setter(float, 0.0)
+        self.mon_counts_stddev, self._mon_counts_stddev_setter = soft_signal_r_and_setter(float, 0.0)
+        self.intensity_stddev, self._intensity_stddev_setter = soft_signal_r_and_setter(float, 0.0, precision=6)
+
         super().__init__(name="")
 
     async def reduce_data(self, dae: "SimpleDae") -> None:
@@ -131,6 +164,22 @@ class MonitorNormalizer(Reducer, StandardReadable):
         self._mon_counts_setter(float(monitor_counts.value))
         self._intensity_setter(float((detector_counts / monitor_counts).value))
 
+        detector_counts_var = 0.0 if detector_counts.variance is None else detector_counts.variance
+        monitor_counts_var = 0.0 if monitor_counts.variance is None else monitor_counts.variance
+        intensity_var = 0.0 if monitor_counts_var == 0.0 else (detector_counts / monitor_counts).variance
+
+        self._det_counts_stddev_setter(math.sqrt(detector_counts_var))
+        self._mon_counts_stddev_setter(math.sqrt(monitor_counts_var))
+        self._intensity_stddev_setter(math.sqrt(intensity_var))
+
+        for spec in self.detectors.values():
+            stddev = await spec.read_counts()
+            spec._stddev_setter(np.sqrt(stddev))
+
+        for spec in self.monitors.values():
+            stddev = await spec.read_counts()
+            spec._stddev_setter(np.sqrt(stddev))
+
     def additional_readable_signals(self, dae: "SimpleDae") -> list[Device]:
         """Publish interesting signals derived or used by this reducer."""
         return [
@@ -138,3 +187,21 @@ class MonitorNormalizer(Reducer, StandardReadable):
             self.mon_counts,
             self.intensity,
         ]
+    
+    def additional_readable_signals_uncertainties(self, dae: "SimpleDae") -> list[Device]:
+        """Publish interesting signals derived or used by this reducer, including respective uncertainties."""
+        return [
+            self.det_counts_stddev,
+            self.mon_counts_stddev,
+            self.intensity_stddev,
+        ]
+    
+    def readable_detector_count_uncertainties(self, dae: "SimpleDae") -> list[Device]:
+        """Publish individual uncertainty signals for all detectors."""
+
+        return [self.detectors[i].stddev for i in self.detectors]
+
+    def readable_monitor_count_uncertainties(self, dae: "SimpleDae") -> list[Device]:
+        """Publish individual uncertainty signals for all monitors."""
+
+        return [self.monitors[i].stddev for i in self.monitors]
