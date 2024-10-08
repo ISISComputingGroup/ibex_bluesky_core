@@ -35,5 +35,3 @@ We will use `ophyd-async`.
 - Developers will need to understand more details about `asyncio`
 - Developers will have to write somewhat less boilerplate code in `ophyd-async` as compared to `ophyd`
 - Our devices should be more comparable to other facilities on site (e.g. DLS) who are using `ophyd-async`.
-- Less expertise with this library on site (mitigation: don't do too much which is very complicated with it)
-- Potentially duplicates some of mantid's functionality: (mitigation: use scipp for "simple" things, use mantid in future if people want to do "full" data reduction pipelines)

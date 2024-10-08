@@ -18,3 +18,5 @@ We will be using scipp.
 - `scipp` has a `numpy`-like interface but handles units and uncertainties by default under-the-hood.
 - Neither `numpy` or `uncertanties` have exactly the functionality we would need, so the solution using them would be a mix of the libraries and our own code, there would be more places to go wrong. Maintainability.
 - Developing our own uncertainties library will take time to understand and then implement. All of the functionality that we need has been done beforehand, so better to not waste time & effort.
+- Less expertise with this library on site (mitigation: don't do too much which is very complicated with it)
+- Potentially duplicates some of `mantid`'s functionality: (mitigation: use `scipp` for "simple" things, use `mantid` in future if people want to do "full" data reduction pipelines)
