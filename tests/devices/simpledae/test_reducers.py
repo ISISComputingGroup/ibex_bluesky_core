@@ -137,15 +137,6 @@ async def test_period_good_frames_normalizer_uncertainties(
     assert intensity_stddev == pytest.approx(math.sqrt((21000 + (123**2 / 21000) ) / 123**2), 1e-4)
 
 
-async def test_scalar_normalizer_publishes_individual_detector_count_uncertainties(
-    simpledae: SimpleDae,
-    period_good_frames_reducer: PeriodGoodFramesNormalizer,
-):
-
-    readables = period_good_frames_reducer.readable_detector_count_uncertainties(simpledae)
-    assert period_good_frames_reducer.detectors[1].stddev in readables
-
-
 # Monitor Normalizer
 
 
@@ -217,19 +208,3 @@ async def test_monitor_normalizer_publishes_raw_and_normalized_count_uncertainti
     assert monitor_normalizer.intensity_stddev in readables
     assert monitor_normalizer.det_counts_stddev in readables
     assert monitor_normalizer.mon_counts_stddev in readables
-
-
-async def test_monitor_normalizer_publishes_individual_detector_count_uncertainties(
-    simpledae: SimpleDae,
-    monitor_normalizer: MonitorNormalizer,
-):
-    readables = monitor_normalizer.readable_detector_count_uncertainties(simpledae)
-    assert monitor_normalizer.detectors[1].stddev in readables
-
-
-async def test_monitor_normalizer_publishes_individual_monitor_count_uncertainties(
-    simpledae: SimpleDae,
-    monitor_normalizer: MonitorNormalizer,
-):
-    readables = monitor_normalizer.readable_monitor_count_uncertainties(simpledae)
-    assert monitor_normalizer.monitors[2].stddev in readables

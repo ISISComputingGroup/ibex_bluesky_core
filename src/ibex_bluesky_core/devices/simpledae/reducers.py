@@ -66,6 +66,9 @@ class ScalarNormalizer(Reducer, StandardReadable, metaclass=ABCMeta):
 
     async def reduce_data(self, dae: "SimpleDae") -> None:
         """Apply the normalization."""
+
+        await asyncio.gather(*[self.detectors[i].trigger() for i in self.detectors])
+
         summed_counts, denominator = await asyncio.gather(
             sum_spectra(self.detectors.values()), self.denominator(dae).get_value()
         )
@@ -81,10 +84,6 @@ class ScalarNormalizer(Reducer, StandardReadable, metaclass=ABCMeta):
         self._det_counts_stddev_setter(math.sqrt(detector_counts_var))
         self._intensity_stddev_setter(math.sqrt(intensity_var))
 
-        for spec in self.detectors.values():
-            stddev = await spec.read_counts()
-            spec._stddev_setter(np.sqrt(stddev))
-
     def additional_readable_signals(self, dae: "SimpleDae") -> list[Device]:
         """Publish interesting signals derived or used by this reducer."""
         return [
@@ -94,11 +93,6 @@ class ScalarNormalizer(Reducer, StandardReadable, metaclass=ABCMeta):
             self.det_counts_stddev,
             self.intensity_stddev,
         ]
-    
-    def readable_detector_count_uncertainties(self, dae: "SimpleDae") -> list[Device]:
-        """Publish individual uncertainty signals for all detectors."""
-
-        return [self.detectors[i].stddev for i in self.detectors]
 
 
 class PeriodGoodFramesNormalizer(ScalarNormalizer):
@@ -151,6 +145,13 @@ class MonitorNormalizer(Reducer, StandardReadable):
 
     async def reduce_data(self, dae: "SimpleDae") -> None:
         """Apply the normalization."""
+        async def trigger_detectors():
+            await asyncio.gather(*[self.detectors[i].trigger() for i in self.detectors])
+        async def trigger_monitors():
+            await asyncio.gather(*[self.monitors[i].trigger() for i in self.monitors])
+        
+        await asyncio.gather(trigger_detectors(), trigger_monitors())
+
         detector_counts, monitor_counts = await asyncio.gather(
             sum_spectra(self.detectors.values()), sum_spectra(self.monitors.values())
         )
@@ -167,14 +168,6 @@ class MonitorNormalizer(Reducer, StandardReadable):
         self._mon_counts_stddev_setter(math.sqrt(monitor_counts_var))
         self._intensity_stddev_setter(math.sqrt(intensity_var))
 
-        for spec in self.detectors.values():
-            stddev = await spec.read_counts()
-            spec._stddev_setter(np.sqrt(stddev))
-
-        for spec in self.monitors.values():
-            stddev = await spec.read_counts()
-            spec._stddev_setter(np.sqrt(stddev))
-
     def additional_readable_signals(self, dae: "SimpleDae") -> list[Device]:
         """Publish interesting signals derived or used by this reducer."""
         return [
@@ -185,13 +178,3 @@ class MonitorNormalizer(Reducer, StandardReadable):
             self.mon_counts_stddev,
             self.intensity_stddev,
         ]
-    
-    def readable_detector_count_uncertainties(self, dae: "SimpleDae") -> list[Device]:
-        """Publish individual uncertainty signals for all detectors."""
-
-        return [self.detectors[i].stddev for i in self.detectors]
-
-    def readable_monitor_count_uncertainties(self, dae: "SimpleDae") -> list[Device]:
-        """Publish individual uncertainty signals for all monitors."""
-
-        return [self.monitors[i].stddev for i in self.monitors]
