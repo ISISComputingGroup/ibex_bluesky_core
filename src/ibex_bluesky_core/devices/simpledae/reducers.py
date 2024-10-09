@@ -2,7 +2,7 @@
 
 import asyncio
 from abc import ABCMeta, abstractmethod
-from typing import TYPE_CHECKING, Collection, Sequence, Tuple
+from typing import TYPE_CHECKING, Collection, Sequence
 
 import numpy as np
 import scipp as sc
@@ -91,11 +91,6 @@ class ScalarNormalizer(Reducer, StandardReadable, metaclass=ABCMeta):
             self.det_counts,
             self.intensity,
             self.denominator(dae),
-        ]
-    
-    def additional_readable_signals_uncertainties(self, dae: "SimpleDae") -> list[Device]:
-        """Publish interesting signals derived or used by this reducer, including respective uncertainties."""
-        return [
             self.det_counts_stddev,
             self.intensity_stddev,
         ]
@@ -186,11 +181,6 @@ class MonitorNormalizer(Reducer, StandardReadable):
             self.det_counts,
             self.mon_counts,
             self.intensity,
-        ]
-    
-    def additional_readable_signals_uncertainties(self, dae: "SimpleDae") -> list[Device]:
-        """Publish interesting signals derived or used by this reducer, including respective uncertainties."""
-        return [
             self.det_counts_stddev,
             self.mon_counts_stddev,
             self.intensity_stddev,

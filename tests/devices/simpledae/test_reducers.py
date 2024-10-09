@@ -75,7 +75,7 @@ async def test_scalar_normalizer_publishes_uncertainties(
     simpledae: SimpleDae,
     good_frames_reducer: GoodFramesNormalizer,
 ):
-    readables = good_frames_reducer.additional_readable_signals_uncertainties(simpledae)
+    readables = good_frames_reducer.additional_readable_signals(simpledae)
     assert good_frames_reducer.intensity_stddev in readables
     assert good_frames_reducer.det_counts_stddev in readables
 
@@ -213,7 +213,7 @@ async def test_monitor_normalizer_publishes_raw_and_normalized_count_uncertainti
     simpledae: SimpleDae,
     monitor_normalizer: MonitorNormalizer,
 ):
-    readables = monitor_normalizer.additional_readable_signals_uncertainties(simpledae)
+    readables = monitor_normalizer.additional_readable_signals(simpledae)
     assert monitor_normalizer.intensity_stddev in readables
     assert monitor_normalizer.det_counts_stddev in readables
     assert monitor_normalizer.mon_counts_stddev in readables

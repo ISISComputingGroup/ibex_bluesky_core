@@ -56,7 +56,7 @@ class DaeSpectra(StandardReadable):
             int, f"{dae_prefix}SPEC:{period}:{spectra}:YC.NORD"
         )
 
-        self.stddev, self._stddev_setter = soft_signal_r_and_setter(NDArray[float32], [0.0])
+        self.stddev, self._stddev_setter = soft_signal_r_and_setter(NDArray[float32], [])
 
         super().__init__(name=name)
 
@@ -85,7 +85,7 @@ class DaeSpectra(StandardReadable):
     async def read_counts_uncertainties(self) -> NDArray[float32]:
         """Read a correctly-sized array of uncertainties for each count."""
         
-        return await self._read_sized(self.stddev, self.counts_size) # type: ignore
+        return await self._read_sized(self.stddev, self.counts_size) # type: ignore ???????
 
     async def read_spectrum_dataarray(self) -> sc.DataArray:
         """Get a scipp DataArray containing the current data from this spectrum.
