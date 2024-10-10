@@ -67,8 +67,6 @@ class ScalarNormalizer(Reducer, StandardReadable, metaclass=ABCMeta):
     async def reduce_data(self, dae: "SimpleDae") -> None:
         """Apply the normalization."""
 
-        await asyncio.gather(*[self.detectors[i].trigger() for i in self.detectors])
-
         summed_counts, denominator = await asyncio.gather(
             sum_spectra(self.detectors.values()), self.denominator(dae).get_value()
         )
@@ -145,12 +143,6 @@ class MonitorNormalizer(Reducer, StandardReadable):
 
     async def reduce_data(self, dae: "SimpleDae") -> None:
         """Apply the normalization."""
-        async def trigger_detectors():
-            await asyncio.gather(*[self.detectors[i].trigger() for i in self.detectors])
-        async def trigger_monitors():
-            await asyncio.gather(*[self.monitors[i].trigger() for i in self.monitors])
-        
-        await asyncio.gather(trigger_detectors(), trigger_monitors())
 
         detector_counts, monitor_counts = await asyncio.gather(
             sum_spectra(self.detectors.values()), sum_spectra(self.monitors.values())

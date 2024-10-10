@@ -950,16 +950,14 @@ def test_empty_dae_settings_dataclass_does_not_change_any_settings(dae: Dae, RE:
 
 
 async def test_read_spectra_correctly_sizes_arrays(spectrum: DaeSpectra):
-    set_mock_value(spectrum._tof_raw, np.zeros(dtype=np.float32, shape=(1000,)))
+    set_mock_value(spectrum.tof, np.zeros(dtype=np.float32, shape=(1000,)))
     set_mock_value(spectrum.tof_size, 100)
-    set_mock_value(spectrum._counts_raw, np.zeros(dtype=np.float32, shape=(2000,)))
+    set_mock_value(spectrum.counts, np.zeros(dtype=np.float32, shape=(2000,)))
     set_mock_value(spectrum.counts_size, 200)
-    set_mock_value(spectrum._counts_per_time_raw, np.zeros(dtype=np.float32, shape=(3000,)))
+    set_mock_value(spectrum.counts_per_time, np.zeros(dtype=np.float32, shape=(3000,)))
     set_mock_value(spectrum.counts_per_time_size, 300)
-    set_mock_value(spectrum._tof_edges_raw, np.zeros(dtype=np.float32, shape=(4000,)))
+    set_mock_value(spectrum.tof_edges, np.zeros(dtype=np.float32, shape=(4000,)))
     set_mock_value(spectrum.tof_edges_size, 400)
-
-    await spectrum.trigger()
 
     assert (await spectrum.read_tof()).shape == (100,)
     assert (await spectrum.read_counts()).shape == (200,)
