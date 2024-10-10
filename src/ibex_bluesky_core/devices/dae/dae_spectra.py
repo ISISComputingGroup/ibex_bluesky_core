@@ -8,9 +8,10 @@ import numpy as np
 from event_model.documents.event_descriptor import DataKey
 from numpy import float32
 from numpy.typing import NDArray
-from ophyd_async.core import SignalR, StandardReadable, soft_signal_r_and_setter, AsyncStageable, AsyncStatus
+from ophyd_async.core import SignalR, StandardReadable, AsyncStatus, SignalMetadata, SoftSignalBackend, soft_signal_r_and_setter
 from ophyd_async.epics.signal import epics_signal_r
 
+T = typing.TypeVar("T")
 
 # def soft_signal_r_and_setter(
 #     datatype: type[T] | None = None,
@@ -18,7 +19,7 @@ from ophyd_async.epics.signal import epics_signal_r
 #     name: str = "",
 #     units: str | None = None,
 #     precision: int | None = None,
-# ) -> tuple[SignalR[T], Callable[[T], None]]:
+# ) -> tuple[SignalR[T], typing.Callable[[T], None], str | None]:
 #     """Returns a tuple of a read-only Signal and a callable through
 #     which the signal can be internally modified within the device.
 #     May pass metadata, which are propagated into describe.
@@ -28,16 +29,23 @@ from ophyd_async.epics.signal import epics_signal_r
 #     backend = SoftSignalBackend(datatype, initial_value, metadata=metadata)
 #     signal = SignalR(backend, name=name)
 
-#     return (signal, backend.set_value, lambda u: metadata.units = u)
+#     return (signal, backend.set_value, metadata["units"])
 
 
-# def get_units(sig: SignalR[Any]) -> str:
-#     pass
+async def get_units(sig: SignalR[typing.Any]) -> str:
+    
+    sig_descriptor = await sig.describe()
+
+    datakey: DataKey = sig_descriptor[sig.name]
+    unit = datakey.get("units", None)
+    if unit is None:
+        raise ValueError(f"Could not determine engineering units of {sig.name}.")
+    
+    return unit
 
 
 class DaeSpectra(StandardReadable, Triggerable):
     """Subdevice for a single DAE spectra."""
-
 
     def __init__(self, dae_prefix: str, *, spectra: int, period: int, name: str = "") -> None:
         """Set up signals for a single DAE spectra."""
@@ -82,11 +90,11 @@ class DaeSpectra(StandardReadable, Triggerable):
             int, f"{dae_prefix}SPEC:{period}:{spectra}:YC.NORD"
         )
 
-        self.tof, self._tof_setter = soft_signal_r_and_setter(NDArray[float32], [])
-        self.tof_edges, self._tof_edges_setter = soft_signal_r_and_setter(NDArray[float32], [])
-        self.counts_per_time, self._counts_per_time_setter = soft_signal_r_and_setter(NDArray[float32], [])
-        self.counts, self._counts_setter = soft_signal_r_and_setter(NDArray[float32], [])
-        self.stddev, self._stddev_setter = soft_signal_r_and_setter(NDArray[float32], [])
+        self.tof, self._tof_setter = soft_signal_r_and_setter(NDArray[float32], [],) #units = await get_units(self._tof_raw))
+        self.tof_edges, self._tof_edges_setter = soft_signal_r_and_setter(NDArray[float32], [],) #units = await get_units(self._tof_edges_raw))
+        self.counts_per_time, self._counts_per_time_setter = soft_signal_r_and_setter(NDArray[float32], [],) # units = await get_units(self._counts_per_time_raw))
+        self.counts, self._counts_setter = soft_signal_r_and_setter(NDArray[float32], [],) #units = await get_units(self._counts_raw))
+        self.stddev, self._stddev_setter = soft_signal_r_and_setter(NDArray[float32], [],) #units = await get_units(self._counts_raw))
 
         super().__init__(name=name)
 
@@ -143,9 +151,9 @@ class DaeSpectra(StandardReadable, Triggerable):
         Data is returned along dimension "tof", which has bin-edge coordinates and units set from
         the units of the underlying PVs.
         """
-        tof_edges, tof_edges_descriptor, counts = await asyncio.gather(
+        tof_edges, tof_edges_units, counts = await asyncio.gather(
             self.read_tof_edges(),
-            self._tof_edges_raw.describe(),
+            get_units(self._tof_edges_raw),
             self.read_counts(),
         )
 
@@ -156,12 +164,7 @@ class DaeSpectra(StandardReadable, Triggerable):
                 f"Edges size was {tof_edges.size}, counts size was {counts.size}."
             )
 
-        datakey: DataKey = tof_edges_descriptor[self._tof_edges_raw.name]
-        unit = datakey.get("units", None)
-        if unit is None:
-            raise ValueError("Could not determine engineering units of tof edges.")
-
         return sc.DataArray(
             data=sc.Variable(dims=["tof"], values=counts, variances=counts, unit=sc.units.counts),
-            coords={"tof": sc.array(dims=["tof"], values=tof_edges, unit=sc.Unit(unit))},
+            coords={"tof": sc.array(dims=["tof"], values=tof_edges, unit=sc.Unit(tof_edges_units))},
         )
