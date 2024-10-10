@@ -3,6 +3,8 @@ from bluesky.run_engine import RunEngine
 
 from ibex_bluesky_core.run_engine import get_run_engine
 
+MOCK_PREFIX = "UNITTEST:MOCK:"
+
 
 @pytest.fixture
 def RE() -> RunEngine:

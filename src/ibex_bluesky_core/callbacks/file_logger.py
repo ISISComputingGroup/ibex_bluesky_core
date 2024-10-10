@@ -78,7 +78,7 @@ class HumanReadableOutputFileLoggingCallback(CallbackBase):
 
     def event(self, doc: Event) -> Event:
         """Append an event's output to the file."""
-        if not self.filename :
+        if not self.filename:
             print("File has not been started yet - doing nothing")
             return doc
         formatted_event_data = {}
@@ -89,9 +89,12 @@ class HumanReadableOutputFileLoggingCallback(CallbackBase):
         for field in self.fields:
             value = event_data[field]
             formatted_event_data[field] = (
-                f"{value:.{descriptor_data[field][PRECISION]}f}"
-                if PRECISION in descriptor_data[field]
-                and descriptor_data[field][PRECISION] is not None
+                f"{value:.{descriptor_data[field][PRECISION]}f}"  # pyright: ignore[reportTypedDictNotRequiredAccess]
+                if PRECISION
+                in descriptor_data[
+                    field
+                ]  # We check if precision is in the data keys, so get pyright to ignore here.
+                and descriptor_data[field][PRECISION] is not None  # pyright: ignore[reportTypedDictNotRequiredAccess]
                 and isinstance(value, float)
                 else value
             )

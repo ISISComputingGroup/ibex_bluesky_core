@@ -1,4 +1,5 @@
 # pyright: reportMissingParameterType=false
+# pyright: reportCallIssue=false
 
 from pathlib import Path
 from unittest.mock import call, mock_open, patch
@@ -154,9 +155,10 @@ def test_event_called_before_filename_specified_does_nothing():
 
     mock_file.assert_not_called()
 
+
 def test_stop_clears_descriptors(cb):
     cb.descriptors["test"] = EventDescriptor(uid="test", run_start="", time=0.1, data_keys={})
 
-    cb.stop(RunStop(uid="test", run_start="",time=0.1,exit_status="success"))
+    cb.stop(RunStop(uid="test", run_start="", time=0.1, exit_status="success"))
 
     assert not cb.descriptors
