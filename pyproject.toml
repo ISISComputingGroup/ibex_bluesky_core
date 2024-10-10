@@ -46,6 +46,7 @@ dependencies = [
   "matplotlib",
   "numpy",
   "scipp",
+  "tzdata",
 ]
 
 [project.optional-dependencies]

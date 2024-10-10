@@ -10,6 +10,7 @@ from event_model.documents.event import Event
 from event_model.documents.event_descriptor import EventDescriptor
 from event_model.documents.run_start import RunStart
 from event_model.documents.run_stop import RunStop
+from zoneinfo import ZoneInfo
 
 TIME = "time"
 START_TIME = "start_time"
@@ -61,7 +62,9 @@ class HumanReadableOutputFileLoggingCallback(CallbackBase):
         header_data = {k: v for k, v in doc.items() if k not in exclude_list}
 
         datetime_obj = datetime.fromtimestamp(doc[TIME])
-        formatted_time = datetime_obj.strftime("%Y-%m-%d %H:%M:%S")
+        formatted_time = datetime_obj.astimezone(ZoneInfo("Europe/London")).strftime(
+            "%Y-%m-%d %H:%M:%S"
+        )
         header_data[START_TIME] = formatted_time
 
         with open(self.filename, "a") as outfile:
