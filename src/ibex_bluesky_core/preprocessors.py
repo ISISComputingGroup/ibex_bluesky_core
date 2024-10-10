@@ -7,11 +7,15 @@ from ophyd_async.plan_stubs import ensure_connected
 from ibex_bluesky_core.devices import get_pv_prefix
 
 
+def _get_rb_number_signal() -> epics_signal_r:
+    return epics_signal_r(str, f"{get_pv_prefix()}ED:RBNUMBER", name="rb_number")
+
+
 def add_rb_number_processor(msg: Msg) -> tuple[Generator[Msg, None, None] | None, None]:
     if msg.command == "open_run" and "rb_number" not in msg.kwargs:
 
         def _before() -> Generator[Msg, None, None]:
-            rb_number = epics_signal_r(str, f"{get_pv_prefix()}ED:RBNUMBER", name="rb_number")
+            rb_number = _get_rb_number_signal()
 
             def _read_rb() -> Generator[Msg, None, str]:
                 yield from ensure_connected(rb_number)
