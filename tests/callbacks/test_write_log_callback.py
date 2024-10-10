@@ -17,8 +17,7 @@ def cb() -> HumanReadableOutputFileLoggingCallback:
     return HumanReadableOutputFileLoggingCallback(save_path, ["block", "dae"])
 
 
-@patch("ibex_bluesky_core.callbacks.file_logger.Path", autospec=True)
-def test_header_data_all_available_on_start(_, cb):
+def test_header_data_all_available_on_start(cb):
     time = 1728049423.5860472
     uid = "test123"
     scan_id = 1234
