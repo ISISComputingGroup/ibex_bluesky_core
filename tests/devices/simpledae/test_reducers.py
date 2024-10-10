@@ -117,13 +117,23 @@ async def test_period_good_frames_normalizer_uncertainties(
 
     period_good_frames_reducer.detectors[1].read_spectrum_dataarray = AsyncMock(
         return_value=sc.DataArray(
-            data=sc.Variable(dims=["tof"], values=[1000.0, 2000.0, 3000.0], variances=[1000.0, 2000.0, 3000.0], unit=sc.units.counts),
+            data=sc.Variable(
+                dims=["tof"],
+                values=[1000.0, 2000.0, 3000.0],
+                variances=[1000.0, 2000.0, 3000.0],
+                unit=sc.units.counts,
+            ),
             coords={"tof": sc.array(dims=["tof"], values=[0, 1, 2, 3])},
         )
     )
     period_good_frames_reducer.detectors[2].read_spectrum_dataarray = AsyncMock(
         return_value=sc.DataArray(
-            data=sc.Variable(dims=["tof"], values=[4000.0, 5000.0, 6000.0], variances=[4000.0, 5000.0, 6000.0], unit=sc.units.counts),
+            data=sc.Variable(
+                dims=["tof"],
+                values=[4000.0, 5000.0, 6000.0],
+                variances=[4000.0, 5000.0, 6000.0],
+                unit=sc.units.counts,
+            ),
             coords={"tof": sc.array(dims=["tof"], values=[0, 1, 2, 3])},
         )
     )
@@ -134,7 +144,7 @@ async def test_period_good_frames_normalizer_uncertainties(
     intensity_stddev = await period_good_frames_reducer.intensity_stddev.get_value()
 
     assert det_counts_stddev == math.sqrt(21000)
-    assert intensity_stddev == pytest.approx(math.sqrt((21000 + (123**2 / 21000) ) / 123**2), 1e-4)
+    assert intensity_stddev == pytest.approx(math.sqrt((21000 + (123**2 / 21000)) / 123**2), 1e-4)
 
 
 # Monitor Normalizer
@@ -165,16 +175,28 @@ async def test_monitor_normalizer(simpledae: SimpleDae, monitor_normalizer: Moni
     assert intensity == pytest.approx(6000 / 15000)
 
 
-async def test_monitor_normalizer_uncertainties(simpledae: SimpleDae, monitor_normalizer: MonitorNormalizer):
+async def test_monitor_normalizer_uncertainties(
+    simpledae: SimpleDae, monitor_normalizer: MonitorNormalizer
+):
     monitor_normalizer.detectors[1].read_spectrum_dataarray = AsyncMock(
         return_value=sc.DataArray(
-            data=sc.Variable(dims=["tof"], values=[1000.0, 2000.0, 3000.0], variances=[1000.0, 2000.0, 3000.0], unit=sc.units.counts),
+            data=sc.Variable(
+                dims=["tof"],
+                values=[1000.0, 2000.0, 3000.0],
+                variances=[1000.0, 2000.0, 3000.0],
+                unit=sc.units.counts,
+            ),
             coords={"tof": sc.array(dims=["tof"], values=[0, 1, 2, 3])},
         )
     )
     monitor_normalizer.monitors[2].read_spectrum_dataarray = AsyncMock(
         return_value=sc.DataArray(
-            data=sc.Variable(dims=["tof"], values=[4000.0, 5000.0, 6000.0], variances=[4000.0, 5000.0, 6000.0], unit=sc.units.counts),
+            data=sc.Variable(
+                dims=["tof"],
+                values=[4000.0, 5000.0, 6000.0],
+                variances=[4000.0, 5000.0, 6000.0],
+                unit=sc.units.counts,
+            ),
             coords={"tof": sc.array(dims=["tof"], values=[0, 1, 2, 3])},
         )
     )
@@ -187,7 +209,7 @@ async def test_monitor_normalizer_uncertainties(simpledae: SimpleDae, monitor_no
 
     assert det_counts_stddev == math.sqrt(6000)
     assert mon_counts_stddev == math.sqrt(15000)
-    assert intensity_stddev == pytest.approx(math.sqrt((6000 + (6000**2 / 15000) ) / 15000**2), 1e-4)
+    assert intensity_stddev == pytest.approx(math.sqrt((6000 + (6000**2 / 15000)) / 15000**2), 1e-4)
 
 
 async def test_monitor_normalizer_publishes_raw_and_normalized_counts(

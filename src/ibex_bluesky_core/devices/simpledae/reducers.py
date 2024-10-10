@@ -1,12 +1,11 @@
 """DAE data reduction strategies."""
 
 import asyncio
+import math
 from abc import ABCMeta, abstractmethod
 from typing import TYPE_CHECKING, Collection, Sequence
 
-import numpy as np
 import scipp as sc
-import math
 from ophyd_async.core import (
     Device,
     DeviceVector,
@@ -55,8 +54,12 @@ class ScalarNormalizer(Reducer, StandardReadable, metaclass=ABCMeta):
         self.det_counts, self._det_counts_setter = soft_signal_r_and_setter(float, 0.0)
         self.intensity, self._intensity_setter = soft_signal_r_and_setter(float, 0.0, precision=6)
 
-        self.det_counts_stddev, self._det_counts_stddev_setter = soft_signal_r_and_setter(float, 0.0)
-        self.intensity_stddev, self._intensity_stddev_setter = soft_signal_r_and_setter(float, 0.0, precision=6)
+        self.det_counts_stddev, self._det_counts_stddev_setter = soft_signal_r_and_setter(
+            float, 0.0
+        )
+        self.intensity_stddev, self._intensity_stddev_setter = soft_signal_r_and_setter(
+            float, 0.0, precision=6
+        )
 
         super().__init__(name="")
 
@@ -135,9 +138,15 @@ class MonitorNormalizer(Reducer, StandardReadable):
         self.mon_counts, self._mon_counts_setter = soft_signal_r_and_setter(float, 0.0)
         self.intensity, self._intensity_setter = soft_signal_r_and_setter(float, 0.0, precision=6)
 
-        self.det_counts_stddev, self._det_counts_stddev_setter = soft_signal_r_and_setter(float, 0.0)
-        self.mon_counts_stddev, self._mon_counts_stddev_setter = soft_signal_r_and_setter(float, 0.0)
-        self.intensity_stddev, self._intensity_stddev_setter = soft_signal_r_and_setter(float, 0.0, precision=6)
+        self.det_counts_stddev, self._det_counts_stddev_setter = soft_signal_r_and_setter(
+            float, 0.0
+        )
+        self.mon_counts_stddev, self._mon_counts_stddev_setter = soft_signal_r_and_setter(
+            float, 0.0
+        )
+        self.intensity_stddev, self._intensity_stddev_setter = soft_signal_r_and_setter(
+            float, 0.0, precision=6
+        )
 
         super().__init__(name="")
 
@@ -154,7 +163,9 @@ class MonitorNormalizer(Reducer, StandardReadable):
 
         detector_counts_var = 0.0 if detector_counts.variance is None else detector_counts.variance
         monitor_counts_var = 0.0 if monitor_counts.variance is None else monitor_counts.variance
-        intensity_var = 0.0 if monitor_counts_var == 0.0 else (detector_counts / monitor_counts).variance
+        intensity_var = (
+            0.0 if monitor_counts_var == 0.0 else (detector_counts / monitor_counts).variance
+        )
 
         self._det_counts_stddev_setter(math.sqrt(detector_counts_var))
         self._mon_counts_stddev_setter(math.sqrt(monitor_counts_var))
