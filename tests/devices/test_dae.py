@@ -39,6 +39,7 @@ from src.ibex_bluesky_core.devices.dae import convert_xml_to_names_and_values, s
 from src.ibex_bluesky_core.devices.dae.dae_controls import BeginRunExBits
 from src.ibex_bluesky_core.devices.dae.dae_period_settings import _convert_period_settings_to_xml
 from src.ibex_bluesky_core.devices.dae.dae_tcb_settings import _convert_tcb_settings_to_xml
+from tests.conftest import MOCK_PREFIX
 from tests.devices.dae_testing_data import (
     dae_settings_template,
     initial_dae_settings,
@@ -47,8 +48,6 @@ from tests.devices.dae_testing_data import (
     period_settings_template,
     tcb_settings_template,
 )
-
-MOCK_PREFIX = "UNITTEST:MOCK:"
 
 
 @pytest.fixture
