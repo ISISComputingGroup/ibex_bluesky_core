@@ -33,10 +33,6 @@ def test_header_data_all_available_on_start(cb):
 
     mock_file().write.assert_any_call(f"uid: {uid}\n")
 
-    # scan id is in the exclude list should not have been written,
-    # therefore call count should only be 2
-    assert mock_file().write.call_count == 2
-
 
 def test_descriptor_data_does_nothing_if_doc_not_called_primary(cb):
     desc = EventDescriptor(

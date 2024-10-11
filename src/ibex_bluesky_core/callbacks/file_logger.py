@@ -50,14 +50,7 @@ class HumanReadableFileCallback(CallbackBase):
         self.filename = self.output_dir / f"{self.current_start_document}.txt"
 
         exclude_list = [
-            TIME,
-            "plan_name",
-            "plan_type",
-            "scan_id",
-            "versions",
-            "plan_pattern",
-            "plan_pattern_module",
-            "plan_pattern_args",
+            TIME,  # We format this later
         ]
         header_data = {k: v for k, v in doc.items() if k not in exclude_list}
 
@@ -93,8 +86,7 @@ class HumanReadableFileCallback(CallbackBase):
             value = event_data[field]
             formatted_event_data[field] = (
                 f"{value:.{descriptor_data[field].get(PRECISION)}f}"
-                if descriptor_data[field].get(PRECISION, None) is not None
-                and isinstance(value, float)
+                if descriptor_data[field].get(PRECISION) is not None and isinstance(value, float)
                 else value
             )
 
