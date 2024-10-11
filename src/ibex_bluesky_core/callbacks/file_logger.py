@@ -24,7 +24,7 @@ UID = "uid"
 PRECISION = "precision"
 
 
-class HumanReadableOutputFileLoggingCallback(CallbackBase):
+class HumanReadableFileCallback(CallbackBase):
     """Outputs bluesky runs to human-readable output files in the specified directory path."""
 
     def __init__(self, output_dir: Path, fields: list[str]) -> None:

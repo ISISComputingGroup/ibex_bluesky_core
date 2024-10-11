@@ -7,14 +7,14 @@ from unittest.mock import call, mock_open, patch
 import pytest
 from event_model import DataKey, Event, EventDescriptor, RunStart, RunStop
 
-from ibex_bluesky_core.callbacks.file_logger import HumanReadableOutputFileLoggingCallback
+from ibex_bluesky_core.callbacks.file_logger import HumanReadableFileCallback
 
 save_path = Path("C:\\") / "instrument" / "var" / "logs" / "bluesky" / "output_files"
 
 
 @pytest.fixture
-def cb() -> HumanReadableOutputFileLoggingCallback:
-    return HumanReadableOutputFileLoggingCallback(save_path, ["block", "dae"])
+def cb() -> HumanReadableFileCallback:
+    return HumanReadableFileCallback(save_path, ["block", "dae"])
 
 
 def test_header_data_all_available_on_start(cb):
@@ -57,7 +57,7 @@ def test_descriptor_adds_descriptor_if_name_primary(cb):
 
 def test_event_prints_header_with_units_and_respects_precision_of_value_on_first_message():
     field_name = "test"
-    cb = HumanReadableOutputFileLoggingCallback(save_path, [field_name])
+    cb = HumanReadableFileCallback(save_path, [field_name])
     # This actually contains the precision
     expected_value = 1.2345
     units = "mm"
@@ -82,7 +82,7 @@ def test_event_prints_header_with_units_and_respects_precision_of_value_on_first
 
 def test_event_prints_header_without_units_and_does_not_truncate_precision_if_no_precision():
     field_name = "test"
-    cb = HumanReadableOutputFileLoggingCallback(save_path, [field_name])
+    cb = HumanReadableFileCallback(save_path, [field_name])
     # This actually contains the precision
     expected_value = 1.2345
     units = None
@@ -107,7 +107,7 @@ def test_event_prints_header_without_units_and_does_not_truncate_precision_if_no
 
 def test_event_prints_header_only_on_first_event_and_does_not_truncate_if_not_float_value():
     field_name = "test"
-    cb = HumanReadableOutputFileLoggingCallback(save_path, [field_name])
+    cb = HumanReadableFileCallback(save_path, [field_name])
     # This actually contains the precision
     expected_value = 12345
     units = "mm"
@@ -134,7 +134,7 @@ def test_event_prints_header_only_on_first_event_and_does_not_truncate_if_not_fl
 
 def test_event_called_before_filename_specified_does_nothing():
     field_name = "test"
-    cb = HumanReadableOutputFileLoggingCallback(save_path, [field_name])
+    cb = HumanReadableFileCallback(save_path, [field_name])
     # This actually contains the precision
     expected_value = 12345
     units = "mm"
