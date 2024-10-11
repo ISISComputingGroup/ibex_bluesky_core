@@ -92,12 +92,8 @@ class HumanReadableFileCallback(CallbackBase):
         for field in self.fields:
             value = event_data[field]
             formatted_event_data[field] = (
-                f"{value:.{descriptor_data[field][PRECISION]}f}"  # pyright: ignore[reportTypedDictNotRequiredAccess]
-                if PRECISION
-                in descriptor_data[
-                    field
-                ]  # We check if precision is in the data keys, so get pyright to ignore here.
-                and descriptor_data[field][PRECISION] is not None  # pyright: ignore[reportTypedDictNotRequiredAccess]
+                f"{value:.{descriptor_data[field].get(PRECISION)}f}"
+                if descriptor_data[field].get(PRECISION, None) is not None
                 and isinstance(value, float)
                 else value
             )
