@@ -23,10 +23,4 @@ def test_GIVEN_logging_is_requested_THEN_handler_is_added():
     assert handler.when.lower() == 'midnight'
     assert handler.baseFilename.endswith(LOG_FILE_NAME) == True
 
-    
-
-
-
-
-
-
+ 

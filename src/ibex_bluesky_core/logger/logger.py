@@ -25,13 +25,3 @@ logging.config.fileConfig(os.path.join(filepath, 'logging.conf'), disable_existi
 
 blueskylogger = logging.getLogger('blueskycore')
 
-#This code or an adapted version is only needed if only specific loggers are to share the handler:
-#
-# 1. Remove disable_existing_loggers or set to True ==> logging.config.fileConfig(os.path.join(filepath, 'logging.conf'))
-#from bluesky.log import config_bluesky_logging
-#for handler in blueskylogger.handlers:
-#    if isinstance(handler, logging.handlers.TimedRotatingFileHandler):
-#        logger = logging.getLogger(BLUESKY_LOGGER)
-#        if not logger.handlers:
-#            logger.addHandler(handler)
-
