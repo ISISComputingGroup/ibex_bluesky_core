@@ -16,6 +16,7 @@ Below is a full example showing how to use standard `matplotlib` & `bluesky` fun
 import matplotlib.pyplot as plt
 from ibex_bluesky_core.callbacks.plotting import LivePlot
 from ibex_bluesky_core.callbacks.fitting import LiveFit
+from bluesky.callbacks import LiveFitPlot
 
 # Create a new figure to plot onto.
 plt.figure()
@@ -74,6 +75,7 @@ There are *two* ways that you can choose how to fit a model to your data:
 When only using the standard fits provided by `ibex_bluesky_core`, the following syntax can be used, replacing `[FIT]` with your chosen one from `ibex_bluesky_core.callbacks.fitting.fitting_utils`:
 
 ```py
+from bluesky.callbacks import LiveFitPlot
 from ibex_bluesky_core.callbacks.fitting.fitting_utils import [FIT]
 
 # Pass [FIT].fit() to the first parameter of LiveFit
