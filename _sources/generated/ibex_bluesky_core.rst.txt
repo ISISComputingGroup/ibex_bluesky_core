@@ -1,0 +1,28 @@
+﻿
+
+``ibex_bluesky_core``
+=====================
+
+.. automodule:: ibex_bluesky_core
+    :members:
+    :show-inheritance:
+
+    
+    
+    .. rubric:: Submodules
+
+    .. autosummary::
+        :toctree:
+        :template: custom-module-template.rst
+        :recursive:
+    
+        callbacks
+        devices
+        plan_stubs
+        run_engine
+    
+    
+
+    
+    
+    

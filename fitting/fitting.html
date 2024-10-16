@@ -1,0 +1,377 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fitting Callback &mdash; ibex_bluesky_core 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Standard Fitting Models" href="standard_fits.html" />
+    <link rel="prev" title="Plotting" href="../callbacks/plotting.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            ibex_bluesky_core
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Devices</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../devices/blocks.html">Blocks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devices/dae.html">DAE (Data Acquisition Electronics)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Callbacks</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../callbacks/docs_logging_callback.html">Document Logging Callback</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../callbacks/plotting.html">Plotting</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Fitting</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Fitting Callback</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#configuration">Configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#models">Models</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#option-1-use-the-standard-fits">Option 1: Use the standard fits</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#option-2-use-custom-fits">Option 2: Use custom fits</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#option-2-continued">Option 2: Continued</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="standard_fits.html">Standard Fitting Models</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Developer information</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../dev/create_a_release.html">Release Process</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dev/manual_system_testing.html">Manual system testing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dev/set_up_dev_environment.html">Local development</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dev/sphinx_notes.html">Notes on Sphinx and addons</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Architectural decisions</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../architectural_decisions/001-repo-structure.html">Repository structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../architectural_decisions/002-use-ophyd-async.html">Use <code class="docutils literal notranslate"><span class="pre">ophyd-async</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../architectural_decisions/003-run-in-process.html">Run in-process</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../_api.html">API</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">ibex_bluesky_core</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Fitting Callback</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/fitting/fitting.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="fitting-callback">
+<h1>Fitting Callback<a class="headerlink" href="#fitting-callback" title="Link to this heading"></a></h1>
+<p>Similar to <a class="reference internal" href="../callbacks/plotting.html"><span class="std std-doc"><code class="docutils literal notranslate"><span class="pre">LivePlot</span></code></span></a>, <code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core</span></code> provides a thin wrapper around Bluesky’s LiveFit class, enhancing it with additional functionality to better support real-time data fitting. This wrapper not only offers a wide selection of models to fit your data on, but also introduces guess generation for fit parameters. As new data points are acquired, the wrapper refines these guesses dynamically, improving the accuracy of the fit with each additional piece of data, allowing for more efficient and adaptive real-time fitting workflows.</p>
+<p>In order to use the wrapper, import <code class="docutils literal notranslate"><span class="pre">LiveFit</span></code> from <code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core</span></code> rather than
+<code class="docutils literal notranslate"><span class="pre">bluesky</span></code> directly:</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ibex_bluesky_core.callbacks.fitting</span> <span class="kn">import</span> <span class="n">LiveFit</span>
+</pre></div>
+</div>
+<p><strong>Note:</strong> that you do not <em>need</em> <code class="docutils literal notranslate"><span class="pre">LivePlot</span></code> for <code class="docutils literal notranslate"><span class="pre">LiveFit</span></code> to work but it may be useful to know visaully how well the model fits to the raw data.</p>
+<section id="configuration">
+<h2>Configuration<a class="headerlink" href="#configuration" title="Link to this heading"></a></h2>
+<p>Below is a full example showing how to use standard <code class="docutils literal notranslate"><span class="pre">matplotlib</span></code> &amp; <code class="docutils literal notranslate"><span class="pre">bluesky</span></code> functionality to apply fitting to a scan, using LivePlot and LiveFit. The fitting callback is set to expect data to take the form of a gaussian.</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">from</span> <span class="nn">ibex_bluesky_core.callbacks.plotting</span> <span class="kn">import</span> <span class="n">LivePlot</span>
+<span class="kn">from</span> <span class="nn">ibex_bluesky_core.callbacks.fitting</span> <span class="kn">import</span> <span class="n">LiveFit</span>
+<span class="kn">from</span> <span class="nn">bluesky.callbacks</span> <span class="kn">import</span> <span class="n">LiveFitPlot</span>
+
+<span class="c1"># Create a new figure to plot onto.</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+<span class="c1"># Make a new set of axes on that figure</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span> 
+<span class="c1"># ax is shared by fit_callback and plot_callback </span>
+
+<span class="n">plot_callback</span> <span class="o">=</span> <span class="n">LivePlot</span><span class="p">(</span><span class="n">y</span><span class="o">=</span><span class="s2">&quot;y_variable&quot;</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s2">&quot;x_variable&quot;</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span>
+<span class="n">fit_callback</span> <span class="o">=</span> <span class="n">LiveFit</span><span class="p">(</span><span class="n">Gaussian</span><span class="o">.</span><span class="n">fit</span><span class="p">(),</span> <span class="n">y</span><span class="o">=</span><span class="s2">&quot;y_variable&quot;</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s2">&quot;x_variable&quot;</span><span class="p">,</span> <span class="n">update_every</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+<span class="c1"># update_every = in seconds, how often to recompute the fit. If `None`, do not compute until the end. Default is 1.</span>
+<span class="n">fit_plot_callback</span> <span class="o">=</span> <span class="n">LiveFitPlot</span><span class="p">(</span><span class="n">fit_callback</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;r&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Note:</strong> that the <code class="docutils literal notranslate"><span class="pre">LiveFit</span></code> callback doesn’t directly do the plotting, it will return function parameters of the model its trying to fit to; a <code class="docutils literal notranslate"><span class="pre">LiveFit</span></code> object must be passed to <code class="docutils literal notranslate"><span class="pre">LiveFitPlot</span></code> which can then be subscribed to the <code class="docutils literal notranslate"><span class="pre">RunEngine</span></code>. See the <a class="reference external" href="https://blueskyproject.io/bluesky/main/callbacks.html#livefitplot">Bluesky Documentation</a> for information on the various arguments that can be passed to the <code class="docutils literal notranslate"><span class="pre">LiveFitPlot</span></code> class.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">plot_callback</span></code> and <code class="docutils literal notranslate"><span class="pre">fit_plot_callback</span></code> objects can then be subscribed to the <code class="docutils literal notranslate"><span class="pre">RunEngine</span></code>, using the same methods as described in <a class="reference internal" href="../callbacks/plotting.html"><span class="std std-doc"><code class="docutils literal notranslate"><span class="pre">LivePlot</span></code></span></a>. See the following example using <code class="docutils literal notranslate"><span class="pre">&#64;subs_decorator</span></code>:</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="nd">@subs_decorator</span><span class="p">(</span>
+    <span class="p">[</span>
+        <span class="n">fit_plot_callback</span><span class="p">,</span>
+        <span class="n">plot_callback</span>
+    <span class="p">]</span>
+<span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">plan</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="o">...</span> 
+</pre></div>
+</div>
+</section>
+<section id="models">
+<h2>Models<a class="headerlink" href="#models" title="Link to this heading"></a></h2>
+<p>We support <strong>standard fits</strong> for the following trends in data. See <a class="reference internal" href="standard_fits.html"><span class="std std-doc">Standard Fits</span></a> for more infomation on the behaviour of these fits.</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Trend</p></th>
+<th class="head"><p>Class Name in fitting_utils</p></th>
+<th class="head"><p>Arguments</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Linear</p></td>
+<td><p><a class="reference internal" href="standard_fits.html#linear"><span class="std std-ref">Linear</span></a></p></td>
+<td><p>None</p></td>
+</tr>
+<tr class="row-odd"><td><p>Polynomial</p></td>
+<td><p><a class="reference internal" href="standard_fits.html#polynomial"><span class="std std-ref">Polynomial</span></a></p></td>
+<td><p>Polynomial Degree (int)</p></td>
+</tr>
+<tr class="row-even"><td><p>Gaussian</p></td>
+<td><p><a class="reference internal" href="standard_fits.html#gaussian"><span class="std std-ref">Gaussian</span></a></p></td>
+<td><p>None</p></td>
+</tr>
+<tr class="row-odd"><td><p>Lorentzian</p></td>
+<td><p><a class="reference internal" href="standard_fits.html#lorentzian"><span class="std std-ref">Lorentzian</span></a></p></td>
+<td><p>None</p></td>
+</tr>
+<tr class="row-even"><td><p>Damped Oscillator</p></td>
+<td><p><a class="reference internal" href="standard_fits.html#damped-oscillator-dampedosc"><span class="std std-ref">DampedOsc</span></a></p></td>
+<td><p>None</p></td>
+</tr>
+<tr class="row-odd"><td><p>Slit Scan Fit</p></td>
+<td><p><a class="reference internal" href="standard_fits.html#slit-scan-slitscan"><span class="std std-ref">SlitScan</span></a></p></td>
+<td><p>Max Slit Size (int)</p></td>
+</tr>
+<tr class="row-even"><td><p>Error Function</p></td>
+<td><p><a class="reference internal" href="standard_fits.html#error-function-erf"><span class="std std-ref">ERF</span></a></p></td>
+<td><p>None</p></td>
+</tr>
+<tr class="row-odd"><td><p>Complementary Error Function</p></td>
+<td><p><a class="reference internal" href="standard_fits.html#complementary-error-function-erfc"><span class="std std-ref">ERFC</span></a></p></td>
+<td><p>None</p></td>
+</tr>
+<tr class="row-even"><td><p>Top Hat</p></td>
+<td><p><a class="reference internal" href="standard_fits.html#top-hat-tophat"><span class="std std-ref">TopHat</span></a></p></td>
+<td><p>None</p></td>
+</tr>
+<tr class="row-odd"><td><p>Trapezoid</p></td>
+<td><p><a class="reference internal" href="standard_fits.html#trapezoid"><span class="std std-ref">Trapezoid</span></a></p></td>
+<td><p>None</p></td>
+</tr>
+<tr class="row-even"><td><p>PeakStats (COM) <strong>*</strong></p></td>
+<td><p>-</p></td>
+<td><p>-</p></td>
+</tr>
+</tbody>
+</table>
+<p>* Native to Bluesky there is support for <code class="docutils literal notranslate"><span class="pre">PeakStats</span></code> which “computes peak statsitics after a run finishes.” See <a class="reference external" href="https://blueskyproject.io/bluesky/main/callbacks.html#peakstats">Bluesky docs</a> for more information on this. Similar to <code class="docutils literal notranslate"><span class="pre">LiveFit</span></code> and <code class="docutils literal notranslate"><span class="pre">LiveFitPLot</span></code>, <code class="docutils literal notranslate"><span class="pre">PeakStats</span></code> is a callback and must be passed to <code class="docutils literal notranslate"><span class="pre">PeakStatsPlot</span></code> to be plotted on a set of axes, which is subscribed to by the <code class="docutils literal notranslate"><span class="pre">RunEngine</span></code>.</p>
+<hr class="docutils" />
+<p>Each of the above fit classes has a <code class="docutils literal notranslate"><span class="pre">.fit()</span></code> which returns an object of type <code class="docutils literal notranslate"><span class="pre">FitMethod</span></code>. This tells <code class="docutils literal notranslate"><span class="pre">LiveFit</span></code> how to perform fitting on the data. <code class="docutils literal notranslate"><span class="pre">FitMethod</span></code> is defined in <code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.callbacks.fitting</span></code>.</p>
+<p>There are <em>two</em> ways that you can choose how to fit a model to your data:</p>
+<section id="option-1-use-the-standard-fits">
+<h3>Option 1: Use the standard fits<a class="headerlink" href="#option-1-use-the-standard-fits" title="Link to this heading"></a></h3>
+<p>When only using the standard fits provided by <code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core</span></code>, the following syntax can be used, replacing <code class="docutils literal notranslate"><span class="pre">[FIT]</span></code> with your chosen one from <code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.callbacks.fitting.fitting_utils</span></code>:</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">bluesky.callbacks</span> <span class="kn">import</span> <span class="n">LiveFitPlot</span>
+<span class="kn">from</span> <span class="nn">ibex_bluesky_core.callbacks.fitting.fitting_utils</span> <span class="kn">import</span> <span class="p">[</span><span class="n">FIT</span><span class="p">]</span>
+
+<span class="c1"># Pass [FIT].fit() to the first parameter of LiveFit</span>
+<span class="n">lf</span> <span class="o">=</span> <span class="n">LiveFit</span><span class="p">([</span><span class="n">FIT</span><span class="p">]</span><span class="o">.</span><span class="n">fit</span><span class="p">(),</span> <span class="n">y</span><span class="o">=</span><span class="s2">&quot;y_variable&quot;</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s2">&quot;x_variable&quot;</span><span class="p">,</span> <span class="n">update_every</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+
+<span class="c1"># Then subscribe to LiveFitPlot(lf, ...)</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">[FIT].fit()</span></code> function will pass the <code class="docutils literal notranslate"><span class="pre">FitMethod</span></code> object straight to the <code class="docutils literal notranslate"><span class="pre">LiveFit</span></code> class.</p>
+<p><strong>Note:</strong> that for the fits in the above table that require parameters, you will need to pass value(s) to their <code class="docutils literal notranslate"><span class="pre">.fit</span></code> method. For example Polynomial fitting:</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="n">lf</span> <span class="o">=</span> <span class="n">LiveFit</span><span class="p">(</span><span class="n">Polynomial</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="mi">3</span><span class="p">),</span>  <span class="n">y</span><span class="o">=</span><span class="s2">&quot;y_variable&quot;</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s2">&quot;x_variable&quot;</span><span class="p">,</span> <span class="n">update_every</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+<span class="c1"># For a polynomial of degree 3</span>
+</pre></div>
+</div>
+</section>
+<section id="option-2-use-custom-fits">
+<h3>Option 2: Use custom fits<a class="headerlink" href="#option-2-use-custom-fits" title="Link to this heading"></a></h3>
+<p>If you wish, you can define your own non-standard <code class="docutils literal notranslate"><span class="pre">FitMethod</span></code> object. The <code class="docutils literal notranslate"><span class="pre">FitMethod</span></code> class takes two function arguments as follows:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">model</span></code></p>
+<ul>
+<li><p>A function representing the behaviour of the model.</p></li>
+<li><p>Returns the <code class="docutils literal notranslate"><span class="pre">y</span></code> value (<code class="docutils literal notranslate"><span class="pre">float</span></code>) at the given <code class="docutils literal notranslate"><span class="pre">x</span></code> value and model parameters.</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">guess</span></code></p>
+<ul>
+<li><p>A function that must take two <code class="docutils literal notranslate"><span class="pre">np.array</span></code> arrays, representing <code class="docutils literal notranslate"><span class="pre">x</span></code> data and respective <code class="docutils literal notranslate"><span class="pre">y</span></code> data, of type <code class="docutils literal notranslate"><span class="pre">float</span></code> as arguments and must return a <code class="docutils literal notranslate"><span class="pre">dict</span></code> in the form <code class="docutils literal notranslate"><span class="pre">dict[str,</span> <span class="pre">lmfit.Parameter]</span></code>.</p></li>
+<li><p>This will be called to guess the properties of the model, given the data already collected in the Bluesky run.</p></li>
+</ul>
+</li>
+</ul>
+<p>See the following example on how to define these.</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="c1"># Linear Fitting</span>
+
+<span class="kn">import</span> <span class="nn">lmfit</span>
+
+<span class="k">def</span> <span class="nf">model</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">m</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">c</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+    
+    <span class="k">return</span> <span class="n">m</span> <span class="o">*</span> <span class="n">x</span> <span class="o">+</span> <span class="n">c</span> <span class="c1"># y = mx + c</span>
+
+<span class="k">def</span> <span class="nf">guess</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">],</span> <span class="n">y</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">lmfit</span><span class="o">.</span><span class="n">Parameter</span><span class="p">]:</span>
+
+    <span class="c1"># Linear regression calculation</span>
+    <span class="c1"># x = set of x data</span>
+    <span class="c1"># y = set of respective y data</span>
+    <span class="c1"># x[n] makes a pair with y[n]</span>
+    
+    <span class="n">numerator</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">x</span> <span class="o">*</span> <span class="n">y</span><span class="p">)</span> <span class="o">-</span> <span class="nb">sum</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">*</span> <span class="nb">sum</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+    <span class="n">denominator</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">x</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">-</span> <span class="nb">sum</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>
+
+    <span class="n">m</span> <span class="o">=</span> <span class="n">numerator</span> <span class="o">/</span> <span class="n">denominator</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="n">y</span><span class="p">)</span> <span class="o">-</span> <span class="n">m</span> <span class="o">*</span> <span class="nb">sum</span><span class="p">(</span><span class="n">x</span><span class="p">))</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+    <span class="n">init_guess</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;m&quot;</span><span class="p">:</span> <span class="n">lmfit</span><span class="o">.</span><span class="n">Parameter</span><span class="p">(</span><span class="s2">&quot;m&quot;</span><span class="p">,</span> <span class="n">m</span><span class="p">),</span> <span class="c1"># gradient</span>
+        <span class="s2">&quot;c&quot;</span><span class="p">:</span> <span class="n">lmfit</span><span class="o">.</span><span class="n">Parameter</span><span class="p">(</span><span class="s2">&quot;c&quot;</span><span class="p">,</span> <span class="n">c</span><span class="p">),</span> <span class="c1"># y - intercept</span>
+    <span class="p">}</span>
+
+    <span class="k">return</span> <span class="n">init_guess</span>
+
+<span class="n">fit_method</span> <span class="o">=</span> <span class="n">FitMethod</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">guess</span><span class="p">)</span> 
+<span class="c1">#Pass the model and guess function to FitMethod</span>
+
+<span class="n">lf</span> <span class="o">=</span> <span class="n">LiveFit</span><span class="p">(</span><span class="n">fit_method</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s2">&quot;y_variable&quot;</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s2">&quot;x_variable&quot;</span><span class="p">,</span> <span class="n">update_every</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+
+<span class="c1"># Then subscribe to LiveFitPlot(lf, ...)</span>
+</pre></div>
+</div>
+<p><strong>Note:</strong> that the parameters returned from the guess function must allocate to the arguments to the model function, ignoring the independant variable e.g <code class="docutils literal notranslate"><span class="pre">x</span></code> in this case. Array-like structures are not allowed. See the <a class="reference external" href="https://lmfit.github.io/lmfit-py/parameters.html">lmfit documentation</a> for more information.</p>
+<section id="option-2-continued">
+<h4>Option 2: Continued<a class="headerlink" href="#option-2-continued" title="Link to this heading"></a></h4>
+<p>Each <code class="docutils literal notranslate"><span class="pre">Fit</span></code> in <code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.callbacks.fitting</span></code> has a <code class="docutils literal notranslate"><span class="pre">.model()</span></code> and <code class="docutils literal notranslate"><span class="pre">.guess()</span></code>, which make up their fitting method. These are publically accessible class methods.</p>
+<p>This means that aslong as the parameters returned from the guess function match to the arguments of the model function, you may mix and match user-made and standard, models and guess functions in the following manner:</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">lmfit</span>
+<span class="kn">from</span> <span class="nn">ibex_bluesky_core.callbacks.fitting.fitting_utils</span> <span class="kn">import</span> <span class="n">Linear</span>
+
+<span class="k">def</span> <span class="nf">different_model</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">m</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">c</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+    
+    <span class="k">return</span> <span class="n">m</span> <span class="o">*</span> <span class="n">x</span> <span class="o">+</span> <span class="n">c</span> <span class="o">**</span> <span class="mi">2</span> <span class="c1"># y = mx + (c ** 2)</span>
+
+
+<span class="n">fit_method</span> <span class="o">=</span> <span class="n">FitMethod</span><span class="p">(</span><span class="n">different_model</span><span class="p">,</span> <span class="n">Linear</span><span class="o">.</span><span class="n">guess</span><span class="p">())</span>
+<span class="c1"># Uses the user defined model and the standard Guessing. function for linear models</span>
+
+<span class="n">lf</span> <span class="o">=</span> <span class="n">LiveFit</span><span class="p">(</span><span class="n">fit_method</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s2">&quot;y_variable&quot;</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s2">&quot;x_variable&quot;</span><span class="p">,</span> <span class="n">update_every</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+
+<span class="c1"># Then subscribe to LiveFitPlot(lf, ...)</span>
+</pre></div>
+</div>
+<p>… or the other way round …</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">lmfit</span>
+<span class="kn">from</span> <span class="nn">ibex_bluesky_core.callbacks.fitting.fitting_utils</span> <span class="kn">import</span> <span class="n">Linear</span>
+
+<span class="c1"># This Guessing. function isn&#39;t very good because it&#39;s return values don&#39;t change on the data already collected in the Bluesky run</span>
+<span class="c1"># It always guesses that the linear function is y = x</span>
+
+<span class="k">def</span> <span class="nf">different_guess</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">m</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">c</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+    
+    <span class="n">init_guess</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;m&quot;</span><span class="p">:</span> <span class="n">lmfit</span><span class="o">.</span><span class="n">Parameter</span><span class="p">(</span><span class="s2">&quot;m&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="c1"># gradient</span>
+        <span class="s2">&quot;c&quot;</span><span class="p">:</span> <span class="n">lmfit</span><span class="o">.</span><span class="n">Parameter</span><span class="p">(</span><span class="s2">&quot;c&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="c1"># y - intercept</span>
+    <span class="p">}</span>
+
+    <span class="k">return</span> <span class="n">init_guess</span>
+
+<span class="n">fit_method</span> <span class="o">=</span> <span class="n">FitMethod</span><span class="p">(</span><span class="n">Linear</span><span class="o">.</span><span class="n">model</span><span class="p">(),</span> <span class="n">different_guess</span><span class="p">)</span>
+<span class="c1"># Uses the standard linear model and the user defined Guessing. function</span>
+
+<span class="n">lf</span> <span class="o">=</span> <span class="n">LiveFit</span><span class="p">(</span><span class="n">fit_method</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s2">&quot;y_variable&quot;</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s2">&quot;x_variable&quot;</span><span class="p">,</span> <span class="n">update_every</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+
+<span class="c1"># Then subscribe to LiveFitPlot(lf, ...)</span>
+</pre></div>
+</div>
+<p>Or you can create a completely user-defined fitting method.</p>
+<p><strong>Note:</strong> that for fits that require arguments, you will need to pass values to their respecitive <code class="docutils literal notranslate"><span class="pre">.model</span></code> and <code class="docutils literal notranslate"><span class="pre">.guess</span></code> functions. E.g for <code class="docutils literal notranslate"><span class="pre">Polynomial</span></code> fitting:</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="n">fit_method</span> <span class="o">=</span> <span class="n">FitMethod</span><span class="p">(</span><span class="n">Polynomial</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="mi">3</span><span class="p">),</span> <span class="n">different_guess</span><span class="p">)</span> <span class="c1"># If using a custom guess function</span>
+<span class="n">lf</span> <span class="o">=</span> <span class="n">LiveFit</span><span class="p">(</span><span class="n">fit_method</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>See the <a class="reference internal" href="#models">standard fits</a> list above for standard fits which require parameters. It gets more complicated if you want to define your own custom model or guess which you want to pass parameters to. You will have to define a function that takes these parameters and returns the model / guess function with the subsituted values.</p>
+</section>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../callbacks/plotting.html" class="btn btn-neutral float-left" title="Plotting" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="standard_fits.html" class="btn btn-neutral float-right" title="Standard Fitting Models" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
