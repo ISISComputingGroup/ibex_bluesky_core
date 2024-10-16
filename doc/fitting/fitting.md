@@ -5,7 +5,7 @@ Similar to [`LivePlot`](../callbacks/plotting.md), `ibex_bluesky_core` provides 
 In order to use the wrapper, import `LiveFit` from `ibex_bluesky_core` rather than 
 `bluesky` directly:
 ```py
-from ibex_bluesky_core.callbacks.plotting import LiveFit
+from ibex_bluesky_core.callbacks.fitting import LiveFit
 ```
 **Note:** that you do not *need* `LivePlot` for `LiveFit` to work but it may be useful to know visaully how well the model fits to the raw data.
 
@@ -14,7 +14,8 @@ from ibex_bluesky_core.callbacks.plotting import LiveFit
 Below is a full example showing how to use standard `matplotlib` & `bluesky` functionality to apply fitting to a scan, using LivePlot and LiveFit. The fitting callback is set to expect data to take the form of a gaussian.
 ```py
 import matplotlib.pyplot as plt
-from ibex_bluesky_core.callbacks.plotting import LivePlot, LiveFit
+from ibex_bluesky_core.callbacks.plotting import LivePlot
+from ibex_bluesky_core.callbacks.fitting import LiveFit
 
 # Create a new figure to plot onto.
 plt.figure()
