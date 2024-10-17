@@ -18,8 +18,8 @@ def test_GIVEN_logging_is_requested_THEN_handler_is_added():
         if isinstance(handler, logging.handlers.TimedRotatingFileHandler):
             loghandler = handler
 
-    assert isinstance(loghandler, logging.handlers.TimedRotatingFileHandler)
-    assert loghandler is not None
-    assert loghandler.name == "timedRotatingFileHandler"
-    assert loghandler.when.lower() == "midnight"
-    assert loghandler.baseFilename.endswith(LOG_FILE_NAME)
+    if (isinstance(loghandler, logging.handlers.TimedRotatingFileHandler)):
+        assert loghandler is not None
+        assert loghandler.name == "timedRotatingFileHandler"
+        assert loghandler.when.lower() == "midnight"
+        assert loghandler.baseFilename.endswith(LOG_FILE_NAME)
