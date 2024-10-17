@@ -1,8 +1,7 @@
-import logging
 import sys
+from logging.handlers import TimedRotatingFileHandler
 
 from ibex_bluesky_core.logger import logger
-from logging.handlers import TimedRotatingFileHandler
 
 LOG_MESSAGE = "Logging something to "
 LOG_FILE_NAME = "blueskylogs.log"
