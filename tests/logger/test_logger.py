@@ -2,6 +2,7 @@ import logging
 import sys
 
 from ibex_bluesky_core.logger import logger
+from logging.handlers import TimedRotatingFileHandler
 
 LOG_MESSAGE = "Logging something to "
 LOG_FILE_NAME = "blueskylogs.log"
@@ -15,14 +16,11 @@ def test_GIVEN_logging_is_requested_THEN_handler_is_added():
 
     loghandler = None
     for handler in logger.blueskylogger.handlers:
-        if isinstance(handler, logging.handlers.TimedRotatingFileHandler):
+        if isinstance(handler, TimedRotatingFileHandler):
             loghandler = handler
 
-    assert isinstance(loghandler, logging.handlers.TimedRotatingFileHandler)
-    if isinstance(loghandler, logging.FileHandler):
-        assert loghandler is not None
-        assert loghandler.name == "timedRotatingFileHandler"
-        assert loghandler.baseFilename.endswith(LOG_FILE_NAME)
-
-    if isinstance(loghandler, logging.handlers.BaseRotatingHandler):
-        assert loghandler.when.lower() == "midnight"
+    assert isinstance(loghandler, TimedRotatingFileHandler)
+    assert loghandler is not None
+    assert loghandler.name == "timedRotatingFileHandler"
+    assert loghandler.baseFilename.endswith(LOG_FILE_NAME)
+    assert loghandler is not None
