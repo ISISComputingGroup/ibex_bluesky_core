@@ -12,13 +12,19 @@ This documentation contains information for the bluesky plan stubs & devices for
    
    devices/*
 
-
 .. toctree::
    :maxdepth: 2
    :caption: Callbacks
    :glob:
 
    callbacks/*
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Fitting
+   :glob:
+
+   fitting/*
 
 .. toctree::
    :maxdepth: 2
