@@ -91,14 +91,20 @@ class HumanReadableFileCallback(CallbackBase):
             )
 
         with open(self.filename, "a", newline="") as outfile:
+            file_delimiter = ","
             if doc[SEQ_NUM] == 1:
                 # If this is the first event, write out the units before writing event data.
-                units_line = "\t".join(
+                units_line = file_delimiter.join(
                     f"{field_name}{f'({descriptor_data[field_name].get(UNITS, None)})' if descriptor_data[field_name].get(UNITS, None) else ''}"  # noqa: E501
                     for field_name in self.fields
                 )
                 outfile.write(f"\n{units_line}\n")
-            writer = csv.DictWriter(outfile, fieldnames=formatted_event_data, delimiter="\t")
+            writer = csv.DictWriter(
+                outfile,
+                fieldnames=formatted_event_data,
+                delimiter=file_delimiter,
+                lineterminator="\n",
+            )
             writer.writerows([formatted_event_data])
         return doc
 

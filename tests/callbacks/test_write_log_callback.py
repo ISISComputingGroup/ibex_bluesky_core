@@ -27,10 +27,8 @@ def test_header_data_all_available_on_start(cb):
         result = save_path / f"{run_start['uid']}.txt"
 
     mock_file.assert_called_with(result, "a")
-    # assert not mock_file().write.assert_any_call(f"scan_id: {scan_id}")
     # time should have been renamed to start_time and converted to human readable
     mock_file().write.assert_any_call("start_time: 2024-10-04 14:43:43\n")
-
     mock_file().write.assert_any_call(f"uid: {uid}\n")
 
 
@@ -55,7 +53,7 @@ def test_event_prints_header_with_units_and_respects_precision_of_value_on_first
     field_name = "test"
     cb = HumanReadableFileCallback(save_path, [field_name])
     # This actually contains the precision
-    expected_value = 1.2345
+    expected_value = 1.234567
     units = "mm"
     prec = 4
     descriptor = "somedescriptor"
@@ -71,7 +69,7 @@ def test_event_prints_header_with_units_and_respects_precision_of_value_on_first
 
     mock_file.assert_called_with(cb.filename, "a", newline="")
     first_call = call(f"\n{field_name}({units})\n")
-    second_call = call(f"{expected_value:.{prec}f}\r\n")
+    second_call = call(f"{expected_value:.{prec}f}\n")
     assert mock_file().write.has_calls(first_call, second_call)
     assert mock_file().write.call_count == 2
 
@@ -96,7 +94,7 @@ def test_event_prints_header_without_units_and_does_not_truncate_precision_if_no
 
     mock_file.assert_called_with(cb.filename, "a", newline="")
     first_call = call(f"\n{field_name}({units})\n")
-    second_call = call(f"{expected_value}\r\n")
+    second_call = call(f"{expected_value}\n")
     assert mock_file().write.has_calls(first_call, second_call)
     assert mock_file().write.call_count == 2
 
@@ -124,7 +122,7 @@ def test_event_prints_header_only_on_first_event_and_does_not_truncate_if_not_fl
 
     mock_file.assert_called_with(cb.filename, "a", newline="")
 
-    mock_file().write.assert_called_once_with(f"{expected_value}\r\n")
+    mock_file().write.assert_called_once_with(f"{expected_value}\n")
     assert mock_file().write.call_count == 1
 
 
