@@ -26,7 +26,7 @@ def test_header_data_all_available_on_start(cb):
         cb.start(run_start)
         result = save_path / f"{run_start['uid']}.txt"
 
-    mock_file.assert_called_with(result, "a")
+    mock_file.assert_called_with(result, "a", newline="")
     # time should have been renamed to start_time and converted to human readable
     mock_file().write.assert_any_call("start_time: 2024-10-04 14:43:43\n")
     mock_file().write.assert_any_call(f"uid: {uid}\n")

@@ -60,7 +60,7 @@ class HumanReadableFileCallback(CallbackBase):
         )
         header_data[START_TIME] = formatted_time
 
-        with open(self.filename, "a") as outfile:
+        with open(self.filename, "a", newline="") as outfile:
             for key, value in header_data.items():
                 outfile.write(f"{key}: {value}\n")
 
