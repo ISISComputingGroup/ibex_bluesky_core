@@ -1,0 +1,801 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ibex_bluesky_core.callbacks.fitting.fitting_utils &mdash; ibex_bluesky_core 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            ibex_bluesky_core
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Devices</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../devices/blocks.html">Blocks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../devices/dae.html">DAE (Data Acquisition Electronics)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Callbacks</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../callbacks/docs_logging_callback.html">Document Logging Callback</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../callbacks/file_writing.html">File writing callbacks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../callbacks/plotting.html">Plotting</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Fitting</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../fitting/fitting.html">Fitting Callback</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../fitting/standard_fits.html">Standard Fitting Models</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Preprocessors</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../preprocessors/rbnumberpp.html">RB Number injection preprocessor</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Developer information</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../dev/create_a_release.html">Release Process</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../dev/manual_system_testing.html">Manual system testing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../dev/set_up_dev_environment.html">Local development</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../dev/sphinx_notes.html">Notes on Sphinx and addons</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Architectural decisions</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../architectural_decisions/001-repo-structure.html">Repository structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../architectural_decisions/002-use-ophyd-async.html">Use <code class="docutils literal notranslate"><span class="pre">ophyd-async</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../architectural_decisions/003-run-in-process.html">Run in-process</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../_api.html">API</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">ibex_bluesky_core</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">Module code</a></li>
+          <li class="breadcrumb-item"><a href="../fitting.html">ibex_bluesky_core.callbacks.fitting</a></li>
+      <li class="breadcrumb-item active">ibex_bluesky_core.callbacks.fitting.fitting_utils</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for ibex_bluesky_core.callbacks.fitting.fitting_utils</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Defines the standard fits. The model and guess functions for each fit.&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">abstractmethod</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Callable</span>
+
+<span class="kn">import</span> <span class="nn">lmfit</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">numpy.typing</span> <span class="k">as</span> <span class="nn">npt</span>
+<span class="kn">import</span> <span class="nn">scipy</span>
+<span class="kn">import</span> <span class="nn">scipy.special</span>
+<span class="kn">from</span> <span class="nn">lmfit.models</span> <span class="kn">import</span> <span class="n">PolynomialModel</span>
+<span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">polynomial</span> <span class="k">as</span> <span class="n">p</span>
+
+<span class="kn">from</span> <span class="nn">ibex_bluesky_core.callbacks.fitting</span> <span class="kn">import</span> <span class="n">FitMethod</span>
+
+
+<div class="viewcode-block" id="Fit">
+<a class="viewcode-back" href="../../../../generated/ibex_bluesky_core.callbacks.fitting.fitting_utils.html#ibex_bluesky_core.callbacks.fitting.fitting_utils.Fit">[docs]</a>
+<span class="k">class</span> <span class="nc">Fit</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Base class for all fits.&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Fit.model">
+<a class="viewcode-back" href="../../../../generated/ibex_bluesky_core.callbacks.fitting.fitting_utils.html#ibex_bluesky_core.callbacks.fitting.fitting_utils.Fit.model">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">model</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">lmfit</span><span class="o">.</span><span class="n">Model</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Outline base model function.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            *args (int): Any extra parameters required for fitting.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            lmfit.Model: Model function</span>
+<span class="sd">            (x-values: NDArray, parameters: np.float64 -&gt; y-values: NDArray)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="Fit.guess">
+<a class="viewcode-back" href="../../../../generated/ibex_bluesky_core.callbacks.fitting.fitting_utils.html#ibex_bluesky_core.callbacks.fitting.fitting_utils.Fit.guess">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">guess</span><span class="p">(</span>
+        <span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">],</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]],</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">lmfit</span><span class="o">.</span><span class="n">Parameter</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Outline base Guessing. method.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            *args (int): Any extra parameters required for fitting.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Callable: Guess function</span>
+<span class="sd">            (x-values: NDArray, y-values: NDArray -&gt; parameters: Dict[str, lmfit.Parameter])</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="Fit.fit">
+<a class="viewcode-back" href="../../../../generated/ibex_bluesky_core.callbacks.fitting.fitting_utils.html#ibex_bluesky_core.callbacks.fitting.fitting_utils.Fit.fit">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FitMethod</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a FitMethod given model and guess functions to pass to LiveFit.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">FitMethod</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="bp">cls</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">),</span> <span class="n">guess</span><span class="o">=</span><span class="bp">cls</span><span class="o">.</span><span class="n">guess</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">))</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="Gaussian">
+<a class="viewcode-back" href="../../../../generated/ibex_bluesky_core.callbacks.fitting.fitting_utils.html#ibex_bluesky_core.callbacks.fitting.fitting_utils.Gaussian">[docs]</a>
+<span class="k">class</span> <span class="nc">Gaussian</span><span class="p">(</span><span class="n">Fit</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Gaussian Fitting.&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Gaussian.model">
+<a class="viewcode-back" href="../../../../generated/ibex_bluesky_core.callbacks.fitting.fitting_utils.html#ibex_bluesky_core.callbacks.fitting.fitting_utils.Gaussian.model">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">model</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">lmfit</span><span class="o">.</span><span class="n">Model</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Gaussian Model.&quot;&quot;&quot;</span>
+
+        <span class="k">def</span> <span class="nf">model</span><span class="p">(</span>
+            <span class="n">x</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">],</span> <span class="n">amp</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">sigma</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">x0</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">background</span><span class="p">:</span> <span class="nb">float</span>
+        <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">sigma</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">sigma</span> <span class="o">=</span> <span class="mi">1</span>
+
+            <span class="k">return</span> <span class="n">amp</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="p">((</span><span class="n">x</span> <span class="o">-</span> <span class="n">x0</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">sigma</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span> <span class="o">+</span> <span class="n">background</span>
+
+        <span class="k">return</span> <span class="n">lmfit</span><span class="o">.</span><span class="n">Model</span><span class="p">(</span><span class="n">model</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Gaussian.guess">
+<a class="viewcode-back" href="../../../../generated/ibex_bluesky_core.callbacks.fitting.fitting_utils.html#ibex_bluesky_core.callbacks.fitting.fitting_utils.Gaussian.guess">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">guess</span><span class="p">(</span>
+        <span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">],</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]],</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">lmfit</span><span class="o">.</span><span class="n">Parameter</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Gaussian Guessing.&quot;&quot;&quot;</span>
+
+        <span class="k">def</span> <span class="nf">guess</span><span class="p">(</span>
+            <span class="n">x</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">],</span> <span class="n">y</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span>
+        <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">lmfit</span><span class="o">.</span><span class="n">Parameter</span><span class="p">]:</span>
+            <span class="n">mean</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">x</span> <span class="o">*</span> <span class="n">y</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+            <span class="n">sigma</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">y</span> <span class="o">*</span> <span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="n">mean</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">y</span><span class="p">))</span>
+            <span class="n">background</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">y</span><span class="p">)</span> <span class="o">&gt;</span> <span class="nb">abs</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">y</span><span class="p">)):</span>
+                <span class="n">amp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">y</span><span class="p">)</span> <span class="o">-</span> <span class="n">background</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">amp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">y</span><span class="p">)</span> <span class="o">+</span> <span class="n">background</span>
+
+            <span class="n">init_guess</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s2">&quot;amp&quot;</span><span class="p">:</span> <span class="n">lmfit</span><span class="o">.</span><span class="n">Parameter</span><span class="p">(</span><span class="s2">&quot;amp&quot;</span><span class="p">,</span> <span class="n">amp</span><span class="p">),</span>
+                <span class="s2">&quot;sigma&quot;</span><span class="p">:</span> <span class="n">lmfit</span><span class="o">.</span><span class="n">Parameter</span><span class="p">(</span><span class="s2">&quot;sigma&quot;</span><span class="p">,</span> <span class="n">sigma</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span>
+                <span class="s2">&quot;x0&quot;</span><span class="p">:</span> <span class="n">lmfit</span><span class="o">.</span><span class="n">Parameter</span><span class="p">(</span><span class="s2">&quot;x0&quot;</span><span class="p">,</span> <span class="n">mean</span><span class="p">),</span>
+                <span class="s2">&quot;background&quot;</span><span class="p">:</span> <span class="n">lmfit</span><span class="o">.</span><span class="n">Parameter</span><span class="p">(</span><span class="s2">&quot;background&quot;</span><span class="p">,</span> <span class="n">background</span><span class="p">),</span>
+            <span class="p">}</span>
+
+            <span class="k">return</span> <span class="n">init_guess</span>
+
+        <span class="k">return</span> <span class="n">guess</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="Lorentzian">
+<a class="viewcode-back" href="../../../../generated/ibex_bluesky_core.callbacks.fitting.fitting_utils.html#ibex_bluesky_core.callbacks.fitting.fitting_utils.Lorentzian">[docs]</a>
+<span class="k">class</span> <span class="nc">Lorentzian</span><span class="p">(</span><span class="n">Fit</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Lorentzian Fitting.&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Lorentzian.model">
+<a class="viewcode-back" href="../../../../generated/ibex_bluesky_core.callbacks.fitting.fitting_utils.html#ibex_bluesky_core.callbacks.fitting.fitting_utils.Lorentzian.model">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">model</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">lmfit</span><span class="o">.</span><span class="n">Model</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Lorentzian Model.&quot;&quot;&quot;</span>
+
+        <span class="k">def</span> <span class="nf">model</span><span class="p">(</span>
+            <span class="n">x</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">],</span> <span class="n">amp</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">sigma</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">center</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">background</span><span class="p">:</span> <span class="nb">float</span>
+        <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">sigma</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">sigma</span> <span class="o">=</span> <span class="mi">1</span>
+
+            <span class="k">return</span> <span class="n">amp</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="p">((</span><span class="n">x</span> <span class="o">-</span> <span class="n">center</span><span class="p">)</span> <span class="o">/</span> <span class="n">sigma</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="n">background</span>
+
+        <span class="k">return</span> <span class="n">lmfit</span><span class="o">.</span><span class="n">Model</span><span class="p">(</span><span class="n">model</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Lorentzian.guess">
+<a class="viewcode-back" href="../../../../generated/ibex_bluesky_core.callbacks.fitting.fitting_utils.html#ibex_bluesky_core.callbacks.fitting.fitting_utils.Lorentzian.guess">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">guess</span><span class="p">(</span>
+        <span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">],</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]],</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">lmfit</span><span class="o">.</span><span class="n">Parameter</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Lorentzian Guessing.&quot;&quot;&quot;</span>
+
+        <span class="k">def</span> <span class="nf">guess</span><span class="p">(</span>
+            <span class="n">x</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">],</span> <span class="n">y</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span>
+        <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">lmfit</span><span class="o">.</span><span class="n">Parameter</span><span class="p">]:</span>
+            <span class="n">background</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">y</span><span class="p">)</span> <span class="o">&gt;</span> <span class="nb">abs</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">y</span><span class="p">)):</span>
+                <span class="n">amp_index</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+                <span class="n">amp</span> <span class="o">=</span> <span class="n">y</span><span class="p">[</span><span class="n">amp_index</span><span class="p">]</span> <span class="o">-</span> <span class="n">background</span>
+
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">amp_index</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+                <span class="n">amp</span> <span class="o">=</span> <span class="n">y</span><span class="p">[</span><span class="n">amp_index</span><span class="p">]</span> <span class="o">+</span> <span class="n">background</span>
+
+            <span class="n">center</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">amp_index</span><span class="p">]</span>
+
+            <span class="c1"># Guessing. sigma using FWHM</span>
+
+            <span class="n">half_max</span> <span class="o">=</span> <span class="n">amp</span> <span class="o">/</span> <span class="mi">2</span>
+            <span class="n">left_side</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">x</span> <span class="o">&lt;</span> <span class="n">center</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># x-values left of the peak</span>
+            <span class="n">right_side</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">x</span> <span class="o">&gt;</span> <span class="n">center</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># x-values right of the peak</span>
+
+            <span class="c1"># Left side</span>
+            <span class="n">x1_index</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">left_side</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="n">left_side</span><span class="p">]</span> <span class="o">-</span> <span class="n">half_max</span><span class="p">))]</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">left_side</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mi">0</span>
+            <span class="p">)</span>
+
+            <span class="c1"># Right side</span>
+            <span class="n">x2_index</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">right_side</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="n">right_side</span><span class="p">]</span> <span class="o">-</span> <span class="n">half_max</span><span class="p">))]</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">right_side</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span>
+                <span class="k">else</span> <span class="o">-</span><span class="mi">1</span>
+            <span class="p">)</span>
+
+            <span class="n">sigma</span> <span class="o">=</span> <span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">x2_index</span><span class="p">]</span> <span class="o">-</span> <span class="n">x</span><span class="p">[</span><span class="n">x1_index</span><span class="p">])</span> <span class="o">/</span> <span class="mi">2</span>
+
+            <span class="n">init_guess</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s2">&quot;amp&quot;</span><span class="p">:</span> <span class="n">lmfit</span><span class="o">.</span><span class="n">Parameter</span><span class="p">(</span><span class="s2">&quot;amp&quot;</span><span class="p">,</span> <span class="n">amp</span><span class="p">),</span>
+                <span class="s2">&quot;sigma&quot;</span><span class="p">:</span> <span class="n">lmfit</span><span class="o">.</span><span class="n">Parameter</span><span class="p">(</span><span class="s2">&quot;sigma&quot;</span><span class="p">,</span> <span class="n">sigma</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span>
+                <span class="s2">&quot;center&quot;</span><span class="p">:</span> <span class="n">lmfit</span><span class="o">.</span><span class="n">Parameter</span><span class="p">(</span><span class="s2">&quot;center&quot;</span><span class="p">,</span> <span class="n">center</span><span class="p">),</span>
+                <span class="s2">&quot;background&quot;</span><span class="p">:</span> <span class="n">lmfit</span><span class="o">.</span><span class="n">Parameter</span><span class="p">(</span><span class="s2">&quot;background&quot;</span><span class="p">,</span> <span class="n">background</span><span class="p">),</span>
+            <span class="p">}</span>
+
+            <span class="k">return</span> <span class="n">init_guess</span>
+
+        <span class="k">return</span> <span class="n">guess</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="Linear">
+<a class="viewcode-back" href="../../../../generated/ibex_bluesky_core.callbacks.fitting.fitting_utils.html#ibex_bluesky_core.callbacks.fitting.fitting_utils.Linear">[docs]</a>
+<span class="k">class</span> <span class="nc">Linear</span><span class="p">(</span><span class="n">Fit</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Linear Fitting.&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Linear.model">
+<a class="viewcode-back" href="../../../../generated/ibex_bluesky_core.callbacks.fitting.fitting_utils.html#ibex_bluesky_core.callbacks.fitting.fitting_utils.Linear.model">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">model</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">lmfit</span><span class="o">.</span><span class="n">Model</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Linear Model.&quot;&quot;&quot;</span>
+
+        <span class="k">def</span> <span class="nf">model</span><span class="p">(</span><span class="n">x</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">],</span> <span class="n">m</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">c</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
+            <span class="k">return</span> <span class="n">m</span> <span class="o">*</span> <span class="n">x</span> <span class="o">+</span> <span class="n">c</span>
+
+        <span class="k">return</span> <span class="n">lmfit</span><span class="o">.</span><span class="n">Model</span><span class="p">(</span><span class="n">model</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Linear.guess">
+<a class="viewcode-back" href="../../../../generated/ibex_bluesky_core.callbacks.fitting.fitting_utils.html#ibex_bluesky_core.callbacks.fitting.fitting_utils.Linear.guess">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">guess</span><span class="p">(</span>
+        <span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">],</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]],</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">lmfit</span><span class="o">.</span><span class="n">Parameter</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Linear Guessing.&quot;&quot;&quot;</span>
+
+        <span class="k">def</span> <span class="nf">guess</span><span class="p">(</span>
+            <span class="n">x</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">],</span> <span class="n">y</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span>
+        <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">lmfit</span><span class="o">.</span><span class="n">Parameter</span><span class="p">]:</span>
+            <span class="c1"># Linear Regression</span>
+            <span class="n">numerator</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">x</span> <span class="o">*</span> <span class="n">y</span><span class="p">)</span> <span class="o">-</span> <span class="nb">sum</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">*</span> <span class="nb">sum</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+            <span class="n">denominator</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">x</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">-</span> <span class="nb">sum</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>
+
+            <span class="n">m</span> <span class="o">=</span> <span class="n">numerator</span> <span class="o">/</span> <span class="n">denominator</span>
+            <span class="n">c</span> <span class="o">=</span> <span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="n">y</span><span class="p">)</span> <span class="o">-</span> <span class="n">m</span> <span class="o">*</span> <span class="nb">sum</span><span class="p">(</span><span class="n">x</span><span class="p">))</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+            <span class="n">init_guess</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s2">&quot;m&quot;</span><span class="p">:</span> <span class="n">lmfit</span><span class="o">.</span><span class="n">Parameter</span><span class="p">(</span><span class="s2">&quot;m&quot;</span><span class="p">,</span> <span class="n">m</span><span class="p">),</span>
+                <span class="s2">&quot;c&quot;</span><span class="p">:</span> <span class="n">lmfit</span><span class="o">.</span><span class="n">Parameter</span><span class="p">(</span><span class="s2">&quot;c&quot;</span><span class="p">,</span> <span class="n">c</span><span class="p">),</span>
+            <span class="p">}</span>
+
+            <span class="k">return</span> <span class="n">init_guess</span>
+
+        <span class="k">return</span> <span class="n">guess</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="Polynomial">
+<a class="viewcode-back" href="../../../../generated/ibex_bluesky_core.callbacks.fitting.fitting_utils.html#ibex_bluesky_core.callbacks.fitting.fitting_utils.Polynomial">[docs]</a>
+<span class="k">class</span> <span class="nc">Polynomial</span><span class="p">(</span><span class="n">Fit</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Polynomial Fitting.&quot;&quot;&quot;</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">_check_degree</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">args</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Check that polynomial degree is valid.&quot;&quot;&quot;</span>
+        <span class="n">degree</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">args</span> <span class="k">else</span> <span class="mi">7</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">degree</span> <span class="o">&lt;=</span> <span class="mi">7</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The polynomial degree should be at least 0 and smaller than 8.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">degree</span>
+
+<div class="viewcode-block" id="Polynomial.model">
+<a class="viewcode-back" href="../../../../generated/ibex_bluesky_core.callbacks.fitting.fitting_utils.html#ibex_bluesky_core.callbacks.fitting.fitting_utils.Polynomial.model">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">model</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">lmfit</span><span class="o">.</span><span class="n">Model</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Polynomial Model.&quot;&quot;&quot;</span>
+        <span class="n">degree</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_check_degree</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">PolynomialModel</span><span class="p">(</span><span class="n">degree</span><span class="o">=</span><span class="n">degree</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Polynomial.guess">
+<a class="viewcode-back" href="../../../../generated/ibex_bluesky_core.callbacks.fitting.fitting_utils.html#ibex_bluesky_core.callbacks.fitting.fitting_utils.Polynomial.guess">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">guess</span><span class="p">(</span>
+        <span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">],</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]],</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">lmfit</span><span class="o">.</span><span class="n">Parameter</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Polynomial Guessing.&quot;&quot;&quot;</span>
+
+        <span class="k">def</span> <span class="nf">guess</span><span class="p">(</span>
+            <span class="n">x</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">],</span> <span class="n">y</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span>
+        <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">lmfit</span><span class="o">.</span><span class="n">Parameter</span><span class="p">]:</span>
+            <span class="n">init_guess</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="n">degree</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_check_degree</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+
+            <span class="n">coeffs</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">polynomial</span><span class="o">.</span><span class="n">polyfit</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">degree</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">degree</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+                <span class="n">init_guess</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;c</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">coeffs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+
+            <span class="k">return</span> <span class="n">init_guess</span>
+
+        <span class="k">return</span> <span class="n">guess</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="DampedOsc">
+<a class="viewcode-back" href="../../../../generated/ibex_bluesky_core.callbacks.fitting.fitting_utils.html#ibex_bluesky_core.callbacks.fitting.fitting_utils.DampedOsc">[docs]</a>
+<span class="k">class</span> <span class="nc">DampedOsc</span><span class="p">(</span><span class="n">Fit</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Damped Oscillator Fitting.&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="DampedOsc.model">
+<a class="viewcode-back" href="../../../../generated/ibex_bluesky_core.callbacks.fitting.fitting_utils.html#ibex_bluesky_core.callbacks.fitting.fitting_utils.DampedOsc.model">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">model</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">lmfit</span><span class="o">.</span><span class="n">Model</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Damped Oscillator Model.&quot;&quot;&quot;</span>
+
+        <span class="k">def</span> <span class="nf">model</span><span class="p">(</span>
+            <span class="n">x</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">],</span> <span class="n">center</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">amp</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">freq</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">width</span><span class="p">:</span> <span class="nb">float</span>
+        <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
+            <span class="k">return</span> <span class="n">amp</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">((</span><span class="n">x</span> <span class="o">-</span> <span class="n">center</span><span class="p">)</span> <span class="o">*</span> <span class="n">freq</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="p">(((</span><span class="n">x</span> <span class="o">-</span> <span class="n">center</span><span class="p">)</span> <span class="o">/</span> <span class="n">width</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">lmfit</span><span class="o">.</span><span class="n">Model</span><span class="p">(</span><span class="n">model</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DampedOsc.guess">
+<a class="viewcode-back" href="../../../../generated/ibex_bluesky_core.callbacks.fitting.fitting_utils.html#ibex_bluesky_core.callbacks.fitting.fitting_utils.DampedOsc.guess">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">guess</span><span class="p">(</span>
+        <span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">],</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]],</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">lmfit</span><span class="o">.</span><span class="n">Parameter</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Damped Oscillator Guessing.&quot;&quot;&quot;</span>
+
+        <span class="k">def</span> <span class="nf">guess</span><span class="p">(</span>
+            <span class="n">x</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">],</span> <span class="n">y</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span>
+        <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">lmfit</span><span class="o">.</span><span class="n">Parameter</span><span class="p">]:</span>
+            <span class="n">peak</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">y</span><span class="p">)]</span>
+            <span class="n">valley</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">y</span><span class="p">)]</span>
+
+            <span class="n">init_guess</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s2">&quot;center&quot;</span><span class="p">:</span> <span class="n">lmfit</span><span class="o">.</span><span class="n">Parameter</span><span class="p">(</span><span class="s2">&quot;center&quot;</span><span class="p">,</span> <span class="n">peak</span><span class="p">),</span>
+                <span class="s2">&quot;amp&quot;</span><span class="p">:</span> <span class="n">lmfit</span><span class="o">.</span><span class="n">Parameter</span><span class="p">(</span><span class="s2">&quot;amp&quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">y</span><span class="p">)),</span>
+                <span class="s2">&quot;freq&quot;</span><span class="p">:</span> <span class="n">lmfit</span><span class="o">.</span><span class="n">Parameter</span><span class="p">(</span><span class="s2">&quot;freq&quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">peak</span> <span class="o">-</span> <span class="n">valley</span><span class="p">)),</span>
+                <span class="s2">&quot;width&quot;</span><span class="p">:</span> <span class="n">lmfit</span><span class="o">.</span><span class="n">Parameter</span><span class="p">(</span><span class="s2">&quot;width&quot;</span><span class="p">,</span> <span class="nb">max</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">-</span> <span class="nb">min</span><span class="p">(</span><span class="n">x</span><span class="p">)),</span>
+            <span class="p">}</span>
+
+            <span class="k">return</span> <span class="n">init_guess</span>
+
+        <span class="k">return</span> <span class="n">guess</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="SlitScan">
+<a class="viewcode-back" href="../../../../generated/ibex_bluesky_core.callbacks.fitting.fitting_utils.html#ibex_bluesky_core.callbacks.fitting.fitting_utils.SlitScan">[docs]</a>
+<span class="k">class</span> <span class="nc">SlitScan</span><span class="p">(</span><span class="n">Fit</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Slit Scan Fitting.&quot;&quot;&quot;</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">_check_input</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">args</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="o">...</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Check that provided maximum slit size is atleast 0.&quot;&quot;&quot;</span>
+        <span class="n">max_slit_gap</span> <span class="o">=</span> <span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">args</span> <span class="k">else</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">max_slit_gap</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The slit gap should be atleast 0.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">max_slit_gap</span>
+
+<div class="viewcode-block" id="SlitScan.model">
+<a class="viewcode-back" href="../../../../generated/ibex_bluesky_core.callbacks.fitting.fitting_utils.html#ibex_bluesky_core.callbacks.fitting.fitting_utils.SlitScan.model">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">model</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">lmfit</span><span class="o">.</span><span class="n">Model</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Slit Scan Model.&quot;&quot;&quot;</span>
+
+        <span class="k">def</span> <span class="nf">model</span><span class="p">(</span>
+            <span class="n">x</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">],</span>
+            <span class="n">background</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+            <span class="n">inflection0</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+            <span class="n">gradient</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+            <span class="n">inflections_diff</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+            <span class="n">height_above_inflection1</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
+            <span class="n">linear_seg</span> <span class="o">=</span> <span class="n">background</span> <span class="o">+</span> <span class="n">gradient</span> <span class="o">*</span> <span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="n">inflection0</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">height_above_inflection1</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">exp_seg</span> <span class="o">=</span> <span class="n">gradient</span> <span class="o">*</span> <span class="n">inflections_diff</span> <span class="o">+</span> <span class="n">background</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">exp_seg</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="n">height_above_inflection1</span>
+                    <span class="o">*</span> <span class="n">scipy</span><span class="o">.</span><span class="n">special</span><span class="o">.</span><span class="n">erf</span><span class="p">(</span>
+                        <span class="n">gradient</span>
+                        <span class="o">*</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">height_above_inflection1</span><span class="p">))</span>
+                        <span class="o">*</span> <span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="n">inflection0</span> <span class="o">-</span> <span class="n">inflections_diff</span><span class="p">)</span>
+                    <span class="p">)</span>
+                    <span class="o">+</span> <span class="n">gradient</span> <span class="o">*</span> <span class="n">inflections_diff</span>
+                    <span class="o">+</span> <span class="n">background</span>
+                <span class="p">)</span>
+
+            <span class="n">linear_seg</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">linear_seg</span><span class="p">,</span> <span class="n">background</span><span class="p">)</span>
+            <span class="n">exp_seg</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">exp_seg</span><span class="p">,</span> <span class="n">background</span><span class="p">)</span>
+
+            <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">minimum</span><span class="p">(</span><span class="n">linear_seg</span><span class="p">,</span> <span class="n">exp_seg</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="n">y</span>
+
+        <span class="k">return</span> <span class="n">lmfit</span><span class="o">.</span><span class="n">Model</span><span class="p">(</span><span class="n">model</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="SlitScan.guess">
+<a class="viewcode-back" href="../../../../generated/ibex_bluesky_core.callbacks.fitting.fitting_utils.html#ibex_bluesky_core.callbacks.fitting.fitting_utils.SlitScan.guess">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">guess</span><span class="p">(</span>
+        <span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">],</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]],</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">lmfit</span><span class="o">.</span><span class="n">Parameter</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Slit Scan Guessing.&quot;&quot;&quot;</span>
+
+        <span class="k">def</span> <span class="nf">guess</span><span class="p">(</span>
+            <span class="n">x</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">],</span> <span class="n">y</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span>
+        <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">lmfit</span><span class="o">.</span><span class="n">Parameter</span><span class="p">]:</span>
+            <span class="n">max_slit_size</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_check_input</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+
+            <span class="c1"># Guessing. gradient of linear-slope part of function</span>
+            <span class="n">dy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">gradient</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>  <span class="c1"># Return array of differences in y</span>
+            <span class="n">max_dy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">dy</span><span class="p">)</span>  <span class="c1"># Return max y difference, this will always be on the upwards slope</span>
+            <span class="n">dx</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># Find x step</span>
+            <span class="n">gradient</span> <span class="o">=</span> <span class="n">max_dy</span> <span class="o">/</span> <span class="n">dx</span>
+
+            <span class="n">d2y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">dy</span><span class="p">)</span>  <span class="c1"># Double differentiate y to find how gradients change</span>
+            <span class="n">inflection0</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">d2y</span><span class="p">)]</span>  <span class="c1"># Where there is positive gradient change</span>
+
+            <span class="n">background</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>  <span class="c1"># The lowest y value is the background</span>
+            <span class="n">inflections_diff</span> <span class="o">=</span> <span class="o">-</span><span class="p">(</span><span class="n">background</span> <span class="o">-</span> <span class="n">y</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">y</span><span class="p">)])</span> <span class="o">/</span> <span class="n">gradient</span>
+            <span class="c1"># As linear, using y - y1 = m(x - x1) -&gt; x = (y - y1) / gradient - x1</span>
+
+            <span class="c1"># The highest y value + slightly more to account for further convergence</span>
+            <span class="c1"># - y distance travelled from inflection0 to inflection1</span>
+            <span class="n">height_above_inflection1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">y</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">y</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">])</span> <span class="o">-</span> <span class="p">(</span><span class="n">gradient</span> <span class="o">*</span> <span class="n">inflections_diff</span><span class="p">)</span>
+
+            <span class="n">init_guess</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s2">&quot;background&quot;</span><span class="p">:</span> <span class="n">lmfit</span><span class="o">.</span><span class="n">Parameter</span><span class="p">(</span><span class="s2">&quot;background&quot;</span><span class="p">,</span> <span class="n">background</span><span class="p">),</span>
+                <span class="s2">&quot;inflection0&quot;</span><span class="p">:</span> <span class="n">lmfit</span><span class="o">.</span><span class="n">Parameter</span><span class="p">(</span><span class="s2">&quot;inflection0&quot;</span><span class="p">,</span> <span class="n">inflection0</span><span class="p">),</span>
+                <span class="s2">&quot;gradient&quot;</span><span class="p">:</span> <span class="n">lmfit</span><span class="o">.</span><span class="n">Parameter</span><span class="p">(</span><span class="s2">&quot;gradient&quot;</span><span class="p">,</span> <span class="n">gradient</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span>
+                <span class="s2">&quot;inflections_diff&quot;</span><span class="p">:</span> <span class="n">lmfit</span><span class="o">.</span><span class="n">Parameter</span><span class="p">(</span>
+                    <span class="s2">&quot;inflections_diff&quot;</span><span class="p">,</span> <span class="n">inflections_diff</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="n">max_slit_size</span>
+                <span class="p">),</span>
+                <span class="s2">&quot;height_above_inflection1&quot;</span><span class="p">:</span> <span class="n">lmfit</span><span class="o">.</span><span class="n">Parameter</span><span class="p">(</span>
+                    <span class="s2">&quot;height_above_inflection1&quot;</span><span class="p">,</span> <span class="n">height_above_inflection1</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="mi">0</span>
+                <span class="p">),</span>
+            <span class="p">}</span>
+
+            <span class="k">return</span> <span class="n">init_guess</span>
+
+        <span class="k">return</span> <span class="n">guess</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="ERF">
+<a class="viewcode-back" href="../../../../generated/ibex_bluesky_core.callbacks.fitting.fitting_utils.html#ibex_bluesky_core.callbacks.fitting.fitting_utils.ERF">[docs]</a>
+<span class="k">class</span> <span class="nc">ERF</span><span class="p">(</span><span class="n">Fit</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Error Function Fitting.&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="ERF.model">
+<a class="viewcode-back" href="../../../../generated/ibex_bluesky_core.callbacks.fitting.fitting_utils.html#ibex_bluesky_core.callbacks.fitting.fitting_utils.ERF.model">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">model</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">lmfit</span><span class="o">.</span><span class="n">Model</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Error Function Model.&quot;&quot;&quot;</span>
+
+        <span class="k">def</span> <span class="nf">model</span><span class="p">(</span>
+            <span class="n">x</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">],</span> <span class="n">cen</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">stretch</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">scale</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">background</span><span class="p">:</span> <span class="nb">float</span>
+        <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
+            <span class="k">return</span> <span class="n">background</span> <span class="o">+</span> <span class="n">scale</span> <span class="o">*</span> <span class="n">scipy</span><span class="o">.</span><span class="n">special</span><span class="o">.</span><span class="n">erf</span><span class="p">(</span><span class="n">stretch</span> <span class="o">*</span> <span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="n">cen</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">lmfit</span><span class="o">.</span><span class="n">Model</span><span class="p">(</span><span class="n">model</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ERF.guess">
+<a class="viewcode-back" href="../../../../generated/ibex_bluesky_core.callbacks.fitting.fitting_utils.html#ibex_bluesky_core.callbacks.fitting.fitting_utils.ERF.guess">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">guess</span><span class="p">(</span>
+        <span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">],</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]],</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">lmfit</span><span class="o">.</span><span class="n">Parameter</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Error Function Guessing.&quot;&quot;&quot;</span>
+
+        <span class="k">def</span> <span class="nf">guess</span><span class="p">(</span>
+            <span class="n">x</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">],</span> <span class="n">y</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span>
+        <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">lmfit</span><span class="o">.</span><span class="n">Parameter</span><span class="p">]:</span>
+            <span class="n">init_guess</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s2">&quot;cen&quot;</span><span class="p">:</span> <span class="n">lmfit</span><span class="o">.</span><span class="n">Parameter</span><span class="p">(</span><span class="s2">&quot;cen&quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">x</span><span class="p">)),</span>
+                <span class="s2">&quot;stretch&quot;</span><span class="p">:</span> <span class="n">lmfit</span><span class="o">.</span><span class="n">Parameter</span><span class="p">(</span><span class="s2">&quot;stretch&quot;</span><span class="p">,</span> <span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">-</span> <span class="nb">min</span><span class="p">(</span><span class="n">x</span><span class="p">))</span> <span class="o">/</span> <span class="mi">2</span><span class="p">),</span>
+                <span class="s2">&quot;scale&quot;</span><span class="p">:</span> <span class="n">lmfit</span><span class="o">.</span><span class="n">Parameter</span><span class="p">(</span><span class="s2">&quot;scale&quot;</span><span class="p">,</span> <span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">y</span><span class="p">)</span> <span class="o">-</span> <span class="nb">min</span><span class="p">(</span><span class="n">y</span><span class="p">))</span> <span class="o">/</span> <span class="mi">2</span><span class="p">),</span>
+                <span class="s2">&quot;background&quot;</span><span class="p">:</span> <span class="n">lmfit</span><span class="o">.</span><span class="n">Parameter</span><span class="p">(</span><span class="s2">&quot;background&quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">y</span><span class="p">)),</span>
+            <span class="p">}</span>
+
+            <span class="k">return</span> <span class="n">init_guess</span>
+
+        <span class="k">return</span> <span class="n">guess</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="ERFC">
+<a class="viewcode-back" href="../../../../generated/ibex_bluesky_core.callbacks.fitting.fitting_utils.html#ibex_bluesky_core.callbacks.fitting.fitting_utils.ERFC">[docs]</a>
+<span class="k">class</span> <span class="nc">ERFC</span><span class="p">(</span><span class="n">Fit</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Complementary Error Function Fitting.&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="ERFC.model">
+<a class="viewcode-back" href="../../../../generated/ibex_bluesky_core.callbacks.fitting.fitting_utils.html#ibex_bluesky_core.callbacks.fitting.fitting_utils.ERFC.model">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">model</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">lmfit</span><span class="o">.</span><span class="n">Model</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Complementary Error Function Model.&quot;&quot;&quot;</span>
+
+        <span class="k">def</span> <span class="nf">model</span><span class="p">(</span>
+            <span class="n">x</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">],</span> <span class="n">cen</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">stretch</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">scale</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">background</span><span class="p">:</span> <span class="nb">float</span>
+        <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
+            <span class="k">return</span> <span class="n">background</span> <span class="o">+</span> <span class="n">scale</span> <span class="o">*</span> <span class="n">scipy</span><span class="o">.</span><span class="n">special</span><span class="o">.</span><span class="n">erfc</span><span class="p">(</span><span class="n">stretch</span> <span class="o">*</span> <span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="n">cen</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">lmfit</span><span class="o">.</span><span class="n">Model</span><span class="p">(</span><span class="n">model</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ERFC.guess">
+<a class="viewcode-back" href="../../../../generated/ibex_bluesky_core.callbacks.fitting.fitting_utils.html#ibex_bluesky_core.callbacks.fitting.fitting_utils.ERFC.guess">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">guess</span><span class="p">(</span>
+        <span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">],</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]],</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">lmfit</span><span class="o">.</span><span class="n">Parameter</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Complementary Error Function Guessing.&quot;&quot;&quot;</span>
+
+        <span class="k">def</span> <span class="nf">guess</span><span class="p">(</span>
+            <span class="n">x</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">],</span> <span class="n">y</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span>
+        <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">lmfit</span><span class="o">.</span><span class="n">Parameter</span><span class="p">]:</span>
+            <span class="n">init_guess</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s2">&quot;cen&quot;</span><span class="p">:</span> <span class="n">lmfit</span><span class="o">.</span><span class="n">Parameter</span><span class="p">(</span><span class="s2">&quot;cen&quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">x</span><span class="p">)),</span>
+                <span class="s2">&quot;stretch&quot;</span><span class="p">:</span> <span class="n">lmfit</span><span class="o">.</span><span class="n">Parameter</span><span class="p">(</span><span class="s2">&quot;stretch&quot;</span><span class="p">,</span> <span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">-</span> <span class="nb">min</span><span class="p">(</span><span class="n">x</span><span class="p">))</span> <span class="o">/</span> <span class="mi">2</span><span class="p">),</span>
+                <span class="s2">&quot;scale&quot;</span><span class="p">:</span> <span class="n">lmfit</span><span class="o">.</span><span class="n">Parameter</span><span class="p">(</span><span class="s2">&quot;scale&quot;</span><span class="p">,</span> <span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">y</span><span class="p">)</span> <span class="o">-</span> <span class="nb">min</span><span class="p">(</span><span class="n">y</span><span class="p">))</span> <span class="o">/</span> <span class="mi">2</span><span class="p">),</span>
+                <span class="s2">&quot;background&quot;</span><span class="p">:</span> <span class="n">lmfit</span><span class="o">.</span><span class="n">Parameter</span><span class="p">(</span><span class="s2">&quot;background&quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">y</span><span class="p">)),</span>
+            <span class="p">}</span>
+
+            <span class="k">return</span> <span class="n">init_guess</span>
+
+        <span class="k">return</span> <span class="n">guess</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="TopHat">
+<a class="viewcode-back" href="../../../../generated/ibex_bluesky_core.callbacks.fitting.fitting_utils.html#ibex_bluesky_core.callbacks.fitting.fitting_utils.TopHat">[docs]</a>
+<span class="k">class</span> <span class="nc">TopHat</span><span class="p">(</span><span class="n">Fit</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Top Hat Fitting.&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="TopHat.model">
+<a class="viewcode-back" href="../../../../generated/ibex_bluesky_core.callbacks.fitting.fitting_utils.html#ibex_bluesky_core.callbacks.fitting.fitting_utils.TopHat.model">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">model</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">lmfit</span><span class="o">.</span><span class="n">Model</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Top Hat Model.&quot;&quot;&quot;</span>
+
+        <span class="k">def</span> <span class="nf">model</span><span class="p">(</span>
+            <span class="n">x</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">],</span> <span class="n">cen</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">width</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">height</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">background</span><span class="p">:</span> <span class="nb">float</span>
+        <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="n">x</span> <span class="o">*</span> <span class="mi">0</span>
+            <span class="n">y</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="n">cen</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">width</span> <span class="o">/</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">height</span>
+            <span class="k">return</span> <span class="n">background</span> <span class="o">+</span> <span class="n">y</span>
+
+        <span class="k">return</span> <span class="n">lmfit</span><span class="o">.</span><span class="n">Model</span><span class="p">(</span><span class="n">model</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TopHat.guess">
+<a class="viewcode-back" href="../../../../generated/ibex_bluesky_core.callbacks.fitting.fitting_utils.html#ibex_bluesky_core.callbacks.fitting.fitting_utils.TopHat.guess">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">guess</span><span class="p">(</span>
+        <span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">],</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]],</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">lmfit</span><span class="o">.</span><span class="n">Parameter</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Top Hat Guessing.&quot;&quot;&quot;</span>
+
+        <span class="k">def</span> <span class="nf">guess</span><span class="p">(</span>
+            <span class="n">x</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">],</span> <span class="n">y</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span>
+        <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">lmfit</span><span class="o">.</span><span class="n">Parameter</span><span class="p">]:</span>
+            <span class="n">top</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">y</span> <span class="o">&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">y</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="c1"># Guess that any value above the mean is the top part</span>
+
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">top</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">width</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">top</span><span class="p">)]</span> <span class="o">-</span> <span class="n">x</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">top</span><span class="p">)]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">width</span> <span class="o">=</span> <span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">-</span> <span class="nb">min</span><span class="p">(</span><span class="n">x</span><span class="p">))</span> <span class="o">/</span> <span class="mi">2</span>
+
+            <span class="n">init_guess</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s2">&quot;cen&quot;</span><span class="p">:</span> <span class="n">lmfit</span><span class="o">.</span><span class="n">Parameter</span><span class="p">(</span><span class="s2">&quot;cen&quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">x</span><span class="p">)),</span>
+                <span class="s2">&quot;width&quot;</span><span class="p">:</span> <span class="n">lmfit</span><span class="o">.</span><span class="n">Parameter</span><span class="p">(</span><span class="s2">&quot;width&quot;</span><span class="p">,</span> <span class="n">width</span><span class="p">),</span>
+                <span class="s2">&quot;height&quot;</span><span class="p">:</span> <span class="n">lmfit</span><span class="o">.</span><span class="n">Parameter</span><span class="p">(</span><span class="s2">&quot;height&quot;</span><span class="p">,</span> <span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">y</span><span class="p">)</span> <span class="o">-</span> <span class="nb">min</span><span class="p">(</span><span class="n">y</span><span class="p">))),</span>
+                <span class="s2">&quot;background&quot;</span><span class="p">:</span> <span class="n">lmfit</span><span class="o">.</span><span class="n">Parameter</span><span class="p">(</span><span class="s2">&quot;background&quot;</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="n">y</span><span class="p">)),</span>
+            <span class="p">}</span>
+
+            <span class="k">return</span> <span class="n">init_guess</span>
+
+        <span class="k">return</span> <span class="n">guess</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="Trapezoid">
+<a class="viewcode-back" href="../../../../generated/ibex_bluesky_core.callbacks.fitting.fitting_utils.html#ibex_bluesky_core.callbacks.fitting.fitting_utils.Trapezoid">[docs]</a>
+<span class="k">class</span> <span class="nc">Trapezoid</span><span class="p">(</span><span class="n">Fit</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Trapezoid Fitting.&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Trapezoid.model">
+<a class="viewcode-back" href="../../../../generated/ibex_bluesky_core.callbacks.fitting.fitting_utils.html#ibex_bluesky_core.callbacks.fitting.fitting_utils.Trapezoid.model">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">model</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">lmfit</span><span class="o">.</span><span class="n">Model</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Trapezoid Model.&quot;&quot;&quot;</span>
+
+        <span class="k">def</span> <span class="nf">model</span><span class="p">(</span>
+            <span class="n">x</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">],</span>
+            <span class="n">cen</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+            <span class="n">gradient</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+            <span class="n">height</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+            <span class="n">background</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+            <span class="n">y_offset</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>  <span class="c1"># Acts as a width multiplier</span>
+        <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]:</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="n">y_offset</span> <span class="o">+</span> <span class="n">height</span> <span class="o">+</span> <span class="n">background</span> <span class="o">-</span> <span class="n">gradient</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="n">cen</span><span class="p">)</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">background</span><span class="p">)</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">minimum</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">background</span> <span class="o">+</span> <span class="n">height</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">y</span>
+
+        <span class="k">return</span> <span class="n">lmfit</span><span class="o">.</span><span class="n">Model</span><span class="p">(</span><span class="n">model</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Trapezoid.guess">
+<a class="viewcode-back" href="../../../../generated/ibex_bluesky_core.callbacks.fitting.fitting_utils.html#ibex_bluesky_core.callbacks.fitting.fitting_utils.Trapezoid.guess">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">guess</span><span class="p">(</span>
+        <span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">],</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]],</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">lmfit</span><span class="o">.</span><span class="n">Parameter</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Trapezoid Guessing.&quot;&quot;&quot;</span>
+
+        <span class="k">def</span> <span class="nf">guess</span><span class="p">(</span>
+            <span class="n">x</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">],</span> <span class="n">y</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">]</span>
+        <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">lmfit</span><span class="o">.</span><span class="n">Parameter</span><span class="p">]:</span>
+            <span class="n">top</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">y</span> <span class="o">&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">y</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="c1"># Guess that any value above the y mean is the top part</span>
+
+            <span class="n">cen</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+            <span class="n">background</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+            <span class="n">height</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">y</span><span class="p">)</span> <span class="o">-</span> <span class="n">background</span>
+
+            <span class="k">if</span> <span class="n">top</span><span class="o">.</span><span class="n">size</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">i</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">top</span><span class="p">)</span>
+                <span class="n">x1</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>  <span class="c1"># x1 is the left of the top part</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">width_top</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">x</span><span class="p">))</span> <span class="o">/</span> <span class="mi">2</span>
+                <span class="n">x1</span> <span class="o">=</span> <span class="n">cen</span> <span class="o">-</span> <span class="n">width_top</span> <span class="o">/</span> <span class="mi">2</span>
+
+            <span class="n">x0</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">+</span> <span class="n">x1</span><span class="p">)</span>  <span class="c1"># Guess that x0 is half way between min(x) and x1</span>
+
+            <span class="k">if</span> <span class="n">height</span> <span class="o">==</span> <span class="mf">0.0</span><span class="p">:</span>
+                <span class="n">gradient</span> <span class="o">=</span> <span class="mf">0.0</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">gradient</span> <span class="o">=</span> <span class="n">height</span> <span class="o">/</span> <span class="p">(</span><span class="n">x1</span> <span class="o">-</span> <span class="n">x0</span><span class="p">)</span>
+
+            <span class="n">y_intercept0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">y</span><span class="p">)</span> <span class="o">-</span> <span class="n">gradient</span> <span class="o">*</span> <span class="n">x1</span>  <span class="c1"># To find the slope function</span>
+            <span class="n">y_tip</span> <span class="o">=</span> <span class="n">gradient</span> <span class="o">*</span> <span class="n">cen</span> <span class="o">+</span> <span class="n">y_intercept0</span>
+            <span class="n">y_offset</span> <span class="o">=</span> <span class="n">y_tip</span> <span class="o">-</span> <span class="n">height</span> <span class="o">-</span> <span class="n">background</span>
+
+            <span class="n">init_guess</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s2">&quot;cen&quot;</span><span class="p">:</span> <span class="n">lmfit</span><span class="o">.</span><span class="n">Parameter</span><span class="p">(</span><span class="s2">&quot;cen&quot;</span><span class="p">,</span> <span class="n">cen</span><span class="p">),</span>
+                <span class="s2">&quot;gradient&quot;</span><span class="p">:</span> <span class="n">lmfit</span><span class="o">.</span><span class="n">Parameter</span><span class="p">(</span><span class="s2">&quot;gradient&quot;</span><span class="p">,</span> <span class="n">gradient</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span>
+                <span class="s2">&quot;height&quot;</span><span class="p">:</span> <span class="n">lmfit</span><span class="o">.</span><span class="n">Parameter</span><span class="p">(</span><span class="s2">&quot;height&quot;</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span>
+                <span class="s2">&quot;background&quot;</span><span class="p">:</span> <span class="n">lmfit</span><span class="o">.</span><span class="n">Parameter</span><span class="p">(</span><span class="s2">&quot;background&quot;</span><span class="p">,</span> <span class="n">background</span><span class="p">),</span>
+                <span class="s2">&quot;y_offset&quot;</span><span class="p">:</span> <span class="n">lmfit</span><span class="o">.</span><span class="n">Parameter</span><span class="p">(</span><span class="s2">&quot;y_offset&quot;</span><span class="p">,</span> <span class="n">y_offset</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span>
+            <span class="p">}</span>
+
+            <span class="k">return</span> <span class="n">init_guess</span>
+
+        <span class="k">return</span> <span class="n">guess</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

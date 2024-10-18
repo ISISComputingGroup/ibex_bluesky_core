@@ -1,0 +1,253 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ibex_bluesky_core.devices.simpledae.controllers &mdash; ibex_bluesky_core 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="ibex_bluesky_core.devices.simpledae.reducers" href="ibex_bluesky_core.devices.simpledae.reducers.html" />
+    <link rel="prev" title="ibex_bluesky_core.devices.simpledae" href="ibex_bluesky_core.devices.simpledae.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            ibex_bluesky_core
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Devices</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../devices/blocks.html">Blocks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devices/dae.html">DAE (Data Acquisition Electronics)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Callbacks</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../callbacks/docs_logging_callback.html">Document Logging Callback</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../callbacks/file_writing.html">File writing callbacks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../callbacks/plotting.html">Plotting</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Fitting</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../fitting/fitting.html">Fitting Callback</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../fitting/standard_fits.html">Standard Fitting Models</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Preprocessors</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../preprocessors/rbnumberpp.html">RB Number injection preprocessor</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Developer information</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../dev/create_a_release.html">Release Process</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dev/manual_system_testing.html">Manual system testing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dev/set_up_dev_environment.html">Local development</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dev/sphinx_notes.html">Notes on Sphinx and addons</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Architectural decisions</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../architectural_decisions/001-repo-structure.html">Repository structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../architectural_decisions/002-use-ophyd-async.html">Use <code class="docutils literal notranslate"><span class="pre">ophyd-async</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../architectural_decisions/003-run-in-process.html">Run in-process</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API reference</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../_api.html">API</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="ibex_bluesky_core.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core</span></code></a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="ibex_bluesky_core.callbacks.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.callbacks</span></code></a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="ibex_bluesky_core.devices.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.devices</span></code></a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="ibex_bluesky_core.devices.block.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.devices.block</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ibex_bluesky_core.devices.dae.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.devices.dae</span></code></a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="ibex_bluesky_core.devices.simpledae.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.devices.simpledae</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="ibex_bluesky_core.plan_stubs.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.plan_stubs</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ibex_bluesky_core.preprocessors.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.preprocessors</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ibex_bluesky_core.run_engine.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.run_engine</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">ibex_bluesky_core</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../_api.html">API</a></li>
+          <li class="breadcrumb-item"><a href="ibex_bluesky_core.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core</span></code></a></li>
+          <li class="breadcrumb-item"><a href="ibex_bluesky_core.devices.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.devices</span></code></a></li>
+          <li class="breadcrumb-item"><a href="ibex_bluesky_core.devices.simpledae.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.devices.simpledae</span></code></a></li>
+      <li class="breadcrumb-item active"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.devices.simpledae.controllers</span></code></li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/generated/ibex_bluesky_core.devices.simpledae.controllers.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-ibex_bluesky_core.devices.simpledae.controllers">
+<span id="ibex-bluesky-core-devices-simpledae-controllers"></span><h1><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.devices.simpledae.controllers</span></code><a class="headerlink" href="#module-ibex_bluesky_core.devices.simpledae.controllers" title="Link to this heading"></a></h1>
+<p>DAE control strategies.</p>
+<p class="rubric">Members</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ibex_bluesky_core.devices.simpledae.controllers.PeriodPerPointController" title="ibex_bluesky_core.devices.simpledae.controllers.PeriodPerPointController"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PeriodPerPointController</span></code></a></p></td>
+<td><p>Controller for a SimpleDae which counts using a period per point.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#ibex_bluesky_core.devices.simpledae.controllers.RunPerPointController" title="ibex_bluesky_core.devices.simpledae.controllers.RunPerPointController"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RunPerPointController</span></code></a></p></td>
+<td><p>Controller for a SimpleDae which counts using a DAE run per point.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py class">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.simpledae.controllers.PeriodPerPointController">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ibex_bluesky_core.devices.simpledae.controllers.</span></span><span class="sig-name descname"><span class="pre">PeriodPerPointController</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">save_run</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ibex_bluesky_core/devices/simpledae/controllers.html#PeriodPerPointController"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibex_bluesky_core.devices.simpledae.controllers.PeriodPerPointController" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="ibex_bluesky_core.devices.simpledae.strategies.html#ibex_bluesky_core.devices.simpledae.strategies.Controller" title="ibex_bluesky_core.devices.simpledae.strategies.Controller"><code class="xref py py-class docutils literal notranslate"><span class="pre">Controller</span></code></a></p>
+<p>Controller for a SimpleDae which counts using a period per point.</p>
+<p>A single run is opened during stage(), and then each new point will count into a new
+DAE period (starting from 1). The run will be either ended or aborted in unstage, depending
+on the value of the save_run parameter.</p>
+<p>Period-per-point DAE controller.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>save_run</strong> – True to terminate runs using end(), saving the data. False to terminate runs
+using abort(), discarding the data.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.simpledae.controllers.PeriodPerPointController.additional_readable_signals">
+<span class="sig-name descname"><span class="pre">additional_readable_signals</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dae</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.SimpleDae" title="ibex_bluesky_core.devices.simpledae.SimpleDae"><span class="pre">SimpleDae</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">Device</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/ibex_bluesky_core/devices/simpledae/controllers.html#PeriodPerPointController.additional_readable_signals"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibex_bluesky_core.devices.simpledae.controllers.PeriodPerPointController.additional_readable_signals" title="Link to this definition"></a></dt>
+<dd><p>period_num is always an interesting signal if using this controller.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.simpledae.controllers.PeriodPerPointController.setup">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">setup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dae</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.SimpleDae" title="ibex_bluesky_core.devices.simpledae.SimpleDae"><span class="pre">SimpleDae</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/ibex_bluesky_core/devices/simpledae/controllers.html#PeriodPerPointController.setup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibex_bluesky_core.devices.simpledae.controllers.PeriodPerPointController.setup" title="Link to this definition"></a></dt>
+<dd><p>Pre-scan setup (begin a new run in paused mode).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.simpledae.controllers.PeriodPerPointController.start_counting">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">start_counting</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dae</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.SimpleDae" title="ibex_bluesky_core.devices.simpledae.SimpleDae"><span class="pre">SimpleDae</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/ibex_bluesky_core/devices/simpledae/controllers.html#PeriodPerPointController.start_counting"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibex_bluesky_core.devices.simpledae.controllers.PeriodPerPointController.start_counting" title="Link to this definition"></a></dt>
+<dd><p>Start counting a scan point.</p>
+<p>Increments the period by 1, then unpauses the run.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.simpledae.controllers.PeriodPerPointController.stop_counting">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">stop_counting</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dae</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.SimpleDae" title="ibex_bluesky_core.devices.simpledae.SimpleDae"><span class="pre">SimpleDae</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/ibex_bluesky_core/devices/simpledae/controllers.html#PeriodPerPointController.stop_counting"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibex_bluesky_core.devices.simpledae.controllers.PeriodPerPointController.stop_counting" title="Link to this definition"></a></dt>
+<dd><p>Stop counting a scan point, by pausing the run.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.simpledae.controllers.PeriodPerPointController.teardown">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">teardown</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dae</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.SimpleDae" title="ibex_bluesky_core.devices.simpledae.SimpleDae"><span class="pre">SimpleDae</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/ibex_bluesky_core/devices/simpledae/controllers.html#PeriodPerPointController.teardown"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibex_bluesky_core.devices.simpledae.controllers.PeriodPerPointController.teardown" title="Link to this definition"></a></dt>
+<dd><p>Finish taking data, ending or aborting the run.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.simpledae.controllers.RunPerPointController">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ibex_bluesky_core.devices.simpledae.controllers.</span></span><span class="sig-name descname"><span class="pre">RunPerPointController</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">save_run</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ibex_bluesky_core/devices/simpledae/controllers.html#RunPerPointController"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibex_bluesky_core.devices.simpledae.controllers.RunPerPointController" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="ibex_bluesky_core.devices.simpledae.strategies.html#ibex_bluesky_core.devices.simpledae.strategies.Controller" title="ibex_bluesky_core.devices.simpledae.strategies.Controller"><code class="xref py py-class docutils literal notranslate"><span class="pre">Controller</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">StandardReadable</span></code></p>
+<p>Controller for a SimpleDae which counts using a DAE run per point.</p>
+<p>The runs can be either ended or aborted once counting is finished.</p>
+<p>Init.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>save_run</strong> – whether to end the run (True) or abort the run (False) on completion.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.simpledae.controllers.RunPerPointController.additional_readable_signals">
+<span class="sig-name descname"><span class="pre">additional_readable_signals</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dae</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.SimpleDae" title="ibex_bluesky_core.devices.simpledae.SimpleDae"><span class="pre">SimpleDae</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">Device</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/ibex_bluesky_core/devices/simpledae/controllers.html#RunPerPointController.additional_readable_signals"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibex_bluesky_core.devices.simpledae.controllers.RunPerPointController.additional_readable_signals" title="Link to this definition"></a></dt>
+<dd><p>Run number is an interesting signal only if saving runs.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.simpledae.controllers.RunPerPointController.start_counting">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">start_counting</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dae</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.SimpleDae" title="ibex_bluesky_core.devices.simpledae.SimpleDae"><span class="pre">SimpleDae</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/ibex_bluesky_core/devices/simpledae/controllers.html#RunPerPointController.start_counting"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibex_bluesky_core.devices.simpledae.controllers.RunPerPointController.start_counting" title="Link to this definition"></a></dt>
+<dd><p>Start counting a scan point, by starting a DAE run.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.simpledae.controllers.RunPerPointController.stop_counting">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">stop_counting</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dae</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.SimpleDae" title="ibex_bluesky_core.devices.simpledae.SimpleDae"><span class="pre">SimpleDae</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/ibex_bluesky_core/devices/simpledae/controllers.html#RunPerPointController.stop_counting"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibex_bluesky_core.devices.simpledae.controllers.RunPerPointController.stop_counting" title="Link to this definition"></a></dt>
+<dd><p>Stop counting a scan point, by ending or aborting the run.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="ibex_bluesky_core.devices.simpledae.html" class="btn btn-neutral float-left" title="ibex_bluesky_core.devices.simpledae" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="ibex_bluesky_core.devices.simpledae.reducers.html" class="btn btn-neutral float-right" title="ibex_bluesky_core.devices.simpledae.reducers" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

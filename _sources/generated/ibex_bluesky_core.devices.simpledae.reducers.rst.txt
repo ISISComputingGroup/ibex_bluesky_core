@@ -1,0 +1,32 @@
+
+
+``ibex_bluesky_core.devices.simpledae.reducers``
+================================================
+        
+        
+        
+        
+        
+
+.. automodule:: ibex_bluesky_core.devices.simpledae.reducers
+    :members:
+    :show-inheritance:
+
+    
+    
+    
+
+    
+    
+    .. rubric:: Members
+
+    .. autosummary::
+        :nosignatures:
+    
+        GoodFramesNormalizer
+        MonitorNormalizer
+        PeriodGoodFramesNormalizer
+        ScalarNormalizer
+        sum_spectra
+    
+    
