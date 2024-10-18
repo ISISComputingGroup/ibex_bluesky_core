@@ -1,9 +1,11 @@
 """Utilities for the bluesky run engine, configured for IBEX."""
 
 import asyncio
+import functools
 from functools import cache
 from threading import Event
 
+import bluesky.preprocessors as bpp
 import matplotlib
 from bluesky.run_engine import RunEngine
 from bluesky.utils import DuringTask
@@ -11,6 +13,8 @@ from bluesky.utils import DuringTask
 from ibex_bluesky_core.callbacks.document_logger import DocLoggingCallback
 
 __all__ = ["get_run_engine"]
+
+from ibex_bluesky_core.preprocessors import add_rb_number_processor
 
 
 class _DuringTask(DuringTask):
@@ -84,5 +88,7 @@ def get_run_engine() -> RunEngine:
 
     log_callback = DocLoggingCallback()
     RE.subscribe(log_callback)
+
+    RE.preprocessors.append(functools.partial(bpp.plan_mutator, msg_proc=add_rb_number_processor))
 
     return RE

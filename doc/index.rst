@@ -28,6 +28,13 @@ This documentation contains information for the bluesky plan stubs & devices for
 
 .. toctree::
    :maxdepth: 2
+   :caption: Preprocessors
+   :glob:
+
+   preprocessors/*
+
+.. toctree::
+   :maxdepth: 2
    :caption: Developer information
    :glob:
 
