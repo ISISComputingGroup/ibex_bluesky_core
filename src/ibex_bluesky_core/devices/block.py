@@ -8,6 +8,7 @@ from bluesky.protocols import Locatable, Location, Movable, Triggerable
 from ophyd_async.core import (
     AsyncStatus,
     HintedSignal,
+    SignalDatatype,
     SignalR,
     SignalRW,
     StandardReadable,
@@ -19,7 +20,7 @@ from ophyd_async.epics.signal import epics_signal_r, epics_signal_rw
 from ibex_bluesky_core.devices import get_pv_prefix
 
 """Block data type"""
-T = TypeVar("T")
+T = TypeVar("T", bound=SignalDatatype)
 
 
 __all__ = [
