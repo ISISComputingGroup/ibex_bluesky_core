@@ -5,10 +5,12 @@ from __future__ import annotations
 import binascii
 import os
 import zlib
-from typing import Type
+from typing import Type, TypeVar
 
-from ophyd_async.core import SignalRW, T
+from ophyd_async.core import SignalDatatype, SignalRW
 from ophyd_async.epics.signal import epics_signal_rw
+
+T = TypeVar("T", bound=SignalDatatype)
 
 
 def get_pv_prefix() -> str:
