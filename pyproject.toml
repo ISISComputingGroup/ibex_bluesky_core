@@ -44,8 +44,11 @@ dependencies = [
   "bluesky",
   "ophyd-async[ca]",
   "matplotlib",
+  "lmfit",
+  "scipy",
   "numpy",
   "scipp",
+  "tzdata",
 ]
 
 [project.optional-dependencies]

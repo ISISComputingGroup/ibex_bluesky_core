@@ -20,9 +20,7 @@ from ibex_bluesky_core.devices.block import (
     block_rw,
     block_rw_rbv,
 )
-
-MOCK_PREFIX = "UNITTEST:MOCK:"
-
+from tests.conftest import MOCK_PREFIX
 
 if sys.version_info < (3, 11):
     aio_timeout_error = asyncio.exceptions.TimeoutError

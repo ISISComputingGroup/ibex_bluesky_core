@@ -19,6 +19,7 @@ python -m venv .venv
 ```
 python -m pip install -e .[dev]
 ```
+To run tests based on changes not yet in a release in the GUI PyDev console you will need to run this command using your global python install rather than in the venv.
 
 ## Unit tests
 ```

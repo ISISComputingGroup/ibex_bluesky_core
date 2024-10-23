@@ -1,6 +1,7 @@
 """Demonstration plan showing basic bluesky functionality."""
 
 import os
+from pathlib import Path
 from typing import Generator
 
 import bluesky.plan_stubs as bps
@@ -12,6 +13,7 @@ from bluesky.preprocessors import subs_decorator
 from bluesky.utils import Msg
 from ophyd_async.plan_stubs import ensure_connected
 
+from ibex_bluesky_core.callbacks.file_logger import HumanReadableFileCallback
 from ibex_bluesky_core.callbacks.plotting import LivePlot
 from ibex_bluesky_core.devices import get_pv_prefix
 from ibex_bluesky_core.devices.block import block_rw_rbv
@@ -69,6 +71,16 @@ def dae_scan_plan() -> Generator[Msg, None, None]:
 
     @subs_decorator(
         [
+            HumanReadableFileCallback(
+                Path("C:\\") / "instrument" / "var" / "logs" / "bluesky" / "output_files",
+                [
+                    block.name,
+                    controller.run_number.name,
+                    reducer.intensity.name,
+                    reducer.det_counts.name,
+                    dae.good_frames.name,
+                ],
+            ),
             LivePlot(y=reducer.intensity.name, x=block.name, marker="x", linestyle="none"),
             LiveTable(
                 [

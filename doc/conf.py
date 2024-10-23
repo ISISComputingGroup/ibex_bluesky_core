@@ -20,6 +20,8 @@ release = "0.1"
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
+myst_enable_extensions = ["dollarmath"]
+
 extensions = [
     "myst_parser",
     "sphinx.ext.autodoc",
@@ -46,3 +48,4 @@ html_theme = "sphinx_rtd_theme"
 html_static_path = ["_static"]
 
 autoclass_content = "both"
+myst_heading_anchors = 3
