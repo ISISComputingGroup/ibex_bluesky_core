@@ -3,14 +3,13 @@ from unittest.mock import AsyncMock
 
 import pytest
 import scipp as sc
-from ophyd_async.core import set_mock_value
-
 from ibex_bluesky_core.devices.simpledae import SimpleDae
 from ibex_bluesky_core.devices.simpledae.reducers import (
     GoodFramesNormalizer,
     MonitorNormalizer,
     PeriodGoodFramesNormalizer,
 )
+from ophyd_async.core import set_mock_value
 
 
 @pytest.fixture
@@ -150,7 +149,6 @@ async def test_period_good_frames_normalizer_uncertainties(
 async def test_period_good_frames_normalizer_zero_counts(
     simpledae: SimpleDae, period_good_frames_reducer: PeriodGoodFramesNormalizer
 ):
-
     period_good_frames_reducer.detectors[1].read_spectrum_dataarray = AsyncMock(
         return_value=sc.DataArray(
             data=sc.Variable(
@@ -214,7 +212,6 @@ async def test_monitor_normalizer(simpledae: SimpleDae, monitor_normalizer: Moni
 async def test_monitor_normalizer_zero_counts(
     simpledae: SimpleDae, monitor_normalizer: MonitorNormalizer
 ):
-
     monitor_normalizer.detectors[1].read_spectrum_dataarray = AsyncMock(
         return_value=sc.DataArray(
             data=sc.Variable(
@@ -247,6 +244,7 @@ async def test_monitor_normalizer_zero_counts(
     assert det_counts_stddev == 0
     assert mon_counts_stddev == 0
     assert intensity_stddev == 0
+
 
 async def test_monitor_normalizer_uncertainties(
     simpledae: SimpleDae, monitor_normalizer: MonitorNormalizer

@@ -84,9 +84,9 @@ class ScalarNormalizer(Reducer, StandardReadable, metaclass=ABCMeta):
             self._intensity_setter(0.0)
             intensity_var = 0.0
         else:
-            self._intensity_setter(float(summed_counts.value) / denominator)
-            temp_intensity_var = (summed_counts / denominator).variance
-            intensity_var = temp_intensity_var if temp_intensity_var is not None else 0.0
+            intensity = summed_counts / denominator
+            self._intensity_setter(intensity.value)
+            intensity_var = intensity.variance if intensity.variance is not None else 0.0
 
         detector_counts_var = 0.0 if summed_counts.variance is None else summed_counts.variance
 
