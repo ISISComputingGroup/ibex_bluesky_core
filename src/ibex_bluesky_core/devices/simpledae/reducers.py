@@ -166,17 +166,16 @@ class MonitorNormalizer(Reducer, StandardReadable):
             sum_spectra(self.detectors.values()), sum_spectra(self.monitors.values())
         )
 
+        intensity = detector_counts / monitor_counts
         self._det_counts_setter(float(detector_counts.value))
         self._mon_counts_setter(float(monitor_counts.value))
-        self._intensity_setter(float((detector_counts / monitor_counts).value))
+        self._intensity_setter(float(intensity.value))
 
         detector_counts_var = 0.0 if detector_counts.variance is None else detector_counts.variance
         monitor_counts_var = 0.0 if monitor_counts.variance is None else monitor_counts.variance
 
         intensity_var = (
-            0.0
-            if detector_counts_var + monitor_counts_var == 0.0
-            else (detector_counts / monitor_counts).variance
+            0.0 if detector_counts_var + monitor_counts_var == 0.0 else intensity.variance
         )
 
         self._det_counts_stddev_setter(math.sqrt(detector_counts_var))
