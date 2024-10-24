@@ -1,0 +1,293 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ibex_bluesky_core.devices.dae.dae_period_settings &mdash; ibex_bluesky_core 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            ibex_bluesky_core
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Devices</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../devices/blocks.html">Blocks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../devices/dae.html">DAE (Data Acquisition Electronics)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Callbacks</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../callbacks/docs_logging_callback.html">Document Logging Callback</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../callbacks/file_writing.html">File writing callbacks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../callbacks/plotting.html">Plotting</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Fitting</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../fitting/fitting.html">Fitting Callback</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../fitting/standard_fits.html">Standard Fitting Models</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Preprocessors</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../preprocessors/rbnumberpp.html">RB Number injection preprocessor</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Developer information</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../dev/create_a_release.html">Release Process</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../dev/manual_system_testing.html">Manual system testing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../dev/set_up_dev_environment.html">Local development</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../dev/sphinx_notes.html">Notes on Sphinx and addons</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Architectural decisions</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../architectural_decisions/001-repo-structure.html">Repository structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../architectural_decisions/002-use-ophyd-async.html">Use <code class="docutils literal notranslate"><span class="pre">ophyd-async</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../architectural_decisions/003-run-in-process.html">Run in-process</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../architectural_decisions/004-use-scipp.html">Use <code class="docutils literal notranslate"><span class="pre">scipp</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../architectural_decisions/004-use-scipp.html#decision">Decision</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../architectural_decisions/004-use-scipp.html#justification-consequences">Justification &amp; Consequences</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../_api.html">API</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">ibex_bluesky_core</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">Module code</a></li>
+          <li class="breadcrumb-item"><a href="../../devices.html">ibex_bluesky_core.devices</a></li>
+          <li class="breadcrumb-item"><a href="../dae.html">ibex_bluesky_core.devices.dae</a></li>
+      <li class="breadcrumb-item active">ibex_bluesky_core.devices.dae.dae_period_settings</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for ibex_bluesky_core.devices.dae.dae_period_settings</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;ophyd-async devices and utilities for the DAE hardware period settings.&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">xml.etree.ElementTree</span> <span class="k">as</span> <span class="nn">ET</span>
+<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
+<span class="kn">from</span> <span class="nn">xml.etree.ElementTree</span> <span class="kn">import</span> <span class="n">tostring</span>
+
+<span class="kn">from</span> <span class="nn">bluesky.protocols</span> <span class="kn">import</span> <span class="n">Locatable</span><span class="p">,</span> <span class="n">Location</span><span class="p">,</span> <span class="n">Movable</span>
+<span class="kn">from</span> <span class="nn">ophyd_async.core</span> <span class="kn">import</span> <span class="n">AsyncStatus</span><span class="p">,</span> <span class="n">Device</span><span class="p">,</span> <span class="n">SignalRW</span>
+
+<span class="kn">from</span> <span class="nn">ibex_bluesky_core.devices</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">isis_epics_signal_rw</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">ibex_bluesky_core.devices.dae</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">convert_xml_to_names_and_values</span><span class="p">,</span>
+    <span class="n">get_all_elements_in_xml_with_child_called_name</span><span class="p">,</span>
+    <span class="n">set_value_in_dae_xml</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">OUTPUT_DELAY</span> <span class="o">=</span> <span class="s2">&quot;Output Delay (us)&quot;</span>
+<span class="n">PERIOD_SEQUENCES</span> <span class="o">=</span> <span class="s2">&quot;Hardware Period Sequences&quot;</span>
+<span class="n">PERIOD_FILE</span> <span class="o">=</span> <span class="s2">&quot;Period File&quot;</span>
+<span class="n">PERIOD_SETUP_SOURCE</span> <span class="o">=</span> <span class="s2">&quot;Period Setup Source&quot;</span>
+<span class="n">PERIOD_TYPE</span> <span class="o">=</span> <span class="s2">&quot;Period Type&quot;</span>
+<span class="n">PERIODS_SOFT_NUM</span> <span class="o">=</span> <span class="s2">&quot;Number Of Software Periods&quot;</span>
+
+
+<div class="viewcode-block" id="PeriodType">
+<a class="viewcode-back" href="../../../../generated/ibex_bluesky_core.devices.dae.dae_period_settings.html#ibex_bluesky_core.devices.dae.dae_period_settings.PeriodType">[docs]</a>
+<span class="k">class</span> <span class="nc">PeriodType</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;General period type.&quot;&quot;&quot;</span>
+
+    <span class="n">SOFTWARE</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">HARDWARE_DAE</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">HARDWARE_EXTERNAL</span> <span class="o">=</span> <span class="mi">2</span></div>
+
+
+
+<div class="viewcode-block" id="PeriodSource">
+<a class="viewcode-back" href="../../../../generated/ibex_bluesky_core.devices.dae.dae_period_settings.html#ibex_bluesky_core.devices.dae.dae_period_settings.PeriodSource">[docs]</a>
+<span class="k">class</span> <span class="nc">PeriodSource</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The period setup source, whether to use parameters or file.&quot;&quot;&quot;</span>
+
+    <span class="n">PARAMETERS</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">FILE</span> <span class="o">=</span> <span class="mi">1</span></div>
+
+
+
+<div class="viewcode-block" id="SinglePeriodSettings">
+<a class="viewcode-back" href="../../../../generated/ibex_bluesky_core.devices.dae.dae_period_settings.html#ibex_bluesky_core.devices.dae.dae_period_settings.SinglePeriodSettings">[docs]</a>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">SinglePeriodSettings</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Dataclass for the settings on a single period.&quot;&quot;&quot;</span>
+
+    <span class="nb">type</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">frames</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">output</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">label</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+
+
+<div class="viewcode-block" id="DaePeriodSettingsData">
+<a class="viewcode-back" href="../../../../generated/ibex_bluesky_core.devices.dae.dae_period_settings.html#ibex_bluesky_core.devices.dae.dae_period_settings.DaePeriodSettingsData">[docs]</a>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">DaePeriodSettingsData</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Dataclass for the hardware period settings.&quot;&quot;&quot;</span>
+
+    <span class="n">periods_settings</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">SinglePeriodSettings</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">periods_soft_num</span><span class="p">:</span> <span class="kc">None</span> <span class="o">|</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">periods_type</span><span class="p">:</span> <span class="n">PeriodType</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">periods_src</span><span class="p">:</span> <span class="n">PeriodSource</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">periods_file</span><span class="p">:</span> <span class="kc">None</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">periods_seq</span><span class="p">:</span> <span class="kc">None</span> <span class="o">|</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">periods_delay</span><span class="p">:</span> <span class="kc">None</span> <span class="o">|</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+
+
+<span class="k">def</span> <span class="nf">_convert_xml_to_period_settings</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DaePeriodSettingsData</span><span class="p">:</span>
+    <span class="n">root</span> <span class="o">=</span> <span class="n">ET</span><span class="o">.</span><span class="n">fromstring</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+    <span class="n">settings_from_xml</span> <span class="o">=</span> <span class="n">convert_xml_to_names_and_values</span><span class="p">(</span><span class="n">root</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">DaePeriodSettingsData</span><span class="p">(</span>
+        <span class="n">periods_soft_num</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">settings_from_xml</span><span class="p">[</span><span class="n">PERIODS_SOFT_NUM</span><span class="p">]),</span>
+        <span class="n">periods_type</span><span class="o">=</span><span class="n">PeriodType</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">settings_from_xml</span><span class="p">[</span><span class="n">PERIOD_TYPE</span><span class="p">])),</span>
+        <span class="n">periods_src</span><span class="o">=</span><span class="n">PeriodSource</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">settings_from_xml</span><span class="p">[</span><span class="n">PERIOD_SETUP_SOURCE</span><span class="p">])),</span>
+        <span class="n">periods_file</span><span class="o">=</span><span class="n">settings_from_xml</span><span class="p">[</span><span class="n">PERIOD_FILE</span><span class="p">],</span>
+        <span class="n">periods_seq</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">settings_from_xml</span><span class="p">[</span><span class="n">PERIOD_SEQUENCES</span><span class="p">]),</span>
+        <span class="n">periods_delay</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">settings_from_xml</span><span class="p">[</span><span class="n">OUTPUT_DELAY</span><span class="p">]),</span>
+        <span class="n">periods_settings</span><span class="o">=</span><span class="p">[</span>
+            <span class="n">SinglePeriodSettings</span><span class="p">(</span>
+                <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">settings_from_xml</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;Type </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]),</span>
+                <span class="n">frames</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">settings_from_xml</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;Frames </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]),</span>
+                <span class="n">output</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">settings_from_xml</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;Output </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]),</span>
+                <span class="n">label</span><span class="o">=</span><span class="n">settings_from_xml</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;Label </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">],</span>
+            <span class="p">)</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">8</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="p">],</span>
+    <span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_convert_period_settings_to_xml</span><span class="p">(</span><span class="n">current_xml</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">DaePeriodSettingsData</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="c1"># get xml here, then substitute values from the dataclasses</span>
+    <span class="n">root</span> <span class="o">=</span> <span class="n">ET</span><span class="o">.</span><span class="n">fromstring</span><span class="p">(</span><span class="n">current_xml</span><span class="p">)</span>
+    <span class="n">elements</span> <span class="o">=</span> <span class="n">get_all_elements_in_xml_with_child_called_name</span><span class="p">(</span><span class="n">root</span><span class="p">)</span>
+    <span class="n">set_value_in_dae_xml</span><span class="p">(</span><span class="n">elements</span><span class="p">,</span> <span class="n">PERIODS_SOFT_NUM</span><span class="p">,</span> <span class="n">value</span><span class="o">.</span><span class="n">periods_soft_num</span><span class="p">)</span>
+    <span class="n">set_value_in_dae_xml</span><span class="p">(</span><span class="n">elements</span><span class="p">,</span> <span class="n">PERIOD_TYPE</span><span class="p">,</span> <span class="n">value</span><span class="o">.</span><span class="n">periods_type</span><span class="p">)</span>
+    <span class="n">set_value_in_dae_xml</span><span class="p">(</span><span class="n">elements</span><span class="p">,</span> <span class="n">PERIOD_SETUP_SOURCE</span><span class="p">,</span> <span class="n">value</span><span class="o">.</span><span class="n">periods_src</span><span class="p">)</span>
+    <span class="n">set_value_in_dae_xml</span><span class="p">(</span><span class="n">elements</span><span class="p">,</span> <span class="n">PERIOD_FILE</span><span class="p">,</span> <span class="n">value</span><span class="o">.</span><span class="n">periods_file</span><span class="p">)</span>
+    <span class="n">set_value_in_dae_xml</span><span class="p">(</span><span class="n">elements</span><span class="p">,</span> <span class="n">PERIOD_SEQUENCES</span><span class="p">,</span> <span class="n">value</span><span class="o">.</span><span class="n">periods_seq</span><span class="p">)</span>
+    <span class="n">set_value_in_dae_xml</span><span class="p">(</span><span class="n">elements</span><span class="p">,</span> <span class="n">OUTPUT_DELAY</span><span class="p">,</span> <span class="n">value</span><span class="o">.</span><span class="n">periods_delay</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">value</span><span class="o">.</span><span class="n">periods_settings</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">8</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="n">period</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">periods_settings</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+            <span class="n">set_value_in_dae_xml</span><span class="p">(</span><span class="n">elements</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Type </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">period</span><span class="o">.</span><span class="n">type</span><span class="p">)</span>
+            <span class="n">set_value_in_dae_xml</span><span class="p">(</span><span class="n">elements</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Frames </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">period</span><span class="o">.</span><span class="n">frames</span><span class="p">)</span>
+            <span class="n">set_value_in_dae_xml</span><span class="p">(</span><span class="n">elements</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Output </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">period</span><span class="o">.</span><span class="n">output</span><span class="p">)</span>
+            <span class="n">set_value_in_dae_xml</span><span class="p">(</span><span class="n">elements</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Label </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">period</span><span class="o">.</span><span class="n">label</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">tostring</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;unicode&quot;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="DaePeriodSettings">
+<a class="viewcode-back" href="../../../../generated/ibex_bluesky_core.devices.dae.dae_period_settings.html#ibex_bluesky_core.devices.dae.dae_period_settings.DaePeriodSettings">[docs]</a>
+<span class="k">class</span> <span class="nc">DaePeriodSettings</span><span class="p">(</span><span class="n">Device</span><span class="p">,</span> <span class="n">Locatable</span><span class="p">,</span> <span class="n">Movable</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Subdevice for the DAE hardware period settings.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dae_prefix</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set up signal for the DAE period settings.</span>
+
+<span class="sd">        See DaePeriodSettingsData for options.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_raw_period_settings</span><span class="p">:</span> <span class="n">SignalRW</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">isis_epics_signal_rw</span><span class="p">(</span>
+            <span class="nb">str</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">dae_prefix</span><span class="si">}</span><span class="s2">HARDWAREPERIODS&quot;</span>
+        <span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+
+<div class="viewcode-block" id="DaePeriodSettings.locate">
+<a class="viewcode-back" href="../../../../generated/ibex_bluesky_core.devices.dae.dae_period_settings.html#ibex_bluesky_core.devices.dae.dae_period_settings.DaePeriodSettings.locate">[docs]</a>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">locate</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Location</span><span class="p">[</span><span class="n">DaePeriodSettingsData</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Retrieve and convert the current XML to DaePeriodSettingsData.&quot;&quot;&quot;</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_raw_period_settings</span><span class="o">.</span><span class="n">get_value</span><span class="p">()</span>
+        <span class="n">period_settings</span> <span class="o">=</span> <span class="n">_convert_xml_to_period_settings</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;setpoint&quot;</span><span class="p">:</span> <span class="n">period_settings</span><span class="p">,</span> <span class="s2">&quot;readback&quot;</span><span class="p">:</span> <span class="n">period_settings</span><span class="p">}</span></div>
+
+
+<div class="viewcode-block" id="DaePeriodSettings.set">
+<a class="viewcode-back" href="../../../../generated/ibex_bluesky_core.devices.dae.dae_period_settings.html#ibex_bluesky_core.devices.dae.dae_period_settings.DaePeriodSettings.set">[docs]</a>
+    <span class="nd">@AsyncStatus</span><span class="o">.</span><span class="n">wrap</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">set</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">DaePeriodSettingsData</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set any changes in the period settings to the XML.&quot;&quot;&quot;</span>
+        <span class="n">current_xml</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_raw_period_settings</span><span class="o">.</span><span class="n">get_value</span><span class="p">()</span>
+        <span class="n">to_write</span> <span class="o">=</span> <span class="n">_convert_period_settings_to_xml</span><span class="p">(</span><span class="n">current_xml</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_raw_period_settings</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">to_write</span><span class="p">,</span> <span class="n">wait</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
