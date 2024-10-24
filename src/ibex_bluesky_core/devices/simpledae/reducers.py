@@ -80,7 +80,7 @@ class ScalarNormalizer(Reducer, StandardReadable, metaclass=ABCMeta):
 
         self._det_counts_setter(float(summed_counts.value))
 
-        if denominator == 0.0: # To avoid zero division
+        if denominator == 0.0:  # To avoid zero division
             self._intensity_setter(0.0)
             intensity_var = 0.0
         else:
@@ -166,7 +166,7 @@ class MonitorNormalizer(Reducer, StandardReadable):
             sum_spectra(self.detectors.values()), sum_spectra(self.monitors.values())
         )
 
-        if monitor_counts.value == 0.0: # To avoid zero division
+        if monitor_counts.value == 0.0:  # To avoid zero division
             self._intensity_setter(0.0)
             intensity_var = 0.0
 
