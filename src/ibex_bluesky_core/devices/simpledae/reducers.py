@@ -166,21 +166,26 @@ class MonitorNormalizer(Reducer, StandardReadable):
             sum_spectra(self.detectors.values()), sum_spectra(self.monitors.values())
         )
 
-        intensity = detector_counts / monitor_counts
+        if monitor_counts.value == 0.0:
+            self._intensity_setter(0.0)
+            intensity_var = 0.0
+
+        else:
+            intensity = detector_counts / monitor_counts
+            self._intensity_setter(float(intensity.value))
+            intensity_var = intensity.variance if intensity.variance is not None else 0.0
+
+        self._intensity_stddev_setter(math.sqrt(intensity_var))
+
         self._det_counts_setter(float(detector_counts.value))
         self._mon_counts_setter(float(monitor_counts.value))
-        self._intensity_setter(float(intensity.value))
-
+        
         detector_counts_var = 0.0 if detector_counts.variance is None else detector_counts.variance
         monitor_counts_var = 0.0 if monitor_counts.variance is None else monitor_counts.variance
 
-        intensity_var = (
-            0.0 if detector_counts_var + monitor_counts_var == 0.0 else intensity.variance
-        )
-
         self._det_counts_stddev_setter(math.sqrt(detector_counts_var))
         self._mon_counts_stddev_setter(math.sqrt(monitor_counts_var))
-        self._intensity_stddev_setter(math.sqrt(intensity_var))
+        
 
     def additional_readable_signals(self, dae: "SimpleDae") -> list[Device]:
         """Publish interesting signals derived or used by this reducer."""
