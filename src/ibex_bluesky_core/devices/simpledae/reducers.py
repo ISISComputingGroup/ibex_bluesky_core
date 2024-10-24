@@ -21,6 +21,9 @@ if TYPE_CHECKING:
     from ibex_bluesky_core.devices.simpledae import SimpleDae
 
 
+INTENSITY_PRECISION = 6
+
+
 async def sum_spectra(spectra: Collection[DaeSpectra]) -> sc.Variable | sc.DataArray:
     """Read and sum a number of spectra from the DAE.
 
@@ -52,13 +55,15 @@ class ScalarNormalizer(Reducer, StandardReadable, metaclass=ABCMeta):
         )
 
         self.det_counts, self._det_counts_setter = soft_signal_r_and_setter(float, 0.0)
-        self.intensity, self._intensity_setter = soft_signal_r_and_setter(float, 0.0, precision=6)
+        self.intensity, self._intensity_setter = soft_signal_r_and_setter(
+            float, 0.0, precision=INTENSITY_PRECISION
+        )
 
         self.det_counts_stddev, self._det_counts_stddev_setter = soft_signal_r_and_setter(
             float, 0.0
         )
         self.intensity_stddev, self._intensity_stddev_setter = soft_signal_r_and_setter(
-            float, 0.0, precision=6
+            float, 0.0, precision=INTENSITY_PRECISION
         )
 
         super().__init__(name="")
@@ -74,12 +79,16 @@ class ScalarNormalizer(Reducer, StandardReadable, metaclass=ABCMeta):
         )
 
         self._det_counts_setter(float(summed_counts.value))
-        self._intensity_setter(float(summed_counts.value) / denominator)
+
+        if denominator == 0.0:
+            self._intensity_setter(0.0)
+            intensity_var = 0.0
+        else:
+            self._intensity_setter(float(summed_counts.value) / denominator)
+            temp_intensity_var = (summed_counts / denominator).variance
+            intensity_var = temp_intensity_var if temp_intensity_var is not None else 0.0
 
         detector_counts_var = 0.0 if summed_counts.variance is None else summed_counts.variance
-
-        var_temp = (summed_counts / denominator).variance
-        intensity_var = var_temp if var_temp is not None else 0.0
 
         self._det_counts_stddev_setter(math.sqrt(detector_counts_var))
         self._intensity_stddev_setter(math.sqrt(intensity_var))
@@ -135,7 +144,9 @@ class MonitorNormalizer(Reducer, StandardReadable):
 
         self.det_counts, self._det_counts_setter = soft_signal_r_and_setter(float, 0.0)
         self.mon_counts, self._mon_counts_setter = soft_signal_r_and_setter(float, 0.0)
-        self.intensity, self._intensity_setter = soft_signal_r_and_setter(float, 0.0, precision=6)
+        self.intensity, self._intensity_setter = soft_signal_r_and_setter(
+            float, 0.0, precision=INTENSITY_PRECISION
+        )
 
         self.det_counts_stddev, self._det_counts_stddev_setter = soft_signal_r_and_setter(
             float, 0.0
@@ -144,7 +155,7 @@ class MonitorNormalizer(Reducer, StandardReadable):
             float, 0.0
         )
         self.intensity_stddev, self._intensity_stddev_setter = soft_signal_r_and_setter(
-            float, 0.0, precision=6
+            float, 0.0, precision=INTENSITY_PRECISION
         )
 
         super().__init__(name="")
@@ -161,8 +172,11 @@ class MonitorNormalizer(Reducer, StandardReadable):
 
         detector_counts_var = 0.0 if detector_counts.variance is None else detector_counts.variance
         monitor_counts_var = 0.0 if monitor_counts.variance is None else monitor_counts.variance
+
         intensity_var = (
-            0.0 if monitor_counts_var == 0.0 else (detector_counts / monitor_counts).variance
+            0.0
+            if detector_counts_var + monitor_counts_var == 0.0
+            else (detector_counts / monitor_counts).variance
         )
 
         self._det_counts_stddev_setter(math.sqrt(detector_counts_var))

@@ -147,6 +147,42 @@ async def test_period_good_frames_normalizer_uncertainties(
     assert intensity_stddev == pytest.approx(math.sqrt((21000 + (123**2 / 21000)) / 123**2), 1e-4)
 
 
+async def test_period_good_frames_normalizer_zero_counts(
+    simpledae: SimpleDae, period_good_frames_reducer: PeriodGoodFramesNormalizer
+):
+
+    period_good_frames_reducer.detectors[1].read_spectrum_dataarray = AsyncMock(
+        return_value=sc.DataArray(
+            data=sc.Variable(
+                dims=["tof"],
+                values=[0.0, 0.0, 0.0],
+                variances=[0.0, 0.0, 0.0],
+                unit=sc.units.counts,
+            ),
+            coords={"tof": sc.array(dims=["tof"], values=[0, 1, 2, 3])},
+        )
+    )
+    period_good_frames_reducer.detectors[2].read_spectrum_dataarray = AsyncMock(
+        return_value=sc.DataArray(
+            data=sc.Variable(
+                dims=["tof"],
+                values=[0.0, 0.0, 0.0],
+                variances=[0.0, 0.0, 0.0],
+                unit=sc.units.counts,
+            ),
+            coords={"tof": sc.array(dims=["tof"], values=[0, 1, 2, 3])},
+        )
+    )
+
+    await period_good_frames_reducer.reduce_data(simpledae)
+
+    det_counts_stddev = await period_good_frames_reducer.det_counts_stddev.get_value()
+    intensity_stddev = await period_good_frames_reducer.intensity_stddev.get_value()
+
+    assert det_counts_stddev == 0
+    assert intensity_stddev == 0
+
+
 # Monitor Normalizer
 
 
@@ -174,6 +210,43 @@ async def test_monitor_normalizer(simpledae: SimpleDae, monitor_normalizer: Moni
     assert mon_counts == 15000
     assert intensity == pytest.approx(6000 / 15000)
 
+
+async def test_monitor_normalizer_zero_counts(
+    simpledae: SimpleDae, monitor_normalizer: MonitorNormalizer
+):
+
+    monitor_normalizer.detectors[1].read_spectrum_dataarray = AsyncMock(
+        return_value=sc.DataArray(
+            data=sc.Variable(
+                dims=["tof"],
+                values=[0.0, 0.0, 0.0],
+                variances=[0.0, 0.0, 0.0],
+                unit=sc.units.counts,
+            ),
+            coords={"tof": sc.array(dims=["tof"], values=[0, 1, 2, 3])},
+        )
+    )
+    monitor_normalizer.monitors[2].read_spectrum_dataarray = AsyncMock(
+        return_value=sc.DataArray(
+            data=sc.Variable(
+                dims=["tof"],
+                values=[0.0, 0.0, 0.0],
+                variances=[0.0, 0.0, 0.0],
+                unit=sc.units.counts,
+            ),
+            coords={"tof": sc.array(dims=["tof"], values=[0, 1, 2, 3])},
+        )
+    )
+
+    await monitor_normalizer.reduce_data(simpledae)
+
+    det_counts_stddev = await monitor_normalizer.det_counts_stddev.get_value()
+    mon_counts_stddev = await monitor_normalizer.mon_counts_stddev.get_value()
+    intensity_stddev = await monitor_normalizer.intensity_stddev.get_value()
+
+    assert det_counts_stddev == 0
+    assert mon_counts_stddev == 0
+    assert intensity_stddev == 0
 
 async def test_monitor_normalizer_uncertainties(
     simpledae: SimpleDae, monitor_normalizer: MonitorNormalizer
