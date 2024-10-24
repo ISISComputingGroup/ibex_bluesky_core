@@ -3,13 +3,14 @@ from unittest.mock import AsyncMock
 
 import pytest
 import scipp as sc
+from ophyd_async.core import set_mock_value
+
 from ibex_bluesky_core.devices.simpledae import SimpleDae
 from ibex_bluesky_core.devices.simpledae.reducers import (
     GoodFramesNormalizer,
     MonitorNormalizer,
     PeriodGoodFramesNormalizer,
 )
-from ophyd_async.core import set_mock_value
 
 
 @pytest.fixture
