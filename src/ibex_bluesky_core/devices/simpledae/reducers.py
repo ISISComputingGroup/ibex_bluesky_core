@@ -179,13 +179,12 @@ class MonitorNormalizer(Reducer, StandardReadable):
 
         self._det_counts_setter(float(detector_counts.value))
         self._mon_counts_setter(float(monitor_counts.value))
-        
+
         detector_counts_var = 0.0 if detector_counts.variance is None else detector_counts.variance
         monitor_counts_var = 0.0 if monitor_counts.variance is None else monitor_counts.variance
 
         self._det_counts_stddev_setter(math.sqrt(detector_counts_var))
         self._mon_counts_stddev_setter(math.sqrt(monitor_counts_var))
-        
 
     def additional_readable_signals(self, dae: "SimpleDae") -> list[Device]:
         """Publish interesting signals derived or used by this reducer."""
