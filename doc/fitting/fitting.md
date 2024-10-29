@@ -176,7 +176,7 @@ from ibex_bluesky_core.callbacks.fitting.fitting_utils import Linear
 # This Guessing. function isn't very good because it's return values don't change on the data already collected in the Bluesky run
 # It always guesses that the linear function is y = x
 
-def different_guess(x: float, m: float, c: float) -> float:
+def different_guess(x: float, c1: float, c0: float) -> float:
     
     init_guess = {
         "c1": lmfit.Parameter("c1", 1), # gradient
