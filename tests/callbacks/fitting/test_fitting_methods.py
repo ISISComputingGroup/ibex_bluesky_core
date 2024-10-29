@@ -219,7 +219,7 @@ class TestLinear:
             grad = 3
             y_intercept = 2
 
-            outp = Linear.model().func(x, m=grad, c=y_intercept)
+            outp = Linear.model().func(x, c1=grad, c0=y_intercept)
 
             # Check for constant gradient of grad
             outp_m = np.diff(outp)
@@ -234,19 +234,26 @@ class TestLinear:
             y = np.array([-1.0, 0.0, 1.0])
             outp = Linear.guess()(x, y)
 
-            assert pytest.approx(outp["m"]) == 1.0
+            assert pytest.approx(outp["c1"]) == 1.0
 
             y = np.array([-2.0, 0.0, 2.0])
             outp1 = Linear.guess()(x, y)
             # check with a graph with steeper gradient
-            assert outp["m"] < outp1["m"]
+            assert outp["c1"] < outp1["c1"]
 
         def test_y_intercept_guess(self):
             x = np.array([-1.0, 0.0, 1.0])
             y = np.array([-1.0, 0.0, 1.0])
             outp = Linear.guess()(x, y)
 
-            assert pytest.approx(outp["c"]) == 0.0
+            assert pytest.approx(outp["c0"]) == 0.0
+
+        def test_zero_gradient_guess(self):
+            x = np.array([-1.0, 0.0, 1.0])
+            y = np.array([0.0, 0.0, 0.0])
+            outp = Linear.guess()(x, y)
+
+            assert pytest.approx(outp["c1"]) == 0.0
 
 
 class TestPolynomial:
