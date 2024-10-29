@@ -111,9 +111,9 @@ See the following example on how to define these.
 
 import lmfit
 
-def model(x: float, m: float, c: float) -> float:
+def model(x: float, c1: float, c0: float) -> float:
     
-    return m * x + c # y = mx + c
+    return c1 * x + c0 # y = mx + c
 
 def guess(x: npt.NDArray[np.float64], y: npt.NDArray[np.float64]) -> dict[str, lmfit.Parameter]:
 
@@ -125,12 +125,12 @@ def guess(x: npt.NDArray[np.float64], y: npt.NDArray[np.float64]) -> dict[str, l
     numerator = sum(x * y) - sum(x) * sum(y)
     denominator = sum(x**2) - sum(x) ** 2
 
-    m = numerator / denominator
-    c = (sum(y) - m * sum(x)) / len(x)
+    c1 = numerator / denominator
+    c0 = (sum(y) - c1 * sum(x)) / len(x)
 
     init_guess = {
-        "m": lmfit.Parameter("m", m), # gradient
-        "c": lmfit.Parameter("c", c), # y - intercept
+        "c1": lmfit.Parameter("c1", c1), # gradient
+        "c0": lmfit.Parameter("c0", c0), # y - intercept
     }
 
     return init_guess
@@ -155,9 +155,9 @@ This means that aslong as the parameters returned from the guess function match 
 import lmfit
 from ibex_bluesky_core.callbacks.fitting.fitting_utils import Linear
 
-def different_model(x: float, m: float, c: float) -> float:
+def different_model(x: float, c1: float, c0: float) -> float:
     
-    return m * x + c ** 2 # y = mx + (c ** 2)
+    return c1 * x + c0 ** 2 # y = mx + (c ** 2)
 
 
 fit_method = FitMethod(different_model, Linear.guess())
@@ -179,8 +179,8 @@ from ibex_bluesky_core.callbacks.fitting.fitting_utils import Linear
 def different_guess(x: float, m: float, c: float) -> float:
     
     init_guess = {
-        "m": lmfit.Parameter("m", 1), # gradient
-        "c": lmfit.Parameter("c", 0), # y - intercept
+        "c1": lmfit.Parameter("c1", 1), # gradient
+        "c0": lmfit.Parameter("c0", 0), # y - intercept
     }
 
     return init_guess

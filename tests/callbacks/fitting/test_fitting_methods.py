@@ -248,6 +248,13 @@ class TestLinear:
 
             assert pytest.approx(outp["c0"]) == 0.0
 
+        def test_zero_gradient_guess(self):
+            x = np.array([-1.0, 0.0, 1.0])
+            y = np.array([0.0, 0.0, 0.0])
+            outp = Linear.guess()(x, y)
+
+            assert pytest.approx(outp["c1"]) == 0.0
+
 
 class TestPolynomial:
     class TestPolynomialModel:

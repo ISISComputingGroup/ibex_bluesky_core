@@ -2,20 +2,20 @@
 
 ## Linear
 
-- `m` - Gradient
-- `c` - (y) Intercept
+- `c1` - Gradient
+- `c0` - (y) Intercept
 
 ```{math}
-y = mx + c
+y = c_1x + c_0
 ```
 
 ## Polynomial
 
-- `a` ... `d` - Polynomial coefficients
+- `cn` ... `c0` - Polynomial coefficients
 
 For a polynomial degree `n`:
 ```{math}
-y = ax^n + bx^n-1 + ... + cx^1 + d 
+y = c_{n}x^n + c_{n-1}x^n-1 + ... + c_1 * x^1 + c_0 
 ```
 
 ## Gaussian
