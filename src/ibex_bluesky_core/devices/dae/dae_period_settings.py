@@ -106,7 +106,7 @@ def _convert_period_settings_to_xml(current_xml: str, value: DaePeriodSettingsDa
     return tostring(root, encoding="unicode")
 
 
-class DaePeriodSettings(Device, Locatable, Movable):
+class DaePeriodSettings(Device, Locatable[DaePeriodSettingsData], Movable[DaePeriodSettingsData]):
     """Subdevice for the DAE hardware period settings."""
 
     def __init__(self, dae_prefix: str, name: str = "") -> None:

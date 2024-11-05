@@ -147,7 +147,7 @@ def _convert_dae_settings_to_xml(current_xml: str, settings: DaeSettingsData) ->
     return tostring(root, encoding="unicode")
 
 
-class DaeSettings(Device, Locatable, Movable):
+class DaeSettings(Device, Locatable[DaeSettingsData], Movable[DaeSettingsData]):
     """Subdevice for the DAE general settings."""
 
     def __init__(self, dae_prefix: str, name: str = "") -> None:

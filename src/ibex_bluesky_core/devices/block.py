@@ -141,7 +141,7 @@ class BlockR(StandardReadable, Triggerable, Generic[T]):
         """
 
 
-class BlockRw(BlockR[T], Movable):
+class BlockRw(BlockR[T], Movable[T]):
     """Device representing an IBEX read/write block of arbitrary data type."""
 
     def __init__(
@@ -207,7 +207,7 @@ class BlockRw(BlockR[T], Movable):
         await set_and_settle(value)
 
 
-class BlockRwRbv(BlockRw[T], Locatable):
+class BlockRwRbv(BlockRw[T], Locatable[T]):
     """Device representing an IBEX read/write/setpoint readback block of arbitrary data type."""
 
     def __init__(
