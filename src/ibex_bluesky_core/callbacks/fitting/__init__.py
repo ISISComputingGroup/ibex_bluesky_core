@@ -50,13 +50,7 @@ class LiveFit(_DefaultLiveFit):
     """Live fit, customized for IBEX."""
 
     def __init__(
-        self,
-        method: FitMethod,
-        y: str,
-        x: str,
-        *,
-        update_every: int = 1,
-        yerr = None
+        self, method: FitMethod, y: str, x: str, *, update_every: int = 1, yerr=None
     ) -> None:
         """Call Bluesky LiveFit with assumption that there is only one independant variable.
 
@@ -70,11 +64,7 @@ class LiveFit(_DefaultLiveFit):
         self.method = method
 
         super().__init__(
-            model=method.model,
-            y=y,
-            independent_vars={"x": x},
-            update_every=update_every,
-            yerr=yerr
+            model=method.model, y=y, independent_vars={"x": x}, update_every=update_every, yerr=yerr
         )
 
     def update_fit(self) -> None:

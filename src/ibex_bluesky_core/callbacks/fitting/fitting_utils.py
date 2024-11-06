@@ -179,8 +179,8 @@ class Linear(Fit):
     def model(cls, *args: int) -> lmfit.Model:
         """Linear Model."""
 
-        def model(x: npt.NDArray[np.float64], m: float, c: float) -> npt.NDArray[np.float64]:
-            return m * x + c
+        def model(x: npt.NDArray[np.float64], c1: float, c0: float) -> npt.NDArray[np.float64]:
+            return c1 * x + c0
 
         return lmfit.Model(model)
 
@@ -189,27 +189,7 @@ class Linear(Fit):
         cls, *args: int
     ) -> Callable[[npt.NDArray[np.float64], npt.NDArray[np.float64]], dict[str, lmfit.Parameter]]:
         """Linear Guessing."""
-
-        def guess(
-            x: npt.NDArray[np.float64], y: npt.NDArray[np.float64]
-        ) -> dict[str, lmfit.Parameter]:
-            # Linear Regression
-            numerator = sum(x * y) - sum(x) * sum(y)
-            denominator = sum(x**2) - sum(x) ** 2
-
-            print(f"N: {numerator} D: {denominator}")
-
-            m = numerator / denominator
-            c = (sum(y) - m * sum(x)) / len(x)
-
-            init_guess = {
-                "m": lmfit.Parameter("m", m),
-                "c": lmfit.Parameter("c", c),
-            }
-
-            return init_guess
-
-        return guess
+        return Polynomial.guess(1)
 
 
 class Polynomial(Fit):

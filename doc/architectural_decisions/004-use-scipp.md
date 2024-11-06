@@ -8,11 +8,11 @@ Current
 
 A decision needs to be made about whether to use scipp, numpy, uncertainties or develop our own library for the purpose of providing support for generating uncertanties on our counts data.
 
-# Decision
+## Decision
 
 We will be using scipp.
 
-# Justification & Consequences
+## Justification & Consequences
 
 - `scipp` is being developed at ESS with past input from STFC, so is well suited for neutron counts data.
 - `scipp` has a `numpy`-like interface but handles units and uncertainties by default under-the-hood.

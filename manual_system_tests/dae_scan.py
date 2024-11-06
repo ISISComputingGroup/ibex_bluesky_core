@@ -74,11 +74,8 @@ def dae_scan_plan() -> Generator[Msg, None, None]:
     yield from ensure_connected(block, blocka, blockb, force_reconnect=True)
     print(reducer.intensity.name)
 
-
-
     lf = LiveFit(Gaussian.fit(), y=blockb.name, x=block.name, yerr=blocka.name)
     fig, ax = plt.subplots()
-
 
     @subs_decorator(
         [
@@ -93,15 +90,10 @@ def dae_scan_plan() -> Generator[Msg, None, None]:
             #     ],
             # ),
             LiveFitPlot(lf, ax=ax, color="r", num_points=1000),
-            LivePlot(y=blockb.name, x=block.name, yerr=blocka.name, marker="x", linestyle="none",  ax=ax),
-            LiveTable(
-                [
-                    block.name,
-                    blocka.name,
-                    blockb.name
-                ]
+            LivePlot(
+                y=blockb.name, x=block.name, yerr=blocka.name, marker="x", linestyle="none", ax=ax
             ),
-
+            LiveTable([block.name, blocka.name, blockb.name]),
         ]
     )
     def _inner() -> Generator[Msg, None, None]:

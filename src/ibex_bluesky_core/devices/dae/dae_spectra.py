@@ -111,6 +111,11 @@ class DaeSpectra(StandardReadable):
         VARIANCE_ADDITION = 0.5
 
         return sc.DataArray(
-            data=sc.Variable(dims=["tof"], values=counts, variances=counts+VARIANCE_ADDITION, unit=sc.units.counts),
+            data=sc.Variable(
+                dims=["tof"],
+                values=counts,
+                variances=counts + VARIANCE_ADDITION,
+                unit=sc.units.counts,
+            ),
             coords={"tof": sc.array(dims=["tof"], values=tof_edges, unit=sc.Unit(unit))},
         )
