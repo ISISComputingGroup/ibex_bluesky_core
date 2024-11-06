@@ -102,11 +102,6 @@ class LiveFit(_DefaultLiveFit):
             None
 
         """
-        self.init_guess = self.method.guess(
-            np.array(next(iter(self.independent_vars_data.values()))),
-            np.array(self.ydata),
-            # Calls the guess function on the set of data already collected in the run
-        )
 
         N = len(self.model.param_names)
         if len(self.ydata) < N:
@@ -115,6 +110,12 @@ class LiveFit(_DefaultLiveFit):
                 stacklevel=1,
             )
         else:
+            self.init_guess = self.method.guess(
+                np.array(next(iter(self.independent_vars_data.values()))),
+                np.array(self.ydata),
+                # Calls the guess function on the set of data already collected in the run
+            )
+
             kwargs = {}
             kwargs.update(self.independent_vars_data)
             kwargs.update(self.init_guess)
