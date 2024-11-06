@@ -34,12 +34,12 @@ class FitMethod:
             guess (Callable): The guess function to use.
 
         """
+        self.guess = guess
+
         if callable(model):
-            self.model = lmfit.Model(model)
+            self.model = lmfit.Model(model, name=self.guess.__qualname__.split('.')[0])
         else:
             self.model = model
-
-        self.guess = guess
 
 
 logger = logging.getLogger(__name__)
@@ -47,7 +47,7 @@ logger = logging.getLogger(__name__)
 
 @make_class_safe(logger=logger)  # pyright: ignore (pyright doesn't understand this decorator)
 class LiveFit(_DefaultLiveFit):
-    """Live fit, customized for IBEX."""
+    """LiveFit, customized for IBEX."""
 
     def __init__(
         self,
