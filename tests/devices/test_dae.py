@@ -25,7 +25,7 @@ from ibex_bluesky_core.devices.dae.dae_settings import (
     DaeSettingsData,
     TimingSource,
 )
-from ibex_bluesky_core.devices.dae.dae_spectra import DaeSpectra
+from ibex_bluesky_core.devices.dae.dae_spectra import DaeSpectra, VARIANCE_ADDITION
 from ibex_bluesky_core.devices.dae.dae_tcb_settings import (
     CalculationMethod,
     DaeTCBSettings,
@@ -979,7 +979,7 @@ async def test_read_spectrum_dataarray(spectrum: DaeSpectra):
             data=sc.Variable(
                 dims=["tof"],
                 values=[1000, 2000, 3000],
-                variances=[1000, 2000, 3000],
+                variances=[1000 + VARIANCE_ADDITION, 2000 + VARIANCE_ADDITION, 3000+ VARIANCE_ADDITION],
                 unit=sc.units.counts,
                 dtype="float32",
             ),

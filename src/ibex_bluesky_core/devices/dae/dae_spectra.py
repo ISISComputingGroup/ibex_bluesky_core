@@ -9,6 +9,7 @@ from numpy.typing import NDArray
 from ophyd_async.core import SignalR, StandardReadable
 from ophyd_async.epics.signal import epics_signal_r
 
+VARIANCE_ADDITION = 0.5
 
 class DaeSpectra(StandardReadable):
     """Subdevice for a single DAE spectra."""
@@ -108,7 +109,7 @@ class DaeSpectra(StandardReadable):
             raise ValueError("Could not determine engineering units of tof edges.")
 
         # TODO add reference to ADR
-        VARIANCE_ADDITION = 0.5
+
 
         return sc.DataArray(
             data=sc.Variable(

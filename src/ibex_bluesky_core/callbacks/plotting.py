@@ -29,10 +29,12 @@ class LivePlot(_DefaultLivePlot):
         if "genie_python" in matplotlib.get_backend():
             plt.show()
 
-    def event(self, doc):
+    def event(self, doc: Event):
+        """Process an event document (delegate to superclass, then show the plot)."""
         new_yerr = None if self.yerr is None else doc["data"][self.yerr]
         self.update_yerr(new_yerr)
         super().event(doc)
+        self._show_plot()
 
     def update_plot(self):
         if self.yerr is not None:
@@ -46,10 +48,4 @@ class LivePlot(_DefaultLivePlot):
     def start(self, doc: RunStart) -> None:
         """Process an start document (delegate to superclass, then show the plot)."""
         super().start(doc)
-        self._show_plot()
-
-    def event(self, doc: Event) -> None:
-        """Process an event document (delegate to superclass, then show the plot)."""
-
-        super().event(doc)
         self._show_plot()
