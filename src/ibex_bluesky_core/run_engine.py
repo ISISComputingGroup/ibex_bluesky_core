@@ -2,6 +2,7 @@
 
 import asyncio
 import functools
+import logging
 from functools import cache
 from threading import Event
 
@@ -11,10 +12,12 @@ from bluesky.run_engine import RunEngine
 from bluesky.utils import DuringTask
 
 from ibex_bluesky_core.callbacks.document_logger import DocLoggingCallback
+from ibex_bluesky_core.preprocessors import add_rb_number_processor
 
 __all__ = ["get_run_engine"]
 
-from ibex_bluesky_core.preprocessors import add_rb_number_processor
+
+logger = logging.getLogger(__name__)
 
 
 class _DuringTask(DuringTask):
@@ -69,6 +72,7 @@ def get_run_engine() -> RunEngine:
     - https://nsls-ii.github.io/bluesky/tutorial.html#the-runengine
     - https://nsls-ii.github.io/bluesky/run_engine_api.html
     """
+    logger.info("Creating new bluesky RunEngine")
     loop = asyncio.new_event_loop()
 
     # Only log *very* slow callbacks (in asyncio debug mode)
