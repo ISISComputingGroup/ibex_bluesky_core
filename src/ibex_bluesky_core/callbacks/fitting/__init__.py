@@ -2,12 +2,14 @@
 
 import logging
 from typing import Callable
+import warnings
 
 import lmfit
 import numpy as np
 import numpy.typing as npt
 from bluesky.callbacks import LiveFit as _DefaultLiveFit
 from bluesky.callbacks.core import make_class_safe
+from event_model.documents.event import Event
 
 
 class FitMethod:
@@ -50,7 +52,7 @@ class LiveFit(_DefaultLiveFit):
     """Live fit, customized for IBEX."""
 
     def __init__(
-        self, method: FitMethod, y: str, x: str, *, update_every: int = 1, yerr=None
+        self, method: FitMethod, y: str, x: str, *, update_every: int = 1, yerr: str | None = None
     ) -> None:
         """Call Bluesky LiveFit with assumption that there is only one independant variable.
 
@@ -58,14 +60,37 @@ class LiveFit(_DefaultLiveFit):
             method (FitMethod): The FitMethod (Model & Guess) to use when fitting.
             y (str): The name of the dependant variable.
             x (str): The name of the independant variable.
-            update_every (int): How often to update the fit. (seconds)
+            update_every (int, optional): How often to update the fit. (seconds)
+            yerr (str or None, optional): Name of field in the Event document that provides standard deviation for each Y value
 
         """
         self.method = method
+        self.yerr = yerr
+        self.weight_data = []
 
         super().__init__(
             model=method.model, y=y, independent_vars={"x": x}, update_every=update_every
         )
+
+    def event(self, doc: Event):
+
+        weight = None
+        if self.yerr is not None:
+            try:
+                weight = 1 / doc["data"][self.yerr]
+            except ZeroDivisionError:
+                warnings.warn(f"standard deviation for y is 0, therefore applying weight of 0 on fit",
+                    stacklevel=1,
+                )
+                weight = 0.0
+
+        self.update_weight(weight)
+        super().event(doc)
+
+    def update_weight(self, weight: float | None = 0.0):
+        if self.yerr is not None:
+            self.weight_data.append(weight)
+        
 
     def update_fit(self) -> None:
         """Use the provided guess function with the most recent x and y values after every update.
@@ -83,4 +108,17 @@ class LiveFit(_DefaultLiveFit):
             # Calls the guess function on the set of data already collected in the run
         )
 
-        super().update_fit()
+        N = len(self.model.param_names)
+        if len(self.ydata) < N:
+            warnings.warn(
+                f"LiveFitPlot cannot update fit until there are at least {N} data points",
+                stacklevel=1,
+            )
+        else:
+            kwargs = {}
+            kwargs.update(self.independent_vars_data)
+            kwargs.update(self.init_guess)
+            self.result = self.model.fit(
+                self.ydata, weights=None if self.yerr is None else self.weight_data, **kwargs
+            )
+            self.__stale = False
