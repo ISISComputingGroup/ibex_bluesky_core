@@ -197,6 +197,8 @@ class Linear(Fit):
             numerator = sum(x * y) - sum(x) * sum(y)
             denominator = sum(x**2) - sum(x) ** 2
 
+            print(f"N: {numerator} D: {denominator}")
+
             m = numerator / denominator
             c = (sum(y) - m * sum(x)) / len(x)
 

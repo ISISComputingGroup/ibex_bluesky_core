@@ -8,15 +8,17 @@ import bluesky.plan_stubs as bps
 import bluesky.plans as bp
 import matplotlib
 import matplotlib.pyplot as plt
-from bluesky.callbacks import LiveTable
+from bluesky.callbacks import LiveTable, LiveFitPlot
 from bluesky.preprocessors import subs_decorator
 from bluesky.utils import Msg
 from ophyd_async.plan_stubs import ensure_connected
 
 from ibex_bluesky_core.callbacks.file_logger import HumanReadableFileCallback
+from ibex_bluesky_core.callbacks.fitting import LiveFit
+from ibex_bluesky_core.callbacks.fitting.fitting_utils import Linear, Gaussian
 from ibex_bluesky_core.callbacks.plotting import LivePlot
 from ibex_bluesky_core.devices import get_pv_prefix
-from ibex_bluesky_core.devices.block import block_rw_rbv
+from ibex_bluesky_core.devices.block import block_rw_rbv, BlockWriteConfig
 from ibex_bluesky_core.devices.simpledae import SimpleDae
 from ibex_bluesky_core.devices.simpledae.controllers import (
     RunPerPointController,
@@ -47,10 +49,12 @@ def dae_scan_plan() -> Generator[Msg, None, None]:
     - The DAE waited for at least 500 good frames at each point
     """
     prefix = get_pv_prefix()
-    block = block_rw_rbv(float, "mot")
+    block = block_rw_rbv(float, "mot", write_config=BlockWriteConfig(settle_time_s=0.5))
+    blocka = block_rw_rbv(float, "alice")
+    blockb = block_rw_rbv(float, "bob", write_config=BlockWriteConfig(settle_time_s=0.5))
 
     controller = RunPerPointController(save_run=True)
-    waiter = GoodFramesWaiter(500)
+    waiter = GoodFramesWaiter(1)
     reducer = GoodFramesNormalizer(
         prefix=prefix,
         detector_spectra=[i for i in range(1, 100)],
@@ -67,38 +71,44 @@ def dae_scan_plan() -> Generator[Msg, None, None]:
     controller.run_number.set_name("run number")
     reducer.intensity.set_name("normalized counts")
 
-    yield from ensure_connected(block, dae, force_reconnect=True)
+    yield from ensure_connected(block, blocka, blockb, force_reconnect=True)
+    print(reducer.intensity.name)
+
+
+
+    lf = LiveFit(Gaussian.fit(), y=blockb.name, x=block.name, yerr=blocka.name)
+    fig, ax = plt.subplots()
+
 
     @subs_decorator(
         [
-            HumanReadableFileCallback(
-                Path("C:\\") / "instrument" / "var" / "logs" / "bluesky" / "output_files",
-                [
-                    block.name,
-                    controller.run_number.name,
-                    reducer.intensity.name,
-                    reducer.det_counts.name,
-                    dae.good_frames.name,
-                ],
-            ),
-            LivePlot(y=reducer.intensity.name, x=block.name, marker="x", linestyle="none"),
+            # HumanReadableFileCallback(
+            #     Path("C:\\") / "instrument" / "var" / "logs" / "bluesky" / "output_files",
+            #     [
+            #         block.name,
+            #         controller.run_number.name,
+            #         reducer.intensity.name,
+            #         reducer.det_counts.name,
+            #         dae.good_frames.name,
+            #     ],
+            # ),
+            LiveFitPlot(lf, ax=ax, color="r", num_points=1000),
+            LivePlot(y=blockb.name, x=block.name, yerr=blocka.name, marker="x", linestyle="none",  ax=ax),
             LiveTable(
                 [
                     block.name,
-                    controller.run_number.name,
-                    reducer.intensity.name,
-                    reducer.intensity_stddev.name,
-                    reducer.det_counts.name,
-                    reducer.det_counts_stddev.name,
-                    dae.good_frames.name,
+                    blocka.name,
+                    blockb.name
                 ]
             ),
+
         ]
     )
     def _inner() -> Generator[Msg, None, None]:
-        num_points = 3
-        yield from bps.mv(dae.number_of_periods, num_points)
-        yield from bp.scan([dae], block, 0, 10, num=num_points)
+        num_points = 10
+        # yield from bps.mv(dae.number_of_periods, num_points)
+        yield from bps.read(blocka)
+        yield from bp.scan([blockb, blocka], block, 0, 10, num=num_points)
 
     yield from _inner()
 

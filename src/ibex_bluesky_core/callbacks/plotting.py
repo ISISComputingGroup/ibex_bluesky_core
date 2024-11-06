@@ -15,6 +15,10 @@ logger = logging.getLogger(__name__)
 class LivePlot(_DefaultLivePlot):
     """Live plot, customized for IBEX."""
 
+    def __init__(self, y,  x=None, yerr=None, *args, **kwargs):
+        super().__init__(y=y, x=x, yerr=yerr, *args, **kwargs)
+
+
     def _show_plot(self) -> None:
         # Play nicely with the "normal" backends too - only force show if we're
         # actually using our custom backend.
@@ -28,5 +32,6 @@ class LivePlot(_DefaultLivePlot):
 
     def event(self, doc: Event) -> None:
         """Process an event document (delegate to superclass, then show the plot)."""
+
         super().event(doc)
         self._show_plot()
