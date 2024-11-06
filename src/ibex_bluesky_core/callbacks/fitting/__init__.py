@@ -64,7 +64,7 @@ class LiveFit(_DefaultLiveFit):
         self.method = method
 
         super().__init__(
-            model=method.model, y=y, independent_vars={"x": x}, update_every=update_every, yerr=yerr
+            model=method.model, y=y, independent_vars={"x": x}, update_every=update_every
         )
 
     def update_fit(self) -> None:
