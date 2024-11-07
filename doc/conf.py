@@ -46,6 +46,13 @@ exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 
 html_theme = "sphinx_rtd_theme"
 html_static_path = ["_static"]
+html_logo = "logo.png"
+html_theme_options = {
+    "logo_only": False,
+    "display_version": False,
+    "style_nav_header_background": "#343131",
+}
+html_favicon = "favicon.png"
 
 autoclass_content = "both"
 myst_heading_anchors = 3
