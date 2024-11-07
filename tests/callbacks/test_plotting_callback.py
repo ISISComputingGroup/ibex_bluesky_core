@@ -47,7 +47,6 @@ def test_show_plot_only_shows_if_backend_is_genie():
 
 
 def test_errorbars_created_if_yerr_is_given():
-
     _, ax = plt.subplots()
     ax.errorbar = MagicMock()
 
@@ -58,7 +57,7 @@ def test_errorbars_created_if_yerr_is_given():
     yerr = 3
 
     # Fake just enough of an event document.
-    lp.start( # type: ignore
+    lp.start(  # type: ignore
         {
             "time": 0,
             "plan_name": "scan",
@@ -73,21 +72,21 @@ def test_errorbars_created_if_yerr_is_given():
             "data": {  # type: ignore
                 "y": y,
                 "x": x,
-                "yerr": yerr
+                "yerr": yerr,
             }
         }
     )
 
-    lp.ax.errorbar.assert_called_with(y=[y], x=[x], yerr=[yerr], fmt="none") # type: ignore
+    lp.ax.errorbar.assert_called_with(y=[y], x=[x], yerr=[yerr], fmt="none")  # type: ignore
+
 
 def test_errorbars_not_created_if_no_yerr():
-
     _, ax = plt.subplots()
     ax.errorbar = MagicMock()
 
     lp = LivePlot(y="y", x="x", ax=ax)
 
-    lp.start( # type: ignore
+    lp.start(  # type: ignore
         {
             "time": 0,
             "plan_name": "scan",

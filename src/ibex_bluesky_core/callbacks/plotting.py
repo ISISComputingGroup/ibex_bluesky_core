@@ -5,7 +5,7 @@ import logging
 import matplotlib
 import matplotlib.pyplot as plt
 from bluesky.callbacks import LivePlot as _DefaultLivePlot
-from bluesky.callbacks.core import make_class_safe, get_obj_fields
+from bluesky.callbacks.core import get_obj_fields, make_class_safe
 from event_model.documents import Event, RunStart
 
 logger = logging.getLogger(__name__)

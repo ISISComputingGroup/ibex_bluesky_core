@@ -1,8 +1,8 @@
 """For IBEX Bluesky scan fitting."""
 
 import logging
-from typing import Callable
 import warnings
+from typing import Callable
 
 import lmfit
 import numpy as np
@@ -61,7 +61,8 @@ class LiveFit(_DefaultLiveFit):
             y (str): The name of the dependant variable.
             x (str): The name of the independant variable.
             update_every (int, optional): How often to update the fit. (seconds)
-            yerr (str or None, optional): Name of field in the Event document that provides standard deviation for each Y value
+            yerr (str or None, optional): Name of field in the Event document
+            that provides standard deviation for each Y value
 
         """
         self.method = method
@@ -72,14 +73,15 @@ class LiveFit(_DefaultLiveFit):
             model=method.model, y=y, independent_vars={"x": x}, update_every=update_every
         )
 
-    def event(self, doc: Event):
-
+    def event(self, doc: Event) -> None:
+        """When an event is received, update caches."""
         weight = None
         if self.yerr is not None:
             try:
                 weight = 1 / doc["data"][self.yerr]
             except ZeroDivisionError:
-                warnings.warn(f"standard deviation for y is 0, therefore applying weight of 0 on fit",
+                warnings.warn(
+                    "standard deviation for y is 0, therefore applying weight of 0 on fit",
                     stacklevel=1,
                 )
                 weight = 0.0
@@ -87,10 +89,10 @@ class LiveFit(_DefaultLiveFit):
         self.update_weight(weight)
         super().event(doc)
 
-    def update_weight(self, weight: float | None = 0.0):
+    def update_weight(self, weight: float | None = 0.0) -> None:
+        """Update uncertainties cache."""
         if self.yerr is not None:
             self.weight_data.append(weight)
-        
 
     def update_fit(self) -> None:
         """Use the provided guess function with the most recent x and y values after every update.
@@ -102,11 +104,10 @@ class LiveFit(_DefaultLiveFit):
             None
 
         """
-
-        N = len(self.model.param_names)
-        if len(self.ydata) < N:
+        n = len(self.model.param_names)
+        if len(self.ydata) < n:
             warnings.warn(
-                f"LiveFitPlot cannot update fit until there are at least {N} data points",
+                f"LiveFitPlot cannot update fit until there are at least {n} data points",
                 stacklevel=1,
             )
         else:
