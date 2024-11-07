@@ -4,11 +4,14 @@ Not intended for user use.
 """
 
 import ctypes
+import logging
 import threading
 from asyncio import CancelledError, Event, get_running_loop
 from typing import Any
 
 from bluesky.utils import Msg
+
+logger = logging.getLogger(__name__)
 
 
 class _ExternalFunctionInterrupted(BaseException):
@@ -25,23 +28,36 @@ async def call_sync_handler(msg: Msg) -> Any:  # noqa: ANN401
 
     def _wrapper() -> Any:  # noqa: ANN401
         nonlocal ret, exc
+        logger.info("Running '{func.__name__}' with args=({msg.args}), kwargs=({msg.kwargs})")
         try:
             ret = func(*msg.args, **msg.kwargs)
+            logger.debug("Running '%s' successful", func.__name__)
         except _ExternalFunctionInterrupted:
-            pass  # Suppress stack traces from our special interruption exception.
+            # Suppress stack traces from our special interruption exception.
+            logger.debug("Running '%s' was interrupted by user", func.__name__)
         except BaseException as e:
+            logger.error("Running '%s' failed with %s: %s", func.__name__, e.__class__.__name__, e)
             exc = e
         finally:
             loop.call_soon_threadsafe(done_event.set)
 
+    logger.info(
+        "Spawning thread to run '%s' with args=(%s), kwargs=(%s)",
+        func.__name__,
+        msg.args,
+        msg.kwargs,
+    )
     worker_thread = threading.Thread(target=_wrapper, name="external_function_worker", daemon=True)
     worker_thread.start()
 
     try:
         # Wait until done event is set.
         # Ensure we're not blocking the whole event loop while waiting.
+        logger.debug("Waiting for event to be set")
         await done_event.wait()
+        logger.debug("event set")
     except (KeyboardInterrupt, CancelledError):
+        logger.info("Interrupted during execution of %s", func.__name__)
         # We got interrupted while the external function thread was running.
         #
         # A few options:
@@ -75,5 +91,6 @@ async def call_sync_handler(msg: Msg) -> Any:  # noqa: ANN401
         assert n_threads <= 1, f"Raised async exception in multiple ({n_threads}) threads!"
         raise
     if exc is not None:
+        logger.debug("Re-raising %s thrown by %s", exc.__class__.__name__, func.__name__)
         raise exc
     return ret
