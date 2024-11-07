@@ -1,4 +1,4 @@
-# ibex_bluesky_core
+![ibex_bluesky_core](doc/logo.png)
 
 Core bluesky plan stubs &amp; devices for use at ISIS. Not instrument/technique specific.
 
