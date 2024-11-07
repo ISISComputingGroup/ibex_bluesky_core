@@ -24,15 +24,13 @@ async def call_sync_handler(msg: Msg) -> Any:  # noqa: ANN401
     loop = get_running_loop()
 
     def _wrapper() -> Any:  # noqa: ANN401
+        nonlocal ret, exc
         try:
-            nonlocal ret
             ret = func(*msg.args, **msg.kwargs)
         except _ExternalFunctionInterrupted:
             pass  # Suppress stack traces from our special interruption exception.
         except BaseException as e:
-            nonlocal exc
             exc = e
-            raise
         finally:
             loop.call_soon_threadsafe(done_event.set)
 
@@ -51,7 +49,7 @@ async def call_sync_handler(msg: Msg) -> Any:  # noqa: ANN401
         #   be a rather long-running external function, so would prevent the interrupt from working)
         # - Interrupt but don't actually kill the thread, this leads to a misleading result where
         #   a user gets the shell back but the task is still running in the background
-        # - Hack around with ctypes to inject an injection into the thread running the external
+        # - Hack around with ctypes to inject an exception into the thread running the external
         #   function. This is generally frowned upon as a bad idea, but may be the "least bad"
         #   solution to running potentially-blocking user code within a plan.
         # - Force users to pass in coroutines (which await regularly) or functions which check some

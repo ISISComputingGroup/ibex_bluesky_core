@@ -1,6 +1,6 @@
 """Core plan stubs."""
 
-from typing import Callable, Generator, ParamSpec, TypeVar
+from typing import Callable, Generator, ParamSpec, TypeVar, cast
 
 import bluesky.plan_stubs as bps
 from bluesky.utils import Msg
@@ -12,9 +12,7 @@ T = TypeVar("T")
 CALL_SYNC_MSG_KEY = "ibex_bluesky_core_call_sync"
 
 
-def call_sync(
-    func: Callable[P, T], *args: P.args, **kwargs: P.kwargs
-) -> Generator[Msg, None, None]:
+def call_sync(func: Callable[P, T], *args: P.args, **kwargs: P.kwargs) -> Generator[Msg, None, T]:
     """Call a synchronous user function in a plan, and returns the result of that call.
 
     Attempts to guard against the most common pitfalls of naive implementations, for example:
@@ -41,4 +39,4 @@ def call_sync(
 
     """
     yield from bps.clear_checkpoint()
-    return (yield Msg(CALL_SYNC_MSG_KEY, func, *args, **kwargs))
+    return cast(T, (yield Msg(CALL_SYNC_MSG_KEY, func, *args, **kwargs)))
