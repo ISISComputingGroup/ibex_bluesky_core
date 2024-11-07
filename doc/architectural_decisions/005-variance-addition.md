@@ -6,7 +6,7 @@ Current
 
 ## Context
 
-If we pass counts data to `scipp` as variance this is correct- but if one of the counts is 0 then its variance is 0, leading to a division by 0 error when calculating its weight for fitting `weight = 1 / doc["data"][self.yerr]`.
+If we pass counts data to `scipp` as variance this is correct- but if one of the counts is 0 then its variance is 0, leading to a division by 0 error when calculating its weight for fitting `weight = 1 / doc["data"][self.yerr]`. See `src\ibex_bluesky_core\devices\dae\dae_spectra.py line 118`.
 
 ## Decision
 
