@@ -1,6 +1,7 @@
 """IBEX plotting callbacks."""
 
 import logging
+from typing import Any
 
 import matplotlib
 import matplotlib.pyplot as plt
@@ -15,7 +16,24 @@ logger = logging.getLogger(__name__)
 class LivePlot(_DefaultLivePlot):
     """Live plot, customized for IBEX."""
 
-    def __init__(self, y, x=None, yerr=None, *args, **kwargs):
+    def __init__(
+        self,
+        y: str,
+        x: str | None = None,
+        yerr: str | None = None,
+        *args: Any,  # noqa: ANN401
+        **kwargs: Any,  # noqa: ANN401
+    ) -> None:
+        """Initialise LivePlot.
+
+        Args:
+            y (str): The name of the dependant variable.
+            x (str or None, optional): The name of the independant variable.
+            yerr (str or None, optional): Name of uncertainties signal.
+            *args: As per mpl_plotting.py
+            **kwargs: As per mpl_plotting.py
+
+        """
         super().__init__(y=y, x=x, *args, **kwargs)
         if yerr is not None:
             self.yerr, *others = get_obj_fields([yerr])
@@ -24,26 +42,28 @@ class LivePlot(_DefaultLivePlot):
         self.yerr_data = []
 
     def _show_plot(self) -> None:
+        """Call plt.show()."""
         # Play nicely with the "normal" backends too - only force show if we're
         # actually using our custom backend.
         if "genie_python" in matplotlib.get_backend():
             plt.show()
 
-    def event(self, doc: Event):
+    def event(self, doc: Event) -> None:
         """Process an event document (delegate to superclass, then show the plot)."""
         new_yerr = None if self.yerr is None else doc["data"][self.yerr]
         self.update_yerr(new_yerr)
         super().event(doc)
         self._show_plot()
 
-    def update_plot(self):
+    def update_plot(self) -> None:
+        """Create error bars if needed, then update plot."""
         if self.yerr is not None:
-            self.ax.errorbar(x=self.x_data, y=self.y_data, yerr=self.yerr_data, fmt="none")
+            self.ax.errorbar(x=self.x_data, y=self.y_data, yerr=self.yerr_data, fmt="none")  # type: ignore
         super().update_plot()
 
-    def update_yerr(self, y_err):
-        # super.update_caches(x, y)
-        self.yerr_data.append(y_err)
+    def update_yerr(self, yerr: float | None) -> None:
+        """Update uncertainties data."""
+        self.yerr_data.append(yerr)
 
     def start(self, doc: RunStart) -> None:
         """Process an start document (delegate to superclass, then show the plot)."""
