@@ -34,7 +34,7 @@ class LivePlot(_DefaultLivePlot):
             **kwargs: As per mpl_plotting.py
 
         """
-        super().__init__(y=y, x=x, *args, **kwargs) # noqa: B026
+        super().__init__(y=y, x=x, *args, **kwargs)  # noqa: B026
         if yerr is not None:
             self.yerr, *others = get_obj_fields([yerr])
         else:
