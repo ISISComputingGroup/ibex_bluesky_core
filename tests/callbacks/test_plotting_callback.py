@@ -57,11 +57,11 @@ def test_errorbars_created_if_yerr_is_given():
     yerr = 3
 
     # Fake just enough of an event document.
-    lp.start(  # type: ignore
+    lp.start(
         {
             "time": 0,
             "plan_name": "scan",
-            "uid": 0,
+            "uid": 0,  # type: ignore
             "scan_id": 0,
         }
     )
@@ -69,12 +69,12 @@ def test_errorbars_created_if_yerr_is_given():
     # Fake just enough of an event document.
     lp.event(
         {
-            "data": {  # type: ignore
+            "data": {
                 "y": y,
                 "x": x,
                 "yerr": yerr,
             }
-        }
+        }  # type: ignore
     )
 
     lp.ax.errorbar.assert_called_with(y=[y], x=[x], yerr=[yerr], fmt="none")  # type: ignore
@@ -86,14 +86,14 @@ def test_errorbars_not_created_if_no_yerr():
 
     lp = LivePlot(y="y", x="x", ax=ax)
 
-    lp.start(  # type: ignore
+    lp.start(
         {
             "time": 0,
             "plan_name": "scan",
-            "uid": 0,
+            "uid": 0,  # type: ignore
             "scan_id": 0,
         }
     )
 
     lp.update_plot()
-    assert not lp.ax.errorbar.called
+    assert not lp.ax.errorbar.called  # type: ignore
