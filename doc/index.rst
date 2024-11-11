@@ -101,6 +101,13 @@ Reference documentation
 
 .. toctree::
    :maxdepth: 2
+   :caption: Plan stubs
+   :glob:
+
+   plan_stubs/*
+
+.. toctree::
+   :maxdepth: 2
    :caption: Preprocessors
    :glob:
 
