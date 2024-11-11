@@ -1,5 +1,7 @@
 # `call_sync` (calling external code)
 
+API reference: {py:obj}`ibex_bluesky_core.plan_stubs.call_sync`
+
 All interaction with the "outside world" should be via bluesky messages, and **not** directly called from
 within a plan. For example, the following is **bad**:
 

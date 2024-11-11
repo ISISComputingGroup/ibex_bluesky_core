@@ -16,6 +16,7 @@ def call_sync(func: Callable[P, T], *args: P.args, **kwargs: P.kwargs) -> Genera
     """Call a synchronous user function in a plan, and returns the result of that call.
 
     Attempts to guard against the most common pitfalls of naive implementations, for example:
+
     - Blocking the whole event loop
     - Breaking keyboard interrupt handling
     - Not clearing the active checkpoint
