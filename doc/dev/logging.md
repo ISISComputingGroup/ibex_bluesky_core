@@ -7,7 +7,7 @@ logger = logging.getLogger(__name__)
 logger.warning("Message to be logged")
 ```
 
-The logger utilizes a `TimedRotatingFileHandler` defined in `ibex_bluesky_core.log` that rolls over the log at midnight.
+The logger utilizes a `TimedRotatingFileHandler` defined in `src/ibex_bluesky_core/log.py` that rolls over the log at midnight.
 
 By default, the log files will be created in `c:\instrument\var\logs\bluesky`. This can be configured by setting
 the `IBEX_BLUESKY_CORE_LOGS` environment variable.
