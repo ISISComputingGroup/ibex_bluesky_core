@@ -42,7 +42,7 @@ classifiers = [
 
 dependencies = [
   "bluesky",
-  "ophyd-async[ca] @ git+https://github.com/bluesky/ophyd-async@signal-typing",
+  "ophyd-async[ca] >= 0.8.0a4",
   "matplotlib",
   "lmfit",
   "scipy",
