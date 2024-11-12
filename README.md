@@ -1,8 +1,9 @@
-# ibex_bluesky_core
+![ibex_bluesky_core](https://github.com/IsisComputingGroup/ibex_bluesky_core/blob/main/doc/logo.png?raw=True)
 
 Core bluesky plan stubs &amp; devices for use at ISIS. Not instrument/technique specific.
 
-### Documentation
+Documentation: https://isiscomputinggroup.github.io/ibex_bluesky_core/
 
-See `doc/` folder for developer and user information e.g. how to set up a development 
-environment or how to create a release.
+Source: https://github.com/ISISComputingGroup/ibex_bluesky_core
+
+PyPi: https://pypi.org/project/ibex-bluesky-core/
