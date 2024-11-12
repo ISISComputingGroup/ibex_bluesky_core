@@ -29,7 +29,7 @@ from ibex_bluesky_core.devices.simpledae.reducers import (
 from ibex_bluesky_core.devices.simpledae.waiters import GoodFramesWaiter
 from ibex_bluesky_core.run_engine import get_run_engine
 
-NUM_POINTS = 3
+NUM_POINTS: int = 3
 
 
 def dae_scan_plan() -> Generator[Msg, None, None]:
@@ -114,7 +114,8 @@ def dae_scan_plan() -> Generator[Msg, None, None]:
     )
     def _inner() -> Generator[Msg, None, None]:
         num_points = NUM_POINTS
-        yield from bps.mv(dae.number_of_periods, num_points)
+        yield from bps.mv(dae.number_of_periods, num_points)  # type: ignore
+        # Pyright does not understand as bluesky isn't typed yet
         yield from bp.scan([dae], block, 0, 10, num=num_points)
 
     yield from _inner()
