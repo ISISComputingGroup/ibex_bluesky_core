@@ -18,6 +18,9 @@ __all__ = ["get_run_engine"]
 
 
 logger = logging.getLogger(__name__)
+from ibex_bluesky_core.plan_stubs import CALL_SYNC_MSG_KEY
+from ibex_bluesky_core.preprocessors import add_rb_number_processor
+from ibex_bluesky_core.run_engine._msg_handlers import call_sync_handler
 
 
 class _DuringTask(DuringTask):
@@ -92,6 +95,8 @@ def get_run_engine() -> RunEngine:
 
     log_callback = DocLoggingCallback()
     RE.subscribe(log_callback)
+
+    RE.register_command(CALL_SYNC_MSG_KEY, call_sync_handler)
 
     RE.preprocessors.append(functools.partial(bpp.plan_mutator, msg_proc=add_rb_number_processor))
 
