@@ -17,11 +17,10 @@ from ibex_bluesky_core.preprocessors import add_rb_number_processor
 __all__ = ["get_run_engine"]
 
 
-logger = logging.getLogger(__name__)
 from ibex_bluesky_core.plan_stubs import CALL_SYNC_MSG_KEY
-from ibex_bluesky_core.preprocessors import add_rb_number_processor
 from ibex_bluesky_core.run_engine._msg_handlers import call_sync_handler
 
+logger = logging.getLogger(__name__)
 
 class _DuringTask(DuringTask):
     def block(self, blocking_event: Event) -> None:
