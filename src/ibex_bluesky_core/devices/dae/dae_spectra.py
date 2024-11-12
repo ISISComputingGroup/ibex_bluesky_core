@@ -7,7 +7,7 @@ from event_model.documents.event_descriptor import DataKey
 from numpy import float32
 from numpy.typing import NDArray
 from ophyd_async.core import Array1D, SignalR, StandardReadable
-from ophyd_async.epics.signal import epics_signal_r
+from ophyd_async.epics.core import epics_signal_r
 
 
 class DaeSpectra(StandardReadable):

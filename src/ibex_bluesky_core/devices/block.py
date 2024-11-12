@@ -7,15 +7,15 @@ from typing import Callable, Generic, Type, TypeVar
 from bluesky.protocols import Locatable, Location, Movable, Triggerable
 from ophyd_async.core import (
     AsyncStatus,
-    HintedSignal,
     SignalDatatype,
     SignalR,
     SignalRW,
     StandardReadable,
+    StandardReadableFormat,
     observe_value,
 )
+from ophyd_async.epics.core import epics_signal_r, epics_signal_rw
 from ophyd_async.epics.motor import Motor
-from ophyd_async.epics.signal import epics_signal_r, epics_signal_rw
 
 from ibex_bluesky_core.devices import get_pv_prefix
 
@@ -96,7 +96,7 @@ class RunControl(StandardReadable):
             name: ophyd device name
 
         """
-        with self.add_children_as_readables(HintedSignal):
+        with self.add_children_as_readables(StandardReadableFormat.HINTED_SIGNAL):
             # When explicitly reading run control, the most obvious signal that people will be
             # interested in is whether the block is in range or not.
             self.in_range = epics_signal_r(bool, f"{prefix}INRANGE")
@@ -125,7 +125,7 @@ class BlockR(StandardReadable, Triggerable, Generic[T]):
             block_name: the name of the block
 
         """
-        with self.add_children_as_readables(HintedSignal):
+        with self.add_children_as_readables(StandardReadableFormat.HINTED_SIGNAL):
             self.readback: SignalR[T] = epics_signal_r(datatype, f"{prefix}CS:SB:{block_name}")
 
         # Run control doesn't need to be read by default

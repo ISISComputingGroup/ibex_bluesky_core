@@ -8,7 +8,7 @@ import zlib
 from typing import Type, TypeVar
 
 from ophyd_async.core import SignalDatatype, SignalRW
-from ophyd_async.epics.signal import epics_signal_rw
+from ophyd_async.epics.core import epics_signal_rw
 
 T = TypeVar("T", bound=SignalDatatype)
 

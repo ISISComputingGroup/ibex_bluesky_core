@@ -1,7 +1,7 @@
 """ophyd-async devices and utilities for the DAE event mode statistics."""
 
 from ophyd_async.core import SignalR, StandardReadable
-from ophyd_async.epics.signal import epics_signal_r
+from ophyd_async.epics.core import epics_signal_r
 
 
 class DaeEventMode(StandardReadable):

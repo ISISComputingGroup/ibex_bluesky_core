@@ -2,7 +2,7 @@
 
 from numpy import int32
 from ophyd_async.core import Array1D, SignalR, SignalRW, StandardReadable, StrictEnum
-from ophyd_async.epics.signal import epics_signal_r, epics_signal_rw
+from ophyd_async.epics.core import epics_signal_r, epics_signal_rw
 
 from ibex_bluesky_core.devices import isis_epics_signal_rw
 from ibex_bluesky_core.devices.dae.dae_controls import DaeControls
