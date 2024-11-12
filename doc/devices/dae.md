@@ -177,6 +177,8 @@ Published signals:
 - `simpledae.good_frames` - the number of good frames reported by the DAE
 - `reducer.det_counts` - summed detector counts for all of the user-provided spectra
 - `reducer.intensity` - normalized intensity (`det_counts / good_frames`)
+- `reducer.det_counts_stddev` - uncertainty (standard deviation) of the summed detector counts
+- `reducer.intensity_stddev` - uncertainty (standard deviation) of the normalised intensity
 
 ### PeriodGoodFramesNormalizer
 
@@ -187,6 +189,8 @@ Published signals:
 - `simpledae.period.good_frames` - the number of good frames reported by the DAE
 - `reducer.det_counts` - summed detector counts for all of the user-provided spectra
 - `reducer.intensity` - normalized intensity (`det_counts / good_frames`)
+- `reducer.det_counts_stddev` - uncertainty (standard deviation) of the summed detector counts
+- `reducer.intensity_stddev` - uncertainty (standard deviation) of the normalised intensity
 
 ### DetectorMonitorNormalizer
 
@@ -197,6 +201,9 @@ Published signals:
 - `reducer.det_counts` - summed detector counts for the user-provided detector spectra
 - `reducer.mon_counts` - summed monitor counts for the user-provided monitor spectra
 - `reducer.intensity` - normalized intensity (`det_counts / mon_counts`)
+- `reducer.det_counts_stddev` - uncertainty (standard deviation) of the summed detector counts
+- `reducer.mon_counts_stddev` - uncertainty (standard deviation) of the summed monitor counts
+- `reducer.intensity_stddev` - uncertainty (standard deviation) of the normalised intensity
 
 ## Waiters
 
