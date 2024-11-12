@@ -22,6 +22,7 @@ from ibex_bluesky_core.run_engine._msg_handlers import call_sync_handler
 
 logger = logging.getLogger(__name__)
 
+
 class _DuringTask(DuringTask):
     def block(self, blocking_event: Event) -> None:
         """On windows, event.wait() on the main thread is not interruptible by a CTRL-C.
