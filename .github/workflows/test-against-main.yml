@@ -18,7 +18,7 @@ jobs:
       - name: install latest bluesky and ophyd-async
         run: pip install --upgrade --force-reinstall git+https://github.com/bluesky/bluesky.git@main git+https://github.com/bluesky/ophyd-async.git@main
       - name: run ruff
-        run: python -m ruff --check
+        run: python -m ruff check
       - name: run pyright
         run: python -m pyright
       - name: run pytest
