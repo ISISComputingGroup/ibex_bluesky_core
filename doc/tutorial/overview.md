@@ -19,7 +19,7 @@ The most important concepts in bluesky are:
 - The **RunEngine** executes plans (possibly interacting with devices)
 - **Callbacks** do something with data emitted by the scan
 
-### Plans
+## Plans
 
 A plan is an _iterable_ of _messages_. A very simple plan, which doesn't do anything, is:
 
@@ -42,7 +42,7 @@ def plan():
     yield from bps.null()
 ```
 
-### Devices
+## Devices
 
 `ibex_bluesky_core` provides built-in support for a number of ISIS-specific devices. For example,
 blocks are available as devices:
@@ -60,7 +60,7 @@ Block objects provide several mechanisms for configuring write behaviour - see
 Likewise, the DAE is available as a bluesky device: see [the DAE Documentation](../devices/dae.md)
 for full examples including example configurations.
 
-### Setting and reading values
+## Setting and reading values
 
 Bluesky provides plan stubs for setting & reading values from bluesky devices: `bps.mv()` and 
 `bps.rd()` respectively.
@@ -86,7 +86,7 @@ external code in a plan.
 For more details about plan stubs (plan fragments like `mv` and `read`), see 
 [bluesky plan stubs documentation](https://blueskyproject.io/bluesky/main/plans.html#stub-plans)
 
-### Scanning
+## Scanning
 
 Having created some simple devices, those devices can be used in standard bluesky plans:
 
@@ -110,7 +110,7 @@ def my_plan(det_block_name: str, mot_block_name: str, start: float, stop: float,
 For details about plans which are available directly from `bluesky` - like `bp.scan` above - see 
 [bluesky's plan documentation](https://blueskyproject.io/bluesky/main/plans.html#pre-assembled-plans).
 
-### The `RunEngine`
+## The `RunEngine`
 
 The `RunEngine` is the central "conductor" in bluesky - it is responsible for reading a plan and
 performing the associated actions on the hardware. To get a run engine instance, use:
@@ -139,7 +139,7 @@ For more detail about the RunEngine, see:
 - [bluesky RunEngine docs](https://blueskyproject.io/bluesky/main/tutorial.html#the-runengine)
 - [bluesky RunEngine API docs](https://blueskyproject.io/bluesky/main/run_engine_api.html)
 
-### Callbacks
+## Callbacks
 
 Callbacks are bluesky's mechanism for listening to data from a scan. Some examples of common callbacks
 are:
@@ -185,7 +185,7 @@ be used for example to always configure a particular scan with plots and a fit w
 For more information on callbacks, see
 [bluesky callbacks documentation](https://blueskyproject.io/bluesky/main/callbacks.html).
 
-### See also
+## See also
 
 **Plans & plan-stubs**
 - Bluesky [experiment plans](https://blueskyproject.io/bluesky/main/plans.html#summary) 
