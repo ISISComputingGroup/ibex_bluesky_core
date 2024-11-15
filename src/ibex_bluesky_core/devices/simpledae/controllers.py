@@ -1,5 +1,6 @@
 """DAE control strategies."""
 
+import logging
 import typing
 
 from ophyd_async.core import (
@@ -13,15 +14,21 @@ from ibex_bluesky_core.devices.dae.dae import RunstateEnum
 from ibex_bluesky_core.devices.dae.dae_controls import BeginRunExBits
 from ibex_bluesky_core.devices.simpledae.strategies import Controller
 
+logger = logging.getLogger(__name__)
+
 if typing.TYPE_CHECKING:
     from ibex_bluesky_core.devices.simpledae import SimpleDae
 
 
 async def _end_or_abort_run(dae: "SimpleDae", save: bool) -> None:
     if save:
+        logger.info("ending run")
         await dae.controls.end_run.trigger(wait=True, timeout=None)
+        logger.info("run ended")
     else:
+        logger.info("aborting run")
         await dae.controls.abort_run.trigger(wait=True, timeout=None)
+        logger.info("run aborted")
 
 
 class PeriodPerPointController(Controller):
@@ -46,14 +53,17 @@ class PeriodPerPointController(Controller):
     async def setup(self, dae: "SimpleDae") -> None:
         """Pre-scan setup (begin a new run in paused mode)."""
         self._current_period = 0
+        logger.info("setting up new run")
         await dae.controls.begin_run_ex.set(BeginRunExBits.BEGIN_PAUSED)
         await wait_for_value(dae.run_state, RunstateEnum.PAUSED, timeout=10)
+        logger.info("setup complete")
 
     async def start_counting(self, dae: "SimpleDae") -> None:
         """Start counting a scan point.
 
         Increments the period by 1, then unpauses the run.
         """
+        logger.info("start counting")
         self._current_period += 1
         await dae.period_num.set(self._current_period, wait=True, timeout=None)
 
@@ -65,9 +75,11 @@ class PeriodPerPointController(Controller):
         )
 
         # Ensure frame counters have reset to zero for the new period.
+        logger.info("waiting for frame counters to be zero")
         await wait_for_value(dae.period.good_frames, 0, timeout=10)
         await wait_for_value(dae.period.raw_frames, 0, timeout=10)
 
+        logger.info("resuming run")
         await dae.controls.resume_run.trigger(wait=True, timeout=None)
         await wait_for_value(
             dae.run_state,
@@ -77,6 +89,7 @@ class PeriodPerPointController(Controller):
 
     async def stop_counting(self, dae: "SimpleDae") -> None:
         """Stop counting a scan point, by pausing the run."""
+        logger.info("stop counting")
         await dae.controls.pause_run.trigger(wait=True, timeout=None)
         await wait_for_value(dae.run_state, RunstateEnum.PAUSED, timeout=10)
 
@@ -113,6 +126,7 @@ class RunPerPointController(Controller, StandardReadable):
 
     async def start_counting(self, dae: "SimpleDae") -> None:
         """Start counting a scan point, by starting a DAE run."""
+        logger.info("start counting")
         await dae.controls.begin_run.trigger(wait=True, timeout=None)
         await wait_for_value(
             dae.run_state,
@@ -122,6 +136,7 @@ class RunPerPointController(Controller, StandardReadable):
 
         # Take care to read this after we've started a run, but before ending it, so that it
         # accurately reflects the run number we're actually counting into.
+        logger.info("saving current run number")
         run_number = await dae.current_or_next_run_number.get_value()
         self._run_number_setter(run_number)
 
