@@ -29,7 +29,7 @@ y = c_{n}x^n + c_{n-1}x^n-1 + ... + c_1 * x^1 + c_0
 y = \text{amp} * e^{-\frac{(x - x0) ^ 2}{2 * \text{sigma}^2}} + \text{background}
 ```
 
-![GaussianModel](./images_fits/gaussian.png)
+![GaussianModel](../_static/images_fits/gaussian.png)
 
 ## Lorentzian
 
@@ -42,7 +42,7 @@ y = \text{amp} * e^{-\frac{(x - x0) ^ 2}{2 * \text{sigma}^2}} + \text{background
 y = \frac{\text{amp}}{1 + \frac{x - \text{center}}{\text{sigma}}^2} + \text{background}
 ```
 
-![LorentzianModel](./images_fits/lorentzian.png)
+![LorentzianModel](../_static/images_fits/lorentzian.png)
 
 ## Damped Oscillator (DampedOsc)
 
@@ -55,7 +55,7 @@ y = \frac{\text{amp}}{1 + \frac{x - \text{center}}{\text{sigma}}^2} + \text{back
 y = \text{amp} * \cos((x - \text{center}) * \text{freq}) * e^{-\frac{x - \text{center}}{\text{width}^ 2}}
 ```
 
-![DampedOscModel](./images_fits/dampedosc.png)
+![DampedOscModel](../_static/images_fits/dampedosc.png)
 
 ##  Slit Scan (SlitScan)
 
@@ -77,7 +77,7 @@ y = \text{amp} * \cos((x - \text{center}) * \text{freq}) * e^{-\frac{x - \text{c
 y = \min(\text{lin_seg}, \text{exp_seg})
 ```
 
-![SlitScanModel](./images_fits/slitscan.png)
+![SlitScanModel](../_static/images_fits/slitscan.png)
 
 ## Error Function (ERF)
 
@@ -90,7 +90,7 @@ y = \min(\text{lin_seg}, \text{exp_seg})
 y = background + scale * erf(stretch * (x - cen))
 ```
 
-![ERFModel](./images_fits/erf.png)
+![ERFModel](../_static/images_fits/erf.png)
 
 ## Complementary Error Function (ERFC)
 
@@ -103,7 +103,7 @@ y = background + scale * erf(stretch * (x - cen))
 y = background + scale * erfc(stretch * (x - cen))
 ```
 
-![ERFCModel](./images_fits/erfc.png)
+![ERFCModel](../_static/images_fits/erfc.png)
 
 ## Top Hat (TopHat)
 
@@ -120,7 +120,7 @@ y =
 \end{cases}
 ```
 
-![TopHatModel](./images_fits/tophat.png)
+![TopHatModel](../_static/images_fits/tophat.png)
 
 ## Trapezoid
 
@@ -140,4 +140,4 @@ g(x) = \max(f(x), \text{background})
 y = \min(g(x), \text{background} + \text{height})
 ```
 
-![TrapezoidModel](./images_fits/trapezoid.png)
+![TrapezoidModel](../_static/images_fits/trapezoid.png)
