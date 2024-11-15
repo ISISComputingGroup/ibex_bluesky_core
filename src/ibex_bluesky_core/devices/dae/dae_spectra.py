@@ -108,6 +108,6 @@ class DaeSpectra(StandardReadable):
             raise ValueError("Could not determine engineering units of tof edges.")
 
         return sc.DataArray(
-            data=sc.Variable(dims=["tof"], values=counts, variances=counts, unit=sc.units.counts),
-            coords={"tof": sc.array(dims=["tof"], values=tof_edges, unit=sc.Unit(unit))},
+            data=sc.Variable(dims=["tof"], values=counts, variances=counts, unit=sc.units.counts, dtype="float64"),
+            coords={"tof": sc.array(dims=["tof"], values=tof_edges, unit=sc.Unit(unit), dtype="float64")},
         )
