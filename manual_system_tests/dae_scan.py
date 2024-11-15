@@ -114,7 +114,7 @@ def dae_scan_plan() -> Generator[Msg, None, None]:
     def _inner() -> Generator[Msg, None, None]:
         num_points = NUM_POINTS
         yield from bps.mv(dae.number_of_periods, num_points)  # type: ignore
-        # Pyright does not understand as bluesky isn't typed yet
+        # Pyright does not understand as bluesky isn't fully typed yet
         yield from bp.scan([dae], block, 0, 10, num=num_points)
 
     yield from _inner()
