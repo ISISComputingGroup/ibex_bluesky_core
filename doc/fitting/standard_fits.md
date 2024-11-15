@@ -55,7 +55,7 @@ y = \frac{\text{amp}}{1 + \frac{x - \text{center}}{\text{sigma}}^2} + \text{back
 y = \text{amp} * \cos((x - \text{center}) * \text{freq}) * e^{-\frac{x - \text{center}}{\text{width}^ 2}}
 ```
 
-![DampedOscModel](../_static/images_fits/dampedosc.png)
+![DampedOscModel](../_static/images_fits/damped_osc.png)
 
 ##  Slit Scan (SlitScan)
 
@@ -77,7 +77,7 @@ y = \text{amp} * \cos((x - \text{center}) * \text{freq}) * e^{-\frac{x - \text{c
 y = \min(\text{lin_seg}, \text{exp_seg})
 ```
 
-![SlitScanModel](../_static/images_fits/slitscan.png)
+![SlitScanModel](../_static/images_fits/slit_scan.png)
 
 ## Error Function (ERF)
 
