@@ -10,7 +10,9 @@ from ibex_bluesky_core.devices.simpledae.reducers import (
     GoodFramesNormalizer,
     MonitorNormalizer,
     PeriodGoodFramesNormalizer,
+    ScalarNormalizer
 )
+from ibex_bluesky_core.devices.simpledae.reducers import tof_bounded_spectra
 
 
 @pytest.fixture
@@ -30,6 +32,38 @@ async def good_frames_reducer() -> GoodFramesNormalizer:
 @pytest.fixture
 async def monitor_normalizer() -> MonitorNormalizer:
     reducer = MonitorNormalizer(prefix="", detector_spectra=[1], monitor_spectra=[2])
+    await reducer.connect(mock=True)
+    return reducer
+
+
+@pytest.fixture
+async def scalar_normalizer_bounded_sum_zero_to_one_half(simpledae: SimpleDae) -> ScalarNormalizer:
+    set_mock_value(simpledae.period.good_frames, 1)
+    reducer = PeriodGoodFramesNormalizer(prefix="", detector_spectra=[1,2], summer=tof_bounded_spectra(sc.array(dims=["tof"], values=[0, 0.5], unit=sc.units.us)))
+    await reducer.connect(mock=True)
+    return reducer
+
+
+@pytest.fixture
+async def scalar_normalizer_bounded_sum_one_to_one(simpledae: SimpleDae) -> ScalarNormalizer:
+    set_mock_value(simpledae.period.good_frames, 1)
+    reducer = PeriodGoodFramesNormalizer(prefix="", detector_spectra=[1,2], summer=tof_bounded_spectra(sc.array(dims=["tof"], values=[1.0, 1.0], unit=sc.units.us)))
+    await reducer.connect(mock=True)
+    return reducer    
+                                                                                                                          
+
+@pytest.fixture
+async def spectra_bins_easy_to_test() -> sc.DataArray:
+    return sc.DataArray(
+            data=sc.Variable(dims=["tof"], values=[1000.0, 2000.0, 3000.0, 2000.0, 1000.0], unit=sc.units.counts, dtype="float64"),
+            coords={"tof": sc.array(dims=["tof"], values=[0, 1, 2, 3, 4, 5], unit=sc.units.us, dtype="float64")},
+    )
+
+
+@pytest.fixture
+async def scalar_normalizer_unbounded_sum(simpledae: SimpleDae) -> ScalarNormalizer:
+    set_mock_value(simpledae.period.good_frames, 1)
+    reducer = PeriodGoodFramesNormalizer(prefix="", detector_spectra=[1,2], summer=tof_bounded_spectra(sc.array(dims=["tof"], values=[], unit=sc.units.us)))
     await reducer.connect(mock=True)
     return reducer
 
@@ -134,7 +168,7 @@ async def test_period_good_frames_normalizer_uncertainties(
                 variances=[4000.0, 5000.0, 6000.0],
                 unit=sc.units.counts,
             ),
-            coords={"tof": sc.array(dims=["tof"], values=[0, 1, 2, 3])},
+            coords={"tof": sc.array(dims=["tof"], values=[0, 1, 2, 3], unit=sc.units.us, dtype="float64")},
         )
     )
 
@@ -158,7 +192,7 @@ async def test_period_good_frames_normalizer_zero_counts(
                 variances=[0.0, 0.0, 0.0],
                 unit=sc.units.counts,
             ),
-            coords={"tof": sc.array(dims=["tof"], values=[0, 1, 2, 3])},
+            coords={"tof": sc.array(dims=["tof"], values=[0, 1, 2, 3], unit=sc.units.us, dtype="float64")},
         )
     )
     period_good_frames_reducer.detectors[2].read_spectrum_dataarray = AsyncMock(
@@ -169,7 +203,7 @@ async def test_period_good_frames_normalizer_zero_counts(
                 variances=[0.0, 0.0, 0.0],
                 unit=sc.units.counts,
             ),
-            coords={"tof": sc.array(dims=["tof"], values=[0, 1, 2, 3])},
+            coords={"tof": sc.array(dims=["tof"], values=[0, 1, 2, 3], unit=sc.units.us, dtype="float64")},
         )
     )
 
@@ -302,3 +336,88 @@ async def test_monitor_normalizer_publishes_raw_and_normalized_count_uncertainti
     assert monitor_normalizer.intensity_stddev in readables
     assert monitor_normalizer.det_counts_stddev in readables
     assert monitor_normalizer.mon_counts_stddev in readables
+
+async def test_tof_bounded_spectra_half_of_first_bin_rebinned_correctly(
+    simpledae: SimpleDae,
+    scalar_normalizer_bounded_sum_zero_to_one_half: ScalarNormalizer
+    ):
+
+    scalar_normalizer_bounded_sum_zero_to_one_half.detectors[1].read_spectrum_dataarray = AsyncMock(
+        return_value=sc.DataArray(
+            data=sc.Variable(
+                dims=["tof"],
+                values=[1000.0, 2000.0, 3000.0],
+                variances=[1000.0, 2000.0, 3000.0],
+                unit=sc.units.counts,
+                dtype="float64"
+            ),
+            coords={"tof": sc.array(dims=["tof"], values=[0, 1, 2, 3], unit=sc.units.us,
+                dtype="float64")},
+        )
+    )
+    scalar_normalizer_bounded_sum_zero_to_one_half.detectors[2].read_spectrum_dataarray = AsyncMock(
+        return_value=sc.DataArray(
+            data=sc.Variable(
+                dims=["tof"],
+                values=[4000.0, 5000.0, 6000.0],
+                variances=[4000.0, 5000.0, 6000.0],
+                unit=sc.units.counts,
+                dtype="float64",
+            ),
+            coords={"tof": sc.array(dims=["tof"], values=[0, 1, 2, 3], unit=sc.units.us,
+                dtype="float64")},
+        )
+    )
+
+    await scalar_normalizer_bounded_sum_zero_to_one_half.reduce_data(simpledae)
+
+    det_counts = await scalar_normalizer_bounded_sum_zero_to_one_half.det_counts.get_value()
+    intensity = await scalar_normalizer_bounded_sum_zero_to_one_half.intensity.get_value()
+
+    assert det_counts == 2500 # 500 from first detector + 2000 from second detector
+    assert intensity == pytest.approx(2500)
+
+
+async def test_tof_bounded_spectra_upper_and_lower_bound_equal(
+    simpledae: SimpleDae,
+    scalar_normalizer_bounded_sum_one_to_one: ScalarNormalizer,
+    spectra_bins_easy_to_test: sc.DataArray
+):
+    
+    scalar_normalizer_bounded_sum_one_to_one.detectors[1].read_spectrum_dataarray = AsyncMock(
+        return_value=spectra_bins_easy_to_test
+    )
+
+    scalar_normalizer_bounded_sum_one_to_one.detectors[2].read_spectrum_dataarray = AsyncMock(
+        return_value=spectra_bins_easy_to_test
+    )
+
+    await scalar_normalizer_bounded_sum_one_to_one.reduce_data(simpledae)
+
+    det_counts = await scalar_normalizer_bounded_sum_one_to_one.det_counts.get_value()
+    intensity = await scalar_normalizer_bounded_sum_one_to_one.intensity.get_value()
+
+    assert det_counts == 0 # 500 from first detector + 2000 from second detector
+    assert intensity == pytest.approx(0)
+
+
+async def test_tof_bounded_spectra_no_upper_bound(
+    simpledae: SimpleDae,
+    scalar_normalizer_unbounded_sum: ScalarNormalizer,
+    spectra_bins_easy_to_test: sc.DataArray
+):
+    scalar_normalizer_unbounded_sum.detectors[1].read_spectrum_dataarray = AsyncMock(
+        return_value=spectra_bins_easy_to_test
+    )
+
+    scalar_normalizer_unbounded_sum.detectors[2].read_spectrum_dataarray = AsyncMock(
+        return_value=spectra_bins_easy_to_test
+    )
+
+    await scalar_normalizer_unbounded_sum.reduce_data(simpledae)
+
+    det_counts = await scalar_normalizer_unbounded_sum.det_counts.get_value()
+    intensity = await scalar_normalizer_unbounded_sum.intensity.get_value()
+
+    assert det_counts == 9000.0 # 1 + 2 + 3 + 2 + 1 thousand = 9 thousand
+    assert intensity == pytest.approx(9000.0)
