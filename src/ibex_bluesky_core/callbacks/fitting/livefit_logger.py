@@ -1,6 +1,7 @@
 """Creates a readable .csv file of Bluesky fitting metrics."""
 
 import csv
+import logging
 from pathlib import Path
 from typing import Optional
 
@@ -11,11 +12,11 @@ from event_model.documents.run_start import RunStart
 from event_model.documents.run_stop import RunStop
 
 from ibex_bluesky_core.callbacks.fitting import LiveFit
-import logging
 
 UID = "uid"
 DATA = "data"
 logger = logging.getLogger(__name__)
+
 
 class LiveFitLogger(CallbackBase):
     """Generates files as part of a scan that describe the fit(s) which have been performed."""
@@ -123,9 +124,7 @@ class LiveFitLogger(CallbackBase):
             self.write_fields_table()
 
             csvfile.close()
-            logger.info(
-                f"Fitting information successfully written to {self.filename}"
-            )
+            logger.info(f"Fitting information successfully written to {self.filename}")
 
     def write_fields_table(self) -> None:
         """Write collected run info to the fitting file."""
