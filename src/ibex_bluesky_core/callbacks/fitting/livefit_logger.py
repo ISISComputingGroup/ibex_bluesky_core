@@ -11,11 +11,11 @@ from event_model.documents.run_start import RunStart
 from event_model.documents.run_stop import RunStop
 
 from ibex_bluesky_core.callbacks.fitting import LiveFit
-from ibex_bluesky_core.logger import logger
+import logging
 
 UID = "uid"
 DATA = "data"
-
+logger = logging.getLogger(__name__)
 
 class LiveFitLogger(CallbackBase):
     """Generates files as part of a scan that describe the fit(s) which have been performed."""
@@ -99,7 +99,7 @@ class LiveFitLogger(CallbackBase):
 
         """
         if self.livefit.result is None:
-            logger.blueskylogger.error("LiveFit.result was None. Could not write to file.")
+            logger.error("LiveFit.result was None. Could not write to file.")
             return
 
         # Evaluate the model function at equally-spaced points.
@@ -123,7 +123,7 @@ class LiveFitLogger(CallbackBase):
             self.write_fields_table()
 
             csvfile.close()
-            logger.blueskylogger.info(
+            logger.info(
                 f"Fitting information successfully written to {self.filename}"
             )
 
