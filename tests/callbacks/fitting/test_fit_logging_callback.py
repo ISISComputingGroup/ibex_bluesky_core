@@ -1,32 +1,28 @@
+# pyright: reportMissingParameterType=false
 from pathlib import Path
 from unittest.mock import MagicMock, mock_open, patch
-from bluesky.plans import scan
-import packaging
-import pytest
 
+import pytest
+from bluesky.plans import scan
+from ophyd.sim import InvariantSignal
+
+from ibex_bluesky_core import run_engine
 from ibex_bluesky_core.callbacks.fitting import FitMethod, LiveFit
 from ibex_bluesky_core.callbacks.fitting.fitting_utils import Linear
 from ibex_bluesky_core.callbacks.fitting.livefit_logger import LiveFitLogger
 
-import ophyd
-from ophyd.sim import InvariantSignal
 
 # Taken from bluesky bluesky\tests\test_callbacks.py
 @pytest.fixture(scope="function")
-def hw(tmp_path):
-
+def hw(tmp_path: str):
     from ophyd.sim import hw
 
-    # ophyd 1.4.0 added support for customizing the directory used by simulated
-    # hardware that generates files
-    if packaging.version.Version(ophyd.__version__) >= packaging.version.Version("1.4.0"):
-        return hw(str(tmp_path))
-    else:
-        return hw()
+    return hw(str(tmp_path))
 
 
-def test_after_fitting_callback_writes_to_file_successfully_no_y_uncertainity(RE, hw):
-
+def test_after_fitting_callback_writes_to_file_successfully_no_y_uncertainity(
+    RE: run_engine.RunEngine, hw
+):
     invariant = InvariantSignal(func=lambda: 0.5, name="invariant", labels={"detectors"})
 
     filepath = Path("C:\\") / "instrument" / "var" / "logs"
@@ -37,9 +33,10 @@ def test_after_fitting_callback_writes_to_file_successfully_no_y_uncertainity(RE
     lfl = LiveFitLogger(lf, y="invariant", x="motor", output_dir=filepath, postfix=postfix)
 
     with patch("ibex_bluesky_core.callbacks.fitting.livefit_logger.open", m):
-        result = RE(scan([invariant], hw.motor, -1, 1, 3), [lf, lfl])
+        result = RE(scan([invariant], hw.motor, -1, 1, 3), [lf, lfl])  # type: ignore
+        # "InvariantSignal" is incompatible with protocol "Readable"
 
-    assert m.call_args_list[0].args == (filepath / f"{result.run_start_uids[0]}{postfix}.csv", "w")
+    assert m.call_args_list[0].args == (filepath / f"{result.run_start_uids[0]}{postfix}.csv", "w")  # type: ignore
 
     handle = m()
     args = []
@@ -51,8 +48,9 @@ def test_after_fitting_callback_writes_to_file_successfully_no_y_uncertainity(RE
     assert "x,y,modelled y\r\n" in args
 
 
-def test_after_fitting_callback_writes_to_file_successfully_with_y_uncertainity(RE, hw):
-
+def test_after_fitting_callback_writes_to_file_successfully_with_y_uncertainity(
+    RE: run_engine.RunEngine, hw
+):
     invariant = InvariantSignal(func=lambda: 0.5, name="invariant", labels={"detectors"})
     uncertainty = InvariantSignal(func=lambda: 1.0, name="uncertainty", labels={"detectors"})
 
@@ -61,12 +59,15 @@ def test_after_fitting_callback_writes_to_file_successfully_with_y_uncertainity(
     m = mock_open()
 
     lf = LiveFit(Linear.fit(), y="invariant", x="motor", update_every=50)
-    lfl = LiveFitLogger(lf, y="invariant", x="motor", yerr="uncertainty", output_dir=filepath, postfix=postfix)
+    lfl = LiveFitLogger(
+        lf, y="invariant", x="motor", yerr="uncertainty", output_dir=filepath, postfix=postfix
+    )
 
     with patch("ibex_bluesky_core.callbacks.fitting.livefit_logger.open", m):
-        result = RE(scan([invariant, uncertainty], hw.motor, -1, 1, 3), [lf, lfl])
+        result = RE(scan([invariant, uncertainty], hw.motor, -1, 1, 3), [lf, lfl])  # type: ignore
+        # "InvariantSignal" is incompatible with protocol "Readable"
 
-    assert m.call_args_list[0].args == (filepath / f"{result.run_start_uids[0]}{postfix}.csv", "w")
+    assert m.call_args_list[0].args == (filepath / f"{result.run_start_uids[0]}{postfix}.csv", "w")  # type: ignore
 
     handle = m()
     args = []
@@ -78,8 +79,7 @@ def test_after_fitting_callback_writes_to_file_successfully_with_y_uncertainity(
     assert "x,y,y uncertainty,modelled y\r\n" in args
 
 
-def test_file_not_written_if_no_fitting_result(RE, hw):
-
+def test_file_not_written_if_no_fitting_result(RE: run_engine.RunEngine, hw):
     invariant = InvariantSignal(func=lambda: 0.5, name="invariant", labels={"detectors"})
 
     filepath = Path("C:\\") / "instrument" / "var" / "logs"
@@ -94,7 +94,7 @@ def test_file_not_written_if_no_fitting_result(RE, hw):
     lfl = LiveFitLogger(lf, y="invariant", x="motor", output_dir=filepath, postfix=postfix)
 
     with patch("ibex_bluesky_core.callbacks.fitting.livefit_logger.open", m):
-
-        RE(scan([invariant], hw.motor, -1, 1, 3), [lf, lfl])
+        RE(scan([invariant], hw.motor, -1, 1, 3), [lf, lfl])  # type: ignore
+        # "InvariantSignal" is incompatible with protocol "Readable"
 
     assert not m.called

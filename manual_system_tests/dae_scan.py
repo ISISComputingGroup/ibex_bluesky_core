@@ -73,9 +73,7 @@ def dae_scan_plan() -> Generator[Msg, None, None]:
     reducer.intensity.set_name("normalized counts")
 
     _, ax = plt.subplots()
-    lf = LiveFit(
-        Linear.fit(), y=reducer.intensity.name, x=block.name
-    )
+    lf = LiveFit(Linear.fit(), y=reducer.intensity.name, x=block.name)
 
     yield from ensure_connected(block, dae, force_reconnect=True)
 
@@ -92,13 +90,7 @@ def dae_scan_plan() -> Generator[Msg, None, None]:
                 ],
             ),
             LiveFitPlot(livefit=lf, ax=ax),
-            LivePlot(
-                y=reducer.intensity.name,
-                x=block.name,
-                marker="x",
-                linestyle="none",
-                ax=ax
-            ),
+            LivePlot(y=reducer.intensity.name, x=block.name, marker="x", linestyle="none", ax=ax),
             LiveTable(
                 [
                     block.name,
@@ -110,7 +102,13 @@ def dae_scan_plan() -> Generator[Msg, None, None]:
                     dae.good_frames.name,
                 ]
             ),
-            LiveFitLogger(lf, y=reducer.intensity.name, x=block.name, output_dir=Path(f"C:\\Instrument\\Var\\logs\\bluesky\\fitting"), yerr=reducer.intensity_stddev.name)
+            LiveFitLogger(
+                lf,
+                y=reducer.intensity.name,
+                x=block.name,
+                output_dir=Path("C:\\Instrument\\Var\\logs\\bluesky\\fitting"),
+                yerr=reducer.intensity_stddev.name,
+            ),
         ]
     )
     def _inner() -> Generator[Msg, None, None]:

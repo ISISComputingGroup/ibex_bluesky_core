@@ -37,7 +37,7 @@ class FitMethod:
         self.guess = guess
 
         if callable(model):
-            self.model = lmfit.Model(model, name=self.guess.__qualname__.split('.')[0])
+            self.model = lmfit.Model(model)
         else:
             self.model = model
 

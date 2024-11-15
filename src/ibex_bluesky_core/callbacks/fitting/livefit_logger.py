@@ -1,32 +1,46 @@
-from event_model.documents.event import Event
+"""Creates a readable .csv file of Bluesky fitting metrics."""
+
 import csv
 from pathlib import Path
 from typing import Optional
-from bluesky.callbacks import CallbackBase
-from event_model.documents.run_stop import RunStop
-from event_model.documents.run_start import RunStart
-from ibex_bluesky_core.logger import logger
+
 import numpy as np
+from bluesky.callbacks import CallbackBase
+from event_model.documents.event import Event
+from event_model.documents.run_start import RunStart
+from event_model.documents.run_stop import RunStop
+
 from ibex_bluesky_core.callbacks.fitting import LiveFit
+from ibex_bluesky_core.logger import logger
 
 UID = "uid"
 DATA = "data"
 
+
 class LiveFitLogger(CallbackBase):
     """Generates files as part of a scan that describe the fit(s) which have been performed."""
-    
-    def __init__(self, livefit: LiveFit, y: str, x: str, output_dir: Path, postfix: str | None = None, yerr : str | None = None) -> None:
-        """Initialises LiveFitLogger callback.
-        
+
+    def __init__(
+        self,
+        livefit: LiveFit,
+        y: str,
+        x: str,
+        output_dir: Path,
+        postfix: str | None = None,
+        yerr: str | None = None,
+    ) -> None:
+        """Initialise LiveFitLogger callback.
+
         Args:
             livefit (LiveFit): A reference to LiveFit callback to collect fit info from.
             y (str): The name of the signal pointing to y counts data.
             x (str): The name of the signal pointing to x counts data.
             output_dir (str): A path to where the fitting file should be stored.
-            postfix (str): A small string that should be placed at the end of the file name to prevent overwriting.
+            postfix (str): A small string that should be placed at the end of the
+                filename to prevent overwriting.
             yerr (str): The name of the signal pointing to y count uncertainties data.
-        """
 
+        """
         super().__init__()
         self.livefit = livefit
         self.postfix = "" if postfix is None else postfix
@@ -44,12 +58,13 @@ class LiveFitLogger(CallbackBase):
         self.x_data = np.array([])
         self.y_data = np.array([])
         self.yerr_data = np.array([])
-    
+
     def start(self, doc: RunStart) -> None:
         """Create the output directory if it doesn't already exist then setting the filename.
 
         Args:
             doc (RunStart): The start bluesky document.
+
         """
         self.output_dir.mkdir(parents=True, exist_ok=True)
         self.current_start_document = doc[UID]
@@ -57,11 +72,11 @@ class LiveFitLogger(CallbackBase):
 
     def event(self, doc: Event) -> Event:
         """Start collecting, y, x and yerr data.
-        
+
         Args:
             doc: (Event): An event document.
+
         """
-        
         event_data = doc[DATA]
 
         assert self.x in event_data
@@ -77,12 +92,12 @@ class LiveFitLogger(CallbackBase):
         return super().event(doc)
 
     def stop(self, doc: RunStop) -> None:
-        """Writes to the fitting file.
-        
+        """Write to the fitting file.
+
         Args:
             doc (RunStop): The stop bluesky document.
+
         """
-        
         if self.livefit.result is None:
             logger.blueskylogger.error("LiveFit.result was None. Could not write to file.")
             return
@@ -95,7 +110,7 @@ class LiveFitLogger(CallbackBase):
         self.stats = str(self.livefit.result.fit_report()).split("\n")
 
         # Writing to csv file
-        with open(self.filename, 'w', newline='') as csvfile:
+        with open(self.filename, "w", newline="") as csvfile:
             # Writing the data
             self.csvwriter = csv.writer(csvfile)
 
@@ -108,22 +123,24 @@ class LiveFitLogger(CallbackBase):
             self.write_fields_table()
 
             csvfile.close()
-            logger.blueskylogger.info(f"Fitting information successfully written to {self.filename}")
+            logger.blueskylogger.info(
+                f"Fitting information successfully written to {self.filename}"
+            )
 
-    def write_fields_table(self):
-        """Write collected run info to the fitting file.
-        """
-
-        if self.yerr is not None:
-                row = ["x", "y", "y uncertainty", "modelled y"]
-        else:
-            row = ["x", "y", "modelled y"]
-        
+    def write_fields_table(self) -> None:
+        """Write collected run info to the fitting file."""
+        row = ["x", "y", "modelled y"]
         self.csvwriter.writerow(row)
 
         for i in range(0, self.x_data.size):
             self.csvwriter.writerow([self.x_data[i], self.y_data[i], self.y_fit_data[i]])
 
-        # docs
-        # fix model name??
-        # x, indep variable fixed name
+    def write_fields_table_uncertainty(self) -> None:
+        """Write collected run info to the fitting file with uncertainties."""
+        row = ["x", "y", "y uncertainty", "modelled y"]
+        self.csvwriter.writerow(row)
+
+        for i in range(0, self.x_data.size):
+            self.csvwriter.writerow(
+                [self.x_data[i], self.y_data[i], self.yerr_data[i], self.y_fit_data[i]]
+            )
