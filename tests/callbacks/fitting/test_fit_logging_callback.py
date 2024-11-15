@@ -75,7 +75,6 @@ def test_after_fitting_callback_writes_to_file_successfully_with_y_uncertainity(
     # Check that it starts writing to the file in the expected way
     for i in handle.write.call_args_list:
         args.append(i.args[0])
-
     assert "x,y,y uncertainty,modelled y\r\n" in args
 
 

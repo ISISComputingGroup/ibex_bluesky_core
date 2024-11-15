@@ -88,7 +88,7 @@ class LiveFitLogger(CallbackBase):
 
         if self.yerr is not None:
             assert self.yerr in event_data
-            np.append(self.yerr_data, [event_data[self.yerr]])
+            self.yerr_data = np.append(self.yerr_data, [event_data[self.yerr]])
 
         return super().event(doc)
 
@@ -121,7 +121,10 @@ class LiveFitLogger(CallbackBase):
             self.csvwriter.writerow([])
             self.csvwriter.writerow([])
 
-            self.write_fields_table()
+            if self.yerr is None:
+                self.write_fields_table()
+            else:
+                self.write_fields_table_uncertainty()
 
             csvfile.close()
             logger.info(f"Fitting information successfully written to {self.filename}")
