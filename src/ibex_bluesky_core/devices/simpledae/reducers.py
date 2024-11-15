@@ -13,6 +13,7 @@ from ophyd_async.core import (
     StandardReadable,
     soft_signal_r_and_setter,
 )
+from typing import Callable, Awaitable
 
 from ibex_bluesky_core.devices.dae.dae_spectra import DaeSpectra
 from ibex_bluesky_core.devices.simpledae.strategies import Reducer
@@ -36,10 +37,29 @@ async def sum_spectra(spectra: Collection[DaeSpectra]) -> sc.Variable | sc.DataA
     return summed_counts
 
 
+def tof_bounded_spectra(bounds: sc.Variable) -> Callable[[Collection[DaeSpectra]], Awaitable[sc.Variable | sc.DataArray]]:
+    if "tof" not in bounds.dims:
+        raise ValueError("Should contain tof dims") # todo write tests covering this
+    if bounds.sizes["tof"] != 2:
+        raise ValueError("Should contain lower and upper bound") # todo write tests covering this
+    async def sum_spectra_with_tof(spectra: Collection[DaeSpectra]) -> sc.Variable | sc.DataArray:
+        """
+        sums spectra, bounded by a time of flight upper and lower bound
+        """
+        summed_counts = sc.scalar(value=0, unit=sc.units.counts, dtype="float64")
+        for spec in asyncio.as_completed([s.read_spectrum_dataarray() for s in spectra]):
+            tof_bound_spectra = await spec
+            summed_counts += tof_bound_spectra.rebin({
+                "tof": bounds
+            }).sum()
+        return summed_counts
+    return sum_spectra_with_tof
+
+
 class ScalarNormalizer(Reducer, StandardReadable, metaclass=ABCMeta):
     """Sum a set of user-specified spectra, then normalize by a scalar signal."""
 
-    def __init__(self, prefix: str, detector_spectra: Sequence[int]) -> None:
+    def __init__(self, prefix: str, detector_spectra: Sequence[int], summer: Callable[[Collection[DaeSpectra]], Awaitable[sc.Variable | sc.DataArray]] = sum_spectra) -> None:
         """Init.
 
         Args:
@@ -65,6 +85,7 @@ class ScalarNormalizer(Reducer, StandardReadable, metaclass=ABCMeta):
         self.intensity_stddev, self._intensity_stddev_setter = soft_signal_r_and_setter(
             float, 0.0, precision=INTENSITY_PRECISION
         )
+        self.summer = summer
 
         super().__init__(name="")
 
@@ -75,7 +96,7 @@ class ScalarNormalizer(Reducer, StandardReadable, metaclass=ABCMeta):
     async def reduce_data(self, dae: "SimpleDae") -> None:
         """Apply the normalization."""
         summed_counts, denominator = await asyncio.gather(
-            sum_spectra(self.detectors.values()), self.denominator(dae).get_value()
+            self.summer(self.detectors.values()), self.denominator(dae).get_value()
         )
 
         self._det_counts_setter(float(summed_counts.value))
