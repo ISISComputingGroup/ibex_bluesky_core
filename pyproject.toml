@@ -110,3 +110,6 @@ reportUntypedClassDecorator = true
 reportUntypedFunctionDecorator = true
 
 [tool.setuptools_scm]
+
+[tool.build_sphinx]
+
