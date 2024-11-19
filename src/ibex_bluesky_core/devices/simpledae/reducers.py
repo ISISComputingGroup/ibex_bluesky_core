@@ -145,7 +145,11 @@ class MonitorNormalizer(Reducer, StandardReadable):
     """Normalize a set of user-specified detector spectra by user-specified monitor spectra."""
 
     def __init__(
-        self, prefix: str, detector_spectra: Sequence[int], monitor_spectra: Sequence[int]
+        self, prefix: str, detector_spectra: Sequence[int], monitor_spectra: Sequence[int], 
+        detector_summer: Callable[[Collection[DaeSpectra]], 
+                         Awaitable[sc.Variable | sc.DataArray]] = sum_spectra,
+        monitor_summer: Callable[[Collection[DaeSpectra]], 
+                         Awaitable[sc.Variable | sc.DataArray]] = sum_spectra
     ) -> None:
         """Init.
 
@@ -178,13 +182,15 @@ class MonitorNormalizer(Reducer, StandardReadable):
         self.intensity_stddev, self._intensity_stddev_setter = soft_signal_r_and_setter(
             float, 0.0, precision=INTENSITY_PRECISION
         )
+        self.detector_summer = detector_summer
+        self.monitor_summer = monitor_summer
 
         super().__init__(name="")
 
     async def reduce_data(self, dae: "SimpleDae") -> None:
         """Apply the normalization."""
         detector_counts, monitor_counts = await asyncio.gather(
-            sum_spectra(self.detectors.values()), sum_spectra(self.monitors.values())
+            self.detector_summer(self.detectors.values()), self.monitor_summer(self.monitors.values())
         )
 
         if monitor_counts.value == 0.0:  # To avoid zero division
