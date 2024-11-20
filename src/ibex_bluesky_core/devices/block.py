@@ -21,7 +21,7 @@ from ibex_bluesky_core.devices import get_pv_prefix
 
 logger = logging.getLogger(__name__)
 
-"""Block data type"""
+# Block data type
 T = TypeVar("T")
 
 

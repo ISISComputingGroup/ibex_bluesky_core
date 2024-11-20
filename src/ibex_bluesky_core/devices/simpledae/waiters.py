@@ -22,7 +22,7 @@ if TYPE_CHECKING:
 T = TypeVar("T", int, float)
 
 
-class _SimpleWaiter(Waiter, Generic[T], metaclass=ABCMeta):
+class SimpleWaiter(Waiter, Generic[T], metaclass=ABCMeta):
     """Wait for a single DAE variable to be greater or equal to a specified numeric value."""
 
     def __init__(self, value: T) -> None:
@@ -47,10 +47,10 @@ class _SimpleWaiter(Waiter, Generic[T], metaclass=ABCMeta):
 
     @abstractmethod
     def get_signal(self, dae: "SimpleDae") -> SignalR[T]:
-        pass
+        """Get the numeric signal to wait for."""
 
 
-class PeriodGoodFramesWaiter(_SimpleWaiter[int]):
+class PeriodGoodFramesWaiter(SimpleWaiter[int]):
     """Wait for period good frames to reach a user-specified value."""
 
     def get_signal(self, dae: "SimpleDae") -> SignalR[int]:
@@ -58,7 +58,7 @@ class PeriodGoodFramesWaiter(_SimpleWaiter[int]):
         return dae.period.good_frames
 
 
-class GoodFramesWaiter(_SimpleWaiter[int]):
+class GoodFramesWaiter(SimpleWaiter[int]):
     """Wait for good frames to reach a user-specified value."""
 
     def get_signal(self, dae: "SimpleDae") -> SignalR[int]:
@@ -66,7 +66,7 @@ class GoodFramesWaiter(_SimpleWaiter[int]):
         return dae.good_frames
 
 
-class GoodUahWaiter(_SimpleWaiter[float]):
+class GoodUahWaiter(SimpleWaiter[float]):
     """Wait for good microamp-hours to reach a user-specified value."""
 
     def get_signal(self, dae: "SimpleDae") -> SignalR[float]:
@@ -74,7 +74,7 @@ class GoodUahWaiter(_SimpleWaiter[float]):
         return dae.good_uah
 
 
-class MEventsWaiter(_SimpleWaiter[float]):
+class MEventsWaiter(SimpleWaiter[float]):
     """Wait for a user-specified number of millions of events."""
 
     def get_signal(self, dae: "SimpleDae") -> SignalR[float]:
