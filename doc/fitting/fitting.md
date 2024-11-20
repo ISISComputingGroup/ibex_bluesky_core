@@ -24,13 +24,16 @@ plt.figure()
 ax = plt.gca() 
 # ax is shared by fit_callback and plot_callback 
 
-plot_callback = LivePlot(y="y_variable", x="x_variable", ax=ax)
-fit_callback = LiveFit(Gaussian.fit(), y="y_variable", x="x_variable", update_every=0.5)
+plot_callback = LivePlot(y="y_signal", x="x_signal", ax=ax, yerr="yerr_signal")
+fit_callback = LiveFit(Gaussian.fit(), y="y_signal", x="x_signal", yerr="yerr_signal", update_every=0.5)
+# Using the yerr parameter allows you to use error bars.
 # update_every = in seconds, how often to recompute the fit. If `None`, do not compute until the end. Default is 1.
 fit_plot_callback = LiveFitPlot(fit_callback, ax=ax, color="r")
 ```
 
 **Note:** that the `LiveFit` callback doesn't directly do the plotting, it will return function parameters of the model its trying to fit to; a `LiveFit` object must be passed to `LiveFitPlot` which can then be subscribed to the `RunEngine`. See the [Bluesky Documentation](https://blueskyproject.io/bluesky/main/callbacks.html#livefitplot) for information on the various arguments that can be passed to the `LiveFitPlot` class.
+
+Using the `yerr` argument allows you to pass uncertainties via a signal to LiveFit, so that the "weight" of each point influences the fit produced. By not providing a signal name you choose not to use uncertainties/weighting in the fitting calculation. Each weight is computed as `1/(standard deviation at point)` and is taken into account to determine how much a point affects the overall fit of the data. Same as the rest of `LiveFit`, the fit will be updated after every new point collected now taking into account the weights of each point. Uncertainty data is collected from Bluesky event documents after each new point.
 
 The `plot_callback` and `fit_plot_callback` objects can then be subscribed to the `RunEngine`, using the same methods as described in [`LivePlot`](../callbacks/plotting.md). See the following example using `@subs_decorator`:
 
@@ -79,7 +82,7 @@ from bluesky.callbacks import LiveFitPlot
 from ibex_bluesky_core.callbacks.fitting.fitting_utils import [FIT]
 
 # Pass [FIT].fit() to the first parameter of LiveFit
-lf = LiveFit([FIT].fit(), y="y_variable", x="x_variable", update_every=0.5)
+lf = LiveFit([FIT].fit(), y="y_signal", x="x_signal", update_every=0.5)
 
 # Then subscribe to LiveFitPlot(lf, ...)
 ```
@@ -89,7 +92,7 @@ The `[FIT].fit()` function will pass the `FitMethod` object straight to the `Liv
 **Note:** that for the fits in the above table that require parameters, you will need to pass value(s) to their `.fit` method. For example Polynomial fitting:
 
 ```py
-lf = LiveFit(Polynomial.fit(3),  y="y_variable", x="x_variable", update_every=0.5)
+lf = LiveFit(Polynomial.fit(3),  y="y_signal", x="x_signal", update_every=0.5)
 # For a polynomial of degree 3
 ```
 
@@ -138,7 +141,7 @@ def guess(x: npt.NDArray[np.float64], y: npt.NDArray[np.float64]) -> dict[str, l
 fit_method = FitMethod(model, guess) 
 #Pass the model and guess function to FitMethod
 
-lf = LiveFit(fit_method, y="y_variable", x="x_variable", update_every=0.5)
+lf = LiveFit(fit_method, y="y_signal", x="x_signal", update_every=0.5)
 
 # Then subscribe to LiveFitPlot(lf, ...)
 ```
@@ -163,7 +166,7 @@ def different_model(x: float, c1: float, c0: float) -> float:
 fit_method = FitMethod(different_model, Linear.guess())
 # Uses the user defined model and the standard Guessing. function for linear models
 
-lf = LiveFit(fit_method, y="y_variable", x="x_variable", update_every=0.5)
+lf = LiveFit(fit_method, y="y_signal", x="x_signal", update_every=0.5)
 
 # Then subscribe to LiveFitPlot(lf, ...)
 ```
@@ -188,7 +191,7 @@ def different_guess(x: float, c1: float, c0: float) -> float:
 fit_method = FitMethod(Linear.model(), different_guess)
 # Uses the standard linear model and the user defined Guessing. function
 
-lf = LiveFit(fit_method, y="y_variable", x="x_variable", update_every=0.5)
+lf = LiveFit(fit_method, y="y_signal", x="x_signal", update_every=0.5)
 
 # Then subscribe to LiveFitPlot(lf, ...)
 ```

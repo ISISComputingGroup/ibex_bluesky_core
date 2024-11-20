@@ -73,7 +73,9 @@ def dae_scan_plan() -> Generator[Msg, None, None]:
     reducer.intensity.set_name("normalized counts")
 
     _, ax = plt.subplots()
-    lf = LiveFit(Linear.fit(), y=reducer.intensity.name, x=block.name)
+    lf = LiveFit(
+        Linear.fit(), y=reducer.intensity.name, x=block.name, yerr=reducer.intensity_stddev.name
+    )
 
     yield from ensure_connected(block, dae, force_reconnect=True)
 
@@ -90,7 +92,14 @@ def dae_scan_plan() -> Generator[Msg, None, None]:
                 ],
             ),
             LiveFitPlot(livefit=lf, ax=ax),
-            LivePlot(y=reducer.intensity.name, x=block.name, marker="x", linestyle="none", ax=ax),
+            LivePlot(
+                y=reducer.intensity.name,
+                x=block.name,
+                marker="x",
+                linestyle="none",
+                ax=ax,
+                yerr=reducer.intensity_stddev.name,
+            ),
             LiveTable(
                 [
                     block.name,
@@ -113,10 +122,10 @@ def dae_scan_plan() -> Generator[Msg, None, None]:
         ]
     )
     def _inner() -> Generator[Msg, None, None]:
-        num_points = NUM_POINTS
-        yield from bps.mv(dae.number_of_periods, num_points)  # type: ignore
-        # Pyright does not understand as bluesky isn't fully typed yet
-        yield from bp.scan([dae], block, 0, 10, num=num_points)
+
+        yield from bps.mv(dae.number_of_periods, NUM_POINTS)  # type: ignore
+        # Pyright does not understand as bluesky isn't typed yet
+        yield from bp.scan([dae], block, 0, 10, num=NUM_POINTS)
 
     yield from _inner()
 
