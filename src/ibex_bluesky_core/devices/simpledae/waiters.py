@@ -1,6 +1,7 @@
 """DAE waiting strategies."""
 
 import asyncio
+import logging
 from abc import ABCMeta, abstractmethod
 from typing import TYPE_CHECKING, Generic, TypeVar
 
@@ -11,6 +12,8 @@ from ophyd_async.core import (
 )
 
 from ibex_bluesky_core.devices.simpledae.strategies import Waiter
+
+logger = logging.getLogger(__name__)
 
 if TYPE_CHECKING:
     from ibex_bluesky_core.devices.simpledae import SimpleDae
@@ -33,7 +36,10 @@ class _SimpleWaiter(Waiter, Generic[T], metaclass=ABCMeta):
 
     async def wait(self, dae: "SimpleDae") -> None:
         """Wait for signal to reach the user-specified value."""
-        await wait_for_value(self.get_signal(dae), lambda v: v >= self._value, timeout=None)
+        signal = self.get_signal(dae)
+        logger.info("starting wait for signal %s", signal.source)
+        await wait_for_value(signal, lambda v: v >= self._value, timeout=None)
+        logger.info("completed wait for signal %s", signal.source)
 
     def additional_readable_signals(self, dae: "SimpleDae") -> list[Device]:
         """Publish the signal we're waiting on as an interesting signal."""
@@ -90,4 +96,6 @@ class TimeWaiter(Waiter):
 
     async def wait(self, dae: "SimpleDae") -> None:
         """Wait for the specified time duration."""
+        logger.info("starting wait for %f seconds", self._secs)
         await asyncio.sleep(self._secs)
+        logger.info("completed wait")

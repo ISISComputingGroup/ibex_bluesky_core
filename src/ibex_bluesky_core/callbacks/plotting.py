@@ -46,6 +46,7 @@ class LivePlot(_DefaultLivePlot):
         # Play nicely with the "normal" backends too - only force show if we're
         # actually using our custom backend.
         if "genie_python" in matplotlib.get_backend():
+            logger.debug("Explicitly show()ing plot for IBEX")
             plt.show()
 
     def event(self, doc: Event) -> None:

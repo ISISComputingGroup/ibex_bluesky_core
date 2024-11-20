@@ -287,3 +287,10 @@ def test_plan_mv_block(RE, writable_block):
     set_mock_value(writable_block.setpoint, 123.0)
     RE(bps.mv(writable_block, 456.0))
     get_mock_put(writable_block.setpoint).assert_called_once_with(456.0, wait=True, timeout=None)
+
+
+def test_block_reprs():
+    assert repr(BlockR(float, block_name="foo", prefix="")) == "BlockR(name=foo)"
+    assert repr(BlockRw(float, block_name="bar", prefix="")) == "BlockRw(name=bar)"
+    assert repr(BlockRwRbv(float, block_name="baz", prefix="")) == "BlockRwRbv(name=baz)"
+    assert repr(BlockMot(block_name="qux", prefix="")) == "BlockMot(name=qux)"

@@ -1019,3 +1019,7 @@ async def test_if_tof_edges_has_no_units_then_read_spec_dataarray_gives_error(
 
     with pytest.raises(ValueError, match="Could not determine engineering units"):
         await spectrum.read_spectrum_dataarray()
+
+
+def test_dae_repr():
+    assert repr(Dae(prefix="foo", name="bar")) == "Dae(name=bar, prefix=foo)"
