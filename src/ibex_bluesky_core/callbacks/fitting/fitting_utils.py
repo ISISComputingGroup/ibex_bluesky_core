@@ -190,7 +190,6 @@ class Linear(Fit):
     ) -> Callable[[npt.NDArray[np.float64], npt.NDArray[np.float64]], dict[str, lmfit.Parameter]]:
         """Linear Guessing."""
         return Polynomial.guess(1)
-        # Uses polynomial guessing with a degree of 1
 
 
 class Polynomial(Fit):
