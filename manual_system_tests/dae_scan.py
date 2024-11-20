@@ -52,7 +52,7 @@ def dae_scan_plan() -> Generator[Msg, None, None]:
     - The DAE waited for at least 500 good frames at each point
     """
     prefix = get_pv_prefix()
-    block = block_rw_rbv(float, "bob")
+    block = block_rw_rbv(float, "mot")
 
     controller = RunPerPointController(save_run=True)
     waiter = GoodFramesWaiter(500)
