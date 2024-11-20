@@ -44,7 +44,7 @@ class LiveFitLogger(CallbackBase):
         """
         super().__init__()
         self.livefit = livefit
-        self.postfix = postfix  # can be none or no?
+        self.postfix = postfix
         self.output_dir = output_dir
         self.current_start_document: Optional[str] = None
 
@@ -76,14 +76,14 @@ class LiveFitLogger(CallbackBase):
         """
         event_data = doc[DATA]
 
-        assert self.x in event_data, f"{self.x} is not in event document"
-        assert self.y in event_data, f"{self.y} is not in event document"
+        assert self.x in event_data, f"{self.x} is not in event document."
+        assert self.y in event_data, f"{self.y} is not in event document."
 
         self.x_data.append(event_data[self.x])
         self.y_data.append(event_data[self.y])
 
         if self.yerr is not None:
-            assert self.yerr in event_data, f"{self.yerr} is not in event document"
+            assert self.yerr in event_data, f"{self.yerr} is not in event document."
             self.yerr_data.append(event_data[self.yerr])
 
         return super().event(doc)
@@ -114,7 +114,7 @@ class LiveFitLogger(CallbackBase):
             for row in self.stats:
                 self.csvwriter.writerow([row])
 
-            self.csvwriter.writerow([])
+            self.csvwriter.writerow([]) # Space out file
             self.csvwriter.writerow([])
 
             if self.yerr is None:
