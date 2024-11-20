@@ -24,8 +24,8 @@ plt.figure()
 ax = plt.gca() 
 # ax is shared by fit_callback and plot_callback 
 
-plot_callback = LivePlot(y="y_signal", x="x_signal", ax=ax, yerr="yerr_signal_")
-fit_callback = LiveFit(Gaussian.fit(), y="y_signal", x="x_signal", yerr="yerr_signal_", update_every=0.5)
+plot_callback = LivePlot(y="y_signal", x="x_signal", ax=ax, yerr="yerr_signal")
+fit_callback = LiveFit(Gaussian.fit(), y="y_signal", x="x_signal", yerr="yerr_signal", update_every=0.5)
 # Using the yerr parameter allows you to use error bars.
 # update_every = in seconds, how often to recompute the fit. If `None`, do not compute until the end. Default is 1.
 fit_plot_callback = LiveFitPlot(fit_callback, ax=ax, color="r")
@@ -33,7 +33,7 @@ fit_plot_callback = LiveFitPlot(fit_callback, ax=ax, color="r")
 
 **Note:** that the `LiveFit` callback doesn't directly do the plotting, it will return function parameters of the model its trying to fit to; a `LiveFit` object must be passed to `LiveFitPlot` which can then be subscribed to the `RunEngine`. See the [Bluesky Documentation](https://blueskyproject.io/bluesky/main/callbacks.html#livefitplot) for information on the various arguments that can be passed to the `LiveFitPlot` class.
 
-Using the `yerr` argument allows you to pass uncertainties via a signal to LiveFit, so that the "weight" of each point influences the fit produced.
+Using the `yerr` argument allows you to pass uncertainties via a signal to LiveFit, so that the "weight" of each point influences the fit produced. By not providing a signal name you choose not to use uncertainties/weighting in the fitting calculation. Each weight is computed as `1/(standard deviation at point)` and is taken into account to determine how much a point affects the overall fit of the data. Same as the rest of `LiveFit`, the fit will be updated after every new point collected now taking into account the weights of each point. Uncertainty data is collected from Bluesky event documents after each new point.
 
 The `plot_callback` and `fit_plot_callback` objects can then be subscribed to the `RunEngine`, using the same methods as described in [`LivePlot`](../callbacks/plotting.md). See the following example using `@subs_decorator`:
 

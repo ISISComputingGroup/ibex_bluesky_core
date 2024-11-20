@@ -30,6 +30,7 @@ class LivePlot(_DefaultLivePlot):
             y (str): The name of the dependant variable.
             x (str or None, optional): The name of the independant variable.
             yerr (str or None, optional): Name of uncertainties signal.
+                Providing None means do not plot uncertainties.
             *args: As per mpl_plotting.py
             **kwargs: As per mpl_plotting.py
 
@@ -42,9 +43,11 @@ class LivePlot(_DefaultLivePlot):
         self.yerr_data = []
 
     def _show_plot(self) -> None:
-        """Call plt.show()."""
-        # Play nicely with the "normal" backends too - only force show if we're
-        # actually using our custom backend.
+        """Call plt.show().
+
+        Play nicely with the "normal" backends too
+        - only force show if we're actually using our custom backend.
+        """
         if "genie_python" in matplotlib.get_backend():
             logger.debug("Explicitly show()ing plot for IBEX")
             plt.show()

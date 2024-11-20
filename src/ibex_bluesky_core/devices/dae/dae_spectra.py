@@ -116,7 +116,8 @@ class DaeSpectra(StandardReadable):
         if unit is None:
             raise ValueError("Could not determine engineering units of tof edges.")
 
-        # TODO add reference to ADR
+        # See doc\architectural_decisions\005-variance-addition.md
+        # for justfication of the VARIANCE_ADDITION to variances
 
         return sc.DataArray(
             data=sc.Variable(

@@ -60,8 +60,7 @@ def test_errorbars_created_if_yerr_is_given():
     lp.start(
         {
             "time": 0,
-            "plan_name": "scan",
-            "uid": 0,  # type: ignore
+            "uid": "0",
             "scan_id": 0,
         }
     )
@@ -77,7 +76,7 @@ def test_errorbars_created_if_yerr_is_given():
         }  # type: ignore
     )
 
-    lp.ax.errorbar.assert_called_with(y=[y], x=[x], yerr=[yerr], fmt="none")  # type: ignore
+    ax.errorbar.assert_called_with(y=[y], x=[x], yerr=[yerr], fmt="none")
 
 
 def test_errorbars_not_created_if_no_yerr():
@@ -89,11 +88,10 @@ def test_errorbars_not_created_if_no_yerr():
     lp.start(
         {
             "time": 0,
-            "plan_name": "scan",
-            "uid": 0,  # type: ignore
+            "uid": "0",
             "scan_id": 0,
         }
     )
 
     lp.update_plot()
-    assert not lp.ax.errorbar.called  # type: ignore
+    assert not ax.errorbar.called

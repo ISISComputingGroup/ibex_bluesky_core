@@ -61,7 +61,8 @@ class LiveFit(_DefaultLiveFit):
             x (str): The name of the independant variable.
             update_every (int, optional): How often to update the fit. (seconds)
             yerr (str or None, optional): Name of field in the Event document
-            that provides standard deviation for each Y value
+                that provides standard deviation for each Y value. None meaning
+                do not use uncertainties in fit.
 
         """
         self.method = method
@@ -116,7 +117,7 @@ class LiveFit(_DefaultLiveFit):
                 np.array(self.ydata),
                 # Calls the guess function on the set of data already collected in the run
             )
-            
+
             logger.info("new guess for %s: %s", self.method, self.init_guess)
 
             kwargs = {}
