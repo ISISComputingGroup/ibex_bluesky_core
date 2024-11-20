@@ -108,6 +108,7 @@ def dae_scan_plan() -> Generator[Msg, None, None]:
                 x=block.name,
                 output_dir=Path("C:\\Instrument\\Var\\logs\\bluesky\\fitting"),
                 yerr=reducer.intensity_stddev.name,
+                postfix="manual_test",
             ),
         ]
     )

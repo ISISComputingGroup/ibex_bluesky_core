@@ -27,7 +27,7 @@ class LiveFitLogger(CallbackBase):
         y: str,
         x: str,
         output_dir: Path,
-        postfix: str = "",
+        postfix: str,
         yerr: str | None = None,
     ) -> None:
         """Initialise LiveFitLogger callback.
@@ -38,7 +38,7 @@ class LiveFitLogger(CallbackBase):
             x (str): The name of the signal pointing to x counts data.
             output_dir (str): A path to where the fitting file should be stored.
             postfix (str): A small string that should be placed at the end of the
-                filename to prevent overwriting.
+                filename to disambiguate multiple fits and avoid overwriting.
             yerr (str): The name of the signal pointing to y count uncertainties data.
 
         """
@@ -76,14 +76,14 @@ class LiveFitLogger(CallbackBase):
         """
         event_data = doc[DATA]
 
-        assert self.x in event_data
-        assert self.y in event_data
+        assert self.x in event_data, f"{self.x} is not in event document"
+        assert self.y in event_data, f"{self.y} is not in event document"
 
         self.x_data.append(event_data[self.x])
         self.y_data.append(event_data[self.y])
 
         if self.yerr is not None:
-            assert self.yerr in event_data
+            assert self.yerr in event_data, f"{self.yerr} is not in event document"
             self.yerr_data.append(event_data[self.yerr])
 
         return super().event(doc)
@@ -130,15 +130,13 @@ class LiveFitLogger(CallbackBase):
         row = ["x", "y", "modelled y"]
         self.csvwriter.writerow(row)
 
-        for i in range(0, len(self.x_data)):
-            self.csvwriter.writerow([self.x_data[i], self.y_data[i], self.y_fit_data[i]])
+        rows = zip(self.x_data, self.y_data, self.y_fit_data, strict=True)
+        self.csvwriter.writerows(rows)
 
     def write_fields_table_uncertainty(self) -> None:
         """Write collected run info to the fitting file with uncertainties."""
         row = ["x", "y", "y uncertainty", "modelled y"]
         self.csvwriter.writerow(row)
 
-        for i in range(0, len(self.x_data)):
-            self.csvwriter.writerow(
-                [self.x_data[i], self.y_data[i], self.yerr_data[i], self.y_fit_data[i]]
-            )
+        rows = zip(self.x_data, self.y_data, self.yerr_data, self.y_fit_data, strict=True)
+        self.csvwriter.writerows(rows)
