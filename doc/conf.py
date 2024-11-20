@@ -16,9 +16,16 @@ copyright = ""
 author = "ISIS Experiment Controls"
 release = "0.1"
 
-
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
+
+nitpicky = True
+nitpick_ignore_regex = [
+    ("py:func", r"^(?!ibex_bluesky_core\.).*$"),
+    ("py:class", r"^(?!ibex_bluesky_core\.).*$"),
+    ("py:class", r"^.*\.T$"),
+    ("py:obj", r"^.*\.T$"),
+]
 
 myst_enable_extensions = ["dollarmath"]
 
