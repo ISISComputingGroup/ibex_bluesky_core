@@ -114,7 +114,7 @@ class LiveFitLogger(CallbackBase):
             for row in self.stats:
                 self.csvwriter.writerow([row])
 
-            self.csvwriter.writerow([]) # Space out file
+            self.csvwriter.writerow([])  # Space out file
             self.csvwriter.writerow([])
 
             if self.yerr is None:
