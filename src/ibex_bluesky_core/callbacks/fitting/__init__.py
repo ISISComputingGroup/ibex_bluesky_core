@@ -9,6 +9,8 @@ import numpy.typing as npt
 from bluesky.callbacks import LiveFit as _DefaultLiveFit
 from bluesky.callbacks.core import make_class_safe
 
+logger = logging.getLogger(__name__)
+
 
 class FitMethod:
     """Tell LiveFit how to fit to a scan. Has a Model function and a Guess function.
@@ -40,9 +42,6 @@ class FitMethod:
             self.model = lmfit.Model(model)
         else:
             self.model = model
-
-
-logger = logging.getLogger(__name__)
 
 
 @make_class_safe(logger=logger)  # pyright: ignore (pyright doesn't understand this decorator)
@@ -85,10 +84,12 @@ class LiveFit(_DefaultLiveFit):
             None
 
         """
+        logger.debug("updating guess for %s ", self.method)
         self.init_guess = self.method.guess(
             np.array(next(iter(self.independent_vars_data.values()))),
             np.array(self.ydata),
             # Calls the guess function on the set of data already collected in the run
         )
+        logger.info("new guess for %s: %s", self.method, self.init_guess)
 
         super().update_fit()

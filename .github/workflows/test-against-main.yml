@@ -1,16 +1,13 @@
-name: Lint-and-test
-on: [pull_request, workflow_call]
+name: test-against-main
+on:
+  schedule:
+    - cron: "0 0 * * *"
 jobs:
-  call-linter-workflow:
-    uses: ISISComputingGroup/reusable-workflows/.github/workflows/linters.yml@main
-    with:
-      compare-branch: origin/main
-      python-ver: '3.11'
   tests:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        version: ['3.10','3.11'] # ,'3.12'] # also check on 3.12 once https://github.com/bluesky/ophyd-async/pull/478 is merged.
+        version: ['3.11', "3.12"]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -18,13 +15,19 @@ jobs:
           python-version: ${{ matrix.version }}
       - name: install requirements
         run: pip install -e .[dev]
+      - name: install latest bluesky and ophyd-async
+        run: pip install --upgrade --force-reinstall git+https://github.com/bluesky/bluesky.git@main git+https://github.com/bluesky/ophyd-async.git@main
+      - name: run ruff
+        run: python -m ruff check
+      - name: run pyright
+        run: python -m pyright
       - name: run pytest
-        run: IBEX_BLUESKY_CORE_LOGS=/tmp/ibex_bluesky_core_logs/ python -m pytest
+        run: python -m pytest
   results:
     if: ${{ always() }}
     runs-on: ubuntu-latest
     name: Final Results
-    needs: [call-linter-workflow, tests]
+    needs: [tests]
     steps:
     - run: exit 1
       # see https://stackoverflow.com/a/67532120/4907315

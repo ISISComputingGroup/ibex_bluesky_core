@@ -1,6 +1,7 @@
 """Creates a readable .txt file of Bluesky runengine dataset."""
 
 import csv
+import logging
 from datetime import datetime
 from pathlib import Path
 from typing import Optional
@@ -11,6 +12,8 @@ from event_model.documents.event_descriptor import EventDescriptor
 from event_model.documents.run_start import RunStart
 from event_model.documents.run_stop import RunStop
 from zoneinfo import ZoneInfo
+
+logger = logging.getLogger(__name__)
 
 TIME = "time"
 START_TIME = "start_time"
@@ -49,6 +52,8 @@ class HumanReadableFileCallback(CallbackBase):
         self.current_start_document = doc[UID]
         self.filename = self.output_dir / f"{self.current_start_document}.txt"
 
+        logger.info("starting new file %s", self.filename)
+
         exclude_list = [
             TIME,  # We format this later
         ]
@@ -64,19 +69,26 @@ class HumanReadableFileCallback(CallbackBase):
             for key, value in header_data.items():
                 outfile.write(f"{key}: {value}\n")
 
+        logger.debug("successfully wrote header in %s", self.filename)
+
     def descriptor(self, doc: EventDescriptor) -> None:
         """Add the descriptor data to descriptors."""
-        if NAME not in doc or not doc[NAME] or doc[NAME] != "primary":
+        logger.debug("event descriptor with name=%s", doc.get(NAME))
+        if doc.get(NAME) != "primary":
             return
 
+        logger.debug("saving event descriptor with name=%s, id=%s", doc.get(NAME), doc.get(UID))
         descriptor_id = doc[UID]
         self.descriptors[descriptor_id] = doc
 
     def event(self, doc: Event) -> Event:
         """Append an event's output to the file."""
         if not self.filename:
-            print("File has not been started yet - doing nothing")
+            logger.error("File has not been started yet - doing nothing")
             return doc
+
+        logger.debug("Appending event document %s", doc.get(UID))
+
         formatted_event_data = {}
         descriptor_id = doc[DESCRIPTOR]
         event_data = doc[DATA]
@@ -110,5 +122,6 @@ class HumanReadableFileCallback(CallbackBase):
 
     def stop(self, doc: RunStop) -> RunStop | None:
         """Clear descriptors."""
+        logger.info("Stopping run, clearing descriptors, filename=%s", self.filename)
         self.descriptors.clear()
         return super().stop(doc)
