@@ -27,7 +27,7 @@ class LiveFitLogger(CallbackBase):
         y: str,
         x: str,
         output_dir: Path,
-        postfix: str | None = None,
+        postfix: str = "",
         yerr: str | None = None,
     ) -> None:
         """Initialise LiveFitLogger callback.
@@ -44,7 +44,7 @@ class LiveFitLogger(CallbackBase):
         """
         super().__init__()
         self.livefit = livefit
-        self.postfix = "" if postfix is None else postfix
+        self.postfix = postfix  # can be none or no?
         self.output_dir = output_dir
         self.current_start_document: Optional[str] = None
 
@@ -52,13 +52,9 @@ class LiveFitLogger(CallbackBase):
         self.y = y
         self.yerr = yerr
 
-        assert self.x != ""
-        assert self.y != ""
-        assert self.yerr != ""
-
-        self.x_data = np.array([])
-        self.y_data = np.array([])
-        self.yerr_data = np.array([])
+        self.x_data = []
+        self.y_data = []
+        self.yerr_data = []
 
     def start(self, doc: RunStart) -> None:
         """Create the output directory if it doesn't already exist then setting the filename.
@@ -83,12 +79,12 @@ class LiveFitLogger(CallbackBase):
         assert self.x in event_data
         assert self.y in event_data
 
-        self.x_data = np.append(self.x_data, [event_data[self.x]])
-        self.y_data = np.append(self.y_data, [event_data[self.y]])
+        self.x_data.append(event_data[self.x])
+        self.y_data.append(event_data[self.y])
 
         if self.yerr is not None:
             assert self.yerr in event_data
-            self.yerr_data = np.append(self.yerr_data, [event_data[self.yerr]])
+            self.yerr_data.append(event_data[self.yerr])
 
         return super().event(doc)
 
@@ -104,7 +100,7 @@ class LiveFitLogger(CallbackBase):
             return
 
         # Evaluate the model function at equally-spaced points.
-        kwargs = {"x": self.x_data}
+        kwargs = {"x": np.array(self.x_data)}
         kwargs.update(self.livefit.result.values)
         self.y_fit_data = self.livefit.result.model.eval(**kwargs)
 
@@ -134,7 +130,7 @@ class LiveFitLogger(CallbackBase):
         row = ["x", "y", "modelled y"]
         self.csvwriter.writerow(row)
 
-        for i in range(0, self.x_data.size):
+        for i in range(0, len(self.x_data)):
             self.csvwriter.writerow([self.x_data[i], self.y_data[i], self.y_fit_data[i]])
 
     def write_fields_table_uncertainty(self) -> None:
@@ -142,7 +138,7 @@ class LiveFitLogger(CallbackBase):
         row = ["x", "y", "y uncertainty", "modelled y"]
         self.csvwriter.writerow(row)
 
-        for i in range(0, self.x_data.size):
+        for i in range(0, len(self.x_data)):
             self.csvwriter.writerow(
                 [self.x_data[i], self.y_data[i], self.yerr_data[i], self.y_fit_data[i]]
             )
