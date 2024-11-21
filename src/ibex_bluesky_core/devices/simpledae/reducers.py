@@ -38,11 +38,14 @@ async def sum_spectra(spectra: Collection[DaeSpectra]) -> sc.Variable | sc.DataA
     return summed_counts
 
 
-def tof_bounded_spectra(bounds: sc.Variable) -> Callable[[Collection[DaeSpectra]], Awaitable[sc.Variable | sc.DataArray]]:
+def tof_bounded_spectra(
+    bounds: sc.Variable,
+) -> Callable[[Collection[DaeSpectra]], Awaitable[sc.Variable | sc.DataArray]]:
     if "tof" not in bounds.dims:
-        raise ValueError("Should contain tof dims") # todo write tests covering this
+        raise ValueError("Should contain tof dims")  # todo write tests covering this
     if bounds.sizes["tof"] != 2:
-        raise ValueError("Should contain lower and upper bound") # todo write tests covering this
+        raise ValueError("Should contain lower and upper bound")  # todo write tests covering this
+
     async def sum_spectra_with_tof(spectra: Collection[DaeSpectra]) -> sc.Variable | sc.DataArray:
         """
         sums spectra, bounded by a time of flight upper and lower bound
@@ -50,35 +53,48 @@ def tof_bounded_spectra(bounds: sc.Variable) -> Callable[[Collection[DaeSpectra]
         summed_counts = sc.scalar(value=0, unit=sc.units.counts, dtype="float64")
         for spec in asyncio.as_completed([s.read_spectrum_dataarray() for s in spectra]):
             tof_bound_spectra = await spec
-            summed_counts += tof_bound_spectra.rebin({
-                "tof": bounds
-            }).sum()
+            summed_counts += tof_bound_spectra.rebin({"tof": bounds}).sum()
         return summed_counts
+
     return sum_spectra_with_tof
 
 
-def wavelength_bounded_spectra(bounds: sc.Variable, beam_total: sc.Variable) -> Callable[[Collection[DaeSpectra]], Awaitable[sc.Variable | sc.DataArray]]:
+def wavelength_bounded_spectra(
+    bounds: sc.Variable, beam_total: sc.Variable
+) -> Callable[[Collection[DaeSpectra]], Awaitable[sc.Variable | sc.DataArray]]:
     if "tof" not in bounds.dims:
         raise ValueError("Should contain tof dims")
-    
-    async def sum_spectra_with_wavelength(spectra: Collection[DaeSpectra]) -> sc.Variable | sc.DataArray:
+
+    async def sum_spectra_with_wavelength(
+        spectra: Collection[DaeSpectra],
+    ) -> sc.Variable | sc.DataArray:
         """
         sums spectra, converting time of flight to wavelength
         """
         summed_counts = sc.scalar(value=0, unit=sc.units.counts, dtype="float64")
         for spec in asyncio.as_completed([s.read_spectrum_dataarray() for s in spectra]):
             wavelength_bounded_spectra = await spec
-            wavelength_coord = conversion.tof.wavelength_from_tof(tof=wavelength_bounded_spectra.coords["tof"], Ltotal=beam_total)
+            wavelength_coord = conversion.tof.wavelength_from_tof(
+                tof=wavelength_bounded_spectra.coords["tof"], Ltotal=beam_total
+            )
             wavelength_bounded_spectra.coords["tof"] = wavelength_coord
             summed_counts += wavelength_bounded_spectra.rebin({"tof": bounds}).sum()
         return summed_counts
+
     return sum_spectra_with_wavelength
 
 
 class ScalarNormalizer(Reducer, StandardReadable, metaclass=ABCMeta):
     """Sum a set of user-specified spectra, then normalize by a scalar signal."""
 
-    def __init__(self, prefix: str, detector_spectra: Sequence[int], summer: Callable[[Collection[DaeSpectra]], Awaitable[sc.Variable | sc.DataArray]] = sum_spectra) -> None:
+    def __init__(
+        self,
+        prefix: str,
+        detector_spectra: Sequence[int],
+        summer: Callable[
+            [Collection[DaeSpectra]], Awaitable[sc.Variable | sc.DataArray]
+        ] = sum_spectra,
+    ) -> None:
         """Init.
 
         Args:
@@ -164,11 +180,16 @@ class MonitorNormalizer(Reducer, StandardReadable):
     """Normalize a set of user-specified detector spectra by user-specified monitor spectra."""
 
     def __init__(
-        self, prefix: str, detector_spectra: Sequence[int], monitor_spectra: Sequence[int], 
-        detector_summer: Callable[[Collection[DaeSpectra]], 
-                         Awaitable[sc.Variable | sc.DataArray]] = sum_spectra,
-        monitor_summer: Callable[[Collection[DaeSpectra]], 
-                         Awaitable[sc.Variable | sc.DataArray]] = sum_spectra
+        self,
+        prefix: str,
+        detector_spectra: Sequence[int],
+        monitor_spectra: Sequence[int],
+        detector_summer: Callable[
+            [Collection[DaeSpectra]], Awaitable[sc.Variable | sc.DataArray]
+        ] = sum_spectra,
+        monitor_summer: Callable[
+            [Collection[DaeSpectra]], Awaitable[sc.Variable | sc.DataArray]
+        ] = sum_spectra,
     ) -> None:
         """Init.
 
@@ -209,7 +230,8 @@ class MonitorNormalizer(Reducer, StandardReadable):
     async def reduce_data(self, dae: "SimpleDae") -> None:
         """Apply the normalization."""
         detector_counts, monitor_counts = await asyncio.gather(
-            self.detector_summer(self.detectors.values()), self.monitor_summer(self.monitors.values())
+            self.detector_summer(self.detectors.values()),
+            self.monitor_summer(self.monitors.values()),
         )
 
         if monitor_counts.value == 0.0:  # To avoid zero division
