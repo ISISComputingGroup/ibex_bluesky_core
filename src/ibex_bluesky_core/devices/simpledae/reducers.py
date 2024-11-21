@@ -6,6 +6,7 @@ from abc import ABCMeta, abstractmethod
 from typing import TYPE_CHECKING, Collection, Sequence
 
 import scipp as sc
+from scippneutron import conversion
 from ophyd_async.core import (
     Device,
     DeviceVector,
@@ -54,6 +55,24 @@ def tof_bounded_spectra(bounds: sc.Variable) -> Callable[[Collection[DaeSpectra]
             }).sum()
         return summed_counts
     return sum_spectra_with_tof
+
+
+def wavelength_bounded_spectra(bounds: sc.Variable, beam_total: sc.Variable) -> Callable[[Collection[DaeSpectra]], Awaitable[sc.Variable | sc.DataArray]]:
+    if "tof" not in bounds.dims:
+        raise ValueError("Should contain tof dims")
+    
+    async def sum_spectra_with_wavelength(spectra: Collection[DaeSpectra]) -> sc.Variable | sc.DataArray:
+        """
+        sums spectra, converting time of flight to wavelength
+        """
+        summed_counts = sc.scalar(value=0, unit=sc.units.counts, dtype="float64")
+        for spec in asyncio.as_completed([s.read_spectrum_dataarray() for s in spectra]):
+            wavelength_bounded_spectra = await spec
+            wavelength_coord = conversion.tof.wavelength_from_tof(tof=wavelength_bounded_spectra.coords["tof"], Ltotal=beam_total)
+            wavelength_bounded_spectra.coords["tof"] = wavelength_coord
+            summed_counts += wavelength_bounded_spectra.rebin({"tof": bounds}).sum()
+        return summed_counts
+    return sum_spectra_with_wavelength
 
 
 class ScalarNormalizer(Reducer, StandardReadable, metaclass=ABCMeta):
