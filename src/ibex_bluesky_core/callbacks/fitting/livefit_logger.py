@@ -122,7 +122,6 @@ class LiveFitLogger(CallbackBase):
             else:
                 self.write_fields_table_uncertainty()
 
-            csvfile.close()
             logger.info(f"Fitting information successfully written to {self.filename}")
 
     def write_fields_table(self) -> None:
