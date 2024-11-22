@@ -318,10 +318,9 @@ class SlitScan(Fit):
         def guess(
             x: npt.NDArray[np.float64], y: npt.NDArray[np.float64]
         ) -> dict[str, lmfit.Parameter]:
-
             background = np.min(y)
-            inflection0 = np.min(x) + (1/3) * (np.max(x) - np.min(x))
-            inflections_diff = (1/3) * (np.max(x) - np.min(x))
+            inflection0 = np.min(x) + (1 / 3) * (np.max(x) - np.min(x))
+            inflections_diff = (1 / 3) * (np.max(x) - np.min(x))
             gradient = 2 * (np.max(y) - np.min(y)) / (np.max(x) - np.min(x))
             height_above_inflection1 = (np.max(y) - np.min(y)) / 5.0
 
@@ -330,7 +329,7 @@ class SlitScan(Fit):
                 "inflection0": lmfit.Parameter("inflection0", inflection0),
                 "gradient": lmfit.Parameter("gradient", gradient, min=0),
                 "inflections_diff": lmfit.Parameter(
-                    "inflections_diff", inflections_diff, min=0, max=float(np.max(x)-np.min(x))
+                    "inflections_diff", inflections_diff, min=0, max=float(np.max(x) - np.min(x))
                 ),
                 "height_above_inflection1": lmfit.Parameter(
                     "height_above_inflection1", height_above_inflection1, min=0
