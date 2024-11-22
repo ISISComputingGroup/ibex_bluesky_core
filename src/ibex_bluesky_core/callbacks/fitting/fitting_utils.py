@@ -70,7 +70,7 @@ class Gaussian(Fit):
 
             return amp * np.exp(-((x - x0) ** 2) / (2 * sigma**2)) + background
 
-        return lmfit.Model(model)
+        return lmfit.Model(model, name=__class__.__name__)
 
     @classmethod
     def guess(
@@ -117,7 +117,7 @@ class Lorentzian(Fit):
 
             return amp / (1 + ((x - center) / sigma) ** 2) + background
 
-        return lmfit.Model(model)
+        return lmfit.Model(model, name=__class__.__name__)
 
     @classmethod
     def guess(
@@ -182,7 +182,7 @@ class Linear(Fit):
         def model(x: npt.NDArray[np.float64], c1: float, c0: float) -> npt.NDArray[np.float64]:
             return c1 * x + c0
 
-        return lmfit.Model(model)
+        return lmfit.Model(model, name=__class__.__name__)
 
     @classmethod
     def guess(
@@ -243,7 +243,7 @@ class DampedOsc(Fit):
         ) -> npt.NDArray[np.float64]:
             return amp * np.cos((x - center) * freq) * np.exp(-(((x - center) / width) ** 2))
 
-        return lmfit.Model(model)
+        return lmfit.Model(model, name=__class__.__name__)
 
     @classmethod
     def guess(
@@ -271,14 +271,6 @@ class DampedOsc(Fit):
 
 class SlitScan(Fit):
     """Slit Scan Fitting."""
-
-    @classmethod
-    def _check_input(cls, args: tuple[int, ...]) -> int:
-        """Check that provided maximum slit size is atleast 0."""
-        max_slit_gap = args[0] if args else 1
-        if not (0 <= max_slit_gap):
-            raise ValueError("The slit gap should be atleast 0.")
-        return max_slit_gap
 
     @classmethod
     def model(cls, *args: int) -> lmfit.Model:
@@ -315,7 +307,7 @@ class SlitScan(Fit):
 
             return y
 
-        return lmfit.Model(model)
+        return lmfit.Model(model, name=__class__.__name__)
 
     @classmethod
     def guess(
@@ -326,34 +318,19 @@ class SlitScan(Fit):
         def guess(
             x: npt.NDArray[np.float64], y: npt.NDArray[np.float64]
         ) -> dict[str, lmfit.Parameter]:
-            max_slit_size = cls._check_input(args)
 
-            # Guessing. gradient of linear-slope part of function
-            dy = np.gradient(y)  # Return array of differences in y
-            max_dy = np.max(dy)  # Return max y difference, this will always be on the upwards slope
-            dx = abs(x[1] - x[0])  # Find x step
-            gradient = max_dy / dx
-
-            d2y = np.diff(dy)  # Double differentiate y to find how gradients change
-            inflection0 = x[np.argmax(d2y)]  # Where there is positive gradient change
-
-            background = min(y)  # The lowest y value is the background
-            if gradient != 0.0:
-                inflections_diff = -(background - y[np.argmax(y)]) / gradient
-            else:
-                inflections_diff = dx  # Fallback case, guess one x step
-            # As linear, using y - y1 = m(x - x1) -> x = (y - y1) / gradient - x1
-
-            # The highest y value + slightly more to account for further convergence
-            # - y distance travelled from inflection0 to inflection1
-            height_above_inflection1 = np.max(y) + (y[-1] - y[-2]) - (gradient * inflections_diff)
+            background = np.min(y)
+            inflection0 = np.min(x) + (1/3) * (np.max(x) - np.min(x))
+            inflections_diff = (1/3) * (np.max(x) - np.min(x))
+            gradient = 2 * (np.max(y) - np.min(y)) / (np.max(x) - np.min(x))
+            height_above_inflection1 = (np.max(y) - np.min(y)) / 5.0
 
             init_guess = {
                 "background": lmfit.Parameter("background", background),
                 "inflection0": lmfit.Parameter("inflection0", inflection0),
                 "gradient": lmfit.Parameter("gradient", gradient, min=0),
                 "inflections_diff": lmfit.Parameter(
-                    "inflections_diff", inflections_diff, min=max_slit_size
+                    "inflections_diff", inflections_diff, min=0, max=float(np.max(x)-np.min(x))
                 ),
                 "height_above_inflection1": lmfit.Parameter(
                     "height_above_inflection1", height_above_inflection1, min=0
@@ -377,7 +354,7 @@ class ERF(Fit):
         ) -> npt.NDArray[np.float64]:
             return background + scale * scipy.special.erf(stretch * (x - cen))
 
-        return lmfit.Model(model)
+        return lmfit.Model(model, name=__class__.__name__)
 
     @classmethod
     def guess(
@@ -412,7 +389,7 @@ class ERFC(Fit):
         ) -> npt.NDArray[np.float64]:
             return background + scale * scipy.special.erfc(stretch * (x - cen))
 
-        return lmfit.Model(model)
+        return lmfit.Model(model, name=__class__.__name__)
 
     @classmethod
     def guess(
@@ -449,7 +426,7 @@ class TopHat(Fit):
             y[np.abs(x - cen) < width / 2] = height
             return background + y
 
-        return lmfit.Model(model)
+        return lmfit.Model(model, name=__class__.__name__)
 
     @classmethod
     def guess(
@@ -500,7 +477,7 @@ class Trapezoid(Fit):
             y = np.minimum(y, background + height)
             return y
 
-        return lmfit.Model(model)
+        return lmfit.Model(model, name=__class__.__name__)
 
     @classmethod
     def guess(
