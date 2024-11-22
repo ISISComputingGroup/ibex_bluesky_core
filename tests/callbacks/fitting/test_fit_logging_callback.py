@@ -30,13 +30,14 @@ def test_after_fitting_callback_writes_to_file_successfully_no_y_uncertainity(
     assert m.call_args_list[0].args == (filepath / f"{result.run_start_uids[0]}{postfix}.csv", "w")  # type: ignore
 
     handle = m()
-    args = []
+    rows = []
 
     # Check that it starts writing to the file in the expected way
     for i in handle.write.call_args_list:
-        args.append(i.args[0])
+        rows.append(i.args[0])
 
-    assert "x,y,modelled y\r\n" in args
+    assert f"    Model({Linear.__name__}  [{Linear.equation}])\r\n" in rows
+    assert "x,y,modelled y\r\n" in rows
 
 
 def test_after_fitting_callback_writes_to_file_successfully_with_y_uncertainity(
@@ -61,12 +62,14 @@ def test_after_fitting_callback_writes_to_file_successfully_with_y_uncertainity(
     assert m.call_args_list[0].args == (filepath / f"{result.run_start_uids[0]}{postfix}.csv", "w")  # type: ignore
 
     handle = m()
-    args = []
+    rows = []
 
     # Check that it starts writing to the file in the expected way
     for i in handle.write.call_args_list:
-        args.append(i.args[0])
-    assert "x,y,y uncertainty,modelled y\r\n" in args
+        rows.append(i.args[0])
+
+    assert f"    Model({Linear.__name__}  [{Linear.equation}])\r\n" in rows
+    assert "x,y,y uncertainty,modelled y\r\n" in rows
 
 
 def test_file_not_written_if_no_fitting_result(RE: run_engine.RunEngine):
