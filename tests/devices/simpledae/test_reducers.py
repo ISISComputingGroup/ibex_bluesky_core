@@ -911,3 +911,15 @@ async def test_monitor_normalizer_det_sum_wavelength_mon_sum_wavelength(  # 3, 3
 def test_tof_bounded_spectra_bounds_missing_or_too_many(data: list[float]):
     with pytest.raises(expected_exception=ValueError, match="Should contain lower and upper bound"):
         tof_bounded_spectra(sc.array(dims=["tof"], values=data, unit=sc.units.us))
+
+
+def test_tof_bounded_spectra_missing_tof_in_bounds_dims():
+    with pytest.raises(expected_exception=ValueError):
+        tof_bounded_spectra(sc.array(dims=[""], values=[0], unit=sc.units.us))
+
+
+def test_wavelength_bounded_spectra_missing_tof_in_bounds_dims():
+    with pytest.raises(expected_exception=ValueError):
+        wavelength_bounded_spectra(
+            bounds=sc.array(dims=[""], values=[0], unit=sc.units.us), beam_total=sc.scalar(value=0)
+        )
