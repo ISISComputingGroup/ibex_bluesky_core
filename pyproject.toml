@@ -60,7 +60,7 @@ doc = [
 ]
 dev = [
   "ibex_bluesky_core[doc]",
-  "ruff>=0.6",
+  "ruff>=0.8",
   "pyright",
   "pytest",
   "pytest-asyncio",
