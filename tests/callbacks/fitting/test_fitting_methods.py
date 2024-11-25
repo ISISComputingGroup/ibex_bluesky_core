@@ -447,6 +447,13 @@ class TestSlitScan:
 
             assert 3.0 == pytest.approx(outp["inflections_diff"].value, rel=1e-2)
 
+        def test_guess_inflections_diff_with_all_zero_data(self):
+            x = np.array([-1.0, 0.0, 1.0, 2.0, 3.0, 4.0])
+            y = np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
+            outp = SlitScan.guess()(x, y)
+
+            assert 1.0 == pytest.approx(outp["inflections_diff"].value, rel=1e-2)
+
         def test_guess_height_above_inflection1(self):
             x = np.array([-1.0, 0.0, 1.0, 2.0, 3.0, 4.0])
             y = np.array([1.0, 1.0, 2.0, 3.0, 4.0, 4.0])

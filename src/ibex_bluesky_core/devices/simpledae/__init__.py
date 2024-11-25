@@ -1,5 +1,6 @@
 """A simple interface to the DAE for bluesky."""
 
+import logging
 import typing
 
 from bluesky.protocols import Triggerable
@@ -14,6 +15,9 @@ if typing.TYPE_CHECKING:
     from ibex_bluesky_core.devices.simpledae.controllers import Controller
     from ibex_bluesky_core.devices.simpledae.reducers import Reducer
     from ibex_bluesky_core.devices.simpledae.waiters import Waiter
+
+
+logger = logging.getLogger(__name__)
 
 
 class SimpleDae(Dae, Triggerable, AsyncStageable):
@@ -51,6 +55,14 @@ class SimpleDae(Dae, Triggerable, AsyncStageable):
         self.waiter: "Waiter" = waiter
         self.reducer: "Reducer" = reducer
 
+        logger.info(
+            "created simpledae with prefix=%s, controller=%s, waiter=%s, reducer=%s",
+            prefix,
+            controller,
+            waiter,
+            reducer,
+        )
+
         # controller, waiter and reducer may be Devices (but don't necessarily have to be),
         # so can define their own signals. Do __init__ after defining those, so that the signals
         # are connected/named and usable.
@@ -62,7 +74,7 @@ class SimpleDae(Dae, Triggerable, AsyncStageable):
         for strategy in [self.controller, self.waiter, self.reducer]:
             for sig in strategy.additional_readable_signals(self):
                 extra_readables.add(sig)
-
+        logger.info("extra readables: %s", list(extra_readables))
         self.add_readables(devices=list(extra_readables))
 
     @AsyncStatus.wrap

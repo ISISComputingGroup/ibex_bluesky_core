@@ -1,10 +1,13 @@
 """ophyd-async devices and utilities for the DAE run controls."""
 
+import logging
 from enum import IntFlag
 
 from bluesky.protocols import Movable
 from ophyd_async.core import AsyncStatus, SignalW, SignalX, StandardReadable
 from ophyd_async.epics.core import epics_signal_w, epics_signal_x
+
+logger = logging.getLogger(__name__)
 
 
 class DaeControls(StandardReadable):
@@ -43,4 +46,6 @@ class BeginRunEx(StandardReadable, Movable):
     @AsyncStatus.wrap
     async def set(self, value: BeginRunExBits) -> None:
         """Start a run with the specified bits - See BeginRunExBits."""
+        logger.info("starting run with options %s", value)
         await self._raw_begin_run_ex.set(value, wait=True, timeout=None)
+        logger.info("start run complete")

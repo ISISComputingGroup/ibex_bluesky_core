@@ -25,7 +25,7 @@ from ibex_bluesky_core.devices.dae.dae_settings import (
     DaeSettingsData,
     TimingSource,
 )
-from ibex_bluesky_core.devices.dae.dae_spectra import DaeSpectra
+from ibex_bluesky_core.devices.dae.dae_spectra import VARIANCE_ADDITION, DaeSpectra
 from ibex_bluesky_core.devices.dae.dae_tcb_settings import (
     CalculationMethod,
     DaeTCBSettings,
@@ -979,7 +979,11 @@ async def test_read_spectrum_dataarray(spectrum: DaeSpectra):
             data=sc.Variable(
                 dims=["tof"],
                 values=[1000, 2000, 3000],
-                variances=[1000, 2000, 3000],
+                variances=[
+                    1000 + VARIANCE_ADDITION,
+                    2000 + VARIANCE_ADDITION,
+                    3000 + VARIANCE_ADDITION,
+                ],
                 unit=sc.units.counts,
                 dtype="float32",
             ),
@@ -1015,3 +1019,7 @@ async def test_if_tof_edges_has_no_units_then_read_spec_dataarray_gives_error(
 
     with pytest.raises(ValueError, match="Could not determine engineering units"):
         await spectrum.read_spectrum_dataarray()
+
+
+def test_dae_repr():
+    assert repr(Dae(prefix="foo", name="bar")) == "Dae(name=bar, prefix=foo)"
