@@ -3,7 +3,6 @@ from unittest.mock import AsyncMock
 
 import pytest
 import scipp as sc
-import scippneutron as scn
 from ophyd_async.core import set_mock_value
 
 from ibex_bluesky_core.devices.simpledae import SimpleDae
@@ -12,8 +11,6 @@ from ibex_bluesky_core.devices.simpledae.reducers import (
     MonitorNormalizer,
     PeriodGoodFramesNormalizer,
     ScalarNormalizer,
-)
-from ibex_bluesky_core.devices.simpledae.reducers import (
     tof_bounded_spectra,
     wavelength_bounded_spectra,
 )
@@ -43,7 +40,7 @@ async def monitor_normalizer() -> MonitorNormalizer:
 
 # detector summer sum_spectra/default, monitor summer tof_bounded 1, 2
 @pytest.fixture
-async def monitor_normalizer_tof_bounded_zero_to_one_half_det_normal_mon_tof() -> MonitorNormalizer:
+async def monitor_normalizer_zero_to_one_half_det_norm_mon_tof() -> MonitorNormalizer:
     reducer = MonitorNormalizer(
         prefix="",
         detector_spectra=[1],
@@ -76,7 +73,7 @@ async def monitor_normalizer_det_normal_mon_wavelenth() -> MonitorNormalizer:
 
 # detector summer tof_bounded, monitor summer sum_spectra/default 2, 1
 @pytest.fixture
-async def monitor_normalizer_tof_bounded_zero_to_one_half_det_tof_mon_normal() -> MonitorNormalizer:
+async def monitor_normalizer_zero_to_one_half_det_tof_mon_normal() -> MonitorNormalizer:
     reducer = MonitorNormalizer(
         prefix="",
         detector_spectra=[1],
@@ -656,22 +653,22 @@ async def test_monitor_normalizer_publishes_raw_and_normalized_count_uncertainti
 
 async def test_monitor_normalizer_det_sum_normal_mon_sum_tof_bound_(  # 1, 2
     simpledae: SimpleDae,
-    monitor_normalizer_tof_bounded_zero_to_one_half_det_normal_mon_tof: MonitorNormalizer,
+    monitor_normalizer_zero_to_one_half_det_norm_mon_tof: MonitorNormalizer,
     spectra_bins_easy_to_test: sc.DataArray,
 ):
-    monitor_normalizer_tof_bounded_zero_to_one_half_det_normal_mon_tof.detectors[
+    monitor_normalizer_zero_to_one_half_det_norm_mon_tof.detectors[
         1
     ].read_spectrum_dataarray = AsyncMock(return_value=spectra_bins_easy_to_test)
 
-    monitor_normalizer_tof_bounded_zero_to_one_half_det_normal_mon_tof.monitors[
+    monitor_normalizer_zero_to_one_half_det_norm_mon_tof.monitors[
         2
     ].read_spectrum_dataarray = AsyncMock(return_value=spectra_bins_easy_to_test)
 
-    await monitor_normalizer_tof_bounded_zero_to_one_half_det_normal_mon_tof.reduce_data(simpledae)
+    await monitor_normalizer_zero_to_one_half_det_norm_mon_tof.reduce_data(simpledae)
 
-    det_counts = await monitor_normalizer_tof_bounded_zero_to_one_half_det_normal_mon_tof.det_counts.get_value()
-    mon_counts = await monitor_normalizer_tof_bounded_zero_to_one_half_det_normal_mon_tof.mon_counts.get_value()
-    intensity = await monitor_normalizer_tof_bounded_zero_to_one_half_det_normal_mon_tof.intensity.get_value()
+    det_counts = await monitor_normalizer_zero_to_one_half_det_norm_mon_tof.det_counts.get_value()
+    mon_counts = await monitor_normalizer_zero_to_one_half_det_norm_mon_tof.mon_counts.get_value()
+    intensity = await monitor_normalizer_zero_to_one_half_det_norm_mon_tof.intensity.get_value()
 
     assert det_counts == 9000.0  # 1 + 2 + 3 + 2 + 1 from detector = 9
     assert mon_counts == 500.0  # 1k / 2k = 500 from monitor
@@ -706,25 +703,25 @@ async def test_monitor_normalizer_det_sum_normal_mon_sum_wavelenth(  # 1, 3
 
 async def test_monitor_normalizer_det_sum_tof_bound_mon_sum_normal(  # 2, 1
     simpledae: SimpleDae,
-    monitor_normalizer_tof_bounded_zero_to_one_half_det_tof_mon_normal: MonitorNormalizer,
+    monitor_normalizer_zero_to_one_half_det_tof_mon_normal: MonitorNormalizer,
     spectra_bins_easy_to_test: sc.DataArray,
 ):
-    monitor_normalizer_tof_bounded_zero_to_one_half_det_tof_mon_normal.detectors[
+    monitor_normalizer_zero_to_one_half_det_tof_mon_normal.detectors[
         1
     ].read_spectrum_dataarray = AsyncMock(return_value=spectra_bins_easy_to_test)
 
-    monitor_normalizer_tof_bounded_zero_to_one_half_det_tof_mon_normal.monitors[
+    monitor_normalizer_zero_to_one_half_det_tof_mon_normal.monitors[
         2
     ].read_spectrum_dataarray = AsyncMock(return_value=spectra_bins_easy_to_test)
 
-    await monitor_normalizer_tof_bounded_zero_to_one_half_det_tof_mon_normal.reduce_data(simpledae)
+    await monitor_normalizer_zero_to_one_half_det_tof_mon_normal.reduce_data(simpledae)
 
-    det_counts = await monitor_normalizer_tof_bounded_zero_to_one_half_det_tof_mon_normal.det_counts.get_value()
-    mon_counts = await monitor_normalizer_tof_bounded_zero_to_one_half_det_tof_mon_normal.mon_counts.get_value()
-    intensity = await monitor_normalizer_tof_bounded_zero_to_one_half_det_tof_mon_normal.intensity.get_value()
+    det_counts = await monitor_normalizer_zero_to_one_half_det_tof_mon_normal.det_counts.get_value()
+    mon_counts = await monitor_normalizer_zero_to_one_half_det_tof_mon_normal.mon_counts.get_value()
+    intensity = await monitor_normalizer_zero_to_one_half_det_tof_mon_normal.intensity.get_value()
 
-    assert det_counts == 500  # 1 + 2 + 3 from detector = 6
-    assert mon_counts == 9000.0  # 1 + 2 + 3 from monitor = 6
+    assert det_counts == 500  # 1/2 * 1000 from detector = 500
+    assert mon_counts == 9000.0  # 1 + 2 + 3 + 2 + 1 from monitor = 9000
     assert intensity == pytest.approx(500 / 9000.0)
 
 
@@ -822,7 +819,7 @@ async def test_monitor_normalizer_det_sum_tof_mon_sum_wavelength(  # 2, 3
     mon_counts = await monitor_normalizer_det_tof_mon_wavelenth.mon_counts.get_value()
     intensity = await monitor_normalizer_det_tof_mon_wavelenth.intensity.get_value()
 
-    assert det_counts == 500.0  # 1000 + (0.5 x 2000) from detector = 2000
+    assert det_counts == 500.0  # 1/2 * 1000 from detector = 1000
     assert mon_counts == pytest.approx(5675.097)  # angstrom rebinning from monitor
     assert intensity == pytest.approx(500 / 5675.097)
 

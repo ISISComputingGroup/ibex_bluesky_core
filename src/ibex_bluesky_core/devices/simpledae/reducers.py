@@ -4,10 +4,9 @@ import asyncio
 import logging
 import math
 from abc import ABCMeta, abstractmethod
-from typing import TYPE_CHECKING, Collection, Sequence
+from typing import TYPE_CHECKING, Awaitable, Callable, Collection, Sequence
 
 import scipp as sc
-from scippneutron import conversion
 from ophyd_async.core import (
     Device,
     DeviceVector,
@@ -15,7 +14,7 @@ from ophyd_async.core import (
     StandardReadable,
     soft_signal_r_and_setter,
 )
-from typing import Callable, Awaitable
+from scippneutron import conversion
 
 from ibex_bluesky_core.devices.dae.dae_spectra import DaeSpectra
 from ibex_bluesky_core.devices.simpledae.strategies import Reducer
@@ -46,15 +45,18 @@ async def sum_spectra(spectra: Collection[DaeSpectra]) -> sc.Variable | sc.DataA
 def tof_bounded_spectra(
     bounds: sc.Variable,
 ) -> Callable[[Collection[DaeSpectra]], Awaitable[sc.Variable | sc.DataArray]]:
+    """Rebin spectra bounded by time of flight bounds.
+
+    Returns a scipp scalar, which has .value and .variance properties for accessing the sum
+    and variance respectively of the summed counts.
+    """
     if "tof" not in bounds.dims:
-        raise ValueError("Should contain tof dims")  # todo write tests covering this
+        raise ValueError("Should contain tof dims")
     if bounds.sizes["tof"] != 2:
-        raise ValueError("Should contain lower and upper bound")  # todo write tests covering this
+        raise ValueError("Should contain lower and upper bound")
 
     async def sum_spectra_with_tof(spectra: Collection[DaeSpectra]) -> sc.Variable | sc.DataArray:
-        """
-        sums spectra, bounded by a time of flight upper and lower bound
-        """
+        """Sum spectra bounded by a time of flight upper and lower bound."""
         summed_counts = sc.scalar(value=0, unit=sc.units.counts, dtype="float64")
         for spec in asyncio.as_completed([s.read_spectrum_dataarray() for s in spectra]):
             tof_bound_spectra = await spec
@@ -67,15 +69,18 @@ def tof_bounded_spectra(
 def wavelength_bounded_spectra(
     bounds: sc.Variable, beam_total: sc.Variable
 ) -> Callable[[Collection[DaeSpectra]], Awaitable[sc.Variable | sc.DataArray]]:
+    """Rebin spectra bounded by wavelength bounds.
+
+    Returns a scipp scalar, which has .value and .variance properties for accessing the sum
+    and variance respectively of the summed counts.
+    """
     if "tof" not in bounds.dims:
         raise ValueError("Should contain tof dims")
 
     async def sum_spectra_with_wavelength(
         spectra: Collection[DaeSpectra],
     ) -> sc.Variable | sc.DataArray:
-        """
-        sums spectra, converting time of flight to wavelength
-        """
+        """Sum spectra and convert time of flight to wavelength."""
         summed_counts = sc.scalar(value=0, unit=sc.units.counts, dtype="float64")
         for spec in asyncio.as_completed([s.read_spectrum_dataarray() for s in spectra]):
             wavelength_bounded_spectra = await spec
@@ -105,6 +110,7 @@ class ScalarNormalizer(Reducer, StandardReadable, metaclass=ABCMeta):
         Args:
             prefix: the PV prefix of the instrument to get spectra from (e.g. IN:DEMO:)
             detector_spectra: a sequence of spectra numbers (detectors) to sum.
+            summer: either sum_spectra, tof_bounded_spectra, or wavelength_bounded_spectra.
 
         """
         self.detectors = DeviceVector(
@@ -204,6 +210,8 @@ class MonitorNormalizer(Reducer, StandardReadable):
             prefix: the PV prefix of the instrument to get spectra from (e.g. IN:DEMO:)
             detector_spectra: a sequence of spectra numbers (detectors) to sum.
             monitor_spectra: a sequence of spectra number (monitors) to sum and normalize by.
+            detector_summer: either sum_spectra, tof_bounded_spectra, or wavelength_bounded_spectra.
+            monitor_summer: either sum_spectra, tof_bounded_spectra, or wavelength_bounded_spectra.
 
         """
         dae_prefix = prefix + "DAE:"
