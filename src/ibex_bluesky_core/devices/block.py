@@ -20,12 +20,10 @@ from ophyd_async.epics.motor import Motor
 
 from ibex_bluesky_core.devices import get_pv_prefix
 
-"""Block data type"""
-T = TypeVar("T", bound=SignalDatatype)
 logger = logging.getLogger(__name__)
 
 # Block data type
-T = TypeVar("T")
+T = TypeVar("T", bound=SignalDatatype)
 
 
 __all__ = [
