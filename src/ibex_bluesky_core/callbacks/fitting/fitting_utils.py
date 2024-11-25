@@ -190,7 +190,6 @@ class Linear(Fit):
     ) -> Callable[[npt.NDArray[np.float64], npt.NDArray[np.float64]], dict[str, lmfit.Parameter]]:
         """Linear Guessing."""
         return Polynomial.guess(1)
-        # Uses polynomial guessing with a degree of 1
 
 
 class Polynomial(Fit):
@@ -332,14 +331,17 @@ class SlitScan(Fit):
             # Guessing. gradient of linear-slope part of function
             dy = np.gradient(y)  # Return array of differences in y
             max_dy = np.max(dy)  # Return max y difference, this will always be on the upwards slope
-            dx = x[1] - x[0]  # Find x step
+            dx = abs(x[1] - x[0])  # Find x step
             gradient = max_dy / dx
 
             d2y = np.diff(dy)  # Double differentiate y to find how gradients change
             inflection0 = x[np.argmax(d2y)]  # Where there is positive gradient change
 
             background = min(y)  # The lowest y value is the background
-            inflections_diff = -(background - y[np.argmax(y)]) / gradient
+            if gradient != 0.0:
+                inflections_diff = -(background - y[np.argmax(y)]) / gradient
+            else:
+                inflections_diff = dx  # Fallback case, guess one x step
             # As linear, using y - y1 = m(x - x1) -> x = (y - y1) / gradient - x1
 
             # The highest y value + slightly more to account for further convergence

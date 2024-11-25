@@ -38,8 +38,11 @@ ax = plt.gca()
 # Set the y-scale to logarithmic
 ax.set_yscale("log")
 # Use the above axes in a LivePlot callback
-plot_callback = LivePlot(y="y_variable", x="x_variable", ax=ax)
+plot_callback = LivePlot(y="y_variable", x="x_variable", ax=ax, yerr="yerr_variable")
+# yerr is the uncertanties of each y value, producing error bars
 ```
+
+By providing a signal name to the `yerr` argument you can pass uncertainties to LivePlot, by not providing anything for this argument means that no errorbars will be drawn. Errorbars are drawn after each point collected, displaying their standard deviation- uncertainty data is collected from Bluesky event documents and errorbars are updated after every new point added.
 
 The `plot_callback` object can then be subscribed to the run engine, using either:
 - An explicit callback when calling the run engine: `RE(some_plan(), plot_callback)`

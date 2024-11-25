@@ -1,6 +1,7 @@
 """DAE waiting strategies."""
 
 import asyncio
+import logging
 from abc import ABCMeta, abstractmethod
 from typing import TYPE_CHECKING, Generic, TypeVar
 
@@ -12,6 +13,8 @@ from ophyd_async.core import (
 
 from ibex_bluesky_core.devices.simpledae.strategies import Waiter
 
+logger = logging.getLogger(__name__)
+
 if TYPE_CHECKING:
     from ibex_bluesky_core.devices.simpledae import SimpleDae
 
@@ -19,7 +22,7 @@ if TYPE_CHECKING:
 T = TypeVar("T", int, float)
 
 
-class _SimpleWaiter(Waiter, Generic[T], metaclass=ABCMeta):
+class SimpleWaiter(Waiter, Generic[T], metaclass=ABCMeta):
     """Wait for a single DAE variable to be greater or equal to a specified numeric value."""
 
     def __init__(self, value: T) -> None:
@@ -33,7 +36,10 @@ class _SimpleWaiter(Waiter, Generic[T], metaclass=ABCMeta):
 
     async def wait(self, dae: "SimpleDae") -> None:
         """Wait for signal to reach the user-specified value."""
-        await wait_for_value(self.get_signal(dae), lambda v: v >= self._value, timeout=None)
+        signal = self.get_signal(dae)
+        logger.info("starting wait for signal %s", signal.source)
+        await wait_for_value(signal, lambda v: v >= self._value, timeout=None)
+        logger.info("completed wait for signal %s", signal.source)
 
     def additional_readable_signals(self, dae: "SimpleDae") -> list[Device]:
         """Publish the signal we're waiting on as an interesting signal."""
@@ -41,10 +47,10 @@ class _SimpleWaiter(Waiter, Generic[T], metaclass=ABCMeta):
 
     @abstractmethod
     def get_signal(self, dae: "SimpleDae") -> SignalR[T]:
-        pass
+        """Get the numeric signal to wait for."""
 
 
-class PeriodGoodFramesWaiter(_SimpleWaiter[int]):
+class PeriodGoodFramesWaiter(SimpleWaiter[int]):
     """Wait for period good frames to reach a user-specified value."""
 
     def get_signal(self, dae: "SimpleDae") -> SignalR[int]:
@@ -52,7 +58,7 @@ class PeriodGoodFramesWaiter(_SimpleWaiter[int]):
         return dae.period.good_frames
 
 
-class GoodFramesWaiter(_SimpleWaiter[int]):
+class GoodFramesWaiter(SimpleWaiter[int]):
     """Wait for good frames to reach a user-specified value."""
 
     def get_signal(self, dae: "SimpleDae") -> SignalR[int]:
@@ -60,7 +66,7 @@ class GoodFramesWaiter(_SimpleWaiter[int]):
         return dae.good_frames
 
 
-class GoodUahWaiter(_SimpleWaiter[float]):
+class GoodUahWaiter(SimpleWaiter[float]):
     """Wait for good microamp-hours to reach a user-specified value."""
 
     def get_signal(self, dae: "SimpleDae") -> SignalR[float]:
@@ -68,7 +74,7 @@ class GoodUahWaiter(_SimpleWaiter[float]):
         return dae.good_uah
 
 
-class MEventsWaiter(_SimpleWaiter[float]):
+class MEventsWaiter(SimpleWaiter[float]):
     """Wait for a user-specified number of millions of events."""
 
     def get_signal(self, dae: "SimpleDae") -> SignalR[float]:
@@ -90,4 +96,6 @@ class TimeWaiter(Waiter):
 
     async def wait(self, dae: "SimpleDae") -> None:
         """Wait for the specified time duration."""
+        logger.info("starting wait for %f seconds", self._secs)
         await asyncio.sleep(self._secs)
+        logger.info("completed wait")

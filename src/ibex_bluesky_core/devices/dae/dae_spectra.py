@@ -1,6 +1,7 @@
 """ophyd-async devices and utilities for a single DAE spectra."""
 
 import asyncio
+import logging
 
 import scipp as sc
 from event_model.documents.event_descriptor import DataKey
@@ -8,6 +9,9 @@ from numpy import float32
 from numpy.typing import NDArray
 from ophyd_async.core import SignalR, StandardReadable
 from ophyd_async.epics.signal import epics_signal_r
+
+VARIANCE_ADDITION = 0.5
+logger = logging.getLogger(__name__)
 
 
 class DaeSpectra(StandardReadable):
@@ -89,6 +93,11 @@ class DaeSpectra(StandardReadable):
         Data is returned along dimension "tof", which has bin-edge coordinates and units set from
         the units of the underlying PVs.
         """
+        logger.debug(
+            "Reading spectrum dataarray backed by PVs edges=%s, counts=%s",
+            self.tof_edges.source,
+            self.counts.source,
+        )
         tof_edges, tof_edges_descriptor, counts = await asyncio.gather(
             self.read_tof_edges(),
             self.tof_edges.describe(),
@@ -107,7 +116,21 @@ class DaeSpectra(StandardReadable):
         if unit is None:
             raise ValueError("Could not determine engineering units of tof edges.")
 
+        # See doc\architectural_decisions\005-variance-addition.md
+        # for justfication of the VARIANCE_ADDITION to variances
+
         return sc.DataArray(
-            data=sc.Variable(dims=["tof"], values=counts, variances=counts, unit=sc.units.counts, dtype="float64"),
-            coords={"tof": sc.array(dims=["tof"], values=tof_edges, unit=sc.Unit(unit), dtype="float64")},
+            data=sc.Variable(
+                dims=["tof"],
+                values=counts,
+                variances=counts + VARIANCE_ADDITION,
+                unit=sc.units.counts,
+                dtype="float64",
+            ),
+            coords={
+                "tof": sc.array(dims=["tof"], 
+                                values=tof_edges, 
+                                unit=sc.Unit(unit), 
+                                dtype="float64")
+            },
         )

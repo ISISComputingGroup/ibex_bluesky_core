@@ -1,6 +1,7 @@
 """ophyd-async devices and utilities for communicating with IBEX blocks."""
 
 import asyncio
+import logging
 from dataclasses import dataclass
 from typing import Callable, Generic, Type, TypeVar
 
@@ -18,7 +19,9 @@ from ophyd_async.epics.signal import epics_signal_r, epics_signal_rw
 
 from ibex_bluesky_core.devices import get_pv_prefix
 
-"""Block data type"""
+logger = logging.getLogger(__name__)
+
+# Block data type
 T = TypeVar("T")
 
 
@@ -140,6 +143,10 @@ class BlockR(StandardReadable, Triggerable, Generic[T]):
         They do not do anything when triggered.
         """
 
+    def __repr__(self) -> str:
+        """Debug representation of this block."""
+        return f"{self.__class__.__name__}(name={self.name})"
+
 
 class BlockRw(BlockR[T], Movable):
     """Device representing an IBEX read/write block of arbitrary data type."""
@@ -184,14 +191,19 @@ class BlockRw(BlockR[T], Movable):
         """Set the setpoint of this block."""
 
         async def do_set(setpoint: T) -> None:
+            logger.info("Setting Block %s to %s", self.name, setpoint)
             await self.setpoint.set(
                 setpoint, wait=self._write_config.use_completion_callback, timeout=None
             )
+            logger.info("Got completion callback from setting block %s to %s", self.name, setpoint)
 
             # Wait for the _set_success_func to return true.
             # This uses an "async for" to loop over items from observe_value, which is an async
             # generator. See documentation on "observe_value" or python "async for" for more details
             if self._write_config.set_success_func is not None:
+                logger.info(
+                    "Waiting for set_success_func on setting block %s to %s", self.name, setpoint
+                )
                 async for actual_value in observe_value(self.readback):
                     if self._write_config.set_success_func(setpoint, actual_value):
                         break
@@ -202,9 +214,15 @@ class BlockRw(BlockR[T], Movable):
             else:
                 await do_set(setpoint)
 
+            logger.info(
+                "Waiting for configured settle time (%f seconds) on block %s",
+                self._write_config.settle_time_s,
+                self.name,
+            )
             await asyncio.sleep(self._write_config.settle_time_s)
 
         await set_and_settle(value)
+        logger.info("block set complete %s value=%s", self.name, value)
 
 
 class BlockRwRbv(BlockRw[T], Locatable):
@@ -241,6 +259,7 @@ class BlockRwRbv(BlockRw[T], Locatable):
 
     async def locate(self) -> Location[T]:
         """Get the current 'location' of this block."""
+        logger.info("locating block %s", self.name)
         actual, sp_rbv = await asyncio.gather(
             self.readback.get_value(),
             self.setpoint_readback.get_value(),
@@ -300,6 +319,10 @@ class BlockMot(Motor):
         # by GWBLOCK in that way. So by pointing at CS:SB:blockname:SP:RBV rather than
         # CS:SB:blockname here, we avoid a write access exception when moving a motor block.
         super().__init__(f"{prefix}CS:SB:{block_name}:SP:RBV", name=block_name)
+
+    def __repr__(self) -> str:
+        """Debug representation of this block."""
+        return f"{self.__class__.__name__}(name={self.name})"
 
 
 def block_r(datatype: Type[T], block_name: str) -> BlockR[T]:

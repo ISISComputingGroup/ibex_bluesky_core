@@ -1,6 +1,7 @@
 """DAE data reduction strategies."""
 
 import asyncio
+import logging
 import math
 from abc import ABCMeta, abstractmethod
 from typing import TYPE_CHECKING, Collection, Sequence
@@ -19,6 +20,8 @@ from typing import Callable, Awaitable
 from ibex_bluesky_core.devices.dae.dae_spectra import DaeSpectra
 from ibex_bluesky_core.devices.simpledae.strategies import Reducer
 
+logger = logging.getLogger(__name__)
+
 if TYPE_CHECKING:
     from ibex_bluesky_core.devices.simpledae import SimpleDae
 
@@ -32,9 +35,11 @@ async def sum_spectra(spectra: Collection[DaeSpectra]) -> sc.Variable | sc.DataA
     Returns a scipp scalar, which has .value and .variance properties for accessing the sum
     and variance respectively of the summed counts.
     """
+    logger.info("Summing %d spectra using scipp", len(spectra))
     summed_counts = sc.scalar(value=0, unit=sc.units.counts, dtype="float64")
     for spec in asyncio.as_completed([s.read_spectrum_dataarray() for s in spectra]):
         summed_counts += (await spec).sum()
+    logger.debug("Summed counts: %s", summed_counts)
     return summed_counts
 
 
@@ -130,6 +135,7 @@ class ScalarNormalizer(Reducer, StandardReadable, metaclass=ABCMeta):
 
     async def reduce_data(self, dae: "SimpleDae") -> None:
         """Apply the normalization."""
+        logger.info("starting reduction")
         summed_counts, denominator = await asyncio.gather(
             self.summer(self.detectors.values()), self.denominator(dae).get_value()
         )
@@ -148,6 +154,7 @@ class ScalarNormalizer(Reducer, StandardReadable, metaclass=ABCMeta):
 
         self._det_counts_stddev_setter(math.sqrt(detector_counts_var))
         self._intensity_stddev_setter(math.sqrt(intensity_var))
+        logger.info("reduction complete")
 
     def additional_readable_signals(self, dae: "SimpleDae") -> list[Device]:
         """Publish interesting signals derived or used by this reducer."""
@@ -229,6 +236,7 @@ class MonitorNormalizer(Reducer, StandardReadable):
 
     async def reduce_data(self, dae: "SimpleDae") -> None:
         """Apply the normalization."""
+        logger.info("starting reduction")
         detector_counts, monitor_counts = await asyncio.gather(
             self.detector_summer(self.detectors.values()),
             self.monitor_summer(self.monitors.values()),
@@ -253,6 +261,7 @@ class MonitorNormalizer(Reducer, StandardReadable):
 
         self._det_counts_stddev_setter(math.sqrt(detector_counts_var))
         self._mon_counts_stddev_setter(math.sqrt(monitor_counts_var))
+        logger.info("reduction complete")
 
     def additional_readable_signals(self, dae: "SimpleDae") -> list[Device]:
         """Publish interesting signals derived or used by this reducer."""
