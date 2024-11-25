@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        version: ['3.10','3.11'] # ,'3.12'] # also check on 3.12 once https://github.com/bluesky/ophyd-async/pull/478 is merged.
+        version: ['3.10','3.11','3.12']
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
