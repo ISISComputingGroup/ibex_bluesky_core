@@ -6,6 +6,7 @@ import math
 from abc import ABCMeta, abstractmethod
 from typing import TYPE_CHECKING, Collection, Sequence
 
+import numpy as np
 import scipp as sc
 from ophyd_async.core import (
     Device,
@@ -88,7 +89,7 @@ class ScalarNormalizer(Reducer, StandardReadable, metaclass=ABCMeta):
 
         if denominator == 0.0:  # To avoid zero division
             self._intensity_setter(0.0)
-            intensity_var = 0.0
+            intensity_var = np.finfo(np.float64).max
         else:
             intensity = summed_counts / denominator
             self._intensity_setter(intensity.value)
@@ -176,8 +177,7 @@ class MonitorNormalizer(Reducer, StandardReadable):
 
         if monitor_counts.value == 0.0:  # To avoid zero division
             self._intensity_setter(0.0)
-            intensity_var = 0.0
-
+            intensity_var = np.finfo(np.float64).max
         else:
             intensity = detector_counts / monitor_counts
             self._intensity_setter(float(intensity.value))
