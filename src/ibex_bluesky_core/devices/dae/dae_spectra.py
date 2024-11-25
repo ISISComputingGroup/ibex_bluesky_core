@@ -128,9 +128,6 @@ class DaeSpectra(StandardReadable):
                 dtype="float64",
             ),
             coords={
-                "tof": sc.array(dims=["tof"], 
-                                values=tof_edges, 
-                                unit=sc.Unit(unit), 
-                                dtype="float64")
+                "tof": sc.array(dims=["tof"], values=tof_edges, unit=sc.Unit(unit), dtype="float64")
             },
         )
