@@ -70,7 +70,7 @@ class Gaussian(Fit):
 
             return amp * np.exp(-((x - x0) ** 2) / (2 * sigma**2)) + background
 
-        return lmfit.Model(model, name=__class__.__name__)
+        return lmfit.Model(model)
 
     @classmethod
     def guess(
@@ -117,7 +117,7 @@ class Lorentzian(Fit):
 
             return amp / (1 + ((x - center) / sigma) ** 2) + background
 
-        return lmfit.Model(model, name=__class__.__name__)
+        return lmfit.Model(model)
 
     @classmethod
     def guess(
@@ -182,7 +182,7 @@ class Linear(Fit):
         def model(x: npt.NDArray[np.float64], c1: float, c0: float) -> npt.NDArray[np.float64]:
             return c1 * x + c0
 
-        return lmfit.Model(model, name=__class__.__name__)
+        return lmfit.Model(model)
 
     @classmethod
     def guess(
@@ -243,7 +243,7 @@ class DampedOsc(Fit):
         ) -> npt.NDArray[np.float64]:
             return amp * np.cos((x - center) * freq) * np.exp(-(((x - center) / width) ** 2))
 
-        return lmfit.Model(model, name=__class__.__name__)
+        return lmfit.Model(model)
 
     @classmethod
     def guess(
@@ -307,7 +307,7 @@ class SlitScan(Fit):
 
             return y
 
-        return lmfit.Model(model, name=__class__.__name__)
+        return lmfit.Model(model)
 
     @classmethod
     def guess(
@@ -353,7 +353,7 @@ class ERF(Fit):
         ) -> npt.NDArray[np.float64]:
             return background + scale * scipy.special.erf(stretch * (x - cen))
 
-        return lmfit.Model(model, name=__class__.__name__)
+        return lmfit.Model(model)
 
     @classmethod
     def guess(
@@ -388,7 +388,7 @@ class ERFC(Fit):
         ) -> npt.NDArray[np.float64]:
             return background + scale * scipy.special.erfc(stretch * (x - cen))
 
-        return lmfit.Model(model, name=__class__.__name__)
+        return lmfit.Model(model)
 
     @classmethod
     def guess(
@@ -425,7 +425,7 @@ class TopHat(Fit):
             y[np.abs(x - cen) < width / 2] = height
             return background + y
 
-        return lmfit.Model(model, name=__class__.__name__)
+        return lmfit.Model(model)
 
     @classmethod
     def guess(
@@ -476,7 +476,7 @@ class Trapezoid(Fit):
             y = np.minimum(y, background + height)
             return y
 
-        return lmfit.Model(model, name=__class__.__name__)
+        return lmfit.Model(model)
 
     @classmethod
     def guess(
