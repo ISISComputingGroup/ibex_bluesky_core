@@ -59,7 +59,7 @@ We support **standard fits** for the following trends in data. See [Standard Fit
 | Gaussian | [Gaussian](./standard_fits.md#gaussian) | None |
 | Lorentzian | [Lorentzian](./standard_fits.md#lorentzian) | None |
 | Damped Oscillator | [DampedOsc](./standard_fits.md#damped-oscillator-dampedosc) | None |
-| Slit Scan Fit | [SlitScan](./standard_fits.md#slit-scan-slitscan) | Max Slit Size (int) |
+| Slit Scan Fit | [SlitScan](./standard_fits.md#slit-scan-slitscan) | None |
 | Error Function | [ERF](./standard_fits.md#error-function-erf) | None |
 | Complementary Error Function | [ERFC](./standard_fits.md/#complementary-error-function-erfc) | None |
 | Top Hat | [TopHat](./standard_fits.md#top-hat-tophat) | None |
