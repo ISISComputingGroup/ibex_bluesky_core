@@ -5,7 +5,7 @@ library so should not set application-level policies. Instead just quietly add h
 logger and the bluesky logger.
 """
 
-import logging.config
+import logging
 import os
 import sys
 from functools import cache

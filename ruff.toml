@@ -19,8 +19,6 @@ extend-select = [
 ignore = [
     "D406",    # Section name should end with a newline ("{name}")
     "D407",    # Missing dashed underline after section ("{name}")
-    "ANN101",  # ignore this until its removed in future versions
-    "ANN102",  # ignore this until its removed in future versions
 	"D213",    # Incompatible with D212
 	"D203",    # Incompatible with D211
 ]
