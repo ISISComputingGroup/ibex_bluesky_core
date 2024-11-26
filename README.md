@@ -1,4 +1,4 @@
-# ibex_bluesky_core
+![ibex_bluesky_core](https://github.com/IsisComputingGroup/ibex_bluesky_core/blob/main/doc/logo.png?raw=True)
 
 Core bluesky plan stubs &amp; devices for use at ISIS. Not instrument/technique specific.
 

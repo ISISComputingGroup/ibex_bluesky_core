@@ -1,1 +1,1 @@
-"""For callbacks that relate to the BlueSky run engine."""
+"""Bluesky callbacks which may be attached to the RunEngine."""

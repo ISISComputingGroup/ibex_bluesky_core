@@ -1,5 +1,6 @@
 """ophyd-async devices and utilities for the DAE time channel settings."""
 
+import logging
 import xml.etree.ElementTree as ET
 from dataclasses import dataclass
 from enum import Enum
@@ -19,6 +20,8 @@ from ibex_bluesky_core.devices.dae import (
     get_all_elements_in_xml_with_child_called_name,
     set_value_in_dae_xml,
 )
+
+logger = logging.getLogger(__name__)
 
 TIME_UNIT = "Time Unit"
 CALCULATION_METHOD = "Calculation Method"
@@ -136,6 +139,7 @@ class DaeTCBSettings(Device, Locatable[DaeTCBSettingsData], Movable[DaeTCBSettin
         value = await self._raw_tcb_settings.get_value()
         value_dehexed = dehex_and_decompress(value.encode()).decode()
         tcb_settings = _convert_xml_to_tcb_settings(value_dehexed)
+        logger.info("locate tcb settings: %s", tcb_settings)
         return {"setpoint": tcb_settings, "readback": tcb_settings}
 
     @AsyncStatus.wrap
@@ -145,4 +149,5 @@ class DaeTCBSettings(Device, Locatable[DaeTCBSettingsData], Movable[DaeTCBSettin
         current_xml_dehexed = dehex_and_decompress(current_xml.encode()).decode()
         xml = _convert_tcb_settings_to_xml(current_xml_dehexed, value)
         the_value_to_write = compress_and_hex(xml).decode()
+        logger.info("set tcb settings: %s", the_value_to_write)
         await self._raw_tcb_settings.set(the_value_to_write, wait=True, timeout=None)

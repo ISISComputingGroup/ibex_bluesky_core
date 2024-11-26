@@ -1,0 +1,38 @@
+name: test-against-main
+on:
+  schedule:
+    - cron: "0 0 * * *"
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        version: ['3.11', "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.version }}
+      - name: install requirements
+        run: pip install -e .[dev]
+      - name: install latest bluesky and ophyd-async
+        run: pip install --upgrade --force-reinstall git+https://github.com/bluesky/bluesky.git@main git+https://github.com/bluesky/ophyd-async.git@main
+      - name: run ruff
+        run: python -m ruff check
+      - name: run pyright
+        run: python -m pyright
+      - name: run pytest
+        run: python -m pytest
+  results:
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    name: Final Results
+    needs: [tests]
+    steps:
+    - run: exit 1
+      # see https://stackoverflow.com/a/67532120/4907315
+      if: >-
+          ${{
+               contains(needs.*.result, 'failure')
+            || contains(needs.*.result, 'cancelled')
+          }}

@@ -1,12 +1,13 @@
 """ophyd-async devices and utilities for the general DAE settings."""
 
+import logging
 import xml.etree.ElementTree as ET
 from dataclasses import dataclass
 from enum import Enum
 from xml.etree.ElementTree import tostring
 
 from bluesky.protocols import Locatable, Location, Movable
-from ophyd_async.core import AsyncStatus, Device, SignalRW
+from ophyd_async.core import AsyncStatus, SignalRW, StandardReadable
 
 from ibex_bluesky_core.devices import (
     isis_epics_signal_rw,
@@ -16,6 +17,8 @@ from ibex_bluesky_core.devices.dae import (
     get_all_elements_in_xml_with_child_called_name,
     set_value_in_dae_xml,
 )
+
+logger = logging.getLogger(__name__)
 
 VETO3_NAME = "Veto 3 Name"
 VETO2_NAME = "Veto 2 Name"
@@ -147,7 +150,7 @@ def _convert_dae_settings_to_xml(current_xml: str, settings: DaeSettingsData) ->
     return tostring(root, encoding="unicode")
 
 
-class DaeSettings(Device, Locatable[DaeSettingsData], Movable[DaeSettingsData]):
+class DaeSettings(StandardReadable, Locatable[DaeSettingsData], Movable[DaeSettingsData]):
     """Subdevice for the DAE general settings."""
 
     def __init__(self, dae_prefix: str, name: str = "") -> None:
@@ -164,6 +167,7 @@ class DaeSettings(Device, Locatable[DaeSettingsData], Movable[DaeSettingsData]):
         """Retrieve and convert the current XML to DaeSettingsData."""
         value = await self._raw_dae_settings.get_value()
         period_settings = _convert_xml_to_dae_settings(value)
+        logger.info("locate dae settings: %s", period_settings)
         return {"setpoint": period_settings, "readback": period_settings}
 
     @AsyncStatus.wrap
@@ -171,4 +175,5 @@ class DaeSettings(Device, Locatable[DaeSettingsData], Movable[DaeSettingsData]):
         """Set any changes in the DAE settings to the XML."""
         current_xml = await self._raw_dae_settings.get_value()
         to_write = _convert_dae_settings_to_xml(current_xml, value)
+        logger.info("set dae settings: %s", to_write)
         await self._raw_dae_settings.set(to_write, wait=True, timeout=None)

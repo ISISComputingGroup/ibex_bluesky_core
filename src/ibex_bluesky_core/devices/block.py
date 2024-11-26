@@ -1,25 +1,29 @@
 """ophyd-async devices and utilities for communicating with IBEX blocks."""
 
 import asyncio
+import logging
 from dataclasses import dataclass
 from typing import Callable, Generic, Type, TypeVar
 
 from bluesky.protocols import Locatable, Location, Movable, Triggerable
 from ophyd_async.core import (
     AsyncStatus,
-    HintedSignal,
+    SignalDatatype,
     SignalR,
     SignalRW,
     StandardReadable,
+    StandardReadableFormat,
     observe_value,
 )
+from ophyd_async.epics.core import epics_signal_r, epics_signal_rw
 from ophyd_async.epics.motor import Motor
-from ophyd_async.epics.signal import epics_signal_r, epics_signal_rw
 
 from ibex_bluesky_core.devices import get_pv_prefix
 
-"""Block data type"""
-T = TypeVar("T")
+logger = logging.getLogger(__name__)
+
+# Block data type
+T = TypeVar("T", bound=SignalDatatype)
 
 
 __all__ = [
@@ -95,7 +99,7 @@ class RunControl(StandardReadable):
             name: ophyd device name
 
         """
-        with self.add_children_as_readables(HintedSignal):
+        with self.add_children_as_readables(StandardReadableFormat.HINTED_SIGNAL):
             # When explicitly reading run control, the most obvious signal that people will be
             # interested in is whether the block is in range or not.
             self.in_range = epics_signal_r(bool, f"{prefix}INRANGE")
@@ -124,7 +128,7 @@ class BlockR(StandardReadable, Triggerable, Generic[T]):
             block_name: the name of the block
 
         """
-        with self.add_children_as_readables(HintedSignal):
+        with self.add_children_as_readables(StandardReadableFormat.HINTED_SIGNAL):
             self.readback: SignalR[T] = epics_signal_r(datatype, f"{prefix}CS:SB:{block_name}")
 
         # Run control doesn't need to be read by default
@@ -139,6 +143,10 @@ class BlockR(StandardReadable, Triggerable, Generic[T]):
 
         They do not do anything when triggered.
         """
+
+    def __repr__(self) -> str:
+        """Debug representation of this block."""
+        return f"{self.__class__.__name__}(name={self.name})"
 
 
 class BlockRw(BlockR[T], Movable[T]):
@@ -184,14 +192,19 @@ class BlockRw(BlockR[T], Movable[T]):
         """Set the setpoint of this block."""
 
         async def do_set(setpoint: T) -> None:
+            logger.info("Setting Block %s to %s", self.name, setpoint)
             await self.setpoint.set(
                 setpoint, wait=self._write_config.use_completion_callback, timeout=None
             )
+            logger.info("Got completion callback from setting block %s to %s", self.name, setpoint)
 
             # Wait for the _set_success_func to return true.
             # This uses an "async for" to loop over items from observe_value, which is an async
             # generator. See documentation on "observe_value" or python "async for" for more details
             if self._write_config.set_success_func is not None:
+                logger.info(
+                    "Waiting for set_success_func on setting block %s to %s", self.name, setpoint
+                )
                 async for actual_value in observe_value(self.readback):
                     if self._write_config.set_success_func(setpoint, actual_value):
                         break
@@ -202,9 +215,15 @@ class BlockRw(BlockR[T], Movable[T]):
             else:
                 await do_set(setpoint)
 
+            logger.info(
+                "Waiting for configured settle time (%f seconds) on block %s",
+                self._write_config.settle_time_s,
+                self.name,
+            )
             await asyncio.sleep(self._write_config.settle_time_s)
 
         await set_and_settle(value)
+        logger.info("block set complete %s value=%s", self.name, value)
 
 
 class BlockRwRbv(BlockRw[T], Locatable[T]):
@@ -241,6 +260,7 @@ class BlockRwRbv(BlockRw[T], Locatable[T]):
 
     async def locate(self) -> Location[T]:
         """Get the current 'location' of this block."""
+        logger.info("locating block %s", self.name)
         actual, sp_rbv = await asyncio.gather(
             self.readback.get_value(),
             self.setpoint_readback.get_value(),
@@ -300,6 +320,10 @@ class BlockMot(Motor):
         # by GWBLOCK in that way. So by pointing at CS:SB:blockname:SP:RBV rather than
         # CS:SB:blockname here, we avoid a write access exception when moving a motor block.
         super().__init__(f"{prefix}CS:SB:{block_name}:SP:RBV", name=block_name)
+
+    def __repr__(self) -> str:
+        """Debug representation of this block."""
+        return f"{self.__class__.__name__}(name={self.name})"
 
 
 def block_r(datatype: Type[T], block_name: str) -> BlockR[T]:
