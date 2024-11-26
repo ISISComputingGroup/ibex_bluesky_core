@@ -42,7 +42,7 @@ classifiers = [
 
 dependencies = [
   "bluesky",
-  "ophyd-async[ca] >= 0.8.0a4",
+  "ophyd-async[ca] >= 0.8.0",
   "matplotlib",
   "lmfit",
   "scipy",
