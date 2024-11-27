@@ -33,6 +33,8 @@ async def sum_spectra(spectra: Collection[DaeSpectra]) -> sc.Variable | sc.DataA
 
     Returns a scipp scalar, which has .value and .variance properties for accessing the sum
     and variance respectively of the summed counts.
+
+    More info on scipp scalars can be found here: https://scipp.github.io/generated/functions/scipp.scalar.html
     """
     logger.info("Summing %d spectra using scipp", len(spectra))
     summed_counts = sc.scalar(value=0, unit=sc.units.counts, dtype="float64")
@@ -45,10 +47,17 @@ async def sum_spectra(spectra: Collection[DaeSpectra]) -> sc.Variable | sc.DataA
 def tof_bounded_spectra(
     bounds: sc.Variable,
 ) -> Callable[[Collection[DaeSpectra]], Awaitable[sc.Variable | sc.DataArray]]:
-    """Rebin spectra bounded by time of flight bounds.
+    """Sum a set of neutron spectra between the specified time of flight bounds.
+
+    Args:
+        bounds: A scipp array of size 2, no variances, unit of us,
+            where the second element must be larger than the first.
 
     Returns a scipp scalar, which has .value and .variance properties for accessing the sum
     and variance respectively of the summed counts.
+
+    More info on scipp arrays and scalars can be found here: https://scipp.github.io/generated/functions/scipp.scalar.html
+
     """
     if "tof" not in bounds.dims:
         raise ValueError("Should contain tof dims")
@@ -69,10 +78,21 @@ def tof_bounded_spectra(
 def wavelength_bounded_spectra(
     bounds: sc.Variable, beam_total: sc.Variable
 ) -> Callable[[Collection[DaeSpectra]], Awaitable[sc.Variable | sc.DataArray]]:
-    """Rebin spectra bounded by wavelength bounds.
+    """Sum a set of neutron spectra between the specified [tof/wavelength] bounds.
+
+    Args:
+        bounds: A scipp array of size 2 of wavelength bounds, in units of angstrom,
+            where the second element must be larger than the first.
+        beam_total: A scipp scalar of Ltotal (total flight path length), the path length
+            from neutron source to detector or monitor, in units of meters.
+
+    Time of flight is converted to wavelength using scipp neutron's library function
+        `wavelength_from_tof`, more info on which can be found here:
+        https://scipp.github.io/scippneutron/generated/modules/scippneutron.conversion.tof.wavelength_from_tof.html
 
     Returns a scipp scalar, which has .value and .variance properties for accessing the sum
     and variance respectively of the summed counts.
+
     """
     if "tof" not in bounds.dims:
         raise ValueError("Should contain tof dims")
@@ -101,7 +121,7 @@ class ScalarNormalizer(Reducer, StandardReadable, metaclass=ABCMeta):
         self,
         prefix: str,
         detector_spectra: Sequence[int],
-        summer: Callable[
+        sum_detector: Callable[
             [Collection[DaeSpectra]], Awaitable[sc.Variable | sc.DataArray]
         ] = sum_spectra,
     ) -> None:
@@ -110,7 +130,8 @@ class ScalarNormalizer(Reducer, StandardReadable, metaclass=ABCMeta):
         Args:
             prefix: the PV prefix of the instrument to get spectra from (e.g. IN:DEMO:)
             detector_spectra: a sequence of spectra numbers (detectors) to sum.
-            summer: either sum_spectra, tof_bounded_spectra, or wavelength_bounded_spectra.
+            sum_detector: takes spectra objects, reads from them, and returns a scipp scalar
+                describing the detector intensity. Defaults to summing over the entire spectrum.
 
         """
         self.detectors = DeviceVector(
@@ -131,7 +152,7 @@ class ScalarNormalizer(Reducer, StandardReadable, metaclass=ABCMeta):
         self.intensity_stddev, self._intensity_stddev_setter = soft_signal_r_and_setter(
             float, 0.0, precision=INTENSITY_PRECISION
         )
-        self.summer = summer
+        self.sum_detector = sum_detector
 
         super().__init__(name="")
 
@@ -143,7 +164,7 @@ class ScalarNormalizer(Reducer, StandardReadable, metaclass=ABCMeta):
         """Apply the normalization."""
         logger.info("starting reduction")
         summed_counts, denominator = await asyncio.gather(
-            self.summer(self.detectors.values()), self.denominator(dae).get_value()
+            self.sum_detector(self.detectors.values()), self.denominator(dae).get_value()
         )
 
         self._det_counts_setter(float(summed_counts.value))
@@ -197,10 +218,10 @@ class MonitorNormalizer(Reducer, StandardReadable):
         prefix: str,
         detector_spectra: Sequence[int],
         monitor_spectra: Sequence[int],
-        detector_summer: Callable[
+        sum_detector: Callable[
             [Collection[DaeSpectra]], Awaitable[sc.Variable | sc.DataArray]
         ] = sum_spectra,
-        monitor_summer: Callable[
+        sum_monitor: Callable[
             [Collection[DaeSpectra]], Awaitable[sc.Variable | sc.DataArray]
         ] = sum_spectra,
     ) -> None:
@@ -210,8 +231,12 @@ class MonitorNormalizer(Reducer, StandardReadable):
             prefix: the PV prefix of the instrument to get spectra from (e.g. IN:DEMO:)
             detector_spectra: a sequence of spectra numbers (detectors) to sum.
             monitor_spectra: a sequence of spectra number (monitors) to sum and normalize by.
-            detector_summer: either sum_spectra, tof_bounded_spectra, or wavelength_bounded_spectra.
-            monitor_summer: either sum_spectra, tof_bounded_spectra, or wavelength_bounded_spectra.
+            sum_detector: takes spectra objects, reads from them, and returns a scipp scalar
+                describing the detector intensity. Defaults to summing over the entire spectrum.
+            sum_monitor: takes spectra objects, reads from them, and returns a scipp scalar
+                describing the monitor intensity. Defaults to summing over the entire spectrum.
+
+        Scipp scalars are described in further detail here: https://scipp.github.io/generated/functions/scipp.scalar.html
 
         """
         dae_prefix = prefix + "DAE:"
@@ -237,8 +262,8 @@ class MonitorNormalizer(Reducer, StandardReadable):
         self.intensity_stddev, self._intensity_stddev_setter = soft_signal_r_and_setter(
             float, 0.0, precision=INTENSITY_PRECISION
         )
-        self.detector_summer = detector_summer
-        self.monitor_summer = monitor_summer
+        self.sum_detector = sum_detector
+        self.sum_monitor = sum_monitor
 
         super().__init__(name="")
 
@@ -246,8 +271,8 @@ class MonitorNormalizer(Reducer, StandardReadable):
         """Apply the normalization."""
         logger.info("starting reduction")
         detector_counts, monitor_counts = await asyncio.gather(
-            self.detector_summer(self.detectors.values()),
-            self.monitor_summer(self.monitors.values()),
+            self.sum_detector(self.detectors.values()),
+            self.sum_monitor(self.monitors.values()),
         )
 
         if monitor_counts.value == 0.0:  # To avoid zero division
