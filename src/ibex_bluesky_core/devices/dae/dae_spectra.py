@@ -125,6 +125,9 @@ class DaeSpectra(StandardReadable):
                 values=counts,
                 variances=counts + VARIANCE_ADDITION,
                 unit=sc.units.counts,
+                dtype="float64",
             ),
-            coords={"tof": sc.array(dims=["tof"], values=tof_edges, unit=sc.Unit(unit))},
+            coords={
+                "tof": sc.array(dims=["tof"], values=tof_edges, unit=sc.Unit(unit), dtype="float64")
+            },
         )
