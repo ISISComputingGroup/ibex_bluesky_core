@@ -45,7 +45,7 @@ async def monitor_normalizer_zero_to_one_half_det_norm_mon_tof() -> MonitorNorma
         prefix="",
         detector_spectra=[1],
         monitor_spectra=[2],
-        monitor_summer=tof_bounded_spectra(
+        sum_monitor=tof_bounded_spectra(
             sc.array(dims=["tof"], values=[0.0, 0.5], unit=sc.units.us)
         ),
     )
@@ -60,7 +60,7 @@ async def monitor_normalizer_det_normal_mon_wavelenth() -> MonitorNormalizer:
         prefix="",
         detector_spectra=[1],
         monitor_spectra=[2],
-        monitor_summer=wavelength_bounded_spectra(
+        sum_monitor=wavelength_bounded_spectra(
             bounds=sc.array(
                 dims=["tof"], values=[0.0, 5.1], unit=sc.units.angstrom, dtype="float64"
             ),
@@ -78,7 +78,7 @@ async def monitor_normalizer_zero_to_one_half_det_tof_mon_normal() -> MonitorNor
         prefix="",
         detector_spectra=[1],
         monitor_spectra=[2],
-        detector_summer=tof_bounded_spectra(
+        sum_detector=tof_bounded_spectra(
             sc.array(dims=["tof"], values=[0.0, 0.5], unit=sc.units.us)
         ),
     )
@@ -93,10 +93,10 @@ async def monitor_normalizer_tof_bounded_one_to_three() -> MonitorNormalizer:
         prefix="",
         detector_spectra=[1],
         monitor_spectra=[2],
-        detector_summer=tof_bounded_spectra(
+        sum_detector=tof_bounded_spectra(
             sc.array(dims=["tof"], values=[0.0, 3.0], unit=sc.units.us)
         ),
-        monitor_summer=tof_bounded_spectra(
+        sum_monitor=tof_bounded_spectra(
             sc.array(dims=["tof"], values=[0.0, 3.0], unit=sc.units.us)
         ),
     )
@@ -110,10 +110,10 @@ async def monitor_normalizer_tof_bounded_zero_to_one_half() -> MonitorNormalizer
         prefix="",
         detector_spectra=[1],
         monitor_spectra=[2],
-        detector_summer=tof_bounded_spectra(
+        sum_detector=tof_bounded_spectra(
             sc.array(dims=["tof"], values=[0.0, 0.5], unit=sc.units.us)
         ),
-        monitor_summer=tof_bounded_spectra(
+        sum_monitor=tof_bounded_spectra(
             sc.array(dims=["tof"], values=[0.0, 0.5], unit=sc.units.us)
         ),
     )
@@ -128,10 +128,10 @@ async def monitor_normalizer_det_tof_mon_wavelenth() -> MonitorNormalizer:
         prefix="",
         detector_spectra=[1],
         monitor_spectra=[2],
-        detector_summer=tof_bounded_spectra(
+        sum_detector=tof_bounded_spectra(
             sc.array(dims=["tof"], values=[0.0, 0.5], unit=sc.units.us)
         ),
-        monitor_summer=wavelength_bounded_spectra(
+        sum_monitor=wavelength_bounded_spectra(
             bounds=sc.array(
                 dims=["tof"], values=[0.0, 5.1], unit=sc.units.angstrom, dtype="float64"
             ),
@@ -149,7 +149,7 @@ async def monitor_normalizer_det_wavelength_mon_normal() -> MonitorNormalizer:
         prefix="",
         detector_spectra=[1],
         monitor_spectra=[2],
-        detector_summer=wavelength_bounded_spectra(
+        sum_detector=wavelength_bounded_spectra(
             bounds=sc.array(
                 dims=["tof"], values=[0.0, 5.1], unit=sc.units.angstrom, dtype="float64"
             ),
@@ -167,13 +167,13 @@ async def monitor_normalizer_det_wavelength_mon_tof() -> MonitorNormalizer:
         prefix="",
         detector_spectra=[1],
         monitor_spectra=[2],
-        detector_summer=wavelength_bounded_spectra(
+        sum_detector=wavelength_bounded_spectra(
             bounds=sc.array(
                 dims=["tof"], values=[0.0, 5.1], unit=sc.units.angstrom, dtype="float64"
             ),
             beam_total=sc.scalar(value=10.0, unit=sc.units.m),
         ),
-        monitor_summer=tof_bounded_spectra(
+        sum_monitor=tof_bounded_spectra(
             sc.array(dims=["tof"], values=[0.0, 0.5], unit=sc.units.us)
         ),
     )
@@ -188,13 +188,13 @@ async def monitor_normalizer_det_wavelength_mon_wavelength() -> MonitorNormalize
         prefix="",
         detector_spectra=[1],
         monitor_spectra=[2],
-        detector_summer=wavelength_bounded_spectra(
+        sum_detector=wavelength_bounded_spectra(
             bounds=sc.array(
                 dims=["tof"], values=[0.0, 5.1], unit=sc.units.angstrom, dtype="float64"
             ),
             beam_total=sc.scalar(value=10.0, unit=sc.units.m),
         ),
-        monitor_summer=wavelength_bounded_spectra(
+        sum_monitor=wavelength_bounded_spectra(
             bounds=sc.array(
                 dims=["tof"], values=[0.0, 4.5], unit=sc.units.angstrom, dtype="float64"
             ),
@@ -211,7 +211,7 @@ async def scalar_normalizer_bounded_sum_zero_to_one_half(simpledae: SimpleDae) -
     reducer = PeriodGoodFramesNormalizer(
         prefix="",
         detector_spectra=[1, 2],
-        summer=tof_bounded_spectra(sc.array(dims=["tof"], values=[0, 0.5], unit=sc.units.us)),
+        sum_detector=tof_bounded_spectra(sc.array(dims=["tof"], values=[0, 0.5], unit=sc.units.us)),
     )
     await reducer.connect(mock=True)
     return reducer
@@ -223,7 +223,9 @@ async def scalar_normalizer_bounded_sum_one_to_one(simpledae: SimpleDae) -> Scal
     reducer = PeriodGoodFramesNormalizer(
         prefix="",
         detector_spectra=[1, 2],
-        summer=tof_bounded_spectra(sc.array(dims=["tof"], values=[1.0, 1.0], unit=sc.units.us)),
+        sum_detector=tof_bounded_spectra(
+            sc.array(dims=["tof"], values=[1.0, 1.0], unit=sc.units.us)
+        ),
     )
     await reducer.connect(mock=True)
     return reducer
@@ -237,7 +239,9 @@ async def scalar_normalizer_bounded_sum_one_to_three_micro_sec(
     reducer = PeriodGoodFramesNormalizer(
         prefix="",
         detector_spectra=[1, 2],
-        summer=tof_bounded_spectra(sc.array(dims=["tof"], values=[0.0, 3.0], unit=sc.units.us)),
+        sum_detector=tof_bounded_spectra(
+            sc.array(dims=["tof"], values=[0.0, 3.0], unit=sc.units.us)
+        ),
     )
     await reducer.connect(mock=True)
     return reducer
