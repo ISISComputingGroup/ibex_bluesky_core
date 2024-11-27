@@ -99,7 +99,7 @@ class LiveFitLogger(CallbackBase):
             logger.error("LiveFit.result was None. Could not write to file.")
             return
 
-        # Evaluate the model function at equally-spaced points.
+        # Evaluate the model function for each x point
         kwargs = {"x": np.array(self.x_data)}
         kwargs.update(self.livefit.result.values)
         self.y_fit_data = self.livefit.result.model.eval(**kwargs)
