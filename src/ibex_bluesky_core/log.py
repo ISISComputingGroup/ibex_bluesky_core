@@ -5,14 +5,14 @@ library so should not set application-level policies. Instead just quietly add h
 logger and the bluesky logger.
 """
 
-import logging.config
+import logging
 import os
 import sys
 from functools import cache
 from logging import Formatter
 from logging.handlers import TimedRotatingFileHandler
 
-__all__ = ["setup_logging", "set_bluesky_log_levels", "file_handler"]
+__all__ = ["file_handler", "set_bluesky_log_levels", "setup_logging"]
 
 DEFAULT_LOG_FOLDER = os.path.join("C:\\", "instrument", "var", "logs", "bluesky")
 

@@ -1,11 +1,8 @@
 """ophyd-async devices for communicating with the ISIS data acquisition electronics."""
 
-from enum import Enum
-
 from numpy import int32
-from numpy.typing import NDArray
-from ophyd_async.core import SignalR, SignalRW, StandardReadable
-from ophyd_async.epics.signal import epics_signal_r, epics_signal_rw
+from ophyd_async.core import Array1D, SignalR, SignalRW, StandardReadable, StrictEnum
+from ophyd_async.epics.core import epics_signal_r, epics_signal_rw
 
 from ibex_bluesky_core.devices import isis_epics_signal_rw
 from ibex_bluesky_core.devices.dae.dae_controls import DaeControls
@@ -18,7 +15,7 @@ from ibex_bluesky_core.devices.dae.dae_spectra import DaeSpectra
 from ibex_bluesky_core.devices.dae.dae_tcb_settings import DaeTCBSettings
 
 
-class RunstateEnum(str, Enum):
+class RunstateEnum(StrictEnum):
     """The run state."""
 
     PROCESSING = "PROCESSING"
@@ -82,11 +79,11 @@ class Dae(StandardReadable):
         self.period_settings = DaePeriodSettings(dae_prefix)
         self.tcb_settings = DaeTCBSettings(dae_prefix)
 
-        self.raw_spectra_integrals: SignalR[NDArray[int32]] = epics_signal_r(
-            NDArray[int32], f"{dae_prefix}SPECINTEGRALS"
+        self.raw_spectra_integrals: SignalR[Array1D[int32]] = epics_signal_r(
+            Array1D[int32], f"{dae_prefix}SPECINTEGRALS"
         )
-        self.raw_spectra_data: SignalR[NDArray[int32]] = epics_signal_r(
-            NDArray[int32], f"{dae_prefix}SPECDATA"
+        self.raw_spectra_data: SignalR[Array1D[int32]] = epics_signal_r(
+            Array1D[int32], f"{dae_prefix}SPECDATA"
         )
 
         self.monitor = DaeMonitor(dae_prefix)

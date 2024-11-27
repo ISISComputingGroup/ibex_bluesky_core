@@ -5,13 +5,13 @@ import logging
 from datetime import datetime
 from pathlib import Path
 from typing import Optional
+from zoneinfo import ZoneInfo
 
 from bluesky.callbacks import CallbackBase
 from event_model.documents.event import Event
 from event_model.documents.event_descriptor import EventDescriptor
 from event_model.documents.run_start import RunStart
 from event_model.documents.run_stop import RunStop
-from zoneinfo import ZoneInfo
 
 logger = logging.getLogger(__name__)
 

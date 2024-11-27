@@ -42,7 +42,7 @@ classifiers = [
 
 dependencies = [
   "bluesky",
-  "ophyd-async[ca]",
+  "ophyd-async[ca] >= 0.8.0",
   "matplotlib",
   "lmfit",
   "scipy",
@@ -60,7 +60,7 @@ doc = [
 ]
 dev = [
   "ibex_bluesky_core[doc]",
-  "ruff>=0.6",
+  "ruff>=0.8",
   "pyright",
   "pytest",
   "pytest-asyncio",
