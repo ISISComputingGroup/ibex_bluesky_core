@@ -72,7 +72,7 @@ def get_run_engine() -> RunEngine:
         RE.subscribe(lambda name, document: ...)
 
     For full documentation about the run engine, see:
-    
+
     - https://nsls-ii.github.io/bluesky/tutorial.html#the-runengine
     - https://nsls-ii.github.io/bluesky/run_engine_api.html
     """
