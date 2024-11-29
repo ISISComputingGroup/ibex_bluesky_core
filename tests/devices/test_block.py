@@ -2,7 +2,7 @@
 
 import asyncio
 import sys
-from unittest.mock import ANY, MagicMock, patch
+from unittest.mock import ANY, MagicMock, call, patch
 
 import bluesky.plan_stubs as bps
 import bluesky.plans as bp
@@ -10,6 +10,7 @@ import pytest
 from ophyd_async.core import get_mock_put, set_mock_value
 
 from ibex_bluesky_core.devices.block import (
+    GLOBAL_MOVING_FLAG_PRE_WAIT,
     BlockMot,
     BlockR,
     BlockRw,
@@ -203,6 +204,39 @@ async def test_block_set_with_settle_time_longer_than_timeout():
     with patch("ibex_bluesky_core.devices.block.asyncio.sleep") as mock_aio_sleep:
         await block.set(20)
         mock_aio_sleep.assert_called_once_with(30)
+
+
+async def test_block_set_waiting_for_global_moving_flag():
+    block = await _block_with_write_config(
+        BlockWriteConfig(use_global_moving_flag=True, set_timeout_s=0.1)
+    )
+
+    set_mock_value(block.global_moving, False)
+    with patch("ibex_bluesky_core.devices.block.asyncio.sleep") as mock_aio_sleep:
+        await block.set(10)
+        # Only check first call, as wait_for_value from ophyd_async gives us a few more...
+        assert mock_aio_sleep.mock_calls[0] == call(GLOBAL_MOVING_FLAG_PRE_WAIT)
+
+
+async def test_block_set_waiting_for_global_moving_flag_timeout():
+    block = await _block_with_write_config(
+        BlockWriteConfig(use_global_moving_flag=True, set_timeout_s=0.1)
+    )
+
+    set_mock_value(block.global_moving, True)
+    with patch("ibex_bluesky_core.devices.block.asyncio.sleep") as mock_aio_sleep:
+        with pytest.raises(aio_timeout_error):
+            await block.set(10)
+            # Only check first call, as wait_for_value from ophyd_async gives us a few more...
+            assert mock_aio_sleep.mock_calls[0] == call(GLOBAL_MOVING_FLAG_PRE_WAIT)
+
+
+async def test_block_without_use_global_moving_flag_does_not_refer_to_global_moving_pv():
+    block_without = await _block_with_write_config(BlockWriteConfig(use_global_moving_flag=False))
+    block_with = await _block_with_write_config(BlockWriteConfig(use_global_moving_flag=True))
+
+    assert not hasattr(block_without, "global_moving")
+    assert hasattr(block_with, "global_moving")
 
 
 @pytest.mark.parametrize(
