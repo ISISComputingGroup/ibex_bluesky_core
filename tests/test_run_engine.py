@@ -1,7 +1,8 @@
 # pyright: reportMissingParameterType=false
 
 import threading
-from typing import Any, Generator
+from collections.abc import Generator
+from typing import Any
 from unittest.mock import MagicMock
 
 import bluesky.plan_stubs as bps

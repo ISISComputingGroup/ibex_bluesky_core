@@ -51,9 +51,9 @@ class SimpleDae(Dae, Triggerable, AsyncStageable):
 
         """
         self.prefix = prefix
-        self.controller: "Controller" = controller
-        self.waiter: "Waiter" = waiter
-        self.reducer: "Reducer" = reducer
+        self.controller: Controller = controller
+        self.waiter: Waiter = waiter
+        self.reducer: Reducer = reducer
 
         logger.info(
             "created simpledae with prefix=%s, controller=%s, waiter=%s, reducer=%s",

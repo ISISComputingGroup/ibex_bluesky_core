@@ -5,7 +5,7 @@ from __future__ import annotations
 import binascii
 import os
 import zlib
-from typing import Type, TypeVar
+from typing import TypeVar
 
 from ophyd_async.core import SignalDatatype, SignalRW
 from ophyd_async.epics.core import epics_signal_rw
@@ -18,7 +18,7 @@ def get_pv_prefix() -> str:
     prefix = os.getenv("MYPVPREFIX")
 
     if prefix is None:
-        raise EnvironmentError("MYPVPREFIX environment variable not available - please define")
+        raise OSError("MYPVPREFIX environment variable not available - please define")
 
     return prefix
 
@@ -48,7 +48,7 @@ def compress_and_hex(value: str) -> bytes:
     return binascii.hexlify(compr)
 
 
-def isis_epics_signal_rw(datatype: Type[T], read_pv: str, name: str = "") -> SignalRW[T]:
+def isis_epics_signal_rw(datatype: type[T], read_pv: str, name: str = "") -> SignalRW[T]:
     """Make a RW signal with ISIS' PV naming standard ie. read_pv as TITLE, write_pv as TITLE:SP."""
     write_pv = f"{read_pv}:SP"
     return epics_signal_rw(datatype, read_pv, write_pv, name)

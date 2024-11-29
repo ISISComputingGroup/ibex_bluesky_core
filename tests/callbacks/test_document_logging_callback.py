@@ -1,8 +1,8 @@
 # pyright: reportMissingParameterType=false
 
 import json
+from collections.abc import Generator
 from pathlib import Path
-from typing import Generator
 from unittest.mock import mock_open, patch
 
 import bluesky.plan_stubs as bps

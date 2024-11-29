@@ -1,7 +1,7 @@
 """Demonstration plan showing basic bluesky functionality."""
 
 import os
-from typing import Generator
+from collections.abc import Generator
 
 import bluesky.plan_stubs as bps
 from bluesky.utils import Msg

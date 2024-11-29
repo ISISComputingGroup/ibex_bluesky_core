@@ -4,7 +4,6 @@ import logging
 import xml.etree.ElementTree as ET
 from dataclasses import dataclass
 from enum import Enum
-from typing import List
 from xml.etree.ElementTree import tostring
 
 from bluesky.protocols import Locatable, Location, Movable
@@ -58,7 +57,7 @@ class SinglePeriodSettings:
 class DaePeriodSettingsData:
     """Dataclass for the hardware period settings."""
 
-    periods_settings: List[SinglePeriodSettings] | None = None
+    periods_settings: list[SinglePeriodSettings] | None = None
     periods_soft_num: int | None = None
     periods_type: PeriodType | None = None
     periods_src: PeriodSource | None = None

@@ -1,7 +1,7 @@
 """Bluesky plan preprocessors specific to ISIS."""
 
 import logging
-from typing import Generator
+from collections.abc import Generator
 
 from bluesky import plan_stubs as bps
 from bluesky import preprocessors as bpp

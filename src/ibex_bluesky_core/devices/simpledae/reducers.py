@@ -4,7 +4,8 @@ import asyncio
 import logging
 import math
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, Collection, Sequence
+from collections.abc import Collection, Sequence
+from typing import TYPE_CHECKING
 
 import scipp as sc
 from ophyd_async.core import (
