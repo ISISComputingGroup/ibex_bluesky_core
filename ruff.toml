@@ -15,18 +15,24 @@ extend-select = [
 	"B",
 	"NPY",   # Numpy-specific rules
 	"RUF",   # Ruff-specific checks, include some useful asyncio rules
+    "FURB",  # Rules from refurb
+    "ERA",   # Commented-out code
+    "PT",    # Pytest-specific rules
+    "LOG",   # Logging-specific rules
+    "G",     # Logging-specific rules
 ]
 ignore = [
     "D406",    # Section name should end with a newline ("{name}")
     "D407",    # Missing dashed underline after section ("{name}")
 	"D213",    # Incompatible with D212
 	"D203",    # Incompatible with D211
+    "B901",    # This is a standard, expected, pattern in bluesky
 ]
 [lint.per-file-ignores]
 "tests/*" = [
     "N802",
     "D",   # Don't require method documentation for test methods
-    "ANN"  # Don't require tests to use type annotations
+    "ANN", # Don't require tests to use type annotations
 ]
 "doc/conf.py" = [
     "D100"

@@ -49,13 +49,13 @@ def test_set_bluesky_log_levels_default_previously_unset():
 
 def test_set_bluesky_log_levels_default_previously_set():
     # Setup, set some explicit log levels on various loggers.
-    logging.getLogger("ibex_bluesky_core").setLevel(logging.WARN)
+    logging.getLogger("ibex_bluesky_core").setLevel(logging.WARNING)
     logging.getLogger("bluesky").setLevel(logging.INFO)
     logging.getLogger("ophyd_async").setLevel(logging.DEBUG)
 
     set_bluesky_log_levels()
 
     # Assert we didn't override the previously explicitly-set levels
-    assert logging.getLogger("ibex_bluesky_core").level == logging.WARN
+    assert logging.getLogger("ibex_bluesky_core").level == logging.WARNING
     assert logging.getLogger("bluesky").level == logging.INFO
     assert logging.getLogger("ophyd_async").level == logging.DEBUG

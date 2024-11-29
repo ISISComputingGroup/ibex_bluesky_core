@@ -206,7 +206,7 @@ async def test_block_set_with_settle_time_longer_than_timeout():
 
 
 @pytest.mark.parametrize(
-    "func,args",
+    ("func", "args"),
     [
         (block_r, (float, "some_block")),
         (block_rw, (float, "some_block")),
