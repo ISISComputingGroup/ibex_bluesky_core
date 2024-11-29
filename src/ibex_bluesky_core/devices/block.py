@@ -15,7 +15,7 @@ from ophyd_async.core import (
     StandardReadableFormat,
     observe_value,
 )
-from ophyd_async.epics.core import epics_signal_r, epics_signal_rw
+from ophyd_async.epics.core import epics_signal_r, epics_signal_rw, epics_signal_w
 from ophyd_async.epics.motor import Motor
 
 from ibex_bluesky_core.devices import get_pv_prefix
@@ -319,11 +319,27 @@ class BlockMot(Motor):
         # However, we also have motor record aliases for :SP and :SP:RBV, which *don't* get mangled
         # by GWBLOCK in that way. So by pointing at CS:SB:blockname:SP:RBV rather than
         # CS:SB:blockname here, we avoid a write access exception when moving a motor block.
+        self.block_mot_stop = epics_signal_w(int, f"{prefix}CS:SB:{block_name}:SP:RBV.STOP")
         super().__init__(f"{prefix}CS:SB:{block_name}:SP:RBV", name=block_name)
 
     def __repr__(self) -> str:
         """Debug representation of this block."""
         return f"{self.__class__.__name__}(name={self.name})"
+
+    async def pause(self):
+        print("HIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII")
+        dmov = await self.motor_done_move.get_value()
+        if not dmov:
+            logger.warning(f"stopping motor: {self}")
+            await self.stop()
+            raise ValueError("Cannot pause a motor when it's moving")
+
+    async def stop(self, success=False):
+        print(f"stopping {self}")
+        await self.motor_stop.trigger(wait=False)
+        print("trying block_mot_stop.set(1)")
+        await self.block_mot_stop.set(1, wait=False)
+        print(f"stopped {self}")
 
 
 def block_r(datatype: Type[T], block_name: str) -> BlockR[T]:
