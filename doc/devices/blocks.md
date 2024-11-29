@@ -136,7 +136,7 @@ mot_block = block_mot("motor_block")
 `BlockRw` and `BlockRwRbv` both take a `write_config` argument, which can be used to configure
 the behaviour on writing to a block, for example tolerances and settle times.
 
-See the docstring on `ibex_bluesky_core.devices.block.BlockWriteConfig` for a detailed
+See {py:class}`ibex_bluesky_core.devices.block.BlockWriteConfig` for a detailed
 description of all the options which are available.
 
 ## Run control
