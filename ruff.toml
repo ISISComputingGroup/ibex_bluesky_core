@@ -2,6 +2,7 @@ line-length = 100
 indent-width = 4
 
 [lint]
+preview = true
 extend-select = [
     "N",     # pep8-naming
     "D",     # pydocstyle (can use this later but for now causes too many errors)
@@ -21,6 +22,7 @@ extend-select = [
     "LOG",   # Logging-specific rules
     "G",     # Logging-specific rules
     "UP",    # Pyupgrade
+    "PL",    # Rules from pylint
 ]
 ignore = [
     "D406",    # Section name should end with a newline ("{name}")
@@ -28,12 +30,17 @@ ignore = [
 	"D213",    # Incompatible with D212
 	"D203",    # Incompatible with D211
     "B901",    # This is a standard, expected, pattern in bluesky
+    "PLR6301"  # Too noisy
 ]
 [lint.per-file-ignores]
 "tests/*" = [
     "N802",
-    "D",   # Don't require method documentation for test methods
-    "ANN", # Don't require tests to use type annotations
+    "D",        # Don't require method documentation for test methods
+    "ANN",      # Don't require tests to use type annotations
+    "PLR2004",  # Allow magic numbers in tests
+    "PLR0915",  # Allow complex tests
+    "PLR0914",  # Allow complex tests
+    "PLC2701",  # Allow tests to import "private" things
 ]
 "doc/conf.py" = [
     "D100"
@@ -41,3 +48,6 @@ ignore = [
 
 [lint.pep8-naming]
 extend-ignore-names = ["RE"]  # Conventional name used for RunEngine
+
+[lint.pylint]
+max-args = 6
