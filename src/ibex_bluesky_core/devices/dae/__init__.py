@@ -32,7 +32,7 @@ def _get_names_and_values(element: Element) -> tuple[Any, Any] | tuple[None, Non
 
 
 def set_value_in_dae_xml(
-    elements: List[Element], name: str, value: str | Enum | int | None | float
+    elements: List[Element], name: str, value: str | Enum | int | float | None
 ) -> None:
     """Find and set a value in the DAE XML, given a name and value.
 

@@ -72,8 +72,7 @@ class SimpleDae(Dae, Triggerable, AsyncStageable):
         # published when the top-level SimpleDae object is read.
         extra_readables = set()
         for strategy in [self.controller, self.waiter, self.reducer]:
-            for sig in strategy.additional_readable_signals(self):
-                extra_readables.add(sig)
+            extra_readables.update(strategy.additional_readable_signals(self))
         logger.info("extra readables: %s", list(extra_readables))
         self.add_readables(devices=list(extra_readables))
 

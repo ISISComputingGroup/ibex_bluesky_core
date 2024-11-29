@@ -25,7 +25,7 @@ def test_setup_logging_does_not_crash_if_directory_cannot_be_created(
         mock_makedirs.side_effect = OSError
         setup_logging()
 
-    stdout, stderr = capfd.readouterr()
+    _, stderr = capfd.readouterr()
     assert stderr == "unable to create ibex_bluesky_core log directory\n"
 
 

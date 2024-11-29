@@ -59,12 +59,12 @@ class DaePeriodSettingsData:
     """Dataclass for the hardware period settings."""
 
     periods_settings: List[SinglePeriodSettings] | None = None
-    periods_soft_num: None | int = None
+    periods_soft_num: int | None = None
     periods_type: PeriodType | None = None
     periods_src: PeriodSource | None = None
-    periods_file: None | str = None
-    periods_seq: None | int = None
-    periods_delay: None | int = None
+    periods_file: str | None = None
+    periods_seq: int | None = None
+    periods_delay: int | None = None
 
 
 def _convert_xml_to_period_settings(value: str) -> DaePeriodSettingsData:
