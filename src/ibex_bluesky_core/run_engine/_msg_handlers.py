@@ -6,12 +6,17 @@ Not intended for user use.
 import ctypes
 import logging
 import threading
-from asyncio import CancelledError, Event, get_running_loop
+from asyncio import CancelledError, Event, get_running_loop, wait_for
 from typing import Any
 
+from bluesky.callbacks.mpl_plotting import QtAwareCallback
 from bluesky.utils import Msg
+from event_model import RunStart
 
 logger = logging.getLogger(__name__)
+
+
+CALL_QT_SAFE_TIMEOUT = 5
 
 
 class _ExternalFunctionInterrupted(BaseException):
@@ -94,3 +99,48 @@ async def call_sync_handler(msg: Msg) -> Any:  # noqa: ANN401
         logger.debug("Re-raising %s thrown by %s", exc.__class__.__name__, func.__name__)
         raise exc
     return ret
+
+
+async def call_qt_safe_handler(msg: Msg) -> Any:  # noqa: ANN401
+    """Handle ibex_bluesky_core.plan_stubs.call_qt_safe.
+
+    This functionality does not get exposed in a generic way to users, as this is
+    a tricky area. This *relies* on the passed function being "fast", but
+    we would have no way to prove that for a generic user-supplied function. So we only
+    expose known cases, like matplotlib.pyplot.subplots for example.
+
+    In particular, operations that take longer than CALL_QT_SAFE_TIMEOUT will cause an
+    asyncio TimeoutError (to flag obvious misuse), but won't cancel the underlying task.
+
+    """
+    func = msg.obj
+    done_event = Event()
+    result: Any = None
+    exc: BaseException | None = None
+    loop = get_running_loop()
+
+    # Slightly hacky, this isn't really a callback per-se but we want to benefit from
+    # bluesky's Qt-matplotlib infrastructure.
+    # This never gets attached to the RunEngine.
+    class _Cb(QtAwareCallback):
+        def start(self, doc: RunStart) -> None:
+            nonlocal result, exc
+            # Note: Qt/UI operations must be "fast", so don't worry too much about timeout or
+            # interruption cases here.
+            # Any attempt to forcibly interrupt a function while it's doing UI operations/using
+            # Qt signals is highly likely to be a bad idea. Don't do that here.
+            try:
+                result = func(*msg.args, **msg.kwargs)
+            except BaseException as e:
+                exc = e
+            finally:
+                loop.call_soon_threadsafe(done_event.set)
+
+    cb = _Cb()
+    # Send fake event to our callback to trigger it (actual contents unimportant)
+    cb("start", {"time": 0, "uid": ""})
+
+    await wait_for(done_event.wait(), CALL_QT_SAFE_TIMEOUT)
+    if exc is not None:
+        raise exc
+    return result

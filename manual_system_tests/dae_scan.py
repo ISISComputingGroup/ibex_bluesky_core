@@ -27,7 +27,7 @@ from ibex_bluesky_core.devices.simpledae.reducers import (
     GoodFramesNormalizer,
 )
 from ibex_bluesky_core.devices.simpledae.waiters import GoodFramesWaiter
-from ibex_bluesky_core.plan_stubs import new_matplotlib_figure_and_axes
+from ibex_bluesky_core.plan_stubs import matplotlib_subplots
 from ibex_bluesky_core.run_engine import get_run_engine
 
 NUM_POINTS: int = 3
@@ -72,7 +72,7 @@ def dae_scan_plan() -> Generator[Msg, None, None]:
     controller.run_number.set_name("run number")
     reducer.intensity.set_name("normalized counts")
 
-    _, ax = yield from new_matplotlib_figure_and_axes()
+    _, ax = yield from matplotlib_subplots()
 
     lf = LiveFit(
         Linear.fit(), y=reducer.intensity.name, x=block.name, yerr=reducer.intensity_stddev.name

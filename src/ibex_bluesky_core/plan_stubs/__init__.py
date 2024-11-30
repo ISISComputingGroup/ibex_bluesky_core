@@ -1,28 +1,22 @@
 """Core plan stubs."""
 
-import threading
 from collections.abc import Generator
-from typing import Callable, ParamSpec, TypeVar, cast
+from typing import Any, Callable, ParamSpec, TypeVar, cast
 
 import bluesky.plan_stubs as bps
 import matplotlib.pyplot as plt
-from bluesky.callbacks.mpl_plotting import QtAwareCallback
 from bluesky.utils import Msg
-from event_model import RunStart
-from matplotlib.axes import Axes
 from matplotlib.figure import Figure
 
 P = ParamSpec("P")
 T = TypeVar("T")
 
 
-PYPLOT_SUBPLOTS_TIMEOUT = 5
-
-
 CALL_SYNC_MSG_KEY = "ibex_bluesky_core_call_sync"
+CALL_QT_SAFE_MSG_KEY = "ibex_bluesky_core_call_qt_safe"
 
 
-__all__ = ["call_sync", "new_matplotlib_figure_and_axes"]
+__all__ = ["call_sync", "matplotlib_subplots"]
 
 
 def call_sync(func: Callable[P, T], *args: P.args, **kwargs: P.kwargs) -> Generator[Msg, None, T]:
@@ -56,13 +50,13 @@ def call_sync(func: Callable[P, T], *args: P.args, **kwargs: P.kwargs) -> Genera
     return cast(T, (yield Msg(CALL_SYNC_MSG_KEY, func, *args, **kwargs)))
 
 
-def new_matplotlib_figure_and_axes(
-    *args: list, **kwargs: dict
-) -> Generator[Msg, None, tuple[Figure, Axes]]:
-    """Create a new matplotlib figure and axes, using plt.subplots, from within a plan.
+def matplotlib_subplots(
+    *args: list[Any], **kwargs: dict[Any]
+) -> Generator[Msg, None, tuple[Figure, Any]]:
+    """Create a new matplotlib figure and axes, using matplotlib.pyplot.subplots, from a plan.
 
-    This is done in a Qt-safe way, such that if matplotlib is using the Qt backend then
-    UI operations need to be run on the Qt thread via Qt signals.
+    This is done in a Qt-safe way, such that if matplotlib is using a Qt backend then
+    UI operations are run on the Qt thread via Qt signals.
 
     Args:
         args: Arbitrary arguments, passed through to matplotlib.pyplot.subplots
@@ -72,35 +66,7 @@ def new_matplotlib_figure_and_axes(
         tuple of (figure, axes) - as per matplotlib.pyplot.subplots()
 
     """
-    yield from bps.null()
-
-    ev = threading.Event()
-    fig: Figure | None = None
-    ax: Axes | None = None
-    ex: BaseException | None = None
-
-    # Slightly hacky, this isn't really a callback per-se but we want to benefit from
-    # bluesky's Qt-matplotlib infrastructure.
-    # This never gets attached to the RunEngine.
-    class _Cb(QtAwareCallback):
-        def start(self, _: RunStart) -> None:
-            nonlocal fig, ax, ex
-            # Note: this is "fast" - so don't need to worry too much about
-            # interruption case.
-            try:
-                fig, ax = plt.subplots(*args, **kwargs)
-            except BaseException as e:
-                ex = e
-            finally:
-                ev.set()
-
-    cb = _Cb()
-    # Send fake event to our callback to trigger it (actual contents unimportant)
-    cb("start", {"time": 0, "uid": ""})
-    if not ev.wait(PYPLOT_SUBPLOTS_TIMEOUT):
-        raise OSError("Could not create matplotlib figure and axes (timeout)")
-    if fig is None or ax is None:
-        raise OSError(
-            "Could not create matplotlib figure and axes (got fig=%s, ax=%s, ex=%s)", fig, ax, ex
-        )
-    return fig, ax
+    yield from bps.clear_checkpoint()
+    return cast(
+        tuple[Figure, Any], (yield Msg(CALL_QT_SAFE_MSG_KEY, plt.subplots, *args, **kwargs))
+    )
