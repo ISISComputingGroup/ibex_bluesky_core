@@ -3,11 +3,10 @@
 Not intended for user use.
 """
 
-import asyncio
 import ctypes
 import logging
 import threading
-from asyncio import CancelledError, Event, get_running_loop, wait_for
+from asyncio import CancelledError, Event, get_running_loop
 from typing import Any
 
 from bluesky.callbacks.mpl_plotting import QtAwareCallback
@@ -15,9 +14,6 @@ from bluesky.utils import Msg
 from event_model import RunStart
 
 logger = logging.getLogger(__name__)
-
-
-CALL_QT_SAFE_TIMEOUT = 5
 
 
 class _ExternalFunctionInterrupted(BaseException):
@@ -34,7 +30,7 @@ async def call_sync_handler(msg: Msg) -> Any:  # noqa: ANN401
 
     def _wrapper() -> Any:  # noqa: ANN401
         nonlocal ret, exc
-        logger.info("Running '{func.__name__}' with args=({msg.args}), kwargs=({msg.kwargs})")
+        logger.info("Running '%s' with args=(%s), kwargs=(%s)", func.__name__, msg.args, msg.kwargs)
         try:
             ret = func(*msg.args, **msg.kwargs)
             logger.debug("Running '%s' successful", func.__name__)
@@ -102,18 +98,8 @@ async def call_sync_handler(msg: Msg) -> Any:  # noqa: ANN401
     return ret
 
 
-async def call_qt_safe_handler(msg: Msg) -> Any:  # noqa: ANN401
-    """Handle ibex_bluesky_core.plan_stubs.call_qt_safe.
-
-    This functionality does not get exposed in a generic way to users, as this is
-    a tricky area. This *relies* on the passed function being "fast", but
-    we would have no way to prove that for a generic user-supplied function. So we only
-    expose known cases, like matplotlib.pyplot.subplots for example.
-
-    Slow functions will cause various undesirable side effects, like stalling the event loop
-    and interfering with ctrl-c handling.
-
-    """
+async def call_qt_aware_handler(msg: Msg) -> Any:  # noqa: ANN401
+    """Handle ibex_bluesky_core.plan_stubs.call_sync."""
     func = msg.obj
     done_event = Event()
     result: Any = None
@@ -126,28 +112,34 @@ async def call_qt_safe_handler(msg: Msg) -> Any:  # noqa: ANN401
     class _Cb(QtAwareCallback):
         def start(self, doc: RunStart) -> None:
             nonlocal result, exc
-            # Note: Qt/UI operations must be "fast", so don't worry too much about timeout or
-            # interruption cases here.
-            # Any attempt to forcibly interrupt a function while it's doing UI operations/using
-            # Qt signals is highly likely to be a bad idea. Don't do that here.
             try:
+                logger.info(
+                    "Running '%s' with args=(%s), kwargs=(%s) (Qt)",
+                    func.__name__,
+                    msg.args,
+                    msg.kwargs,
+                )
                 result = func(*msg.args, **msg.kwargs)
+                logger.debug("Running '%s' (Qt) successful", func.__name__)
             except BaseException as e:
+                logger.error(
+                    "Running '%s' failed with %s: %s", func.__name__, e.__class__.__name__, e
+                )
                 exc = e
             finally:
                 loop.call_soon_threadsafe(done_event.set)
 
     cb = _Cb()
     # Send fake event to our callback to trigger it (actual contents unimportant)
+    # If not using Qt, this will run synchronously i.e. block until complete
+    # If using Qt, this will be sent off to the Qt teleporter which will execute it asynchronously,
+    # and we have to wait for the event to be set.
     cb("start", {"time": 0, "uid": ""})
 
-    try:
-        await wait_for(done_event.wait(), CALL_QT_SAFE_TIMEOUT)
-    except asyncio.TimeoutError as e:  # pragma: no cover (CI on linux doesn't have a UI/Qt backend)
-        raise TimeoutError(
-            f"Long-running function '{func.__name__}' passed to call_qt_safe_handler. Functions "
-            f"passed to call_qt_safe_handler must be faster than {CALL_QT_SAFE_TIMEOUT}s."
-        ) from e
+    # Attempting to forcibly interrupt a function while it's doing UI operations/using
+    # Qt signals is highly likely to be a bad idea. Don't do that here. No special ctrl-c handling.
+    await done_event.wait()
+
     if exc is not None:
         raise exc
     return result

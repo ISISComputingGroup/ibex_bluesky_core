@@ -1,22 +1,20 @@
 """Core plan stubs."""
 
 from collections.abc import Generator
-from typing import Any, Callable, ParamSpec, TypeVar, cast
+from typing import Callable, ParamSpec, TypeVar, cast
 
 import bluesky.plan_stubs as bps
-import matplotlib.pyplot as plt
 from bluesky.utils import Msg
-from matplotlib.figure import Figure
 
 P = ParamSpec("P")
 T = TypeVar("T")
 
 
 CALL_SYNC_MSG_KEY = "ibex_bluesky_core_call_sync"
-CALL_QT_SAFE_MSG_KEY = "ibex_bluesky_core_call_qt_safe"
+CALL_QT_AWARE_MSG_KEY = "ibex_bluesky_core_call_qt_aware"
 
 
-__all__ = ["call_sync", "matplotlib_subplots"]
+__all__ = ["call_qt_aware", "call_sync"]
 
 
 def call_sync(func: Callable[P, T], *args: P.args, **kwargs: P.kwargs) -> Generator[Msg, None, T]:
@@ -42,32 +40,41 @@ def call_sync(func: Callable[P, T], *args: P.args, **kwargs: P.kwargs) -> Genera
 
     Args:
         func: A callable to run.
-        args: Arbitrary arguments to be passed to the wrapped function
-        kwargs: Arbitrary keyword arguments to be passed to the wrapped function
+        *args: Arbitrary arguments to be passed to the wrapped function
+        **kwargs: Arbitrary keyword arguments to be passed to the wrapped function
+
+    Returns:
+        The return value of the wrapped function
 
     """
     yield from bps.clear_checkpoint()
     return cast(T, (yield Msg(CALL_SYNC_MSG_KEY, func, *args, **kwargs)))
 
 
-def matplotlib_subplots(
-    *args: Any,  # noqa: ANN401 - pyright doesn't understand we're wrapping mpl API.
-    **kwargs: Any,  # noqa: ANN401 - pyright doesn't understand we're wrapping mpl API.
-) -> Generator[Msg, None, tuple[Figure, Any]]:
-    """Create a new matplotlib figure and axes, using matplotlib.pyplot.subplots, from a plan.
+def call_qt_aware(
+    func: Callable[P, T], *args: P.args, **kwargs: P.kwargs
+) -> Generator[Msg, None, T]:
+    """Call a matplotlib function in a Qt-aware context, from within a plan.
 
-    This is done in a Qt-safe way, such that if matplotlib is using a Qt backend then
-    UI operations are run on the Qt thread via Qt signals.
+    If matplotlib is using a Qt backend then UI operations are run on the Qt thread via Qt signals.
+
+    Only matplotlib functions may be run using this plan stub.
 
     Args:
-        args: Arbitrary arguments, passed through to matplotlib.pyplot.subplots
-        kwargs: Arbitrary keyword arguments, passed through to matplotlib.pyplot.subplots
+        func: A matplotlib function reference.
+        *args: Arbitrary arguments, passed through to matplotlib.pyplot.subplots
+        **kwargs: Arbitrary keyword arguments, passed through to matplotlib.pyplot.subplots
+
+    Raises:
+        ValueError: if the passed function is not a matplotlib function.
 
     Returns:
-        tuple of (figure, axes) - as per matplotlib.pyplot.subplots()
+        The return value of the wrapped function
 
     """
+    # Limit potential for misuse - constrain to just running matplotlib functions.
+    if not getattr(func, "__module__", "").startswith("matplotlib"):
+        raise ValueError("Only matplotlib functions should be passed to call_qt_aware")
+
     yield from bps.clear_checkpoint()
-    return cast(
-        tuple[Figure, Any], (yield Msg(CALL_QT_SAFE_MSG_KEY, plt.subplots, *args, **kwargs))
-    )
+    return cast(T, (yield Msg(CALL_QT_AWARE_MSG_KEY, func, *args, **kwargs)))

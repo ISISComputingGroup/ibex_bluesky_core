@@ -1,14 +1,13 @@
 # pyright: reportMissingParameterType=false
-import re
 import time
 from asyncio import CancelledError
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
-import matplotlib
+import matplotlib.pyplot as plt
 import pytest
 from bluesky.utils import Msg
 
-from ibex_bluesky_core.plan_stubs import CALL_QT_SAFE_MSG_KEY, call_sync, matplotlib_subplots
+from ibex_bluesky_core.plan_stubs import CALL_QT_AWARE_MSG_KEY, call_qt_aware, call_sync
 from ibex_bluesky_core.run_engine._msg_handlers import call_sync_handler
 
 
@@ -69,54 +68,54 @@ def test_call_sync_waits_for_completion(RE):
     assert end - start == pytest.approx(1, abs=0.2)
 
 
-def test_call_qt_safe_returns_result(RE):
+def test_call_qt_aware_returns_result(RE):
     def f(arg, keyword_arg):
         assert arg == "foo"
         assert keyword_arg == "bar"
         return 123
 
     def plan():
-        return (yield Msg(CALL_QT_SAFE_MSG_KEY, f, "foo", keyword_arg="bar"))
+        return (yield Msg(CALL_QT_AWARE_MSG_KEY, f, "foo", keyword_arg="bar"))
 
     result = RE(plan())
 
     assert result.plan_result == 123
 
 
-def test_call_qt_safe_throws_exception(RE):
+def test_call_qt_aware_throws_exception(RE):
     def f():
         raise ValueError("broke it")
 
     def plan():
-        return (yield Msg(CALL_QT_SAFE_MSG_KEY, f))
+        return (yield Msg(CALL_QT_AWARE_MSG_KEY, f))
 
     with pytest.raises(ValueError, match="broke it"):
         RE(plan())
 
 
-@pytest.mark.skipif("qt" not in matplotlib.get_backend().lower(), reason="Qt not available")
-def test_call_qt_safe_blocking_causes_descriptive_timeout_error(RE):
-    def f():
-        time.sleep(0.2)
+def test_call_qt_aware_matplotlib_function(RE):
+    mock = MagicMock(spec=plt.close)
+    mock.__module__ = "matplotlib.pyplot"
+    mock.return_value = 123
 
     def plan():
-        return (yield Msg(CALL_QT_SAFE_MSG_KEY, f))
+        return (yield from call_qt_aware(mock, "all"))
 
-    with patch("ibex_bluesky_core.run_engine._msg_handlers.CALL_QT_SAFE_TIMEOUT", new=0.1):
-        with pytest.raises(
-            TimeoutError,
-            match=re.escape(
-                "Long-running function 'f' passed to call_qt_safe_handler. "
-                "Functions passed to call_qt_safe_handler must be faster than 0.1s."
-            ),
-        ):
-            RE(plan())
+    result = RE(plan())
+    assert result.plan_result == 123
+    mock.assert_called_once_with("all")
 
 
-def test_matplotlib_subplots_calls_pyplot_subplots(RE):
+def test_call_qt_aware_non_matplotlib_function(RE):
+    mock = MagicMock()
+    mock.__module__ = "some_random_module"
+
     def plan():
-        return (yield from matplotlib_subplots("foo", keyword="bar"))
+        return (yield from call_qt_aware(mock, "arg", keyword_arg="kwarg"))
 
-    with patch("ibex_bluesky_core.plan_stubs.plt.subplots") as mock_pyplot_subplots:
+    with pytest.raises(
+        ValueError, match="Only matplotlib functions should be passed to call_qt_aware"
+    ):
         RE(plan())
-        mock_pyplot_subplots.assert_called_once_with("foo", keyword="bar")
+
+    mock.assert_not_called()
