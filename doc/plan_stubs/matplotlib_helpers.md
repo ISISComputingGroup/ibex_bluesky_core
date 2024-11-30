@@ -36,10 +36,10 @@ from bluesky.preprocessors import subs_decorator
 def my_plan():
     # BAD
     # fig, ax = plt.subplots()
-    
+
     # GOOD
     fig, ax = yield from matplotlib_subplots()
-    
+
     # Pass the matplotlib ax object to other callbacks
     @subs_decorator([
         LiveFitPlot(..., ax=ax),

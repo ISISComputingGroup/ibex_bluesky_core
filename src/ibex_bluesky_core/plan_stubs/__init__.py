@@ -51,7 +51,8 @@ def call_sync(func: Callable[P, T], *args: P.args, **kwargs: P.kwargs) -> Genera
 
 
 def matplotlib_subplots(
-    *args: list[Any], **kwargs: dict[Any]
+    *args: Any,  # noqa: ANN401 - pyright doesn't understand we're wrapping mpl API.
+    **kwargs: Any,  # noqa: ANN401 - pyright doesn't understand we're wrapping mpl API.
 ) -> Generator[Msg, None, tuple[Figure, Any]]:
     """Create a new matplotlib figure and axes, using matplotlib.pyplot.subplots, from a plan.
 

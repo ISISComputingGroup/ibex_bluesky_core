@@ -3,6 +3,7 @@
 Not intended for user use.
 """
 
+import asyncio
 import ctypes
 import logging
 import threading
@@ -109,8 +110,8 @@ async def call_qt_safe_handler(msg: Msg) -> Any:  # noqa: ANN401
     we would have no way to prove that for a generic user-supplied function. So we only
     expose known cases, like matplotlib.pyplot.subplots for example.
 
-    In particular, operations that take longer than CALL_QT_SAFE_TIMEOUT will cause an
-    asyncio TimeoutError (to flag obvious misuse), but won't cancel the underlying task.
+    Slow functions will cause various undesirable side effects, like stalling the event loop
+    and interfering with ctrl-c handling.
 
     """
     func = msg.obj
@@ -140,7 +141,13 @@ async def call_qt_safe_handler(msg: Msg) -> Any:  # noqa: ANN401
     # Send fake event to our callback to trigger it (actual contents unimportant)
     cb("start", {"time": 0, "uid": ""})
 
-    await wait_for(done_event.wait(), CALL_QT_SAFE_TIMEOUT)
+    try:
+        await wait_for(done_event.wait(), CALL_QT_SAFE_TIMEOUT)
+    except asyncio.TimeoutError as e:  # pragma: no cover (CI on linux doesn't have a UI/Qt backend)
+        raise TimeoutError(
+            f"Long-running function '{func.__name__}' passed to call_qt_safe_handler. Functions "
+            f"passed to call_qt_safe_handler must be faster than {CALL_QT_SAFE_TIMEOUT}s."
+        ) from e
     if exc is not None:
         raise exc
     return result
