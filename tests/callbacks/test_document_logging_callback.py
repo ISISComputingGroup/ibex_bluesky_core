@@ -22,7 +22,7 @@ def test_run_engine_logs_all_documents(RE):
         result: RunEngineResult = RE(basic_plan())
         filepath = log_location / f"{result.run_start_uids[0]}.log"
 
-    for i in range(0, 2):
+    for i in range(2):
         assert m.call_args_list[i].args == (filepath, "a")
         # Checks that the file is opened 2 times, for open and then stop
 

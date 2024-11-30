@@ -30,7 +30,6 @@ class Fit(ABC):
             (x-values: NDArray, parameters: np.float64 -> y-values: NDArray)
 
         """
-        pass
 
     @classmethod
     @abstractmethod
@@ -47,7 +46,6 @@ class Fit(ABC):
             (x-values: NDArray, y-values: NDArray -> parameters: Dict[str, lmfit.Parameter])
 
         """
-        pass
 
     @classmethod
     def fit(cls, *args: int) -> FitMethod:

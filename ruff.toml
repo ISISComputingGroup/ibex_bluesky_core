@@ -5,15 +5,17 @@ indent-width = 4
 preview = true
 extend-select = [
     "N",     # pep8-naming
-    "D",     # pydocstyle (can use this later but for now causes too many errors)
+    "D",     # pydocstyle
     "I",     # isort (for imports)
     "E501",  # Line too long ({width} > {limit})
-    "E",
-    "F",
-	"W",
-    "ANN",
+    "E",     # Pycodestyle errors
+	"W",     # Pycodestyle warnings
+    "F",     # Pyflakes
+    "PL",    # Pylint
+	"B",     # Flake8-bugbear
+	"PIE",   # Flake8-pie
+    "ANN",   # Annotations
 	"ASYNC", # Asyncio-specific checks
-	"B",
 	"NPY",   # Numpy-specific rules
 	"RUF",   # Ruff-specific checks, include some useful asyncio rules
     "FURB",  # Rules from refurb
@@ -22,7 +24,8 @@ extend-select = [
     "LOG",   # Logging-specific rules
     "G",     # Logging-specific rules
     "UP",    # Pyupgrade
-    "PL",    # Rules from pylint
+    "SLF",   # Private-member usage
+    "PERF",  # Performance-related rules
 ]
 ignore = [
     "D406",    # Section name should end with a newline ("{name}")
@@ -34,13 +37,14 @@ ignore = [
 ]
 [lint.per-file-ignores]
 "tests/*" = [
-    "N802",
+    "N802",     # Allow test names to be long / not pep8
     "D",        # Don't require method documentation for test methods
     "ANN",      # Don't require tests to use type annotations
     "PLR2004",  # Allow magic numbers in tests
     "PLR0915",  # Allow complex tests
     "PLR0914",  # Allow complex tests
     "PLC2701",  # Allow tests to import "private" things
+    "SLF001",   # Allow tests to use "private" things
 ]
 "doc/conf.py" = [
     "D100"
