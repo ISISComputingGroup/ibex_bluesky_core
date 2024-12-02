@@ -315,6 +315,7 @@ class BlockMot(Motor):
         """Create a new motor-record block.
 
         The 'BlockMot' object supports motion-specific functionality such as:
+
         - Stopping if a scan is aborted (supports the bluesky 'Stoppable' protocol)
         - Limit checking (before a move starts - supports the bluesky 'Checkable' protocol)
         - Automatic calculation of move timeouts based on motor velocity
