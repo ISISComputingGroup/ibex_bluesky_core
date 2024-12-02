@@ -33,7 +33,7 @@ def test_get_pv_prefix():
 def test_cannot_get_pv_prefix():
     with patch("os.getenv") as mock_getenv:
         mock_getenv.return_value = None
-        with pytest.raises(EnvironmentError):
+        with pytest.raises(EnvironmentError, match="MYPVPREFIX environment variable not available"):
             get_pv_prefix()
 
 

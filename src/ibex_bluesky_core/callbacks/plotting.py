@@ -37,7 +37,7 @@ class LivePlot(_DefaultLivePlot):
         """
         super().__init__(y=y, x=x, *args, **kwargs)  # noqa: B026
         if yerr is not None:
-            self.yerr, *others = get_obj_fields([yerr])
+            self.yerr, *_others = get_obj_fields([yerr])
         else:
             self.yerr = None
         self.yerr_data = []

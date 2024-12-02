@@ -30,7 +30,6 @@ class Fit(ABC):
             (x-values: NDArray, parameters: np.float64 -> y-values: NDArray)
 
         """
-        pass
 
     @classmethod
     @abstractmethod
@@ -47,7 +46,6 @@ class Fit(ABC):
             (x-values: NDArray, y-values: NDArray -> parameters: Dict[str, lmfit.Parameter])
 
         """
-        pass
 
     @classmethod
     def fit(cls, *args: int) -> FitMethod:
@@ -198,8 +196,9 @@ class Polynomial(Fit):
     @classmethod
     def _check_degree(cls, args: tuple[int, ...]) -> int:
         """Check that polynomial degree is valid."""
-        degree = args[0] if args else 7
-        if not (0 <= degree <= 7):
+        max_degree = 7
+        degree = args[0] if args else max_degree
+        if not (0 <= degree <= max_degree):
             raise ValueError("The polynomial degree should be at least 0 and smaller than 8.")
         return degree
 

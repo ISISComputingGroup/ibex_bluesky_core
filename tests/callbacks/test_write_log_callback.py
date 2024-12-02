@@ -26,7 +26,7 @@ def test_header_data_all_available_on_start(cb):
         cb.start(run_start)
         result = save_path / f"{run_start['uid']}.txt"
 
-    mock_file.assert_called_with(result, "a", newline="")
+    mock_file.assert_called_with(result, "a", newline="", encoding="utf-8")
     # time should have been renamed to start_time and converted to human readable
     mock_file().write.assert_any_call("start_time: 2024-10-04 14:43:43\n")
     mock_file().write.assert_any_call(f"uid: {uid}\n")
@@ -67,7 +67,7 @@ def test_event_prints_header_with_units_and_respects_precision_of_value_on_first
     with patch("ibex_bluesky_core.callbacks.file_logger.open", mock_open()) as mock_file:
         cb.event(event)
 
-    mock_file.assert_called_with(cb.filename, "a", newline="")
+    mock_file.assert_called_with(cb.filename, "a", newline="", encoding="utf-8")
     first_call = call(f"\n{field_name}({units})\n")
     second_call = call(f"{expected_value:.{prec}f}\n")
     mock_file().write.assert_has_calls([first_call, second_call])
@@ -92,7 +92,7 @@ def test_event_prints_header_without_units_and_does_not_truncate_precision_if_no
     with patch("ibex_bluesky_core.callbacks.file_logger.open", mock_open()) as mock_file:
         cb.event(event)
 
-    mock_file.assert_called_with(cb.filename, "a", newline="")
+    mock_file.assert_called_with(cb.filename, "a", newline="", encoding="utf-8")
     mock_file().write.assert_has_calls([call("\ntest\n"), call("1.2345\n")])
     assert mock_file().write.call_count == 2
 
@@ -118,7 +118,7 @@ def test_event_prints_header_only_on_first_event_and_does_not_truncate_if_not_fl
     with patch("ibex_bluesky_core.callbacks.file_logger.open", mock_open()) as mock_file:
         cb.event(second_event)
 
-    mock_file.assert_called_with(cb.filename, "a", newline="")
+    mock_file.assert_called_with(cb.filename, "a", newline="", encoding="utf-8")
 
     mock_file().write.assert_called_once_with(f"{expected_value}\n")
     assert mock_file().write.call_count == 1
