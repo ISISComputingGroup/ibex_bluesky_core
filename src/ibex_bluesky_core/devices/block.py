@@ -14,6 +14,7 @@ from ophyd_async.core import (
     StandardReadable,
     StandardReadableFormat,
     observe_value,
+    wait_for_value,
 )
 from ophyd_async.epics.core import epics_signal_r, epics_signal_rw
 from ophyd_async.epics.motor import Motor
@@ -39,8 +40,13 @@ __all__ = [
     "block_rw_rbv",
 ]
 
+# When using the global moving flag, we want to give IOCs enough time to update the
+# global flag before checking it. This is an amount of time always applied before
+# looking at the global moving flag.
+GLOBAL_MOVING_FLAG_PRE_WAIT = 0.1
 
-@dataclass(kw_only=True)
+
+@dataclass(kw_only=True, frozen=True)
 class BlockWriteConfig(Generic[T]):
     """Configuration settings for writing to blocks.
 
@@ -77,12 +83,19 @@ class BlockWriteConfig(Generic[T]):
         A wait time, in seconds, which is unconditionally applied just before the set
         status is marked as complete. Defaults to zero.
 
+    use_global_moving_flag:
+        Whether to wait for the IBEX global moving indicator to return "stationary". This is useful
+        for compound moves, where changing a single block may cause multiple underlying axes to
+        move, and all movement needs to be complete before the set is considered complete. Defaults
+        to False.
+
     """
 
     use_completion_callback: bool = True
     set_success_func: Callable[[T, T], bool] | None = None
     set_timeout_s: float | None = None
     settle_time_s: float = 0.0
+    use_global_moving_flag: bool = False
 
 
 class RunControl(StandardReadable):
@@ -185,6 +198,11 @@ class BlockRw(BlockR[T], Movable):
 
         self._write_config: BlockWriteConfig[T] = write_config or BlockWriteConfig()
 
+        if self._write_config.use_global_moving_flag:
+            # Misleading PV name... says it's a str but it's really a bi record.
+            # Only link to this if we need to (i.e. if use_global_moving_flag was requested)
+            self.global_moving = epics_signal_r(bool, f"{prefix}CS:MOT:MOVING:STR")
+
         super().__init__(datatype=datatype, prefix=prefix, block_name=block_name)
 
     @AsyncStatus.wrap
@@ -197,6 +215,21 @@ class BlockRw(BlockR[T], Movable):
                 setpoint, wait=self._write_config.use_completion_callback, timeout=None
             )
             logger.info("Got completion callback from setting block %s to %s", self.name, setpoint)
+
+            if self._write_config.use_global_moving_flag:
+                logger.info(
+                    "Waiting for global moving flag on setting block %s to %s", self.name, setpoint
+                )
+                # Paranoid sleep - ensure that the global flag has had a chance to go into moving,
+                # otherwise there could be a race condition where we check the flag before the move
+                # has even started.
+                await asyncio.sleep(GLOBAL_MOVING_FLAG_PRE_WAIT)
+                await wait_for_value(self.global_moving, False, timeout=None)
+                logger.info(
+                    "Done wait for global moving flag on setting block %s to %s",
+                    self.name,
+                    setpoint,
+                )
 
             # Wait for the _set_success_func to return true.
             # This uses an "async for" to loop over items from observe_value, which is an async
@@ -282,6 +315,7 @@ class BlockMot(Motor):
         """Create a new motor-record block.
 
         The 'BlockMot' object supports motion-specific functionality such as:
+
         - Stopping if a scan is aborted (supports the bluesky 'Stoppable' protocol)
         - Limit checking (before a move starts - supports the bluesky 'Checkable' protocol)
         - Automatic calculation of move timeouts based on motor velocity
@@ -308,6 +342,9 @@ class BlockMot(Motor):
             keyword-argument on set().
         settle_time_s:
             Use .DLY on the motor record to configure this.
+        use_global_moving_flag:
+            This is unnecessary for a single motor block, as a completion callback will always be
+            used instead to detect when a single move has finished.
         """
         self.run_control = RunControl(f"{prefix}CS:SB:{block_name}:RC:")
 

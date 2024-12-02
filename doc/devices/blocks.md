@@ -131,12 +131,16 @@ from ibex_bluesky_core.devices.block import block_mot
 mot_block = block_mot("motor_block")
 ```
 
+A motor block does not need an explicit write config: it always waits for the requested motion
+to complete. See {py:obj}`ibex_bluesky_core.devices.block.BlockMot` for a detailed mapping of
+the usual write-configuration options and how these are instead achieved by a motor block.
+
 ## Configuring block write behaviour
 
 `BlockRw` and `BlockRwRbv` both take a `write_config` argument, which can be used to configure
 the behaviour on writing to a block, for example tolerances and settle times.
 
-See the docstring on `ibex_bluesky_core.devices.block.BlockWriteConfig` for a detailed
+See {py:class}`ibex_bluesky_core.devices.block.BlockWriteConfig` for a detailed
 description of all the options which are available.
 
 ## Run control
