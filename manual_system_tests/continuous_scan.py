@@ -11,30 +11,23 @@ import matplotlib
 import matplotlib.pyplot as plt
 from bluesky.callbacks import LiveFitPlot, LiveTable
 from bluesky.plan_stubs import trigger_and_read
-from bluesky.preprocessors import subs_decorator, run_decorator, monitor_during_decorator, contingency_wrapper
+from bluesky.preprocessors import subs_decorator, run_decorator, finalize_wrapper
 from bluesky.utils import Msg
 from ophyd_async.plan_stubs import ensure_connected
 
 from ibex_bluesky_core.callbacks.file_logger import HumanReadableFileCallback
 from ibex_bluesky_core.callbacks.fitting import LiveFit
-from ibex_bluesky_core.callbacks.fitting.fitting_utils import Linear, Gaussian
+from ibex_bluesky_core.callbacks.fitting.fitting_utils import Trapezoid
 from ibex_bluesky_core.callbacks.plotting import LivePlot
-from ibex_bluesky_core.devices import get_pv_prefix
-from ibex_bluesky_core.devices.block import block_rw_rbv, block_r, block_mot
-from ibex_bluesky_core.devices.simpledae import SimpleDae
-from ibex_bluesky_core.devices.simpledae.controllers import (
-    RunPerPointController,
-)
-from ibex_bluesky_core.devices.simpledae.reducers import (
-    GoodFramesNormalizer,
-)
-from ibex_bluesky_core.devices.simpledae.waiters import GoodFramesWaiter
+from ibex_bluesky_core.devices.block import block_r, block_mot
 from ibex_bluesky_core.run_engine import get_run_engine
 
 NUM_POINTS: int = 3
 
 
-def continuous_scan_plan(dave: float) -> Generator[Msg, None, None]:
+def continuous_scan_plan(
+    mot_block_name: str, centre: float, size: float, time: float, iterations: int
+) -> Generator[Msg, None, None]:
     """Manual system test which moves a block and reads the DAE.
 
     Prerequisites:
@@ -52,77 +45,79 @@ def continuous_scan_plan(dave: float) -> Generator[Msg, None, None]:
     - The DAE was started and ended once per point
     - The DAE waited for at least 500 good frames at each point
     """
-    prefix = get_pv_prefix()
-    bob = block_mot("bob")
-    alice = block_r(float, "alice")
-    mot = block_r(float, "mot")
-    _, ax = plt.subplots()
-    lf = LiveFit(
-        Gaussian.fit(), y=alice.name, x=bob.name
-    )
+    motor = block_mot(mot_block_name)
 
-    yield from ensure_connected(bob, alice, mot)
+    laser_intensity = block_r(float, "alice")
+    _, ax = plt.subplots()
+    lf = LiveFit(Trapezoid.fit(), y=laser_intensity.name, x=motor.name)
+
+    initial_position = centre - 0.5 * size
+    final_position = centre + 0.5 * size
+
+    yield from ensure_connected(
+        laser_intensity,
+        motor,
+    )
+    initial_velocity = yield from bps.rd(motor.velocity)
+    yield from bps.mv(motor.velocity, size / time)
 
     @subs_decorator(
         [
             HumanReadableFileCallback(
                 Path("C:\\") / "instrument" / "var" / "logs" / "bluesky" / "output_files",
-                [
-                    alice.name,
-                    bob.name
-                ],
+                [motor.name, laser_intensity.name],
             ),
-            LiveTable(
-                [
-                    alice.name,
-                    bob.name
-                ]
-            ),
-            LiveFitPlot(livefit=lf, ax=ax, update_every=100),
+            LiveTable([motor.name, laser_intensity.name]),
+            LiveFitPlot(livefit=lf, ax=ax),
             LivePlot(
-                y=alice.name,
-                x=bob.name,
+                y=laser_intensity.name,
+                x=motor.name,
                 marker="x",
                 linestyle="none",
                 ax=ax,
             ),
         ]
     )
+    @run_decorator(md={})
     def _inner() -> Generator[Msg, None, None]:
-
-        @run_decorator(md={})
-        def polling_plan():
-            yield from bps.clear_checkpoint()
+        def polling_plan(destination: float):
+            yield from bps.checkpoint()
             yield from bps.create()
-            reading = yield from bps.read(bob)
-            yield from bps.read(alice)
+            reading = yield from bps.read(motor)
+            yield from bps.read(laser_intensity)
             yield from bps.save()
 
             # start the ramp
-            status = yield from bps.abs_set(bob, dave, wait=False)
+            status = yield from bps.abs_set(motor, destination, wait=False)
             while not status.done:
                 yield from bps.create()
-                new_reading = yield from bps.read(bob)
-                yield from bps.read(alice)
+                new_reading = yield from bps.read(motor)
+                yield from bps.read(laser_intensity)
 
-                if new_reading[bob.name]["value"] == reading[bob.name]["value"]:
+                if new_reading[motor.name]["value"] == reading[motor.name]["value"]:
                     yield from bps.drop()
                 else:
                     reading = new_reading
                     yield from bps.save()
 
             # take a 'post' data point
-            yield from trigger_and_read([bob, alice])
-            yield from bps.checkpoint()
+            yield from trigger_and_read([motor, laser_intensity])
 
-        return (yield from polling_plan())
+        yield from bps.mv(motor, initial_position)
+        for i in range(iterations):
+            yield from polling_plan(final_position)
+            yield from polling_plan(initial_position)
 
-    yield from _inner()
+    def _set_motor_back_to_original_velocity():
+        yield from bps.mv(motor.velocity, initial_velocity)
+
+    yield from finalize_wrapper(_inner(), _set_motor_back_to_original_velocity)
+    print(lf.result.fit_report())
 
 
 if __name__ == "__main__" and not os.environ.get("FROM_IBEX") == "True":
     matplotlib.use("qtagg")
     plt.ion()
     RE = get_run_engine()
-    RE(continuous_scan_plan())
+    RE(continuous_scan_plan("bob", 100, 50, 10, 2))
     input("Plan complete, press return to close plot and exit")
