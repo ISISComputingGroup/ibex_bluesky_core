@@ -1,8 +1,8 @@
 """Demonstration plan showing basic bluesky functionality."""
 
 import os
+from collections.abc import Generator
 from pathlib import Path
-from typing import Generator
 
 import bluesky.plan_stubs as bps
 import bluesky.plans as bp
@@ -27,6 +27,7 @@ from ibex_bluesky_core.devices.simpledae.reducers import (
     GoodFramesNormalizer,
 )
 from ibex_bluesky_core.devices.simpledae.waiters import GoodFramesWaiter
+from ibex_bluesky_core.plan_stubs import call_qt_aware
 from ibex_bluesky_core.run_engine import get_run_engine
 
 NUM_POINTS: int = 3
@@ -71,7 +72,8 @@ def dae_scan_plan() -> Generator[Msg, None, None]:
     controller.run_number.set_name("run number")
     reducer.intensity.set_name("normalized counts")
 
-    _, ax = plt.subplots()
+    _, ax = yield from call_qt_aware(plt.subplots)
+
     lf = LiveFit(
         Linear.fit(), y=reducer.intensity.name, x=block.name, yerr=reducer.intensity_stddev.name
     )

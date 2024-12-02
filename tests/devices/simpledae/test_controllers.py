@@ -30,7 +30,7 @@ def aborting_run_per_point_controller() -> RunPerPointController:
     return RunPerPointController(save_run=False)
 
 
-async def test_period_per_point_controller_publishes_current_period(
+def test_period_per_point_controller_publishes_current_period(
     simpledae: SimpleDae, period_per_point_controller: PeriodPerPointController
 ):
     assert period_per_point_controller.additional_readable_signals(simpledae) == [
@@ -83,7 +83,7 @@ async def test_run_per_point_controller_starts_and_ends_runs(
     get_mock_put(simpledae.controls.end_run).assert_called_once_with(None, wait=True)
 
 
-async def test_run_per_point_controller_publishes_run(
+def test_run_per_point_controller_publishes_run(
     simpledae: SimpleDae, run_per_point_controller: RunPerPointController
 ):
     assert run_per_point_controller.additional_readable_signals(simpledae) == [
@@ -91,7 +91,7 @@ async def test_run_per_point_controller_publishes_run(
     ]
 
 
-async def test_aborting_run_per_point_controller_doesnt_publish_run(
+def test_aborting_run_per_point_controller_doesnt_publish_run(
     simpledae: SimpleDae, aborting_run_per_point_controller: RunPerPointController
 ):
     assert aborting_run_per_point_controller.additional_readable_signals(simpledae) == []

@@ -101,12 +101,12 @@ async def test_locate(rw_rbv_block):
     }
 
 
-async def test_hints(readable_block):
+def test_hints(readable_block):
     # The primary readback should be the only "hinted" signal on a block
     assert readable_block.hints == {"fields": ["float_block"]}
 
 
-async def test_mot_hints(mot_block):
+def test_mot_hints(mot_block):
     assert mot_block.hints == {"fields": ["mot_block"]}
 
 
@@ -240,7 +240,7 @@ async def test_block_without_use_global_moving_flag_does_not_refer_to_global_mov
 
 
 @pytest.mark.parametrize(
-    "func,args",
+    ("func", "args"),
     [
         (block_r, (float, "some_block")),
         (block_rw, (float, "some_block")),
@@ -273,18 +273,18 @@ async def test_runcontrol_read_and_describe(readable_block):
     assert descriptor["float_block-run_control-in_range"]["dtype"] == "boolean"
 
 
-async def test_runcontrol_hints(readable_block):
+def test_runcontrol_hints(readable_block):
     # Hinted field for explicitly reading run-control: is the reading in range?
     hints = readable_block.run_control.hints
     assert hints == {"fields": ["float_block-run_control-in_range"]}
 
 
-async def test_runcontrol_monitors_correct_pv(readable_block):
+def test_runcontrol_monitors_correct_pv(readable_block):
     source = readable_block.run_control.in_range.source
     assert source.endswith("UNITTEST:MOCK:CS:SB:float_block:RC:INRANGE")
 
 
-async def test_mot_block_runcontrol_monitors_correct_pv(mot_block):
+def test_mot_block_runcontrol_monitors_correct_pv(mot_block):
     source = mot_block.run_control.in_range.source
     # The main "motor" uses mot_block:SP:RBV, but run control should not.
     assert source.endswith("UNITTEST:MOCK:CS:SB:mot_block:RC:INRANGE")

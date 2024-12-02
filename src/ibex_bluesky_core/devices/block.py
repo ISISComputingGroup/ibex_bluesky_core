@@ -3,7 +3,7 @@
 import asyncio
 import logging
 from dataclasses import dataclass
-from typing import Callable, Generic, Type, TypeVar
+from typing import Callable, Generic, TypeVar
 
 from bluesky.protocols import Locatable, Location, Movable, Triggerable
 from ophyd_async.core import (
@@ -132,7 +132,7 @@ class RunControl(StandardReadable):
 class BlockR(StandardReadable, Triggerable, Generic[T]):
     """Device representing an IBEX readable block of arbitrary data type."""
 
-    def __init__(self, datatype: Type[T], prefix: str, block_name: str) -> None:
+    def __init__(self, datatype: type[T], prefix: str, block_name: str) -> None:
         """Create a new read-only block.
 
         Args:
@@ -167,7 +167,7 @@ class BlockRw(BlockR[T], Movable):
 
     def __init__(
         self,
-        datatype: Type[T],
+        datatype: type[T],
         prefix: str,
         block_name: str,
         *,
@@ -264,7 +264,7 @@ class BlockRwRbv(BlockRw[T], Locatable):
 
     def __init__(
         self,
-        datatype: Type[T],
+        datatype: type[T],
         prefix: str,
         block_name: str,
         *,
@@ -362,7 +362,7 @@ class BlockMot(Motor):
         return f"{self.__class__.__name__}(name={self.name})"
 
 
-def block_r(datatype: Type[T], block_name: str) -> BlockR[T]:
+def block_r(datatype: type[T], block_name: str) -> BlockR[T]:
     """Get a local read-only block for the current instrument.
 
     See documentation of BlockR for more information.
@@ -371,7 +371,7 @@ def block_r(datatype: Type[T], block_name: str) -> BlockR[T]:
 
 
 def block_rw(
-    datatype: Type[T], block_name: str, *, write_config: BlockWriteConfig[T] | None = None
+    datatype: type[T], block_name: str, *, write_config: BlockWriteConfig[T] | None = None
 ) -> BlockRw[T]:
     """Get a local read-write block for the current instrument.
 
@@ -383,7 +383,7 @@ def block_rw(
 
 
 def block_rw_rbv(
-    datatype: Type[T], block_name: str, *, write_config: BlockWriteConfig[T] | None = None
+    datatype: type[T], block_name: str, *, write_config: BlockWriteConfig[T] | None = None
 ) -> BlockRwRbv[T]:
     """Get a local read/write/setpoint readback block for the current instrument.
 
