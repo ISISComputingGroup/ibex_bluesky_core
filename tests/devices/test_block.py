@@ -227,8 +227,8 @@ async def test_block_set_waiting_for_global_moving_flag_timeout():
     with patch("ibex_bluesky_core.devices.block.asyncio.sleep") as mock_aio_sleep:
         with pytest.raises(aio_timeout_error):
             await block.set(10)
-            # Only check first call, as wait_for_value from ophyd_async gives us a few more...
-            assert mock_aio_sleep.mock_calls[0] == call(GLOBAL_MOVING_FLAG_PRE_WAIT)
+        # Only check first call, as wait_for_value from ophyd_async gives us a few more...
+        assert mock_aio_sleep.mock_calls[0] == call(GLOBAL_MOVING_FLAG_PRE_WAIT)
 
 
 async def test_block_without_use_global_moving_flag_does_not_refer_to_global_moving_pv():
