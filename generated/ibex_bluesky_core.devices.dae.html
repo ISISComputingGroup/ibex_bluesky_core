@@ -1,0 +1,241 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ibex_bluesky_core.devices.dae &mdash; ibex_bluesky_core 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+
+  
+    <link rel="shortcut icon" href="../_static/favicon.png"/>
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="ibex_bluesky_core.devices.dae.dae" href="ibex_bluesky_core.devices.dae.dae.html" />
+    <link rel="prev" title="ibex_bluesky_core.devices.block" href="ibex_bluesky_core.devices.block.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #343131" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            ibex_bluesky_core
+              <img src="../_static/logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Tutorial</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/overview.html">Getting started</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Devices</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../devices/blocks.html">Blocks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devices/dae.html">DAE (Data Acquisition Electronics)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Callbacks</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../callbacks/docs_logging_callback.html">Document Logging Callback</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../callbacks/file_writing.html">File writing callbacks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../callbacks/plotting.html">Plotting</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Fitting</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../fitting/fitting.html">Fitting Callback</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../fitting/standard_fits.html">Standard Fitting Models</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Plan stubs</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/external_code.html"><code class="docutils literal notranslate"><span class="pre">call_sync</span></code> (calling external code)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/matplotlib_helpers.html"><code class="docutils literal notranslate"><span class="pre">call_qt_aware</span></code> (matplotlib helpers)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Preprocessors</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../preprocessors/rbnumberpp.html">RB Number injection preprocessor</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Developer information</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../dev/create_a_release.html">Release Process</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dev/logging.html">Logging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dev/manual_system_testing.html">Manual system testing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dev/set_up_dev_environment.html">Local development</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dev/sphinx_notes.html">Notes on Sphinx and addons</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Architectural decisions</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../architectural_decisions/001-repo-structure.html">Repository structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../architectural_decisions/002-use-ophyd-async.html">Use <code class="docutils literal notranslate"><span class="pre">ophyd-async</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../architectural_decisions/003-run-in-process.html">Run in-process</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../architectural_decisions/004-use-scipp.html">Use <code class="docutils literal notranslate"><span class="pre">scipp</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../architectural_decisions/005-variance-addition.html">Variance addition to counts data</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API reference</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../_api.html">API</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="ibex_bluesky_core.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core</span></code></a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="ibex_bluesky_core.callbacks.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.callbacks</span></code></a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="ibex_bluesky_core.devices.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.devices</span></code></a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="ibex_bluesky_core.devices.block.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.devices.block</span></code></a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.devices.dae</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ibex_bluesky_core.devices.simpledae.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.devices.simpledae</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="ibex_bluesky_core.log.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.log</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ibex_bluesky_core.plan_stubs.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.plan_stubs</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ibex_bluesky_core.preprocessors.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.preprocessors</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ibex_bluesky_core.run_engine.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.run_engine</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #343131" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">ibex_bluesky_core</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../_api.html">API</a></li>
+          <li class="breadcrumb-item"><a href="ibex_bluesky_core.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core</span></code></a></li>
+          <li class="breadcrumb-item"><a href="ibex_bluesky_core.devices.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.devices</span></code></a></li>
+      <li class="breadcrumb-item active"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.devices.dae</span></code></li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/ISISComputingGroup/ibex_bluesky_core/blob/main/doc/generated/ibex_bluesky_core.devices.dae.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-ibex_bluesky_core.devices.dae">
+<span id="ibex-bluesky-core-devices-dae"></span><h1><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.devices.dae</span></code><a class="headerlink" href="#module-ibex_bluesky_core.devices.dae" title="Link to this heading"></a></h1>
+<p>Utilities for the DAE device - mostly XML helpers.</p>
+<p class="rubric">Submodules</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="ibex_bluesky_core.devices.dae.dae.html#module-ibex_bluesky_core.devices.dae.dae" title="ibex_bluesky_core.devices.dae.dae"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dae</span></code></a></p></td>
+<td><p>ophyd-async devices for communicating with the ISIS data acquisition electronics.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="ibex_bluesky_core.devices.dae.dae_controls.html#module-ibex_bluesky_core.devices.dae.dae_controls" title="ibex_bluesky_core.devices.dae.dae_controls"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dae_controls</span></code></a></p></td>
+<td><p>ophyd-async devices and utilities for the DAE run controls.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="ibex_bluesky_core.devices.dae.dae_event_mode.html#module-ibex_bluesky_core.devices.dae.dae_event_mode" title="ibex_bluesky_core.devices.dae.dae_event_mode"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dae_event_mode</span></code></a></p></td>
+<td><p>ophyd-async devices and utilities for the DAE event mode statistics.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="ibex_bluesky_core.devices.dae.dae_monitor.html#module-ibex_bluesky_core.devices.dae.dae_monitor" title="ibex_bluesky_core.devices.dae.dae_monitor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dae_monitor</span></code></a></p></td>
+<td><p>ophyd-async devices and utilities for a DAE monitor.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="ibex_bluesky_core.devices.dae.dae_period.html#module-ibex_bluesky_core.devices.dae.dae_period" title="ibex_bluesky_core.devices.dae.dae_period"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dae_period</span></code></a></p></td>
+<td><p>ophyd-async devices and utilities for a DAE period.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="ibex_bluesky_core.devices.dae.dae_period_settings.html#module-ibex_bluesky_core.devices.dae.dae_period_settings" title="ibex_bluesky_core.devices.dae.dae_period_settings"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dae_period_settings</span></code></a></p></td>
+<td><p>ophyd-async devices and utilities for the DAE hardware period settings.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="ibex_bluesky_core.devices.dae.dae_settings.html#module-ibex_bluesky_core.devices.dae.dae_settings" title="ibex_bluesky_core.devices.dae.dae_settings"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dae_settings</span></code></a></p></td>
+<td><p>ophyd-async devices and utilities for the general DAE settings.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="ibex_bluesky_core.devices.dae.dae_spectra.html#module-ibex_bluesky_core.devices.dae.dae_spectra" title="ibex_bluesky_core.devices.dae.dae_spectra"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dae_spectra</span></code></a></p></td>
+<td><p>ophyd-async devices and utilities for a single DAE spectra.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="ibex_bluesky_core.devices.dae.dae_tcb_settings.html#module-ibex_bluesky_core.devices.dae.dae_tcb_settings" title="ibex_bluesky_core.devices.dae.dae_tcb_settings"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dae_tcb_settings</span></code></a></p></td>
+<td><p>ophyd-async devices and utilities for the DAE time channel settings.</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Members</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ibex_bluesky_core.devices.dae.convert_xml_to_names_and_values" title="ibex_bluesky_core.devices.dae.convert_xml_to_names_and_values"><code class="xref py py-obj docutils literal notranslate"><span class="pre">convert_xml_to_names_and_values</span></code></a></p></td>
+<td><p>Convert an XML element's children to a dict containing &lt;Name&gt;.text:&lt;Val&gt;.text.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#ibex_bluesky_core.devices.dae.get_all_elements_in_xml_with_child_called_name" title="ibex_bluesky_core.devices.dae.get_all_elements_in_xml_with_child_called_name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_all_elements_in_xml_with_child_called_name</span></code></a></p></td>
+<td><p>Find all elements with a &quot;name&quot; element, but ignore the first one as it's the root.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ibex_bluesky_core.devices.dae.set_value_in_dae_xml" title="ibex_bluesky_core.devices.dae.set_value_in_dae_xml"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_value_in_dae_xml</span></code></a></p></td>
+<td><p>Find and set a value in the DAE XML, given a name and value.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py function">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.dae.convert_xml_to_names_and_values">
+<span class="sig-prename descclassname"><span class="pre">ibex_bluesky_core.devices.dae.</span></span><span class="sig-name descname"><span class="pre">convert_xml_to_names_and_values</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xml</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Element</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/ibex_bluesky_core/devices/dae.html#convert_xml_to_names_and_values"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibex_bluesky_core.devices.dae.convert_xml_to_names_and_values" title="Link to this definition"></a></dt>
+<dd><p>Convert an XML element’s children to a dict containing &lt;Name&gt;.text:&lt;Val&gt;.text.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.dae.get_all_elements_in_xml_with_child_called_name">
+<span class="sig-prename descclassname"><span class="pre">ibex_bluesky_core.devices.dae.</span></span><span class="sig-name descname"><span class="pre">get_all_elements_in_xml_with_child_called_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xml</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Element</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">Element</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/ibex_bluesky_core/devices/dae.html#get_all_elements_in_xml_with_child_called_name"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibex_bluesky_core.devices.dae.get_all_elements_in_xml_with_child_called_name" title="Link to this definition"></a></dt>
+<dd><p>Find all elements with a “name” element, but ignore the first one as it’s the root.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.dae.set_value_in_dae_xml">
+<span class="sig-prename descclassname"><span class="pre">ibex_bluesky_core.devices.dae.</span></span><span class="sig-name descname"><span class="pre">set_value_in_dae_xml</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">elements</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">Element</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Enum</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/ibex_bluesky_core/devices/dae.html#set_value_in_dae_xml"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibex_bluesky_core.devices.dae.set_value_in_dae_xml" title="Link to this definition"></a></dt>
+<dd><p>Find and set a value in the DAE XML, given a name and value.</p>
+<p>Do nothing (by design) if value is None to leave value unchanged.</p>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="ibex_bluesky_core.devices.block.html" class="btn btn-neutral float-left" title="ibex_bluesky_core.devices.block" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="ibex_bluesky_core.devices.dae.dae.html" class="btn btn-neutral float-right" title="ibex_bluesky_core.devices.dae.dae" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

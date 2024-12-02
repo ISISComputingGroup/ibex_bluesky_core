@@ -1,0 +1,44 @@
+
+
+``ibex_bluesky_core.callbacks.fitting.fitting_utils``
+=====================================================
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+
+.. automodule:: ibex_bluesky_core.callbacks.fitting.fitting_utils
+    :members:
+    :show-inheritance:
+
+    
+    
+    
+
+    
+    
+    .. rubric:: Members
+
+    .. autosummary::
+        :nosignatures:
+    
+        DampedOsc
+        ERF
+        ERFC
+        Fit
+        Gaussian
+        Linear
+        Lorentzian
+        Polynomial
+        SlitScan
+        TopHat
+        Trapezoid
+    
+    

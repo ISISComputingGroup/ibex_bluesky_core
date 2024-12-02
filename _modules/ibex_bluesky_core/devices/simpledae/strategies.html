@@ -1,0 +1,242 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ibex_bluesky_core.devices.simpledae.strategies &mdash; ibex_bluesky_core 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=e59714d7" />
+
+  
+    <link rel="shortcut icon" href="../../../../_static/favicon.png"/>
+      <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #343131" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            ibex_bluesky_core
+              <img src="../../../../_static/logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Tutorial</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../tutorial/overview.html">Getting started</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Devices</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../devices/blocks.html">Blocks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../devices/dae.html">DAE (Data Acquisition Electronics)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Callbacks</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../callbacks/docs_logging_callback.html">Document Logging Callback</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../callbacks/file_writing.html">File writing callbacks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../callbacks/plotting.html">Plotting</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Fitting</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../fitting/fitting.html">Fitting Callback</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../fitting/standard_fits.html">Standard Fitting Models</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Plan stubs</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../plan_stubs/external_code.html"><code class="docutils literal notranslate"><span class="pre">call_sync</span></code> (calling external code)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../plan_stubs/matplotlib_helpers.html"><code class="docutils literal notranslate"><span class="pre">call_qt_aware</span></code> (matplotlib helpers)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Preprocessors</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../preprocessors/rbnumberpp.html">RB Number injection preprocessor</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Developer information</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../dev/create_a_release.html">Release Process</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../dev/logging.html">Logging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../dev/manual_system_testing.html">Manual system testing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../dev/set_up_dev_environment.html">Local development</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../dev/sphinx_notes.html">Notes on Sphinx and addons</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Architectural decisions</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../architectural_decisions/001-repo-structure.html">Repository structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../architectural_decisions/002-use-ophyd-async.html">Use <code class="docutils literal notranslate"><span class="pre">ophyd-async</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../architectural_decisions/003-run-in-process.html">Run in-process</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../architectural_decisions/004-use-scipp.html">Use <code class="docutils literal notranslate"><span class="pre">scipp</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../architectural_decisions/005-variance-addition.html">Variance addition to counts data</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../_api.html">API</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #343131" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">ibex_bluesky_core</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">Module code</a></li>
+          <li class="breadcrumb-item"><a href="../../devices.html">ibex_bluesky_core.devices</a></li>
+          <li class="breadcrumb-item"><a href="../simpledae.html">ibex_bluesky_core.devices.simpledae</a></li>
+      <li class="breadcrumb-item active">ibex_bluesky_core.devices.simpledae.strategies</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for ibex_bluesky_core.devices.simpledae.strategies</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Base classes for DAE strategies.&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
+
+<span class="kn">from</span> <span class="nn">ophyd_async.core</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">Device</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">ibex_bluesky_core.devices.simpledae</span> <span class="kn">import</span> <span class="n">SimpleDae</span>
+
+
+<div class="viewcode-block" id="ProvidesExtraReadables">
+<a class="viewcode-back" href="../../../../generated/ibex_bluesky_core.devices.simpledae.strategies.html#ibex_bluesky_core.devices.simpledae.strategies.ProvidesExtraReadables">[docs]</a>
+<span class="k">class</span> <span class="nc">ProvidesExtraReadables</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Strategies may specify interesting DAE signals using this method.</span>
+
+<span class="sd">    Those signals will then be added to read() and describe() on the top-level SimpleDae object.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="ProvidesExtraReadables.additional_readable_signals">
+<a class="viewcode-back" href="../../../../generated/ibex_bluesky_core.devices.simpledae.strategies.html#ibex_bluesky_core.devices.simpledae.strategies.ProvidesExtraReadables.additional_readable_signals">[docs]</a>
+    <span class="k">def</span> <span class="nf">additional_readable_signals</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dae</span><span class="p">:</span> <span class="s2">&quot;SimpleDae&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Device</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Define signals that this strategy considers important.</span>
+
+<span class="sd">        These will be added to the dae&#39;s default-read signals and made available by read() on the</span>
+<span class="sd">        DAE object.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[]</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="Controller">
+<a class="viewcode-back" href="../../../../generated/ibex_bluesky_core.devices.simpledae.strategies.html#ibex_bluesky_core.devices.simpledae.strategies.Controller">[docs]</a>
+<span class="k">class</span> <span class="nc">Controller</span><span class="p">(</span><span class="n">ProvidesExtraReadables</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Controller specifies how DAE runs should be started &amp; stopped.&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Controller.start_counting">
+<a class="viewcode-back" href="../../../../generated/ibex_bluesky_core.devices.simpledae.strategies.html#ibex_bluesky_core.devices.simpledae.strategies.Controller.start_counting">[docs]</a>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">start_counting</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dae</span><span class="p">:</span> <span class="s2">&quot;SimpleDae&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Start counting for a single scan point.&quot;&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="Controller.stop_counting">
+<a class="viewcode-back" href="../../../../generated/ibex_bluesky_core.devices.simpledae.strategies.html#ibex_bluesky_core.devices.simpledae.strategies.Controller.stop_counting">[docs]</a>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">stop_counting</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dae</span><span class="p">:</span> <span class="s2">&quot;SimpleDae&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Stop counting for a single scan point.&quot;&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="Controller.setup">
+<a class="viewcode-back" href="../../../../generated/ibex_bluesky_core.devices.simpledae.strategies.html#ibex_bluesky_core.devices.simpledae.strategies.Controller.setup">[docs]</a>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dae</span><span class="p">:</span> <span class="s2">&quot;SimpleDae&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Pre-scan setup.&quot;&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="Controller.teardown">
+<a class="viewcode-back" href="../../../../generated/ibex_bluesky_core.devices.simpledae.strategies.html#ibex_bluesky_core.devices.simpledae.strategies.Controller.teardown">[docs]</a>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">teardown</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dae</span><span class="p">:</span> <span class="s2">&quot;SimpleDae&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Post-scan teardown.&quot;&quot;&quot;</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="Waiter">
+<a class="viewcode-back" href="../../../../generated/ibex_bluesky_core.devices.simpledae.strategies.html#ibex_bluesky_core.devices.simpledae.strategies.Waiter">[docs]</a>
+<span class="k">class</span> <span class="nc">Waiter</span><span class="p">(</span><span class="n">ProvidesExtraReadables</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Waiter specifies how the dae will wait for a scan point to complete counting.&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Waiter.wait">
+<a class="viewcode-back" href="../../../../generated/ibex_bluesky_core.devices.simpledae.strategies.html#ibex_bluesky_core.devices.simpledae.strategies.Waiter.wait">[docs]</a>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">wait</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dae</span><span class="p">:</span> <span class="s2">&quot;SimpleDae&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Wait for the acquisition to complete.&quot;&quot;&quot;</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="Reducer">
+<a class="viewcode-back" href="../../../../generated/ibex_bluesky_core.devices.simpledae.strategies.html#ibex_bluesky_core.devices.simpledae.strategies.Reducer">[docs]</a>
+<span class="k">class</span> <span class="nc">Reducer</span><span class="p">(</span><span class="n">ProvidesExtraReadables</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Reducer specifies any post-processing which needs to be done after a scan point completes.&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Reducer.reduce_data">
+<a class="viewcode-back" href="../../../../generated/ibex_bluesky_core.devices.simpledae.strategies.html#ibex_bluesky_core.devices.simpledae.strategies.Reducer.reduce_data">[docs]</a>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">reduce_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dae</span><span class="p">:</span> <span class="s2">&quot;SimpleDae&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Triggers a reduction of DAE data after a scan point has been measured.</span>
+
+<span class="sd">        Data that should be published by this reducer should be added as soft signals, in</span>
+<span class="sd">        a class which both implements this protocol and derives from StandardReadable.</span>
+<span class="sd">        &quot;&quot;&quot;</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
