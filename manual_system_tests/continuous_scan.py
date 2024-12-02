@@ -92,6 +92,7 @@ def continuous_scan_plan(dave: float) -> Generator[Msg, None, None]:
 
         @run_decorator(md={})
         def polling_plan():
+            yield from bps.clear_checkpoint()
             yield from bps.create()
             reading = yield from bps.read(bob)
             yield from bps.read(alice)
@@ -100,9 +101,6 @@ def continuous_scan_plan(dave: float) -> Generator[Msg, None, None]:
             # start the ramp
             status = yield from bps.abs_set(bob, dave, wait=False)
             while not status.done:
-                yield from bps.checkpoint()
-                yield from bps.clear_checkpoint()
-
                 yield from bps.create()
                 new_reading = yield from bps.read(bob)
                 yield from bps.read(alice)
@@ -115,13 +113,11 @@ def continuous_scan_plan(dave: float) -> Generator[Msg, None, None]:
 
             # take a 'post' data point
             yield from trigger_and_read([bob, alice])
+            yield from bps.checkpoint()
 
         return (yield from polling_plan())
 
-    def _stop_motor(e):
-        yield from bps.stop(bob)
-
-    yield from contingency_wrapper(_inner(), except_plan=_stop_motor)
+    yield from _inner()
 
 
 if __name__ == "__main__" and not os.environ.get("FROM_IBEX") == "True":
