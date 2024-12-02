@@ -9,15 +9,15 @@ extend-select = [
     "I",     # isort (for imports)
     "E501",  # Line too long ({width} > {limit})
     "E",     # Pycodestyle errors
-	"W",     # Pycodestyle warnings
+    "W",     # Pycodestyle warnings
     "F",     # Pyflakes
     "PL",    # Pylint
-	"B",     # Flake8-bugbear
-	"PIE",   # Flake8-pie
+    "B",     # Flake8-bugbear
+    "PIE",   # Flake8-pie
     "ANN",   # Annotations
-	"ASYNC", # Asyncio-specific checks
-	"NPY",   # Numpy-specific rules
-	"RUF",   # Ruff-specific checks, include some useful asyncio rules
+    "ASYNC", # Asyncio-specific checks
+    "NPY",   # Numpy-specific rules
+    "RUF",   # Ruff-specific checks, include some useful asyncio rules
     "FURB",  # Rules from refurb
     "ERA",   # Commented-out code
     "PT",    # Pytest-specific rules
@@ -30,8 +30,8 @@ extend-select = [
 ignore = [
     "D406",    # Section name should end with a newline ("{name}")
     "D407",    # Missing dashed underline after section ("{name}")
-	"D213",    # Incompatible with D212
-	"D203",    # Incompatible with D211
+    "D213",    # Incompatible with D212
+    "D203",    # Incompatible with D211
     "B901",    # This is a standard, expected, pattern in bluesky
     "PLR6301"  # Too noisy
 ]
