@@ -83,7 +83,7 @@ class PeriodPerPointController(Controller):
         await dae.controls.resume_run.trigger(wait=True, timeout=None)
         await wait_for_value(
             dae.run_state,
-            lambda v: v in [RunstateEnum.RUNNING, RunstateEnum.WAITING, RunstateEnum.VETOING],
+            lambda v: v in {RunstateEnum.RUNNING, RunstateEnum.WAITING, RunstateEnum.VETOING},
             timeout=10,
         )
 
@@ -130,7 +130,7 @@ class RunPerPointController(Controller, StandardReadable):
         await dae.controls.begin_run.trigger(wait=True, timeout=None)
         await wait_for_value(
             dae.run_state,
-            lambda v: v in [RunstateEnum.RUNNING, RunstateEnum.WAITING, RunstateEnum.VETOING],
+            lambda v: v in {RunstateEnum.RUNNING, RunstateEnum.WAITING, RunstateEnum.VETOING},
             timeout=10,
         )
 

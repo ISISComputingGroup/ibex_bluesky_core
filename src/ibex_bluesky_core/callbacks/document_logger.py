@@ -34,5 +34,5 @@ class DocLoggingCallback:
 
         to_write: dict[str, Any] = {"type": name, "document": document}
 
-        with open(self.filename, "a") as outfile:
+        with open(self.filename, "a", encoding="utf8") as outfile:
             outfile.write(f"{json.dumps(to_write)}\n")

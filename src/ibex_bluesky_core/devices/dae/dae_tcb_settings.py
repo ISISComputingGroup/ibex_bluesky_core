@@ -4,7 +4,6 @@ import logging
 import xml.etree.ElementTree as ET
 from dataclasses import dataclass
 from enum import Enum
-from typing import Dict
 from xml.etree.ElementTree import tostring
 
 from bluesky.protocols import Locatable, Location, Movable
@@ -66,14 +65,14 @@ class TimeRegimeRow:
 class TimeRegime:
     """Time regime - contains a dict(rows) which is row_number:TimeRegimeRow."""
 
-    rows: Dict[int, TimeRegimeRow]
+    rows: dict[int, TimeRegimeRow]
 
 
 @dataclass(kw_only=True)
 class DaeTCBSettingsData:
     """Dataclass for the DAE TCB settings."""
 
-    tcb_tables: Dict[int, TimeRegime] | None = None
+    tcb_tables: dict[int, TimeRegime] | None = None
     tcb_file: str | None = None
     time_unit: TimeUnit | None = None
     tcb_calculation_method: CalculationMethod | None = None
