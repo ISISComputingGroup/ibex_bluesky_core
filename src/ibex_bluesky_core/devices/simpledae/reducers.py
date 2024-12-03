@@ -3,8 +3,9 @@
 import asyncio
 import logging
 import math
-from abc import ABCMeta, abstractmethod
-from typing import TYPE_CHECKING, Collection, Sequence
+from abc import ABC, abstractmethod
+from collections.abc import Collection, Sequence
+from typing import TYPE_CHECKING
 
 import scipp as sc
 from ophyd_async.core import (
@@ -41,7 +42,7 @@ async def sum_spectra(spectra: Collection[DaeSpectra]) -> sc.Variable | sc.DataA
     return summed_counts
 
 
-class ScalarNormalizer(Reducer, StandardReadable, metaclass=ABCMeta):
+class ScalarNormalizer(Reducer, StandardReadable, ABC):
     """Sum a set of user-specified spectra, then normalize by a scalar signal."""
 
     def __init__(self, prefix: str, detector_spectra: Sequence[int]) -> None:

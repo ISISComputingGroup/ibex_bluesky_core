@@ -65,7 +65,7 @@ class HumanReadableFileCallback(CallbackBase):
         )
         header_data[START_TIME] = formatted_time
 
-        with open(self.filename, "a", newline="") as outfile:
+        with open(self.filename, "a", newline="", encoding="utf-8") as outfile:
             for key, value in header_data.items():
                 outfile.write(f"{key}: {value}\n")
 
@@ -102,7 +102,7 @@ class HumanReadableFileCallback(CallbackBase):
                 else value
             )
 
-        with open(self.filename, "a", newline="") as outfile:
+        with open(self.filename, "a", newline="", encoding="utf-8") as outfile:
             file_delimiter = ","
             if doc[SEQ_NUM] == 1:
                 # If this is the first event, write out the units before writing event data.
