@@ -17,6 +17,8 @@ from ibex_bluesky_core.callbacks.fitting import FitMethod
 class Fit(ABC):
     """Base class for all fits."""
 
+    equation: str = ""
+
     @classmethod
     @abstractmethod
     def model(cls, *args: int) -> lmfit.Model:
@@ -56,6 +58,8 @@ class Fit(ABC):
 class Gaussian(Fit):
     """Gaussian Fitting."""
 
+    equation = "amp * exp(-((x - x0) ** 2) / (2 * sigma**2)) + background"
+
     @classmethod
     def model(cls, *args: int) -> lmfit.Model:
         """Gaussian Model."""
@@ -68,7 +72,7 @@ class Gaussian(Fit):
 
             return amp * np.exp(-((x - x0) ** 2) / (2 * sigma**2)) + background
 
-        return lmfit.Model(model)
+        return lmfit.Model(model, name=f"{cls.__name__}  [{cls.equation}]")
 
     @classmethod
     def guess(
@@ -103,6 +107,8 @@ class Gaussian(Fit):
 class Lorentzian(Fit):
     """Lorentzian Fitting."""
 
+    equation = "amp / (1 + ((x - center) / sigma) ** 2) + background"
+
     @classmethod
     def model(cls, *args: int) -> lmfit.Model:
         """Lorentzian Model."""
@@ -115,7 +121,7 @@ class Lorentzian(Fit):
 
             return amp / (1 + ((x - center) / sigma) ** 2) + background
 
-        return lmfit.Model(model)
+        return lmfit.Model(model, name=f"{cls.__name__}  [{cls.equation}]")
 
     @classmethod
     def guess(
@@ -173,6 +179,8 @@ class Lorentzian(Fit):
 class Linear(Fit):
     """Linear Fitting."""
 
+    equation = "c1 * x + c0"
+
     @classmethod
     def model(cls, *args: int) -> lmfit.Model:
         """Linear Model."""
@@ -180,7 +188,7 @@ class Linear(Fit):
         def model(x: npt.NDArray[np.float64], c1: float, c0: float) -> npt.NDArray[np.float64]:
             return c1 * x + c0
 
-        return lmfit.Model(model)
+        return lmfit.Model(model, name=f"{cls.__name__}  [{cls.equation}]")
 
     @classmethod
     def guess(
@@ -192,6 +200,8 @@ class Linear(Fit):
 
 class Polynomial(Fit):
     """Polynomial Fitting."""
+
+    equation = "cn * x^n + ... + c1 * x^1 + c0"
 
     @classmethod
     def _check_degree(cls, args: tuple[int, ...]) -> int:
@@ -233,6 +243,8 @@ class Polynomial(Fit):
 class DampedOsc(Fit):
     """Damped Oscillator Fitting."""
 
+    equation = "amp * cos((x - center) * freq) * exp(-(((x - center) / width) ** 2))"
+
     @classmethod
     def model(cls, *args: int) -> lmfit.Model:
         """Damped Oscillator Model."""
@@ -242,7 +254,7 @@ class DampedOsc(Fit):
         ) -> npt.NDArray[np.float64]:
             return amp * np.cos((x - center) * freq) * np.exp(-(((x - center) / width) ** 2))
 
-        return lmfit.Model(model)
+        return lmfit.Model(model, name=f"{cls.__name__}  [{cls.equation}]")
 
     @classmethod
     def guess(
@@ -270,6 +282,10 @@ class DampedOsc(Fit):
 
 class SlitScan(Fit):
     """Slit Scan Fitting."""
+
+    equation = """See
+    https://isiscomputinggroup.github.io/ibex_bluesky_core/fitting/standard_fits.html#slit-scan-slitscan
+    for model function"""
 
     @classmethod
     def model(cls, *args: int) -> lmfit.Model:
@@ -306,7 +322,7 @@ class SlitScan(Fit):
 
             return y
 
-        return lmfit.Model(model)
+        return lmfit.Model(model, name=f"{cls.__name__}  [{cls.equation}]")
 
     @classmethod
     def guess(
@@ -343,6 +359,8 @@ class SlitScan(Fit):
 class ERF(Fit):
     """Error Function Fitting."""
 
+    equation = "background + scale * erf(stretch * (x - cen))"
+
     @classmethod
     def model(cls, *args: int) -> lmfit.Model:
         """Error Function Model."""
@@ -352,7 +370,7 @@ class ERF(Fit):
         ) -> npt.NDArray[np.float64]:
             return background + scale * scipy.special.erf(stretch * (x - cen))
 
-        return lmfit.Model(model)
+        return lmfit.Model(model, name=f"{cls.__name__}  [{cls.equation}]")
 
     @classmethod
     def guess(
@@ -378,6 +396,8 @@ class ERF(Fit):
 class ERFC(Fit):
     """Complementary Error Function Fitting."""
 
+    equation = "background + scale * erfc(stretch * (x - cen))"
+
     @classmethod
     def model(cls, *args: int) -> lmfit.Model:
         """Complementary Error Function Model."""
@@ -387,7 +407,7 @@ class ERFC(Fit):
         ) -> npt.NDArray[np.float64]:
             return background + scale * scipy.special.erfc(stretch * (x - cen))
 
-        return lmfit.Model(model)
+        return lmfit.Model(model, name=f"{cls.__name__}  [{cls.equation}]")
 
     @classmethod
     def guess(
@@ -413,6 +433,8 @@ class ERFC(Fit):
 class TopHat(Fit):
     """Top Hat Fitting."""
 
+    equation = "if (abs(x - cen) < width / 2) { background + height } else { background }"
+
     @classmethod
     def model(cls, *args: int) -> lmfit.Model:
         """Top Hat Model."""
@@ -424,7 +446,7 @@ class TopHat(Fit):
             y[np.abs(x - cen) < width / 2] = height
             return background + y
 
-        return lmfit.Model(model)
+        return lmfit.Model(model, name=f"{cls.__name__}  [{cls.equation}]")
 
     @classmethod
     def guess(
@@ -458,6 +480,10 @@ class TopHat(Fit):
 class Trapezoid(Fit):
     """Trapezoid Fitting."""
 
+    equation = """
+    y = clip(y_offset + height + background - gradient * abs(x - cen),
+     background, background + height)"""
+
     @classmethod
     def model(cls, *args: int) -> lmfit.Model:
         """Trapezoid Model."""
@@ -475,7 +501,7 @@ class Trapezoid(Fit):
             y = np.minimum(y, background + height)
             return y
 
-        return lmfit.Model(model)
+        return lmfit.Model(model, name=f"{cls.__name__}  [{cls.equation}]")
 
     @classmethod
     def guess(

@@ -16,6 +16,7 @@ from ophyd_async.plan_stubs import ensure_connected
 from ibex_bluesky_core.callbacks.file_logger import HumanReadableFileCallback
 from ibex_bluesky_core.callbacks.fitting import LiveFit
 from ibex_bluesky_core.callbacks.fitting.fitting_utils import Linear
+from ibex_bluesky_core.callbacks.fitting.livefit_logger import LiveFitLogger
 from ibex_bluesky_core.callbacks.plotting import LivePlot
 from ibex_bluesky_core.devices import get_pv_prefix
 from ibex_bluesky_core.devices.block import block_rw_rbv
@@ -112,12 +113,21 @@ def dae_scan_plan() -> Generator[Msg, None, None]:
                     dae.good_frames.name,
                 ]
             ),
+            LiveFitLogger(
+                lf,
+                y=reducer.intensity.name,
+                x=block.name,
+                output_dir=Path("C:\\Instrument\\Var\\logs\\bluesky\\fitting"),
+                yerr=reducer.intensity_stddev.name,
+                postfix="manual_test",
+            ),
         ]
     )
     def _inner() -> Generator[Msg, None, None]:
         yield from bps.mv(dae.number_of_periods, NUM_POINTS)  # type: ignore
         # Pyright does not understand as bluesky isn't typed yet
         yield from bp.scan([dae], block, 0, 10, num=NUM_POINTS)
+        print(lf.result.fit_report())
 
     yield from _inner()
 
