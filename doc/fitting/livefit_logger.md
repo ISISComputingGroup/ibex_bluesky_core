@@ -1,7 +1,7 @@
 # Fitting Files Callback
 ## Fitting Files
 
-The callback ({py:obj}`ibex_bluesky_core.fitting.livefit_logger.LiveFitLogger`) exists to write all fitting metrics from `LiveFit` to file. These are designed to be human readable files rather than machine readable.
+The callback ({py:obj}`ibex_bluesky_core.callbacks.fitting.livefit_logger.LiveFitLogger`) exists to write all fitting metrics from `LiveFit` to file. These are designed to be human readable files rather than machine readable.
 
 This callback provides you with useful metrics such as `R-squared` and `chi-square`, then providing you with a table of the raw collected data included modelled `y` data and `y` uncertainty. 
 
