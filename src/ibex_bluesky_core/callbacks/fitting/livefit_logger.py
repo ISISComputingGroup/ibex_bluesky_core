@@ -76,14 +76,18 @@ class LiveFitLogger(CallbackBase):
         """
         event_data = doc[DATA]
 
-        assert self.x in event_data, f"{self.x} is not in event document."
-        assert self.y in event_data, f"{self.y} is not in event document."
+        if self.x not in event_data:
+            raise OSError(f"{self.x} is not in event document.")
+
+        if self.y not in event_data:
+            raise OSError(f"{self.y} is not in event document.")
 
         self.x_data.append(event_data[self.x])
         self.y_data.append(event_data[self.y])
 
         if self.yerr is not None:
-            assert self.yerr in event_data, f"{self.yerr} is not in event document."
+            if self.yerr not in event_data:
+                raise OSError(f"{self.yerr} is not in event document.")
             self.yerr_data.append(event_data[self.yerr])
 
         return super().event(doc)
@@ -104,10 +108,11 @@ class LiveFitLogger(CallbackBase):
         kwargs.update(self.livefit.result.values)
         self.y_fit_data = self.livefit.result.model.eval(**kwargs)
 
-        self.stats = str(self.livefit.result.fit_report()).split("\n")
+        self.stats = str(self.livefit.result.fit_report())
+        self.stats = self.stats.replace('"', "").split("\n")
 
         # Writing to csv file
-        with open(self.filename, "w", newline="") as csvfile:
+        with open(self.filename, "w", newline="", encoding="utf-8") as csvfile:
             # Writing the data
             self.csvwriter = csv.writer(csvfile)
 
@@ -122,7 +127,8 @@ class LiveFitLogger(CallbackBase):
             else:
                 self.write_fields_table_uncertainty()
 
-            logger.info(f"Fitting information successfully written to {self.filename}")
+            logging.basicConfig(format="%(message)s", level=logging.INFO)
+            logger.info("Fitting information successfully written to: %s", self.filename.name)
 
     def write_fields_table(self) -> None:
         """Write collected run info to the fitting file."""

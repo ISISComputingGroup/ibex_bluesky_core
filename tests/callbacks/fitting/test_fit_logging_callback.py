@@ -2,6 +2,7 @@
 from pathlib import Path
 from unittest.mock import MagicMock, mock_open, patch
 
+import pytest
 from bluesky.plans import scan
 from ophyd_async.core import soft_signal_rw
 
@@ -30,11 +31,9 @@ def test_after_fitting_callback_writes_to_file_successfully_no_y_uncertainity(
     assert m.call_args_list[0].args == (filepath / f"{result.run_start_uids[0]}{postfix}.csv", "w")  # type: ignore
 
     handle = m()
-    rows = []
+    rows = [i.args[0] for i in handle.write.call_args_list]
 
     # Check that it starts writing to the file in the expected way
-    for i in handle.write.call_args_list:
-        rows.append(i.args[0])
 
     assert f"    Model({Linear.__name__}  [{Linear.equation}])\r\n" in rows
     assert "x,y,modelled y\r\n" in rows
@@ -62,11 +61,9 @@ def test_after_fitting_callback_writes_to_file_successfully_with_y_uncertainity(
     assert m.call_args_list[0].args == (filepath / f"{result.run_start_uids[0]}{postfix}.csv", "w")  # type: ignore
 
     handle = m()
-    rows = []
+    rows = [i.args[0] for i in handle.write.call_args_list]
 
     # Check that it starts writing to the file in the expected way
-    for i in handle.write.call_args_list:
-        rows.append(i.args[0])
 
     assert f"    Model({Linear.__name__}  [{Linear.equation}])\r\n" in rows
     assert "x,y,y uncertainty,modelled y\r\n" in rows
@@ -91,3 +88,57 @@ def test_file_not_written_if_no_fitting_result(RE: run_engine.RunEngine):
         RE(scan([invariant], mot, -1, 1, 3), [lf, lfl])
 
     assert not m.called
+
+
+def test_error_thrown_if_no_x_data_in_event(RE: run_engine.RunEngine):
+    filepath = Path("C:\\") / "instrument" / "var" / "logs"
+    postfix = "fit1"
+
+    lf = LiveFit(Linear.fit(), y="invariant", x="motor", update_every=50)
+    lfl = LiveFitLogger(lf, y="invariant", x="motor", output_dir=filepath, postfix=postfix)
+
+    with pytest.raises(IOError, match="motor is not in event document."):
+        lfl.event(
+            {
+                "data": {  # type: ignore
+                    "invariant": 2,
+                }
+            }
+        )
+
+
+def test_error_thrown_if_no_y_data_in_event(RE: run_engine.RunEngine):
+    filepath = Path("C:\\") / "instrument" / "var" / "logs"
+    postfix = "fit1"
+
+    lf = LiveFit(Linear.fit(), y="invariant", x="motor", update_every=50)
+    lfl = LiveFitLogger(lf, y="invariant", x="motor", output_dir=filepath, postfix=postfix)
+
+    with pytest.raises(IOError, match="invariant is not in event document."):
+        lfl.event(
+            {
+                "data": {  # type: ignore
+                    "motor": 2,
+                }
+            }
+        )
+
+
+def test_error_thrown_if_no_y_err_data_in_event(RE: run_engine.RunEngine):
+    filepath = Path("C:\\") / "instrument" / "var" / "logs"
+    postfix = "fit1"
+
+    lf = LiveFit(Linear.fit(), y="invariant", x="motor", update_every=50)
+    lfl = LiveFitLogger(
+        lf, y="invariant", x="motor", output_dir=filepath, postfix=postfix, yerr="yerr"
+    )
+
+    with pytest.raises(IOError, match="yerr is not in event document."):
+        lfl.event(
+            {
+                "data": {  # type: ignore
+                    "motor": 2,
+                    "invariant": 2,
+                }
+            }
+        )
