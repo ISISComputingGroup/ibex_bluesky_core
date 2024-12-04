@@ -2,6 +2,7 @@
 
 import csv
 import logging
+import os
 from pathlib import Path
 from typing import Optional
 
@@ -108,8 +109,7 @@ class LiveFitLogger(CallbackBase):
         kwargs.update(self.livefit.result.values)
         self.y_fit_data = self.livefit.result.model.eval(**kwargs)
 
-        self.stats = str(self.livefit.result.fit_report())
-        self.stats = self.stats.replace('"', "").split("\n")
+        self.stats = self.livefit.result.fit_report().split("\n")
 
         # Writing to csv file
         with open(self.filename, "w", newline="", encoding="utf-8") as csvfile:
@@ -117,18 +117,17 @@ class LiveFitLogger(CallbackBase):
             self.csvwriter = csv.writer(csvfile)
 
             for row in self.stats:
-                self.csvwriter.writerow([row])
+                csvfile.write(row + os.linesep)
 
-            self.csvwriter.writerow([])  # Space out file
-            self.csvwriter.writerow([])
+            csvfile.write(os.linesep)  # Space out file
+            csvfile.write(os.linesep)
 
             if self.yerr is None:
                 self.write_fields_table()
             else:
                 self.write_fields_table_uncertainty()
 
-            logging.basicConfig(format="%(message)s", level=logging.INFO)
-            logger.info("Fitting information successfully written to: %s", self.filename.name)
+            logger.info("Fitting information successfully written to: %s", self.filename.resolve())
 
     def write_fields_table(self) -> None:
         """Write collected run info to the fitting file."""
