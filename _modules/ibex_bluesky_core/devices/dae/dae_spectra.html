@@ -1,0 +1,299 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ibex_bluesky_core.devices.dae.dae_spectra &mdash; ibex_bluesky_core 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=e59714d7" />
+
+  
+    <link rel="shortcut icon" href="../../../../_static/favicon.png"/>
+      <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #343131" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            ibex_bluesky_core
+              <img src="../../../../_static/logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Tutorial</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../tutorial/overview.html">Getting started</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Devices</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../devices/blocks.html">Blocks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../devices/dae.html">DAE (Data Acquisition Electronics)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Callbacks</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../callbacks/docs_logging_callback.html">Document Logging Callback</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../callbacks/file_writing.html">File writing callbacks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../callbacks/plotting.html">Plotting</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Fitting</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../fitting/fitting.html">Fitting Callback</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../fitting/livefit_logger.html">Fitting Files Callback</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../fitting/standard_fits.html">Standard Fitting Models</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Plan stubs</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../plan_stubs/external_code.html"><code class="docutils literal notranslate"><span class="pre">call_sync</span></code> (calling external code)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../plan_stubs/matplotlib_helpers.html"><code class="docutils literal notranslate"><span class="pre">call_qt_aware</span></code> (matplotlib helpers)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Preprocessors</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../preprocessors/rbnumberpp.html">RB Number injection preprocessor</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Developer information</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../dev/create_a_release.html">Release Process</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../dev/logging.html">Logging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../dev/manual_system_testing.html">Manual system testing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../dev/set_up_dev_environment.html">Local development</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../dev/sphinx_notes.html">Notes on Sphinx and addons</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Architectural decisions</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../architectural_decisions/001-repo-structure.html">Repository structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../architectural_decisions/002-use-ophyd-async.html">Use <code class="docutils literal notranslate"><span class="pre">ophyd-async</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../architectural_decisions/003-run-in-process.html">Run in-process</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../architectural_decisions/004-use-scipp.html">Use <code class="docutils literal notranslate"><span class="pre">scipp</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../architectural_decisions/005-variance-addition.html">Variance addition to counts data</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../_api.html">API</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #343131" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">ibex_bluesky_core</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">Module code</a></li>
+          <li class="breadcrumb-item"><a href="../../devices.html">ibex_bluesky_core.devices</a></li>
+          <li class="breadcrumb-item"><a href="../dae.html">ibex_bluesky_core.devices.dae</a></li>
+      <li class="breadcrumb-item active">ibex_bluesky_core.devices.dae.dae_spectra</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for ibex_bluesky_core.devices.dae.dae_spectra</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;ophyd-async devices and utilities for a single DAE spectra.&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">asyncio</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="kn">import</span> <span class="nn">scipp</span> <span class="k">as</span> <span class="nn">sc</span>
+<span class="kn">from</span> <span class="nn">event_model.documents.event_descriptor</span> <span class="kn">import</span> <span class="n">DataKey</span>
+<span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">float32</span>
+<span class="kn">from</span> <span class="nn">numpy.typing</span> <span class="kn">import</span> <span class="n">NDArray</span>
+<span class="kn">from</span> <span class="nn">ophyd_async.core</span> <span class="kn">import</span> <span class="n">Array1D</span><span class="p">,</span> <span class="n">SignalR</span><span class="p">,</span> <span class="n">StandardReadable</span>
+<span class="kn">from</span> <span class="nn">ophyd_async.epics.core</span> <span class="kn">import</span> <span class="n">epics_signal_r</span>
+
+<span class="n">VARIANCE_ADDITION</span> <span class="o">=</span> <span class="mf">0.5</span>
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="DaeSpectra">
+<a class="viewcode-back" href="../../../../generated/ibex_bluesky_core.devices.dae.dae_spectra.html#ibex_bluesky_core.devices.dae.dae_spectra.DaeSpectra">[docs]</a>
+<span class="k">class</span> <span class="nc">DaeSpectra</span><span class="p">(</span><span class="n">StandardReadable</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Subdevice for a single DAE spectra.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dae_prefix</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">spectra</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">period</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set up signals for a single DAE spectra.&quot;&quot;&quot;</span>
+        <span class="c1"># x-axis; time-of-flight.</span>
+        <span class="c1"># These are bin-centre coordinates.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tof</span><span class="p">:</span> <span class="n">SignalR</span><span class="p">[</span><span class="n">Array1D</span><span class="p">[</span><span class="n">float32</span><span class="p">]]</span> <span class="o">=</span> <span class="n">epics_signal_r</span><span class="p">(</span>
+            <span class="n">Array1D</span><span class="p">[</span><span class="n">float32</span><span class="p">],</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">dae_prefix</span><span class="si">}</span><span class="s2">SPEC:</span><span class="si">{</span><span class="n">period</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">spectra</span><span class="si">}</span><span class="s2">:X&quot;</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tof_size</span><span class="p">:</span> <span class="n">SignalR</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">epics_signal_r</span><span class="p">(</span>
+            <span class="nb">int</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">dae_prefix</span><span class="si">}</span><span class="s2">SPEC:</span><span class="si">{</span><span class="n">period</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">spectra</span><span class="si">}</span><span class="s2">:X.NORD&quot;</span>
+        <span class="p">)</span>
+
+        <span class="c1"># x-axis; time-of-flight.</span>
+        <span class="c1"># These are bin-edge coordinates, with a size one more than the corresponding data.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tof_edges</span><span class="p">:</span> <span class="n">SignalR</span><span class="p">[</span><span class="n">Array1D</span><span class="p">[</span><span class="n">float32</span><span class="p">]]</span> <span class="o">=</span> <span class="n">epics_signal_r</span><span class="p">(</span>
+            <span class="n">Array1D</span><span class="p">[</span><span class="n">float32</span><span class="p">],</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">dae_prefix</span><span class="si">}</span><span class="s2">SPEC:</span><span class="si">{</span><span class="n">period</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">spectra</span><span class="si">}</span><span class="s2">:XE&quot;</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tof_edges_size</span><span class="p">:</span> <span class="n">SignalR</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">epics_signal_r</span><span class="p">(</span>
+            <span class="nb">int</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">dae_prefix</span><span class="si">}</span><span class="s2">SPEC:</span><span class="si">{</span><span class="n">period</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">spectra</span><span class="si">}</span><span class="s2">:XE.NORD&quot;</span>
+        <span class="p">)</span>
+
+        <span class="c1"># y-axis; counts / tof</span>
+        <span class="c1"># This is the number of counts in a ToF bin, normalized by the width of</span>
+        <span class="c1"># that ToF bin.</span>
+        <span class="c1"># - Unsuitable for summing counts directly.</span>
+        <span class="c1"># - Will give a continuous plot for non-uniform bin sizes.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">counts_per_time</span><span class="p">:</span> <span class="n">SignalR</span><span class="p">[</span><span class="n">Array1D</span><span class="p">[</span><span class="n">float32</span><span class="p">]]</span> <span class="o">=</span> <span class="n">epics_signal_r</span><span class="p">(</span>
+            <span class="n">Array1D</span><span class="p">[</span><span class="n">float32</span><span class="p">],</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">dae_prefix</span><span class="si">}</span><span class="s2">SPEC:</span><span class="si">{</span><span class="n">period</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">spectra</span><span class="si">}</span><span class="s2">:Y&quot;</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">counts_per_time_size</span><span class="p">:</span> <span class="n">SignalR</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">epics_signal_r</span><span class="p">(</span>
+            <span class="nb">int</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">dae_prefix</span><span class="si">}</span><span class="s2">SPEC:</span><span class="si">{</span><span class="n">period</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">spectra</span><span class="si">}</span><span class="s2">:Y.NORD&quot;</span>
+        <span class="p">)</span>
+
+        <span class="c1"># y-axis; counts</span>
+        <span class="c1"># This is unnormalized number of counts per ToF bin.</span>
+        <span class="c1"># - Suitable for summing counts</span>
+        <span class="c1"># - This will give a discontinuous plot for non-uniform bin sizes.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">counts</span><span class="p">:</span> <span class="n">SignalR</span><span class="p">[</span><span class="n">Array1D</span><span class="p">[</span><span class="n">float32</span><span class="p">]]</span> <span class="o">=</span> <span class="n">epics_signal_r</span><span class="p">(</span>
+            <span class="n">Array1D</span><span class="p">[</span><span class="n">float32</span><span class="p">],</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">dae_prefix</span><span class="si">}</span><span class="s2">SPEC:</span><span class="si">{</span><span class="n">period</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">spectra</span><span class="si">}</span><span class="s2">:YC&quot;</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">counts_size</span><span class="p">:</span> <span class="n">SignalR</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">epics_signal_r</span><span class="p">(</span>
+            <span class="nb">int</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">dae_prefix</span><span class="si">}</span><span class="s2">SPEC:</span><span class="si">{</span><span class="n">period</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="n">spectra</span><span class="si">}</span><span class="s2">:YC.NORD&quot;</span>
+        <span class="p">)</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">_read_sized</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">array_signal</span><span class="p">:</span> <span class="n">SignalR</span><span class="p">[</span><span class="n">NDArray</span><span class="p">[</span><span class="n">float32</span><span class="p">]],</span> <span class="n">size_signal</span><span class="p">:</span> <span class="n">SignalR</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">float32</span><span class="p">]:</span>
+        <span class="n">array</span><span class="p">,</span> <span class="n">size</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="n">array_signal</span><span class="o">.</span><span class="n">get_value</span><span class="p">(),</span> <span class="n">size_signal</span><span class="o">.</span><span class="n">get_value</span><span class="p">())</span>
+        <span class="k">return</span> <span class="n">array</span><span class="p">[:</span><span class="n">size</span><span class="p">]</span>
+
+<div class="viewcode-block" id="DaeSpectra.read_tof">
+<a class="viewcode-back" href="../../../../generated/ibex_bluesky_core.devices.dae.dae_spectra.html#ibex_bluesky_core.devices.dae.dae_spectra.DaeSpectra.read_tof">[docs]</a>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">read_tof</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">float32</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Read a correctly-sized time-of-flight (x) array representing bin centres.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_sized</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tof</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tof_size</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DaeSpectra.read_tof_edges">
+<a class="viewcode-back" href="../../../../generated/ibex_bluesky_core.devices.dae.dae_spectra.html#ibex_bluesky_core.devices.dae.dae_spectra.DaeSpectra.read_tof_edges">[docs]</a>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">read_tof_edges</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">float32</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Read a correctly-sized time-of-flight (x) array representing bin edges.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_sized</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tof_edges</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tof_edges_size</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DaeSpectra.read_counts">
+<a class="viewcode-back" href="../../../../generated/ibex_bluesky_core.devices.dae.dae_spectra.html#ibex_bluesky_core.devices.dae.dae_spectra.DaeSpectra.read_counts">[docs]</a>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">read_counts</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">float32</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Read a correctly-sized array of counts.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_sized</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">counts</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">counts_size</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DaeSpectra.read_counts_per_time">
+<a class="viewcode-back" href="../../../../generated/ibex_bluesky_core.devices.dae.dae_spectra.html#ibex_bluesky_core.devices.dae.dae_spectra.DaeSpectra.read_counts_per_time">[docs]</a>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">read_counts_per_time</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NDArray</span><span class="p">[</span><span class="n">float32</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Read a correctly-sized array of counts divided by bin width.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_sized</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">counts_per_time</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">counts_per_time_size</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DaeSpectra.read_spectrum_dataarray">
+<a class="viewcode-back" href="../../../../generated/ibex_bluesky_core.devices.dae.dae_spectra.html#ibex_bluesky_core.devices.dae.dae_spectra.DaeSpectra.read_spectrum_dataarray">[docs]</a>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">read_spectrum_dataarray</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">sc</span><span class="o">.</span><span class="n">DataArray</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get a scipp DataArray containing the current data from this spectrum.</span>
+
+<span class="sd">        Variances are set to the counts - i.e. the standard deviation is sqrt(N), which is typical</span>
+<span class="sd">        for counts data.</span>
+
+<span class="sd">        Data is returned along dimension &quot;tof&quot;, which has bin-edge coordinates and units set from</span>
+<span class="sd">        the units of the underlying PVs.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+            <span class="s2">&quot;Reading spectrum dataarray backed by PVs edges=</span><span class="si">%s</span><span class="s2">, counts=</span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tof_edges</span><span class="o">.</span><span class="n">source</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">counts</span><span class="o">.</span><span class="n">source</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">tof_edges</span><span class="p">,</span> <span class="n">tof_edges_descriptor</span><span class="p">,</span> <span class="n">counts</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">read_tof_edges</span><span class="p">(),</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tof_edges</span><span class="o">.</span><span class="n">describe</span><span class="p">(),</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">read_counts</span><span class="p">(),</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">tof_edges</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="n">counts</span><span class="o">.</span><span class="n">size</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;Time-of-flight edges must have size one more than the data. &quot;</span>
+                <span class="s2">&quot;You may be trying to read too many time channels. &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;Edges size was </span><span class="si">{</span><span class="n">tof_edges</span><span class="o">.</span><span class="n">size</span><span class="si">}</span><span class="s2">, counts size was </span><span class="si">{</span><span class="n">counts</span><span class="o">.</span><span class="n">size</span><span class="si">}</span><span class="s2">.&quot;</span>
+            <span class="p">)</span>
+
+        <span class="n">datakey</span><span class="p">:</span> <span class="n">DataKey</span> <span class="o">=</span> <span class="n">tof_edges_descriptor</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">tof_edges</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
+        <span class="n">unit</span> <span class="o">=</span> <span class="n">datakey</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;units&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">unit</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Could not determine engineering units of tof edges.&quot;</span><span class="p">)</span>
+
+        <span class="c1"># See doc\architectural_decisions\005-variance-addition.md</span>
+        <span class="c1"># for justfication of the VARIANCE_ADDITION to variances</span>
+
+        <span class="k">return</span> <span class="n">sc</span><span class="o">.</span><span class="n">DataArray</span><span class="p">(</span>
+            <span class="n">data</span><span class="o">=</span><span class="n">sc</span><span class="o">.</span><span class="n">Variable</span><span class="p">(</span>
+                <span class="n">dims</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;tof&quot;</span><span class="p">],</span>
+                <span class="n">values</span><span class="o">=</span><span class="n">counts</span><span class="p">,</span>
+                <span class="n">variances</span><span class="o">=</span><span class="n">counts</span> <span class="o">+</span> <span class="n">VARIANCE_ADDITION</span><span class="p">,</span>
+                <span class="n">unit</span><span class="o">=</span><span class="n">sc</span><span class="o">.</span><span class="n">units</span><span class="o">.</span><span class="n">counts</span><span class="p">,</span>
+            <span class="p">),</span>
+            <span class="n">coords</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;tof&quot;</span><span class="p">:</span> <span class="n">sc</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">dims</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;tof&quot;</span><span class="p">],</span> <span class="n">values</span><span class="o">=</span><span class="n">tof_edges</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">sc</span><span class="o">.</span><span class="n">Unit</span><span class="p">(</span><span class="n">unit</span><span class="p">))},</span>
+        <span class="p">)</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

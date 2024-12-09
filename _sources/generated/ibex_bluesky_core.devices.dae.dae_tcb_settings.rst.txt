@@ -1,0 +1,36 @@
+
+
+``ibex_bluesky_core.devices.dae.dae_tcb_settings``
+==================================================
+        
+        
+        
+        
+        
+        
+        
+
+.. automodule:: ibex_bluesky_core.devices.dae.dae_tcb_settings
+    :members:
+    :show-inheritance:
+
+    
+    
+    
+
+    
+    
+    .. rubric:: Members
+
+    .. autosummary::
+        :nosignatures:
+    
+        CalculationMethod
+        DaeTCBSettings
+        DaeTCBSettingsData
+        TimeRegime
+        TimeRegimeMode
+        TimeRegimeRow
+        TimeUnit
+    
+    
