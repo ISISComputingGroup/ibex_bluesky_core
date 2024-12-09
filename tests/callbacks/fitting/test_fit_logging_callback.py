@@ -1,4 +1,5 @@
 # pyright: reportMissingParameterType=false
+import os
 from pathlib import Path
 from unittest.mock import MagicMock, mock_open, patch
 
@@ -35,7 +36,7 @@ def test_after_fitting_callback_writes_to_file_successfully_no_y_uncertainity(
 
     # Check that it starts writing to the file in the expected way
 
-    assert f"    Model({Linear.__name__}  [{Linear.equation}])\r\n" in rows
+    assert f"    Model({Linear.__name__}  [{Linear.equation}])" + os.linesep in rows
     assert "x,y,modelled y\r\n" in rows
 
 
@@ -65,7 +66,7 @@ def test_after_fitting_callback_writes_to_file_successfully_with_y_uncertainity(
 
     # Check that it starts writing to the file in the expected way
 
-    assert f"    Model({Linear.__name__}  [{Linear.equation}])\r\n" in rows
+    assert f"    Model({Linear.__name__}  [{Linear.equation}])" + os.linesep in rows
     assert "x,y,y uncertainty,modelled y\r\n" in rows
 
 
