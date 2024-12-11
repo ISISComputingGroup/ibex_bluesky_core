@@ -17,8 +17,8 @@ from ibex_bluesky_core.preprocessors import add_rb_number_processor
 __all__ = ["get_run_engine"]
 
 
-from ibex_bluesky_core.plan_stubs import CALL_SYNC_MSG_KEY
-from ibex_bluesky_core.run_engine._msg_handlers import call_sync_handler
+from ibex_bluesky_core.plan_stubs import CALL_QT_AWARE_MSG_KEY, CALL_SYNC_MSG_KEY
+from ibex_bluesky_core.run_engine._msg_handlers import call_qt_aware_handler, call_sync_handler
 
 logger = logging.getLogger(__name__)
 
@@ -98,6 +98,7 @@ def get_run_engine() -> RunEngine:
     RE.subscribe(log_callback)
 
     RE.register_command(CALL_SYNC_MSG_KEY, call_sync_handler)
+    RE.register_command(CALL_QT_AWARE_MSG_KEY, call_qt_aware_handler)
 
     RE.preprocessors.append(functools.partial(bpp.plan_mutator, msg_proc=add_rb_number_processor))
 

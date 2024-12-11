@@ -47,9 +47,16 @@ napoleon_numpy_docstring = False
 templates_path = ["_templates"]
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 
-
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
+
+html_context = {
+    "display_github": True,  # Integrate GitHub
+    "github_user": "ISISComputingGroup",  # Username
+    "github_repo": "ibex_bluesky_core",  # Repo name
+    "github_version": "main",  # Version
+    "conf_py_path": "/doc/",  # Path in the checkout to the docs root
+}
 
 html_theme = "sphinx_rtd_theme"
 html_logo = "logo.png"

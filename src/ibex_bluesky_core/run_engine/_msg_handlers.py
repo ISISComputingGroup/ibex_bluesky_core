@@ -9,7 +9,9 @@ import threading
 from asyncio import CancelledError, Event, get_running_loop
 from typing import Any
 
+from bluesky.callbacks.mpl_plotting import QtAwareCallback
 from bluesky.utils import Msg
+from event_model import RunStart
 
 logger = logging.getLogger(__name__)
 
@@ -28,7 +30,7 @@ async def call_sync_handler(msg: Msg) -> Any:  # noqa: ANN401
 
     def _wrapper() -> Any:  # noqa: ANN401
         nonlocal ret, exc
-        logger.info("Running '{func.__name__}' with args=({msg.args}), kwargs=({msg.kwargs})")
+        logger.info("Running '%s' with args=(%s), kwargs=(%s)", func.__name__, msg.args, msg.kwargs)
         try:
             ret = func(*msg.args, **msg.kwargs)
             logger.debug("Running '%s' successful", func.__name__)
@@ -94,3 +96,50 @@ async def call_sync_handler(msg: Msg) -> Any:  # noqa: ANN401
         logger.debug("Re-raising %s thrown by %s", exc.__class__.__name__, func.__name__)
         raise exc
     return ret
+
+
+async def call_qt_aware_handler(msg: Msg) -> Any:  # noqa: ANN401
+    """Handle ibex_bluesky_core.plan_stubs.call_sync."""
+    func = msg.obj
+    done_event = Event()
+    result: Any = None
+    exc: BaseException | None = None
+    loop = get_running_loop()
+
+    # Slightly hacky, this isn't really a callback per-se but we want to benefit from
+    # bluesky's Qt-matplotlib infrastructure.
+    # This never gets attached to the RunEngine.
+    class _Cb(QtAwareCallback):
+        def start(self, doc: RunStart) -> None:
+            nonlocal result, exc
+            try:
+                logger.info(
+                    "Running '%s' with args=(%s), kwargs=(%s) (Qt)",
+                    func.__name__,
+                    msg.args,
+                    msg.kwargs,
+                )
+                result = func(*msg.args, **msg.kwargs)
+                logger.debug("Running '%s' (Qt) successful", func.__name__)
+            except BaseException as e:
+                logger.error(
+                    "Running '%s' failed with %s: %s", func.__name__, e.__class__.__name__, e
+                )
+                exc = e
+            finally:
+                loop.call_soon_threadsafe(done_event.set)
+
+    cb = _Cb()
+    # Send fake event to our callback to trigger it (actual contents unimportant)
+    # If not using Qt, this will run synchronously i.e. block until complete
+    # If using Qt, this will be sent off to the Qt teleporter which will execute it asynchronously,
+    # and we have to wait for the event to be set.
+    cb("start", {"time": 0, "uid": ""})
+
+    # Attempting to forcibly interrupt a function while it's doing UI operations/using
+    # Qt signals is highly likely to be a bad idea. Don't do that here. No special ctrl-c handling.
+    await done_event.wait()
+
+    if exc is not None:
+        raise exc
+    return result

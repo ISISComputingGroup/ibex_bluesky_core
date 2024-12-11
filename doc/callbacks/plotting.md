@@ -31,15 +31,23 @@ to plot a scan with a logarithmically-scaled y-axis:
 ```python
 import matplotlib.pyplot as plt
 from ibex_bluesky_core.callbacks.plotting import LivePlot
-# Create a new figure to plot onto.
-plt.figure()
-# Make a new set of axes on that figure
-ax = plt.gca()
-# Set the y-scale to logarithmic
-ax.set_yscale("log")
-# Use the above axes in a LivePlot callback
-plot_callback = LivePlot(y="y_variable", x="x_variable", ax=ax, yerr="yerr_variable")
-# yerr is the uncertanties of each y value, producing error bars
+from ibex_bluesky_core.plan_stubs import call_qt_aware
+
+def plan():
+    # Create a new figure to plot onto.
+    yield from call_qt_aware(plt.figure)
+    # Make a new set of axes on that figure
+    ax = yield from call_qt_aware(plt.gca)
+    # Set the y-scale to logarithmic
+    yield from call_qt_aware(ax.set_yscale, "log")
+    # Use the above axes in a LivePlot callback
+    plot_callback = LivePlot(y="y_variable", x="x_variable", ax=ax, yerr="yerr_variable")
+    # yerr is the uncertanties of each y value, producing error bars
+```
+
+```{note}
+See [docs for `call_qt_aware`](../plan_stubs/matplotlib_helpers.md) for a description of why we need to use 
+`yield from call_qt_aware` rather than calling `matplotlib` functions directly.
 ```
 
 By providing a signal name to the `yerr` argument you can pass uncertainties to LivePlot, by not providing anything for this argument means that no errorbars will be drawn. Errorbars are drawn after each point collected, displaying their standard deviation- uncertainty data is collected from Bluesky event documents and errorbars are updated after every new point added.

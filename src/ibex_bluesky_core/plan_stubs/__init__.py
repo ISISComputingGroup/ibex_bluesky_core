@@ -1,6 +1,7 @@
 """Core plan stubs."""
 
-from typing import Callable, Generator, ParamSpec, TypeVar, cast
+from collections.abc import Generator
+from typing import Callable, ParamSpec, TypeVar, cast
 
 import bluesky.plan_stubs as bps
 from bluesky.utils import Msg
@@ -10,6 +11,10 @@ T = TypeVar("T")
 
 
 CALL_SYNC_MSG_KEY = "ibex_bluesky_core_call_sync"
+CALL_QT_AWARE_MSG_KEY = "ibex_bluesky_core_call_qt_aware"
+
+
+__all__ = ["call_qt_aware", "call_sync"]
 
 
 def call_sync(func: Callable[P, T], *args: P.args, **kwargs: P.kwargs) -> Generator[Msg, None, T]:
@@ -35,9 +40,41 @@ def call_sync(func: Callable[P, T], *args: P.args, **kwargs: P.kwargs) -> Genera
 
     Args:
         func: A callable to run.
-        args: Arbitrary arguments to be passed to the wrapped function
-        kwargs: Arbitrary keyword arguments to be passed to the wrapped function
+        *args: Arbitrary arguments to be passed to the wrapped function
+        **kwargs: Arbitrary keyword arguments to be passed to the wrapped function
+
+    Returns:
+        The return value of the wrapped function
 
     """
     yield from bps.clear_checkpoint()
     return cast(T, (yield Msg(CALL_SYNC_MSG_KEY, func, *args, **kwargs)))
+
+
+def call_qt_aware(
+    func: Callable[P, T], *args: P.args, **kwargs: P.kwargs
+) -> Generator[Msg, None, T]:
+    """Call a matplotlib function in a Qt-aware context, from within a plan.
+
+    If matplotlib is using a Qt backend then UI operations are run on the Qt thread via Qt signals.
+
+    Only matplotlib functions may be run using this plan stub.
+
+    Args:
+        func: A matplotlib function reference.
+        *args: Arbitrary arguments, passed through to matplotlib.pyplot.subplots
+        **kwargs: Arbitrary keyword arguments, passed through to matplotlib.pyplot.subplots
+
+    Raises:
+        ValueError: if the passed function is not a matplotlib function.
+
+    Returns:
+        The return value of the wrapped function
+
+    """
+    # Limit potential for misuse - constrain to just running matplotlib functions.
+    if not getattr(func, "__module__", "").startswith("matplotlib"):
+        raise ValueError("Only matplotlib functions should be passed to call_qt_aware")
+
+    yield from bps.clear_checkpoint()
+    return cast(T, (yield Msg(CALL_QT_AWARE_MSG_KEY, func, *args, **kwargs)))

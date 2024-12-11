@@ -2,33 +2,49 @@ line-length = 100
 indent-width = 4
 
 [lint]
+preview = true
 extend-select = [
     "N",     # pep8-naming
-    "D",     # pydocstyle (can use this later but for now causes too many errors)
+    "D",     # pydocstyle
     "I",     # isort (for imports)
     "E501",  # Line too long ({width} > {limit})
-    "E",
-    "F",
-	"W",
-    "ANN",
-	"ASYNC", # Asyncio-specific checks
-	"B",
-	"NPY",   # Numpy-specific rules
-	"RUF",   # Ruff-specific checks, include some useful asyncio rules
+    "E",     # Pycodestyle errors
+    "W",     # Pycodestyle warnings
+    "F",     # Pyflakes
+    "PL",    # Pylint
+    "B",     # Flake8-bugbear
+    "PIE",   # Flake8-pie
+    "ANN",   # Annotations
+    "ASYNC", # Asyncio-specific checks
+    "NPY",   # Numpy-specific rules
+    "RUF",   # Ruff-specific checks, include some useful asyncio rules
+    "FURB",  # Rules from refurb
+    "ERA",   # Commented-out code
+    "PT",    # Pytest-specific rules
+    "LOG",   # Logging-specific rules
+    "G",     # Logging-specific rules
+    "UP",    # Pyupgrade
+    "SLF",   # Private-member usage
+    "PERF",  # Performance-related rules
 ]
 ignore = [
     "D406",    # Section name should end with a newline ("{name}")
     "D407",    # Missing dashed underline after section ("{name}")
-    "ANN101",  # ignore this until its removed in future versions
-    "ANN102",  # ignore this until its removed in future versions
-	"D213",    # Incompatible with D212
-	"D203",    # Incompatible with D211
+    "D213",    # Incompatible with D212
+    "D203",    # Incompatible with D211
+    "B901",    # This is a standard, expected, pattern in bluesky
+    "PLR6301"  # Too noisy
 ]
 [lint.per-file-ignores]
 "tests/*" = [
-    "N802",
-    "D",   # Don't require method documentation for test methods
-    "ANN"  # Don't require tests to use type annotations
+    "N802",     # Allow test names to be long / not pep8
+    "D",        # Don't require method documentation for test methods
+    "ANN",      # Don't require tests to use type annotations
+    "PLR2004",  # Allow magic numbers in tests
+    "PLR0915",  # Allow complex tests
+    "PLR0914",  # Allow complex tests
+    "PLC2701",  # Allow tests to import "private" things
+    "SLF001",   # Allow tests to use "private" things
 ]
 "doc/conf.py" = [
     "D100"
@@ -36,3 +52,6 @@ ignore = [
 
 [lint.pep8-naming]
 extend-ignore-names = ["RE"]  # Conventional name used for RunEngine
+
+[lint.pylint]
+max-args = 6

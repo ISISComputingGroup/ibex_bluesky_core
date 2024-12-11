@@ -5,7 +5,7 @@ from enum import IntFlag
 
 from bluesky.protocols import Movable
 from ophyd_async.core import AsyncStatus, SignalW, SignalX, StandardReadable
-from ophyd_async.epics.signal import epics_signal_w, epics_signal_x
+from ophyd_async.epics.core import epics_signal_w, epics_signal_x
 
 logger = logging.getLogger(__name__)
 

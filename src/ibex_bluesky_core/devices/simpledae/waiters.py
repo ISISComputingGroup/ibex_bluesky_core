@@ -2,7 +2,7 @@
 
 import asyncio
 import logging
-from abc import ABCMeta, abstractmethod
+from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Generic, TypeVar
 
 from ophyd_async.core import (
@@ -22,7 +22,7 @@ if TYPE_CHECKING:
 T = TypeVar("T", int, float)
 
 
-class SimpleWaiter(Waiter, Generic[T], metaclass=ABCMeta):
+class SimpleWaiter(Waiter, Generic[T], ABC):
     """Wait for a single DAE variable to be greater or equal to a specified numeric value."""
 
     def __init__(self, value: T) -> None:

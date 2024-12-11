@@ -319,7 +319,7 @@ class FakeDae:
 # Scalar Normalizer
 
 
-async def test_period_good_frames_normalizer_publishes_period_good_frames(
+def test_period_good_frames_normalizer_publishes_period_good_frames(
     period_good_frames_reducer: PeriodGoodFramesNormalizer,
 ):
     fake_dae: SimpleDae = FakeDae()  # type: ignore
@@ -330,7 +330,7 @@ async def test_period_good_frames_normalizer_publishes_period_good_frames(
     assert period_good_frames_reducer.denominator(fake_dae) == fake_dae.period.good_frames
 
 
-async def test_good_frames_normalizer_publishes_good_frames(
+def test_good_frames_normalizer_publishes_good_frames(
     good_frames_reducer: GoodFramesNormalizer,
 ):
     fake_dae: SimpleDae = FakeDae()  # type: ignore
@@ -341,7 +341,7 @@ async def test_good_frames_normalizer_publishes_good_frames(
     assert good_frames_reducer.denominator(fake_dae) == fake_dae.good_frames
 
 
-async def test_scalar_normalizer_publishes_uncertainties(
+def test_scalar_normalizer_publishes_uncertainties(
     simpledae: SimpleDae,
     good_frames_reducer: GoodFramesNormalizer,
 ):
@@ -635,7 +635,7 @@ async def test_monitor_normalizer_uncertainties(
     assert intensity_stddev == pytest.approx(math.sqrt((6000 + (6000**2 / 15000)) / 15000**2), 1e-4)
 
 
-async def test_monitor_normalizer_publishes_raw_and_normalized_counts(
+def test_monitor_normalizer_publishes_raw_and_normalized_counts(
     simpledae: SimpleDae,
     monitor_normalizer: MonitorNormalizer,
 ):
@@ -645,7 +645,7 @@ async def test_monitor_normalizer_publishes_raw_and_normalized_counts(
     assert monitor_normalizer.mon_counts in readables
 
 
-async def test_monitor_normalizer_publishes_raw_and_normalized_count_uncertainties(
+def test_monitor_normalizer_publishes_raw_and_normalized_count_uncertainties(
     simpledae: SimpleDae,
     monitor_normalizer: MonitorNormalizer,
 ):

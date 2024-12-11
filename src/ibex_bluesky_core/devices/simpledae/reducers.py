@@ -4,6 +4,7 @@ import asyncio
 import logging
 import math
 from abc import ABCMeta, abstractmethod
+from collections.abc import Collection, Sequence
 from typing import TYPE_CHECKING, Awaitable, Callable, Collection, Sequence
 
 import scipp as sc
