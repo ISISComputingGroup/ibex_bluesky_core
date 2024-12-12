@@ -50,6 +50,7 @@ class LivePlot(_DefaultLivePlot):
         """
         if "genie_python" in matplotlib.get_backend():
             logger.debug("Explicitly show()ing plot for IBEX")
+            plt.legend()
             plt.show()
 
     def event(self, doc: Event) -> None:
