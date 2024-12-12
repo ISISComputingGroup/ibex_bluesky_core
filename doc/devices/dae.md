@@ -210,6 +210,8 @@ Published signals:
 Scalar Normalizers (such as PeriodGoodFramesNormalizer, GoodFramesNormalizer) can be passed a
 summing function which can optionally sum spectra between provided time of flight or wavelength bounds.
 
+{py:obj}`ibex_bluesky_core.some.path.PeriodGoodFramesNormalizer`
+
 
 Here is an example showing creating a scalar normalizer with time of flight bounds from 15000 to 25000 μs, and summing 2 detectors:
 ```
@@ -233,14 +235,14 @@ Monitor Normalizers, which have both a monitor as well as detector, can be passe
 import scipp
 
 wavelength_bounds = scipp.array(dims=["tof"], values=[0.0, 5.1], unit=scipp.units.angstrom, dtype="float64")
-beam_total = scipp.scalar(value=85.0, unit=sc.units.m),
+total_flight_path_length = scipp.scalar(value=85.0, unit=sc.units.m),
 tof_bounds = scipp.array(dims=["tof"], values=[15000, 25000], unit=scipp.units.us)
 
 reducer = MonitorNormalizer(
     prefix=get_pv_prefix(),
     detector_spectra=[1],
     monitor_spectra=[2],
-    detector_summer=wavelength_bounded_spectra(wavelength_bounds, beam_total),
+    detector_summer=wavelength_bounded_spectra(wavelength_bounds, total_flight_path_length),
     monitor_summer=tof_bounded_spectra(tof_bounds)
 )
 ```
@@ -250,7 +252,7 @@ reducer = MonitorNormalizer(
 - In either case, the bounds are passed as a scipp array, which needs a `dims` attribute, `values` passed
 as a list, and `units` (μs/microseconds for time of flight bounding, and angstrom for wavelength bounding)
 
-- If you don't specify either of these options, they will default to an unbounded spectra
+- If you don't specify either of these options, they will default to an summing over the entire spectrum.
 
 
 ## Waiters
@@ -414,14 +416,13 @@ the set of spectra which they are interested in.
 
 
 
-Spectra can be rebinned based on time of flight bounds, or wavelength bounds, for both detector 
-and monitor normalizers.
+Spectra can be summed between two bounds based on time of flight bounds, or wavelength bounds, for both detector and monitor normalizers.
 
 Both Scalar Normalizers (PeriodGoodFramesNormalizer, GoodFramesNormalizer) and MonitorNormalizers
-provide the following: 
-- `detector_summer`: sums counts using pre-existing bins, or rebins using time of flight bounds,
+accept the following arguments: 
+- `detector_summer`: sums counts using pre-existing bounds, or sums using time of flight bounds,
 or wavelength bounds.
-- `monitor_summer` (MonitorNormalizer only): sums counts using sums counts using pre-existing bins, 
-or rebins using time of flight bounds, or wavelength bounds.
+- `monitor_summer` (MonitorNormalizer only): sums counts using pre-existing bounds,
+or sums using time of flight bounds, or wavelength bounds.
 
-For both options, the default, if none is specified, is to use pre-existing bins.
+For both options, the default, if none is specified, is to use pre-existing bounds.
