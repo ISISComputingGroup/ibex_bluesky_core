@@ -210,7 +210,7 @@ Published signals:
 Scalar Normalizers (such as PeriodGoodFramesNormalizer, GoodFramesNormalizer) can be passed a
 summing function which can optionally sum spectra between provided time of flight or wavelength bounds.
 
-{py:obj}`ibex_bluesky_core.some.path.PeriodGoodFramesNormalizer`
+{py:obj}`ibex_bluesky_core.src.ibex_bluesky_core.devices.simpledae.reducers.PeriodGoodFramesNormalizer`
 
 
 Here is an example showing creating a scalar normalizer with time of flight bounds from 15000 to 25000 μs, and summing 2 detectors:
