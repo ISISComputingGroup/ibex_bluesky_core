@@ -64,7 +64,7 @@ async def monitor_normalizer_det_normal_mon_wavelenth() -> MonitorNormalizer:
             bounds=sc.array(
                 dims=["tof"], values=[0.0, 5.1], unit=sc.units.angstrom, dtype="float64"
             ),
-            beam_total=sc.scalar(value=10.0, unit=sc.units.m),
+            total_flight_path_length=sc.scalar(value=10.0, unit=sc.units.m),
         ),
     )
     await reducer.connect(mock=True)
@@ -135,7 +135,7 @@ async def monitor_normalizer_det_tof_mon_wavelenth() -> MonitorNormalizer:
             bounds=sc.array(
                 dims=["tof"], values=[0.0, 5.1], unit=sc.units.angstrom, dtype="float64"
             ),
-            beam_total=sc.scalar(value=10.0, unit=sc.units.m),
+            total_flight_path_length=sc.scalar(value=10.0, unit=sc.units.m),
         ),
     )
     await reducer.connect(mock=True)
@@ -153,7 +153,7 @@ async def monitor_normalizer_det_wavelength_mon_normal() -> MonitorNormalizer:
             bounds=sc.array(
                 dims=["tof"], values=[0.0, 5.1], unit=sc.units.angstrom, dtype="float64"
             ),
-            beam_total=sc.scalar(value=10.0, unit=sc.units.m),
+            total_flight_path_length=sc.scalar(value=10.0, unit=sc.units.m),
         ),
     )
     await reducer.connect(mock=True)
@@ -171,7 +171,7 @@ async def monitor_normalizer_det_wavelength_mon_tof() -> MonitorNormalizer:
             bounds=sc.array(
                 dims=["tof"], values=[0.0, 5.1], unit=sc.units.angstrom, dtype="float64"
             ),
-            beam_total=sc.scalar(value=10.0, unit=sc.units.m),
+            total_flight_path_length=sc.scalar(value=10.0, unit=sc.units.m),
         ),
         sum_monitor=tof_bounded_spectra(
             sc.array(dims=["tof"], values=[0.0, 0.5], unit=sc.units.us)
@@ -192,13 +192,13 @@ async def monitor_normalizer_det_wavelength_mon_wavelength() -> MonitorNormalize
             bounds=sc.array(
                 dims=["tof"], values=[0.0, 5.1], unit=sc.units.angstrom, dtype="float64"
             ),
-            beam_total=sc.scalar(value=10.0, unit=sc.units.m),
+            total_flight_path_length=sc.scalar(value=10.0, unit=sc.units.m),
         ),
         sum_monitor=wavelength_bounded_spectra(
             bounds=sc.array(
                 dims=["tof"], values=[0.0, 4.5], unit=sc.units.angstrom, dtype="float64"
             ),
-            beam_total=sc.scalar(value=10.0, unit=sc.units.m),
+            total_flight_path_length=sc.scalar(value=10.0, unit=sc.units.m),
         ),
     )
     await reducer.connect(mock=True)
@@ -248,7 +248,7 @@ async def scalar_normalizer_bounded_sum_one_to_three_micro_sec(
 
 
 @pytest.fixture
-async def spectra_bins_easy_to_test() -> sc.DataArray:
+def spectra_bins_easy_to_test() -> sc.DataArray:
     return sc.DataArray(
         data=sc.Variable(
             dims=["tof"],
@@ -265,7 +265,7 @@ async def spectra_bins_easy_to_test() -> sc.DataArray:
 
 
 @pytest.fixture
-async def spectra_bins_tof_convert_to_wavelength_easy() -> sc.DataArray:
+def spectra_bins_tof_convert_to_wavelength_easy() -> sc.DataArray:
     return sc.DataArray(
         data=sc.Variable(
             dims=["tof"],
@@ -285,7 +285,7 @@ async def spectra_bins_tof_convert_to_wavelength_easy() -> sc.DataArray:
 
 
 @pytest.fixture
-async def spectra_bins_tof_convert_to_wavelength_easy_copy() -> sc.DataArray:
+def spectra_bins_tof_convert_to_wavelength_easy_copy() -> sc.DataArray:
     return sc.DataArray(
         data=sc.Variable(
             dims=["tof"],
@@ -675,7 +675,7 @@ async def test_monitor_normalizer_det_sum_normal_mon_sum_tof_bound_(  # 1, 2
     intensity = await monitor_normalizer_zero_to_one_half_det_norm_mon_tof.intensity.get_value()
 
     assert det_counts == 9000.0  # 1 + 2 + 3 + 2 + 1 from detector = 9
-    assert mon_counts == 500.0  # 1k / 2k = 500 from monitor
+    assert mon_counts == 500.0  # 1k / 2 = 500 from monitor
     assert intensity == pytest.approx(9000.0 / 500.0)
 
 
@@ -799,7 +799,7 @@ async def test_monitor_normalizer_det_mon_summer_tof_bounded_zero_to_one_half(  
 
     assert det_counts == 500  # 500 from first detector
     assert mon_counts == 2000  # 2000 half of monitor first bin
-    assert intensity == pytest.approx(0.25)  # 500 / 2500
+    assert intensity == pytest.approx(0.25)  # 500 / 2000
 
 
 # test_monitor_normalizer_det_sum_tof_bound_mon_sum_wavelength 2, 3
@@ -915,12 +915,22 @@ def test_tof_bounded_spectra_bounds_missing_or_too_many(data: list[float]):
 
 
 def test_tof_bounded_spectra_missing_tof_in_bounds_dims():
-    with pytest.raises(expected_exception=ValueError):
+    with pytest.raises(expected_exception=ValueError, match="Should contain tof dims"):
         tof_bounded_spectra(sc.array(dims=[""], values=[0], unit=sc.units.us))
 
 
 def test_wavelength_bounded_spectra_missing_tof_in_bounds_dims():
-    with pytest.raises(expected_exception=ValueError):
+    with pytest.raises(expected_exception=ValueError, match="Should contain tof dims"):
         wavelength_bounded_spectra(
-            bounds=sc.array(dims=[""], values=[0], unit=sc.units.us), beam_total=sc.scalar(value=0)
+            bounds=sc.array(dims=[""], values=[0], unit=sc.units.us),
+            total_flight_path_length=sc.scalar(value=0),
+        )
+
+
+@pytest.mark.parametrize("data", [[], [0.0], [0.1, 0.2, 0.3]])
+def test_wavelength_bounded_spectra_bounds_missing_or_too_many(data: list[float]):
+    with pytest.raises(expected_exception=ValueError, match="Should contain lower and upper bound"):
+        wavelength_bounded_spectra(
+            bounds=sc.array(dims=["tof"], values=data, unit=sc.units.us),
+            total_flight_path_length=sc.scalar(value=100, unit=sc.units.m),
         )
