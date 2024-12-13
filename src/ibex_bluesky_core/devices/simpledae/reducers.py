@@ -3,9 +3,9 @@
 import asyncio
 import logging
 import math
-from abc import ABCMeta, abstractmethod
+from abc import ABC, abstractmethod
 from collections.abc import Collection, Sequence
-from typing import TYPE_CHECKING, Awaitable, Callable, Collection, Sequence
+from typing import TYPE_CHECKING, Awaitable, Callable
 
 import scipp as sc
 from ophyd_async.core import (
@@ -60,9 +60,10 @@ def tof_bounded_spectra(
     More info on scipp arrays and scalars can be found here: https://scipp.github.io/generated/functions/scipp.scalar.html
 
     """
+    bounds_value = 2
     if "tof" not in bounds.dims:
         raise ValueError("Should contain tof dims")
-    if bounds.sizes["tof"] != 2:
+    if bounds.sizes["tof"] != bounds_value:
         raise ValueError("Should contain lower and upper bound")
 
     async def sum_spectra_with_tof(spectra: Collection[DaeSpectra]) -> sc.Variable | sc.DataArray:
@@ -77,15 +78,15 @@ def tof_bounded_spectra(
 
 
 def wavelength_bounded_spectra(
-    bounds: sc.Variable, beam_total: sc.Variable
+    bounds: sc.Variable, total_flight_path_length: sc.Variable
 ) -> Callable[[Collection[DaeSpectra]], Awaitable[sc.Variable | sc.DataArray]]:
-    """Sum a set of neutron spectra between the specified [tof/wavelength] bounds.
+    """Sum a set of neutron spectra between the specified wavelength bounds.
 
     Args:
         bounds: A scipp array of size 2 of wavelength bounds, in units of angstrom,
             where the second element must be larger than the first.
-        beam_total: A scipp scalar of Ltotal (total flight path length), the path length
-            from neutron source to detector or monitor, in units of meters.
+        total_flight_path_length: A scipp scalar of Ltotal (total flight path length), the path
+            length from neutron source to detector or monitor, in units of meters.
 
     Time of flight is converted to wavelength using scipp neutron's library function
         `wavelength_from_tof`, more info on which can be found here:
@@ -95,18 +96,22 @@ def wavelength_bounded_spectra(
     and variance respectively of the summed counts.
 
     """
+    bounds_value = 2
+
     if "tof" not in bounds.dims:
         raise ValueError("Should contain tof dims")
+    if bounds.sizes["tof"] != bounds_value:
+        raise ValueError("Should contain lower and upper bound")
 
     async def sum_spectra_with_wavelength(
         spectra: Collection[DaeSpectra],
     ) -> sc.Variable | sc.DataArray:
-        """Sum spectra and convert time of flight to wavelength."""
+        """Sum a set of spectra between the specified wavelength bounds."""
         summed_counts = sc.scalar(value=0, unit=sc.units.counts, dtype="float64")
         for spec in asyncio.as_completed([s.read_spectrum_dataarray() for s in spectra]):
             wavelength_bounded_spectra = await spec
             wavelength_coord = conversion.tof.wavelength_from_tof(
-                tof=wavelength_bounded_spectra.coords["tof"], Ltotal=beam_total
+                tof=wavelength_bounded_spectra.coords["tof"], Ltotal=total_flight_path_length
             )
             wavelength_bounded_spectra.coords["tof"] = wavelength_coord
             summed_counts += wavelength_bounded_spectra.rebin({"tof": bounds}).sum()
@@ -115,7 +120,7 @@ def wavelength_bounded_spectra(
     return sum_spectra_with_wavelength
 
 
-class ScalarNormalizer(Reducer, StandardReadable, metaclass=ABCMeta):
+class ScalarNormalizer(Reducer, StandardReadable, ABC):
     """Sum a set of user-specified spectra, then normalize by a scalar signal."""
 
     def __init__(
