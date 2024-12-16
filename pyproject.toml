@@ -49,6 +49,7 @@ dependencies = [
   "numpy",
   "scipp",
   "tzdata",
+  "scippneutron",
 ]
 
 [project.optional-dependencies]

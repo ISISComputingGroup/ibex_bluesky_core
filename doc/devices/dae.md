@@ -205,6 +205,58 @@ Published signals:
 - `reducer.mon_counts_stddev` - uncertainty (standard deviation) of the summed monitor counts
 - `reducer.intensity_stddev` - uncertainty (standard deviation) of the normalised intensity
 
+### Time of Flight and Wavelength Bounding Spectra
+
+Scalar Normalizers (such as PeriodGoodFramesNormalizer, GoodFramesNormalizer) can be passed a
+summing function which can optionally sum spectra between provided time of flight or wavelength bounds.
+
+{py:obj}`ibex_bluesky_core.devices.simpledae.reducers.PeriodGoodFramesNormalizer`
+
+
+Here is an example showing creating a scalar normalizer with time of flight bounds from 15000 to 25000 μs, and summing 2 detectors:
+```
+import scipp
+
+bounds=scipp.array(dims=["tof"], values=[15000.0, 25000.0], unit=scipp.units.us)
+
+reducer = PeriodGoodFramesNormalizer(
+    prefix=get_pv_prefix(),
+    detector_spectra=[1, 2],
+    summer=tof_bounded_spectra(bounds)
+)
+```
+
+{py:obj}`ibex_bluesky_core.devices.simpledae.reducers.tof_bounded_spectra` 
+
+
+Monitor Normalizers, which have both a monitor as well as detector, can be passed a summing function for each of these components independently, e.g. the detector can use time of flight while the monitor uses wavelength. tof_bounded_spectra assumes that all pixels being summed share the same flight-path length. Where two separate instances of tof_bounded_spectra are used, such as in DetectorMonitorNormalizer, these may have different flight path lengths from each other.
+
+Here is an example with wavelength bounding used to sum the monitor component, and time of flight bounding for the detector summing spectra: 
+
+```
+import scipp
+
+wavelength_bounds = scipp.array(dims=["tof"], values=[0.0, 5.1], unit=scipp.units.angstrom, dtype="float64")
+total_flight_path_length = scipp.scalar(value=85.0, unit=sc.units.m),
+tof_bounds = scipp.array(dims=["tof"], values=[15000, 25000], unit=scipp.units.us)
+
+reducer = MonitorNormalizer(
+    prefix=get_pv_prefix(),
+    detector_spectra=[1],
+    monitor_spectra=[2],
+    detector_summer=wavelength_bounded_spectra(wavelength_bounds, total_flight_path_length),
+    monitor_summer=tof_bounded_spectra(tof_bounds)
+)
+```
+{py:obj}`ibex_bluesky_core.devices.simpledae.reducers.wavelength_bounded_spectra`
+
+
+- In either case, the bounds are passed as a scipp array, which needs a `dims` attribute, `values` passed
+as a list, and `units` (μs/microseconds for time of flight bounding, and angstrom for wavelength bounding)
+
+- If you don't specify either of these options, they will default to an summing over the entire spectrum.
+
+
 ## Waiters
 
 A `waiter` defines an arbitrary strategy for how long to count at each point.
@@ -362,3 +414,17 @@ A `DaeSpectrum` object provides 3 arrays:
 
 The `Dae` base class does not provide any spectra by default. User-level classes should specify 
 the set of spectra which they are interested in.
+
+
+
+
+Spectra can be summed between two bounds based on time of flight bounds, or wavelength bounds, for both detector and monitor normalizers.
+
+Both Scalar Normalizers (PeriodGoodFramesNormalizer, GoodFramesNormalizer) and MonitorNormalizers
+accept the following arguments: 
+- `detector_summer`: sums counts using pre-existing bounds, or sums using time of flight bounds,
+or wavelength bounds.
+- `monitor_summer` (MonitorNormalizer only): sums counts using pre-existing bounds,
+or sums using time of flight bounds, or wavelength bounds.
+
+For both options, the default, if none is specified, is to use pre-existing bounds.
