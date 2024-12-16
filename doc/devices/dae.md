@@ -229,7 +229,9 @@ reducer = PeriodGoodFramesNormalizer(
 {py:obj}`ibex_bluesky_core.devices.simpledae.reducers.tof_bounded_spectra` 
 
 
-Monitor Normalizers, which have both a monitor as well as detector, can be passed a summing function for each of these components independently, e.g. the detector can use time of flight while the monitor uses wavelength. Here is an example with wavelength bounding used to sum the monitor component, and time of flight bounding for the detector summing spectra: 
+Monitor Normalizers, which have both a monitor as well as detector, can be passed a summing function for each of these components independently, e.g. the detector can use time of flight while the monitor uses wavelength. tof_bounded_spectra assumes that all pixels being summed share the same flight-path length. Where two separate instances of tof_bounded_spectra are used, such as in DetectorMonitorNormalizer, these may have different flight path lengths from each other.
+
+Here is an example with wavelength bounding used to sum the monitor component, and time of flight bounding for the detector summing spectra: 
 
 ```
 import scipp
