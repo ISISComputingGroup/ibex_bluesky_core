@@ -1,0 +1,28 @@
+
+
+``ibex_bluesky_core.devices.dae.dae_controls``
+==============================================
+        
+        
+        
+
+.. automodule:: ibex_bluesky_core.devices.dae.dae_controls
+    :members:
+    :show-inheritance:
+
+    
+    
+    
+
+    
+    
+    .. rubric:: Members
+
+    .. autosummary::
+        :nosignatures:
+    
+        BeginRunEx
+        BeginRunExBits
+        DaeControls
+    
+    
