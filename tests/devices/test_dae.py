@@ -989,7 +989,7 @@ async def test_read_spectrum_dataarray(spectrum: DaeSpectra):
             ),
             coords={
                 "tof": sc.Variable(
-                    dims=["tof"], values=[0, 1, 2, 3], dtype="float32", unit=sc.units.us
+                    dims=["tof"], values=[0, 1, 2, 3], dtype="float64", unit=sc.units.us
                 )
             },
         ),
