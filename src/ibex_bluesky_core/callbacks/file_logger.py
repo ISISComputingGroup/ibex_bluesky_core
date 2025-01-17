@@ -6,14 +6,13 @@ from datetime import datetime
 from pathlib import Path
 from platform import node
 from typing import Optional
+from zoneinfo import ZoneInfo
 
 from bluesky.callbacks import CallbackBase
 from event_model.documents.event import Event
 from event_model.documents.event_descriptor import EventDescriptor
 from event_model.documents.run_start import RunStart
 from event_model.documents.run_stop import RunStop
-from genie_python import genie as g
-from zoneinfo import ZoneInfo
 
 logger = logging.getLogger(__name__)
 
@@ -26,9 +25,10 @@ DATA = "data"
 DESCRIPTOR = "descriptor"
 UNITS = "units"
 UID = "uid"
+RB = "rb_number"
 PRECISION = "precision"
 INSTRUMENT = node()
-DEFAULT_PATH = Path("//isis/inst$") / INSTRUMENT / "user" / "TEST" / "scans" / g.get_rb()
+DEFAULT_PATH = Path("//isis/inst$") / INSTRUMENT / "user" / "TEST" / "scans"
 
 
 class HumanReadableFileCallback(CallbackBase):
@@ -59,11 +59,11 @@ class HumanReadableFileCallback(CallbackBase):
         title_format_datetime = datetime_obj.astimezone(ZoneInfo("Europe/London")).strftime(
             "%Y-%m-%d_%H-%M-%S"
         )
-
+        axes = "_".join(self.fields)
         self.filename = (
-            self.output_dir / f"{INSTRUMENT}_{"_".join(self.fields)}_{title_format_datetime}Z.txt"
+            self.output_dir / doc[RB] / f"{INSTRUMENT}_{axes}_{title_format_datetime}Z.txt"
         )
-
+        assert self.filename is not None
         logger.info("starting new file %s", self.filename)
 
         exclude_list = [
