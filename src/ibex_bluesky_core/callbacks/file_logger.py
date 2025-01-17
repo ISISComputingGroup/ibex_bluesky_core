@@ -6,6 +6,8 @@ from datetime import datetime
 from pathlib import Path
 from typing import Optional
 from zoneinfo import ZoneInfo
+from platform import node
+from genie_python import genie as g
 
 from bluesky.callbacks import CallbackBase
 from event_model.documents.event import Event
@@ -25,12 +27,14 @@ DESCRIPTOR = "descriptor"
 UNITS = "units"
 UID = "uid"
 PRECISION = "precision"
+INSTRUMENT = node()
+DEFAULT_PATH = Path("//isis/inst$") / INSTRUMENT / "user" / "TEST" / "scans" / g.get_rb()
 
 
 class HumanReadableFileCallback(CallbackBase):
     """Outputs bluesky runs to human-readable output files in the specified directory path."""
 
-    def __init__(self, output_dir: Path, fields: list[str]) -> None:
+    def __init__(self, fields: list[str], *, output_dir: Path = DEFAULT_PATH) -> None:
         """Output human-readable output files of bluesky runs.
 
         If fields are given, just output those, otherwise output all hinted signals.
@@ -41,6 +45,7 @@ class HumanReadableFileCallback(CallbackBase):
         self.current_start_document: Optional[str] = None
         self.descriptors: dict[str, EventDescriptor] = {}
         self.filename: Optional[Path] = None
+        
 
     def start(self, doc: RunStart) -> None:
         """Start writing an output file.
@@ -50,7 +55,13 @@ class HumanReadableFileCallback(CallbackBase):
         """
         self.output_dir.mkdir(parents=True, exist_ok=True)
         self.current_start_document = doc[UID]
-        self.filename = self.output_dir / f"{self.current_start_document}.txt"
+        
+        datetime_obj = datetime.fromtimestamp(doc[TIME])
+        title_format_datetime = datetime_obj.astimezone(ZoneInfo("Europe/London")).strftime(
+            "%Y-%m-%d_%H-%M-%S"
+        )
+        
+        self.filename = self.output_dir /  f"{INSTRUMENT}_{"_".join(self.fields)}_{title_format_datetime}Z.txt"
 
         logger.info("starting new file %s", self.filename)
 
@@ -59,7 +70,6 @@ class HumanReadableFileCallback(CallbackBase):
         ]
         header_data = {k: v for k, v in doc.items() if k not in exclude_list}
 
-        datetime_obj = datetime.fromtimestamp(doc[TIME])
         formatted_time = datetime_obj.astimezone(ZoneInfo("Europe/London")).strftime(
             "%Y-%m-%d %H:%M:%S"
         )
