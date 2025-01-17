@@ -4,16 +4,16 @@ import csv
 import logging
 from datetime import datetime
 from pathlib import Path
-from typing import Optional
-from zoneinfo import ZoneInfo
 from platform import node
-from genie_python import genie as g
+from typing import Optional
 
 from bluesky.callbacks import CallbackBase
 from event_model.documents.event import Event
 from event_model.documents.event_descriptor import EventDescriptor
 from event_model.documents.run_start import RunStart
 from event_model.documents.run_stop import RunStop
+from genie_python import genie as g
+from zoneinfo import ZoneInfo
 
 logger = logging.getLogger(__name__)
 
@@ -45,7 +45,6 @@ class HumanReadableFileCallback(CallbackBase):
         self.current_start_document: Optional[str] = None
         self.descriptors: dict[str, EventDescriptor] = {}
         self.filename: Optional[Path] = None
-        
 
     def start(self, doc: RunStart) -> None:
         """Start writing an output file.
@@ -55,13 +54,15 @@ class HumanReadableFileCallback(CallbackBase):
         """
         self.output_dir.mkdir(parents=True, exist_ok=True)
         self.current_start_document = doc[UID]
-        
+
         datetime_obj = datetime.fromtimestamp(doc[TIME])
         title_format_datetime = datetime_obj.astimezone(ZoneInfo("Europe/London")).strftime(
             "%Y-%m-%d_%H-%M-%S"
         )
-        
-        self.filename = self.output_dir /  f"{INSTRUMENT}_{"_".join(self.fields)}_{title_format_datetime}Z.txt"
+
+        self.filename = (
+            self.output_dir / f"{INSTRUMENT}_{"_".join(self.fields)}_{title_format_datetime}Z.txt"
+        )
 
         logger.info("starting new file %s", self.filename)
 
