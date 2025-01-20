@@ -25,7 +25,7 @@ def test_header_data_all_available_on_start(cb):
     run_start = RunStart(time=time, uid=uid, scan_id=scan_id, rb_number="0")
     with patch("ibex_bluesky_core.callbacks.file_logger.open", mock_open()) as mock_file:
         cb.start(run_start)
-        result = save_path / run_start["rb_number"] / f"{node()}_block_dae_2024-10-04_14-43-43Z.txt"
+        result = save_path / f"{run_start.get("rb_number", None)}" / f"{node()}_block_dae_2024-10-04_14-43-43Z.txt"
 
     mock_file.assert_called_with(result, "a", newline="", encoding="utf-8")
     # time should have been renamed to start_time and converted to human readable

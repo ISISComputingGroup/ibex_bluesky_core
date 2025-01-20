@@ -78,7 +78,7 @@ class LiveFitLogger(CallbackBase):
         self.output_dir.mkdir(parents=True, exist_ok=True)
         self.current_start_document = doc[UID]
         file = f"{INSTRUMENT}_{self.x}_{self.y}_{title_format_datetime}Z{self.postfix}.csv"
-        self.filename = self.output_dir / doc[RB] / file
+        self.filename = self.output_dir / f"{doc.get("rb_number", None)}" / file
 
     def event(self, doc: Event) -> Event:
         """Start collecting, y, x and yerr data.
