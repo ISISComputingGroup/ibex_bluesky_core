@@ -61,7 +61,9 @@ class HumanReadableFileCallback(CallbackBase):
         )
         axes = "_".join(self.fields)
         self.filename = (
-            self.output_dir / f"{doc.get("rb_number", None)}" / f"{INSTRUMENT}_{axes}_{title_format_datetime}Z.txt"
+            self.output_dir
+            / f"{doc.get('rb_number', None)}"
+            / f"{INSTRUMENT}_{axes}_{title_format_datetime}Z.txt"
         )
         assert self.filename is not None
         logger.info("starting new file %s", self.filename)
