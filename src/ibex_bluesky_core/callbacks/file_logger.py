@@ -60,11 +60,12 @@ class HumanReadableFileCallback(CallbackBase):
             "%Y-%m-%d_%H-%M-%S"
         )
         axes = "_".join(self.fields)
+        rb_num = doc.get("rb_number", "Unknown RB")
         self.filename = (
-            self.output_dir
-            / f"{doc.get('rb_number', None)}"
-            / f"{INSTRUMENT}_{axes}_{title_format_datetime}Z.txt"
+            self.output_dir / f"{rb_num}" / f"{INSTRUMENT}_{axes}_{title_format_datetime}Z.txt"
         )
+        if rb_num == "Unknown RB":
+            logger.warning('No RB number found, saving to "Unknown RB"')
         assert self.filename is not None
         logger.info("starting new file %s", self.filename)
 

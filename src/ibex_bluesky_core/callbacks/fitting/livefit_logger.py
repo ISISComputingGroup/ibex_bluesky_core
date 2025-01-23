@@ -78,7 +78,10 @@ class LiveFitLogger(CallbackBase):
         self.output_dir.mkdir(parents=True, exist_ok=True)
         self.current_start_document = doc[UID]
         file = f"{INSTRUMENT}_{self.x}_{self.y}_{title_format_datetime}Z{self.postfix}.csv"
-        self.filename = self.output_dir / f"{doc.get('rb_number', None)}" / file
+        rb_num = doc.get("rb_number", "Unknown RB")
+        if rb_num == "Unknown RB":
+            logger.warning('No RB number found, will save to "Unknown RB"')
+        self.filename = self.output_dir / f"{rb_num}" / file
 
     def event(self, doc: Event) -> Event:
         """Start collecting, y, x and yerr data.
