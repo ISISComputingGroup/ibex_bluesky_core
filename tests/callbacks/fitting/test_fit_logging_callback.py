@@ -1,6 +1,7 @@
 # pyright: reportMissingParameterType=false
 import os
 from pathlib import Path
+from platform import node
 from unittest.mock import MagicMock, mock_open, patch
 
 import pytest
@@ -12,8 +13,10 @@ from ibex_bluesky_core.callbacks.fitting import FitMethod, LiveFit
 from ibex_bluesky_core.callbacks.fitting.fitting_utils import Linear
 from ibex_bluesky_core.callbacks.fitting.livefit_logger import LiveFitLogger
 
+time = 1728049423.5860472
 
-def test_after_fitting_callback_writes_to_file_successfully_no_y_uncertainity(
+
+def test_after_fitting_callback_writes_to_file_successfully_no_y_uncertainty(
     RE: run_engine.RunEngine,
 ):
     invariant = soft_signal_rw(float, 0.5, name="invariant")
@@ -24,12 +27,15 @@ def test_after_fitting_callback_writes_to_file_successfully_no_y_uncertainity(
     m = mock_open()
 
     lf = LiveFit(Linear.fit(), y="invariant", x="motor", update_every=50)
-    lfl = LiveFitLogger(lf, y="invariant", x="motor", output_dir=filepath, postfix=postfix)
-
+    lfl = LiveFitLogger(lf, y="invariant", x="motor", postfix=postfix, output_dir=filepath)
     with patch("ibex_bluesky_core.callbacks.fitting.livefit_logger.open", m):
-        result = RE(scan([invariant], mot, -1, 1, 3), [lf, lfl])
+        with patch("time.time", MagicMock(return_value=time)):
+            RE(scan([invariant], mot, -1, 1, 3), [lf, lfl], rb_number="0")
 
-    assert m.call_args_list[0].args == (filepath / f"{result.run_start_uids[0]}{postfix}.csv", "w")  # type: ignore
+    assert m.call_args_list[0].args == (
+        filepath / "0" / f"{node()}_motor_invariant_2024-10-04_14-43-43Z{postfix}.csv",
+        "w",
+    )  # type: ignore
 
     handle = m()
     rows = [i.args[0] for i in handle.write.call_args_list]
@@ -40,7 +46,29 @@ def test_after_fitting_callback_writes_to_file_successfully_no_y_uncertainity(
     assert "x,y,modelled y\r\n" in rows
 
 
-def test_after_fitting_callback_writes_to_file_successfully_with_y_uncertainity(
+def test_fitting_callback_handles_no_rb_number_save(
+    RE: run_engine.RunEngine,
+):
+    invariant = soft_signal_rw(float, 0.5, name="invariant")
+    mot = soft_signal_rw(float, name="motor")
+
+    filepath = Path("C:\\") / "instrument" / "var" / "logs"
+    postfix = "fit1"
+    m = mock_open()
+
+    lf = LiveFit(Linear.fit(), y="invariant", x="motor", update_every=50)
+    lfl = LiveFitLogger(lf, y="invariant", x="motor", postfix=postfix, output_dir=filepath)
+    with patch("ibex_bluesky_core.callbacks.fitting.livefit_logger.open", m):
+        with patch("time.time", MagicMock(return_value=time)):
+            RE(scan([invariant], mot, -1, 1, 3), [lf, lfl])
+
+    assert m.call_args_list[0].args == (
+        filepath / "Unknown RB" / f"{node()}_motor_invariant_2024-10-04_14-43-43Z{postfix}.csv",
+        "w",
+    )  # type: ignore
+
+
+def test_after_fitting_callback_writes_to_file_successfully_with_y_uncertainty(
     RE: run_engine.RunEngine,
 ):
     uncertainty = soft_signal_rw(float, 1.0, name="uncertainty")
@@ -53,13 +81,17 @@ def test_after_fitting_callback_writes_to_file_successfully_with_y_uncertainity(
 
     lf = LiveFit(Linear.fit(), y="invariant", x="motor", update_every=50)
     lfl = LiveFitLogger(
-        lf, y="invariant", x="motor", output_dir=filepath, postfix=postfix, yerr="uncertainty"
+        lf, y="invariant", x="motor", postfix=postfix, output_dir=filepath, yerr="uncertainty"
     )
 
     with patch("ibex_bluesky_core.callbacks.fitting.livefit_logger.open", m):
-        result = RE(scan([invariant, uncertainty], mot, -1, 1, 3), [lf, lfl])
+        with patch("time.time", MagicMock(return_value=time)):
+            RE(scan([invariant, uncertainty], mot, -1, 1, 3), [lf, lfl], rb_number="0")
 
-    assert m.call_args_list[0].args == (filepath / f"{result.run_start_uids[0]}{postfix}.csv", "w")  # type: ignore
+    assert m.call_args_list[0].args == (
+        filepath / "0" / f"{node()}_motor_invariant_2024-10-04_14-43-43Z{postfix}.csv",
+        "w",
+    )  # type: ignore
 
     handle = m()
     rows = [i.args[0] for i in handle.write.call_args_list]
@@ -83,10 +115,10 @@ def test_file_not_written_if_no_fitting_result(RE: run_engine.RunEngine):
     model.fit.return_value = None
     method = FitMethod(model=model, guess=Linear.guess())
     lf = LiveFit(method, y="invariant", x="motor")
-    lfl = LiveFitLogger(lf, y="invariant", x="motor", output_dir=filepath, postfix=postfix)
+    lfl = LiveFitLogger(lf, y="invariant", x="motor", postfix=postfix, output_dir=filepath)
 
     with patch("ibex_bluesky_core.callbacks.fitting.livefit_logger.open", m):
-        RE(scan([invariant], mot, -1, 1, 3), [lf, lfl])
+        RE(scan([invariant], mot, -1, 1, 3), [lf, lfl], rb_number="0")
 
     assert not m.called
 
@@ -96,9 +128,9 @@ def test_error_thrown_if_no_x_data_in_event(RE: run_engine.RunEngine):
     postfix = "fit1"
 
     lf = LiveFit(Linear.fit(), y="invariant", x="motor", update_every=50)
-    lfl = LiveFitLogger(lf, y="invariant", x="motor", output_dir=filepath, postfix=postfix)
+    lfl = LiveFitLogger(lf, y="invariant", x="motor", postfix=postfix, output_dir=filepath)
 
-    with pytest.raises(IOError, match="motor is not in event document."):
+    with pytest.raises(IOError, match=r"motor is not in event document."):
         lfl.event(
             {
                 "data": {  # type: ignore
@@ -115,7 +147,7 @@ def test_error_thrown_if_no_y_data_in_event(RE: run_engine.RunEngine):
     lf = LiveFit(Linear.fit(), y="invariant", x="motor", update_every=50)
     lfl = LiveFitLogger(lf, y="invariant", x="motor", output_dir=filepath, postfix=postfix)
 
-    with pytest.raises(IOError, match="invariant is not in event document."):
+    with pytest.raises(IOError, match=r"invariant is not in event document."):
         lfl.event(
             {
                 "data": {  # type: ignore
@@ -134,7 +166,7 @@ def test_error_thrown_if_no_y_err_data_in_event(RE: run_engine.RunEngine):
         lf, y="invariant", x="motor", output_dir=filepath, postfix=postfix, yerr="yerr"
     )
 
-    with pytest.raises(IOError, match="yerr is not in event document."):
+    with pytest.raises(IOError, match=r"yerr is not in event document."):
         lfl.event(
             {
                 "data": {  # type: ignore

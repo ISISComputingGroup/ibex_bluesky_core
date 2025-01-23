@@ -4,6 +4,7 @@ import csv
 import logging
 from datetime import datetime
 from pathlib import Path
+from platform import node
 from typing import Optional
 from zoneinfo import ZoneInfo
 
@@ -24,13 +25,16 @@ DATA = "data"
 DESCRIPTOR = "descriptor"
 UNITS = "units"
 UID = "uid"
+RB = "rb_number"
 PRECISION = "precision"
+INSTRUMENT = node()
+DEFAULT_PATH = Path("//isis/inst$") / INSTRUMENT / "user" / "TEST" / "scans"
 
 
 class HumanReadableFileCallback(CallbackBase):
     """Outputs bluesky runs to human-readable output files in the specified directory path."""
 
-    def __init__(self, output_dir: Path, fields: list[str]) -> None:
+    def __init__(self, fields: list[str], *, output_dir: Path = DEFAULT_PATH) -> None:
         """Output human-readable output files of bluesky runs.
 
         If fields are given, just output those, otherwise output all hinted signals.
@@ -50,8 +54,19 @@ class HumanReadableFileCallback(CallbackBase):
         """
         self.output_dir.mkdir(parents=True, exist_ok=True)
         self.current_start_document = doc[UID]
-        self.filename = self.output_dir / f"{self.current_start_document}.txt"
 
+        datetime_obj = datetime.fromtimestamp(doc[TIME])
+        title_format_datetime = datetime_obj.astimezone(ZoneInfo("Europe/London")).strftime(
+            "%Y-%m-%d_%H-%M-%S"
+        )
+        axes = "_".join(self.fields)
+        rb_num = doc.get("rb_number", "Unknown RB")
+        self.filename = (
+            self.output_dir / f"{rb_num}" / f"{INSTRUMENT}_{axes}_{title_format_datetime}Z.txt"
+        )
+        if rb_num == "Unknown RB":
+            logger.warning('No RB number found, saving to "Unknown RB"')
+        assert self.filename is not None
         logger.info("starting new file %s", self.filename)
 
         exclude_list = [
@@ -59,7 +74,6 @@ class HumanReadableFileCallback(CallbackBase):
         ]
         header_data = {k: v for k, v in doc.items() if k not in exclude_list}
 
-        datetime_obj = datetime.fromtimestamp(doc[TIME])
         formatted_time = datetime_obj.astimezone(ZoneInfo("Europe/London")).strftime(
             "%Y-%m-%d %H:%M:%S"
         )
