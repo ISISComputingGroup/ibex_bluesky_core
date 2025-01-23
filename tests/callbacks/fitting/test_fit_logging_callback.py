@@ -16,7 +16,7 @@ from ibex_bluesky_core.callbacks.fitting.livefit_logger import LiveFitLogger
 time = 1728049423.5860472
 
 
-def test_after_fitting_callback_writes_to_file_successfully_no_y_uncertainity(
+def test_after_fitting_callback_writes_to_file_successfully_no_y_uncertainty(
     RE: run_engine.RunEngine,
 ):
     invariant = soft_signal_rw(float, 0.5, name="invariant")
@@ -46,7 +46,7 @@ def test_after_fitting_callback_writes_to_file_successfully_no_y_uncertainity(
     assert "x,y,modelled y\r\n" in rows
 
 
-def test_after_fitting_callback_writes_to_file_successfully_with_y_uncertainity(
+def test_after_fitting_callback_writes_to_file_successfully_with_y_uncertainty(
     RE: run_engine.RunEngine,
 ):
     uncertainty = soft_signal_rw(float, 1.0, name="uncertainty")

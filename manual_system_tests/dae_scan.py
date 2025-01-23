@@ -91,7 +91,12 @@ def dae_scan_plan() -> Generator[Msg, None, None]:
                     reducer.det_counts.name,
                     dae.good_frames.name,
                 ],
-                Path("C:\\") / "instrument" / "var" / "logs" / "bluesky" / "output_files",
+                output_dir=Path("C:\\")
+                / "instrument"
+                / "var"
+                / "logs"
+                / "bluesky"
+                / "output_files",
             ),
             LiveFitPlot(livefit=lf, ax=ax),
             LivePlot(
