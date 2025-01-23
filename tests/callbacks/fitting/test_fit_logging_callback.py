@@ -46,6 +46,28 @@ def test_after_fitting_callback_writes_to_file_successfully_no_y_uncertainty(
     assert "x,y,modelled y\r\n" in rows
 
 
+def test_fitting_callback_handles_no_rb_number_save(
+    RE: run_engine.RunEngine,
+):
+    invariant = soft_signal_rw(float, 0.5, name="invariant")
+    mot = soft_signal_rw(float, name="motor")
+
+    filepath = Path("C:\\") / "instrument" / "var" / "logs"
+    postfix = "fit1"
+    m = mock_open()
+
+    lf = LiveFit(Linear.fit(), y="invariant", x="motor", update_every=50)
+    lfl = LiveFitLogger(lf, y="invariant", x="motor", postfix=postfix, output_dir=filepath)
+    with patch("ibex_bluesky_core.callbacks.fitting.livefit_logger.open", m):
+        with patch("time.time", MagicMock(return_value=time)):
+            RE(scan([invariant], mot, -1, 1, 3), [lf, lfl])
+
+    assert m.call_args_list[0].args == (
+        filepath / "Unknown RB" / f"{node()}_motor_invariant_2024-10-04_14-43-43Z{postfix}.csv",
+        "w",
+    )  # type: ignore
+
+
 def test_after_fitting_callback_writes_to_file_successfully_with_y_uncertainty(
     RE: run_engine.RunEngine,
 ):

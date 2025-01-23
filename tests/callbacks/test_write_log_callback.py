@@ -37,6 +37,21 @@ def test_header_data_all_available_on_start(cb):
     mock_file().write.assert_any_call(f"uid: {uid}\n")
 
 
+def test_no_rb_number_folder(cb):
+    time = 1728049423.5860472
+    uid = "test123"
+    scan_id = 1234
+    run_start = RunStart(time=time, uid=uid, scan_id=scan_id)
+    with patch("ibex_bluesky_core.callbacks.file_logger.open", mock_open()) as mock_file:
+        cb.start(run_start)
+        result = save_path / "Unknown RB" / f"{node()}_block_dae_2024-10-04_14-43-43Z.txt"
+
+    mock_file.assert_called_with(result, "a", newline="", encoding="utf-8")
+    # time should have been renamed to start_time and converted to human readable
+    mock_file().write.assert_any_call("start_time: 2024-10-04 14:43:43\n")
+    mock_file().write.assert_any_call(f"uid: {uid}\n")
+
+
 def test_descriptor_data_does_nothing_if_doc_not_called_primary(cb):
     desc = EventDescriptor(
         data_keys={}, uid="someuid", time=123.4, run_start="n/a", name="notprimary"
