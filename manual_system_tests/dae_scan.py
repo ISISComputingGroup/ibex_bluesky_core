@@ -84,7 +84,6 @@ def dae_scan_plan() -> Generator[Msg, None, None]:
     @subs_decorator(
         [
             HumanReadableFileCallback(
-                Path("C:\\") / "instrument" / "var" / "logs" / "bluesky" / "output_files",
                 [
                     block.name,
                     controller.run_number.name,
@@ -92,6 +91,12 @@ def dae_scan_plan() -> Generator[Msg, None, None]:
                     reducer.det_counts.name,
                     dae.good_frames.name,
                 ],
+                output_dir=Path("C:\\")
+                / "instrument"
+                / "var"
+                / "logs"
+                / "bluesky"
+                / "output_files",
             ),
             LiveFitPlot(livefit=lf, ax=ax),
             LivePlot(
