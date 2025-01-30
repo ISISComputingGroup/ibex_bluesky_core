@@ -13,6 +13,7 @@ from ibex_bluesky_core.devices.simpledae.reducers import (
     ScalarNormalizer,
     tof_bounded_spectra,
     wavelength_bounded_spectra,
+    polarization
 )
 
 
@@ -936,9 +937,7 @@ def test_wavelength_bounded_spectra_bounds_missing_or_too_many(data: list[float]
         )
 
 # Polarization
-
-def test_polarization_function_calculates_accurately():
-     @pytest.mark.parametrize("A, B, sigma_A, sigma_B, expected_value, expected_uncertainty", [
+@pytest.mark.parametrize("A, B, sigma_A, sigma_B, expected_value, expected_uncertainty", [
         # Case 1: Symmetric case with equal uncertainties
         (5.0, 3.0, 0.1, 0.1, 0.25, 0.0354),
         
@@ -948,3 +947,14 @@ def test_polarization_function_calculates_accurately():
         # Case 3: Case with larger values and different uncertainty magnitudes
         (100.0, 60.0, 1.0, 2.0, 0.25, 0.0884)
     ])
+def test_polarization_function_calculates_accurately(A: float, B: float, sigma_A: float, sigma_B: float,
+                                                    expected_value: float, expected_uncertainty: float):
+    var_a = sc.Variable(dims=[], values=A, variances=sigma_A, unit='')
+    var_b = sc.Variable(dims=[], values=B, variances=sigma_B, unit='')
+    result_value = polarization(var_a, var_b)
+
+    result_uncertainy = result_value.variance
+
+    assert result_value == expected_value
+    assert result_uncertainy == expected_uncertainty
+
