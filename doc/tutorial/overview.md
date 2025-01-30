@@ -1,6 +1,6 @@
 # Getting started
 
-`ibex_bluesky_core` is a library which bridges the 
+[`ibex_bluesky_core`](ibex_bluesky_core) is a library which bridges the 
 [IBEX control system](https://github.com/ISISComputingGroup/ibex_user_manual/wiki/What-Is-IBEX) 
 and the [bluesky data acquisition framework](https://blueskyproject.io/).
 
@@ -44,7 +44,7 @@ def plan():
 
 ## Devices
 
-`ibex_bluesky_core` provides built-in support for a number of ISIS-specific devices. For example,
+[`ibex_bluesky_core`](ibex_bluesky_core) provides built-in support for a number of ISIS-specific devices. For example,
 blocks are available as devices:
 
 ```python
@@ -55,7 +55,7 @@ det = block_r(float, "p5")  # A readback block with float datatype
 ```
 
 Block objects provide several mechanisms for configuring write behaviour - see 
-{py:obj}`ibex_bluesky_core.devices.block.BlockWriteConfig` for detailed options.
+[`BlockWriteConfig`](`ibex_bluesky_core.devices.block.BlockWriteConfig`) for detailed options.
 
 Likewise, the DAE is available as a bluesky device: see [the DAE Documentation](../devices/dae.md)
 for full examples including example configurations.
@@ -112,7 +112,7 @@ For details about plans which are available directly from `bluesky` - like `bp.s
 
 ## The `RunEngine`
 
-The `RunEngine` is the central "conductor" in bluesky - it is responsible for reading a plan and
+The [`RunEngine`](`ibex_bluesky_core.run_engine`) is the central "conductor" in bluesky - it is responsible for reading a plan and
 performing the associated actions on the hardware. To get a run engine instance, use:
 
 ```python
@@ -124,18 +124,18 @@ RE = get_run_engine()
 In the IBEX GUI, manually getting a runengine is unnecessary - it is done automatically.
 ```
 
-Then execute a plan using the RunEngine:
+Then execute a plan using the [`RunEngine`](`ibex_bluesky_core.run_engine`):
 
 ```
 RE(my_plan("det", "mot", 0, 10, 5))
 ```
 
-Noth that typing `my_plan("det", "mot", 0, 10, 5)` does not do anything by itself. 
+Note that typing `my_plan("det", "mot", 0, 10, 5)` does not do anything by itself. 
 That is because `my_plan` is a python generator - which does nothing until iterated. 
-To actually execute the plan, it must be passed to the `RunEngine`, which is conventionally 
+To actually execute the plan, it must be passed to the [`RunEngine`](`ibex_bluesky_core.run_engine`), which is conventionally 
 called `RE`.
 
-For more detail about the RunEngine, see:
+For more detail about the [`RunEngine`](`ibex_bluesky_core.run_engine`), see:
 - [bluesky RunEngine docs](https://blueskyproject.io/bluesky/main/tutorial.html#the-runengine)
 - [bluesky RunEngine API docs](https://blueskyproject.io/bluesky/main/run_engine_api.html)
 
@@ -179,7 +179,7 @@ def my_plan(det_block_name: str, mot_block_name: str, start: float, stop: float,
     yield from _inner()
 ```
 
-The above will show a `LiveTable` by default, any time `my_plan` is executed. The same mechanism can
+The above will show a `LiveTable`[`ibex_bluesky_core`](ibex_bluesky_core) by default, any time `my_plan` is executed. The same mechanism can
 be used for example to always configure a particular scan with plots and a fit with a specific type.
 
 For more information on callbacks, see
