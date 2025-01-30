@@ -125,18 +125,15 @@ def polarization(a: sc.Variable, b: sc.Variable) -> sc.Variable:
         raise ValueError("The units of a and b are not the same. Please provide a and b with equivalent units")
     if a + b == 0:
         raise ValueError("The sum of a and b cannot be zero to avoid division by zero")
-    
-    uncertainy_a = a.variance
-    uncertainty_b = b.variance
  
-    polarization_value = (a - b) / (a + b)
+    polarization_value = (a.value - b.value) / (a.value + b.value)
 
     #Calculate partial derivatives
-    partial_a = 2 * b / (a + b)**2
-    partial_b = 2 * a / (a + b)**2
+    partial_a = 2 * b.value / (a.value + b.value)**2
+    partial_b = -2 * a.value / (a.value + b.value)**2
 
     #Propagate uncertainties
-    uncertainty = sc.sqrt((partial_a * a.variance)**2 + (partial_b * b.variance)**2)
+    uncertainty = sc.sqrt((partial_a**2 * a.variance) + (partial_b**2 * b.variance))
 
     polarization = sc.scalar(value=polarization_value, variance=uncertainty)
 
