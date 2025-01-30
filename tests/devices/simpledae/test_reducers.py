@@ -934,3 +934,17 @@ def test_wavelength_bounded_spectra_bounds_missing_or_too_many(data: list[float]
             bounds=sc.array(dims=["tof"], values=data, unit=sc.units.us),
             total_flight_path_length=sc.scalar(value=100, unit=sc.units.m),
         )
+
+# Polarization
+
+def test_polarization_function_calculates_accurately():
+     @pytest.mark.parametrize("A, B, sigma_A, sigma_B, expected_value, expected_uncertainty", [
+        # Case 1: Symmetric case with equal uncertainties
+        (5.0, 3.0, 0.1, 0.1, 0.25, 0.0354),
+        
+        # Case 2: Asymmetric case with different uncertainties
+        (10.0, 6.0, 0.2, 0.3, 0.25, 0.0884),
+        
+        # Case 3: Case with larger values and different uncertainty magnitudes
+        (100.0, 60.0, 1.0, 2.0, 0.25, 0.0884)
+    ])
