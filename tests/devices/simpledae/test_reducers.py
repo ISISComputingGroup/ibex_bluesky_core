@@ -302,3 +302,17 @@ def test_monitor_normalizer_publishes_raw_and_normalized_count_uncertainties(
     assert monitor_normalizer.intensity_stddev in readables
     assert monitor_normalizer.det_counts_stddev in readables
     assert monitor_normalizer.mon_counts_stddev in readables
+
+# Polarization
+
+def test_polarization_function_calculates_accurately():
+     @pytest.mark.parametrize("A, B, sigma_A, sigma_B, expected_value, expected_uncertainty", [
+        # Case 1: Symmetric case with equal uncertainties
+        (5.0, 3.0, 0.1, 0.1, 0.25, 0.0354),
+        
+        # Case 2: Asymmetric case with different uncertainties
+        (10.0, 6.0, 0.2, 0.3, 0.25, 0.0884),
+        
+        # Case 3: Case with larger values and different uncertainty magnitudes
+        (100.0, 60.0, 1.0, 2.0, 0.25, 0.0884)
+    ])

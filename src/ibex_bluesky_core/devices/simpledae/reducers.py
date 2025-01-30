@@ -42,6 +42,29 @@ async def sum_spectra(spectra: Collection[DaeSpectra]) -> sc.Variable | sc.DataA
     return summed_counts
 
 
+def polarization(a: sc.Variable, b: sc.Variable) -> sc.Variable:
+    if a.unit != b.unit:
+        raise ValueError("The units of a and b are not the same. Please provide a and b with equivalent units")
+    if a + b == 0:
+        raise ValueError("The sum of a and b cannot be zero to avoid division by zero")
+    
+    uncertainy_a = a.variance
+    uncertainty_b = b.variance
+ 
+    polarization_value = (a - b) / (a + b)
+
+    #Calculate partial derivatives
+    partial_a = 2 * b / (a + b)**2
+    partial_b = 2 * a / (a + b)**2
+
+    #Propagate uncertainties
+    uncertainty = sc.sqrt((partial_a * a.variance)**2 + (partial_b * b.variance)**2)
+
+    polarization = sc.scalar(value=polarization_value, variance=uncertainty)
+
+    return polarization
+    
+
 class ScalarNormalizer(Reducer, StandardReadable, ABC):
     """Sum a set of user-specified spectra, then normalize by a scalar signal."""
 
