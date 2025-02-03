@@ -61,6 +61,29 @@ def test_no_rb_number_folder(cb):
     assert f"uid: {uid}\n" in writelines_call_args
 
 
+def test_rb_number_folder_exists(cb):
+    time = 1728049424.5860472
+    uid = "test432"
+    scan_id = 4321
+    run_start = RunStart(time=time, uid=uid, scan_id=scan_id)
+
+    with (
+        patch("ibex_bluesky_core.callbacks.file_logger.open", mock_open()) as mock_file,
+        patch.object(Path, "exists") as mock_exists,
+        patch.object(Path, "mkdir") as mock_mkdir,
+    ):
+        mock_exists.return_value = True
+        cb.start(run_start)
+        result = save_path / "Unknown RB" / f"{node()}_block_dae_2024-10-04_14-43-44Z.txt"
+        assert mock_mkdir.called
+
+    mock_file.assert_called_with(result, "a", newline="", encoding="utf-8")
+    # time should have been renamed to start_time and converted to human readable
+    writelines_call_args = mock_file().writelines.call_args[0][0]
+    assert "start_time: 2024-10-04 14:43:44\n" in writelines_call_args
+    assert f"uid: {uid}\n" in writelines_call_args
+
+
 def test_descriptor_data_does_nothing_if_doc_not_called_primary(cb):
     desc = EventDescriptor(
         data_keys={}, uid="someuid", time=123.4, run_start="n/a", name="notprimary"
