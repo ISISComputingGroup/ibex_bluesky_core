@@ -3,7 +3,7 @@
 
 from pathlib import Path
 from platform import node
-from unittest.mock import call, mock_open, patch
+from unittest.mock import call, mock_open, patch, Mock
 
 import pytest
 from event_model import DataKey, Event, EventDescriptor, RunStart, RunStop
@@ -42,9 +42,16 @@ def test_no_rb_number_folder(cb):
     uid = "test123"
     scan_id = 1234
     run_start = RunStart(time=time, uid=uid, scan_id=scan_id)
-    with patch("ibex_bluesky_core.callbacks.file_logger.open", mock_open()) as mock_file:
+
+    with (
+        patch("ibex_bluesky_core.callbacks.file_logger.open", mock_open()) as mock_file,
+        patch.object(Path, "exists") as mock_exists,
+        patch.object(Path, "mkdir") as mock_mkdir,
+    ):
+        mock_exists.return_value = False
         cb.start(run_start)
         result = save_path / "Unknown RB" / f"{node()}_block_dae_2024-10-04_14-43-43Z.txt"
+        assert mock_mkdir.called
 
     mock_file.assert_called_with(result, "a", newline="", encoding="utf-8")
     # time should have been renamed to start_time and converted to human readable

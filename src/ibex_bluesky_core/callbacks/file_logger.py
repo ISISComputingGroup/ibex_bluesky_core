@@ -79,6 +79,9 @@ class HumanReadableFileCallback(CallbackBase):
         )
         header_data[START_TIME] = formatted_time
 
+        if not self.filename.parent.exists():
+            self.filename.parent.mkdir()
+
         with open(self.filename, "a", newline="", encoding="utf-8") as outfile:
             for key, value in header_data.items():
                 outfile.write(f"{key}: {value}\n")
