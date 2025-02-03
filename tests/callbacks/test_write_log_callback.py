@@ -3,7 +3,7 @@
 
 from pathlib import Path
 from platform import node
-from unittest.mock import call, mock_open, patch, Mock
+from unittest.mock import call, mock_open, patch
 
 import pytest
 from event_model import DataKey, Event, EventDescriptor, RunStart, RunStop
