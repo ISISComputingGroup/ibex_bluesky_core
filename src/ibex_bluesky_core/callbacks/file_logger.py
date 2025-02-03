@@ -83,8 +83,7 @@ class HumanReadableFileCallback(CallbackBase):
             self.filename.parent.mkdir()
 
         with open(self.filename, "a", newline="", encoding="utf-8") as outfile:
-            for key, value in header_data.items():
-                outfile.write(f"{key}: {value}\n")
+            outfile.writelines([f"{key}: {value}\n" for key, value in header_data.items()])
 
         logger.debug("successfully wrote header in %s", self.filename)
 

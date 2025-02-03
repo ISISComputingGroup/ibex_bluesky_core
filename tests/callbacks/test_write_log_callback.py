@@ -32,9 +32,10 @@ def test_header_data_all_available_on_start(cb):
         )
 
     mock_file.assert_called_with(result, "a", newline="", encoding="utf-8")
+    writelines_call_args = mock_file().writelines.call_args[0][0]
     # time should have been renamed to start_time and converted to human readable
-    mock_file().write.assert_any_call("start_time: 2024-10-04 14:43:43\n")
-    mock_file().write.assert_any_call(f"uid: {uid}\n")
+    assert "start_time: 2024-10-04 14:43:43\n" in writelines_call_args
+    assert f"uid: {uid}\n" in writelines_call_args
 
 
 def test_no_rb_number_folder(cb):
@@ -55,8 +56,9 @@ def test_no_rb_number_folder(cb):
 
     mock_file.assert_called_with(result, "a", newline="", encoding="utf-8")
     # time should have been renamed to start_time and converted to human readable
-    mock_file().write.assert_any_call("start_time: 2024-10-04 14:43:43\n")
-    mock_file().write.assert_any_call(f"uid: {uid}\n")
+    writelines_call_args = mock_file().writelines.call_args[0][0]
+    assert "start_time: 2024-10-04 14:43:43\n" in writelines_call_args
+    assert f"uid: {uid}\n" in writelines_call_args
 
 
 def test_descriptor_data_does_nothing_if_doc_not_called_primary(cb):
