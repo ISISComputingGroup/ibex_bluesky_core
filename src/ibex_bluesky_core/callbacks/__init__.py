@@ -1,12 +1,17 @@
 """Bluesky callbacks which may be attached to the RunEngine."""
-
+import asyncio
+from asyncio import get_running_loop
 from functools import wraps
 from os import PathLike
 from pathlib import Path
+from typing import Callable
 
 from bluesky.callbacks import LiveTable, LiveFitPlot
+from bluesky.callbacks.mpl_plotting import QtAwareCallback
 from bluesky.preprocessors import subs_wrapper
 from bluesky.utils import make_decorator
+import bluesky.preprocessors as bpp
+from event_model import RunStart
 
 from ibex_bluesky_core.callbacks.file_logger import HumanReadableFileCallback, DEFAULT_PATH
 from ibex_bluesky_core.callbacks.fitting import FitMethod, LiveFit
@@ -56,11 +61,18 @@ class ISISCallbacks:
                 LiveTable(self.measured_fields),
             )
 
-        # TODO make this work
-        yield from call_qt_aware(plt.close, "all")
-        fig, ax = yield from call_qt_aware(plt.subplots)
+        fig, ax, exc, result = None, None, None, None
 
-        # tODO be a bit more cleverer here and auto-add a plot if fit toggled to true etc.
+        class _Cb(QtAwareCallback):
+            def start(self, doc: RunStart) -> None:
+                nonlocal result, exc, fig, ax
+                plt.close("all")
+                fig, ax = plt.subplots()
+
+        cb = _Cb()
+        cb("start", {"time": 0, "uid": ""})
+
+        # TODO be a bit more cleverer here and auto-add a plot if fit toggled to true etc.
         lf = LiveFit(self.fit, y=self.y, x=self.x, yerr=self.yerr)
         if self.add_fit_cb:
             self.subs.append(LiveFitPlot(livefit=lf, ax=ax))
@@ -75,12 +87,17 @@ class ISISCallbacks:
                     yerr=self.yerr,
                 )
             )
-        return
 
-    def _add_callbacks(self, function):
-        return (yield from subs_wrapper(function, self.subs))
 
-    __call__ = make_decorator(_add_callbacks)
+    def _icbc_wrapper(self, plan):
+        @bpp.subs_decorator(self.subs)
+        def _inner():
+            return (yield from plan)
+        return (yield from _inner())
+
+    def __call__(self, f: Callable) -> Callable:
+        print(f"{repr(self)}, {repr(f)}")
+        return make_decorator(self._icbc_wrapper)()(f)
 
 
 

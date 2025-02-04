@@ -82,7 +82,7 @@ def dae_scan_plan() -> Generator[Msg, None, None]:
 
     yield from ensure_connected(block, dae, force_reconnect=True)
 
-    @ISISCallbacks(
+    icc = ISISCallbacks(
         x=block.name,
         y=reducer.intensity.name,
         yerr=reducer.intensity_stddev.name,
@@ -103,6 +103,8 @@ def dae_scan_plan() -> Generator[Msg, None, None]:
         / "bluesky"
         / "output_files",
     )
+
+    @icc
     def _inner() -> Generator[Msg, None, None]:
         yield from bps.mv(dae.number_of_periods, NUM_POINTS)  # type: ignore
         # Pyright does not understand as bluesky isn't typed yet
