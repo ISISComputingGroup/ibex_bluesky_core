@@ -2,6 +2,7 @@
 
 import csv
 import logging
+import os
 from datetime import datetime
 from pathlib import Path
 from platform import node
@@ -79,8 +80,8 @@ class HumanReadableFileCallback(CallbackBase):
         )
         header_data[START_TIME] = formatted_time
 
-        if not self.filename.parent.exists():
-            self.filename.parent.mkdir()
+        # make sure the parent directory exists, create it if not
+        os.makedirs(self.filename.parent, exist_ok=True)
 
         with open(self.filename, "a", newline="", encoding="utf-8") as outfile:
             outfile.writelines([f"{key}: {value}\n" for key, value in header_data.items()])
