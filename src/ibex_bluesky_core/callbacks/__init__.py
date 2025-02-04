@@ -13,6 +13,7 @@ from ibex_bluesky_core.callbacks.fitting import FitMethod, LiveFit
 import matplotlib.pyplot as plt
 
 from ibex_bluesky_core.callbacks.plotting import LivePlot
+from ibex_bluesky_core.plan_stubs import call_qt_aware
 
 
 class ISISCallbacks:
@@ -40,10 +41,9 @@ class ISISCallbacks:
         self.add_table_cb = add_table_cb
         self.fit = fit
 
-    def __call__(self, function, *args, **kwargs):
-        subs = []
+        self.subs = []
         if self.add_human_readable_file_cb and self.measured_fields:
-            subs.append(
+            self.subs.append(
                 HumanReadableFileCallback(
                     fields=self.measured_fields,
                     output_dir=Path(self.human_readable_file_output_dir)
@@ -52,15 +52,20 @@ class ISISCallbacks:
                 ),
             )
         if self.add_table_cb and self.measured_fields:
-            subs.append(
+            self.subs.append(
                 LiveTable(self.measured_fields),
             )
-        _, ax = plt.subplots()
+
+        # TODO make this work
+        yield from call_qt_aware(plt.close, "all")
+        fig, ax = yield from call_qt_aware(plt.subplots)
+
+        # tODO be a bit more cleverer here and auto-add a plot if fit toggled to true etc.
         lf = LiveFit(self.fit, y=self.y, x=self.x, yerr=self.yerr)
         if self.add_fit_cb:
-            subs.append(LiveFitPlot(livefit=lf, ax=ax))
+            self.subs.append(LiveFitPlot(livefit=lf, ax=ax))
         if self.add_plot_cb:
-            subs.append(
+            self.subs.append(
                 LivePlot(
                     y=self.y,
                     x=self.x,
@@ -70,7 +75,13 @@ class ISISCallbacks:
                     yerr=self.yerr,
                 )
             )
-        return (yield from subs_wrapper(function, subs))
+        return
+
+    def _add_callbacks(self, function):
+        return (yield from subs_wrapper(function, self.subs))
+
+    __call__ = make_decorator(_add_callbacks)
+
 
 
 #
