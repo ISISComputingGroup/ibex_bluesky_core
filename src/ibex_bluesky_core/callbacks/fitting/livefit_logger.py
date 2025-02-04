@@ -126,6 +126,9 @@ class LiveFitLogger(CallbackBase):
 
         self.stats = self.livefit.result.fit_report().split("\n")
 
+        # make sure the parent directory exists, create it if not
+        os.makedirs(self.filename.parent, exist_ok=True)
+
         # Writing to csv file
         with open(self.filename, "w", newline="", encoding="utf-8") as csvfile:
             # Writing the data
