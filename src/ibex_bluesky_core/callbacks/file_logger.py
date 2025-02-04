@@ -60,10 +60,19 @@ class HumanReadableFileCallback(CallbackBase):
         title_format_datetime = datetime_obj.astimezone(ZoneInfo("Europe/London")).strftime(
             "%Y-%m-%d_%H-%M-%S"
         )
-        axes = "_".join(self.fields)
         rb_num = doc.get("rb_number", "Unknown RB")
+
+        detectors = doc.get("detectors", [])
+        # motors is a tuple, we need to convert to a list to join the two below
+        motors = doc.get("motors", [])
+        if motors:
+            motors = list(motors)
+
+        detectors_and_motors = "_".join(detectors + motors)
         self.filename = (
-            self.output_dir / f"{rb_num}" / f"{INSTRUMENT}_{axes}_{title_format_datetime}Z.txt"
+            self.output_dir
+            / f"{rb_num}"
+            / f"{INSTRUMENT}_{detectors_and_motors}_{title_format_datetime}Z.txt"
         )
         if rb_num == "Unknown RB":
             logger.warning('No RB number found, saving to "Unknown RB"')
