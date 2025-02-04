@@ -1,14 +1,10 @@
 """Bluesky callbacks which may be attached to the RunEngine."""
-import asyncio
-from asyncio import get_running_loop
-from functools import wraps
 from os import PathLike
 from pathlib import Path
 from typing import Callable
 
 from bluesky.callbacks import LiveTable, LiveFitPlot
 from bluesky.callbacks.mpl_plotting import QtAwareCallback
-from bluesky.preprocessors import subs_wrapper
 from bluesky.utils import make_decorator
 import bluesky.preprocessors as bpp
 from event_model import RunStart
@@ -18,7 +14,6 @@ from ibex_bluesky_core.callbacks.fitting import FitMethod, LiveFit
 import matplotlib.pyplot as plt
 
 from ibex_bluesky_core.callbacks.plotting import LivePlot
-from ibex_bluesky_core.plan_stubs import call_qt_aware
 
 
 class ISISCallbacks:
@@ -73,9 +68,9 @@ class ISISCallbacks:
         cb("start", {"time": 0, "uid": ""})
 
         # TODO be a bit more cleverer here and auto-add a plot if fit toggled to true etc.
-        lf = LiveFit(self.fit, y=self.y, x=self.x, yerr=self.yerr)
+        self.lf = LiveFit(self.fit, y=self.y, x=self.x, yerr=self.yerr)
         if self.add_fit_cb:
-            self.subs.append(LiveFitPlot(livefit=lf, ax=ax))
+            self.subs.append(LiveFitPlot(livefit=self.lf, ax=ax))
         if self.add_plot_cb:
             self.subs.append(
                 LivePlot(
@@ -96,57 +91,7 @@ class ISISCallbacks:
         return (yield from _inner())
 
     def __call__(self, f: Callable) -> Callable:
-        print(f"{repr(self)}, {repr(f)}")
         return make_decorator(self._icbc_wrapper)()(f)
-
-
-
-#
-# def _isis_standard_callbacks(plan,
-#     x: str,
-#     y: str,
-#     yerr: str | None,
-#     fit: FitMethod,
-#     add_human_readable_file_cb: bool = True,
-#     add_plot_cb: bool = True,
-#     add_fit_cb: bool = True,
-#     add_table_cb: bool = True,
-#     measured_fields: list[str] | None = None,
-#     human_readable_file_output_dir: str | PathLike[str] | None = None,
-# ):
-#     subs = []
-#     if add_human_readable_file_cb and measured_fields:
-#         subs.append(
-#             HumanReadableFileCallback(
-#                 fields=measured_fields,
-#                 output_dir=Path(human_readable_file_output_dir)
-#                 if human_readable_file_output_dir
-#                 else Path("C:\\") / "instrument" / "var" / "logs" / "bluesky" / "output_files",
-#             ),
-#         )
-#     if add_table_cb and measured_fields:
-#         subs.append(
-#             LiveTable(measured_fields),
-#         )
-#     _, ax = plt.subplots()
-#     lf = LiveFit(fit, y=y, x=x, yerr=yerr)
-#     if add_fit_cb:
-#         subs.append(LiveFitPlot(livefit=lf, ax=ax))
-#     if add_plot_cb:
-#         subs.append(
-#             LivePlot(
-#                 y=y,
-#                 x=x,
-#                 marker="x",
-#                 linestyle="none",
-#                 ax=ax,
-#                 yerr=yerr,
-#             )
-#         )
-#     return (yield from subs_wrapper(plan, subs))
-#
-#
-# isis_standard_callbacks = make_decorator(_isis_standard_callbacks)
 
 
 __all__ = [

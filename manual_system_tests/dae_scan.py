@@ -74,12 +74,6 @@ def dae_scan_plan() -> Generator[Msg, None, None]:
     controller.run_number.set_name("run number")
     reducer.intensity.set_name("normalized counts")
 
-    _, ax = yield from call_qt_aware(plt.subplots)
-
-    lf = LiveFit(
-        Linear.fit(), y=reducer.intensity.name, x=block.name, yerr=reducer.intensity_stddev.name
-    )
-
     yield from ensure_connected(block, dae, force_reconnect=True)
 
     icc = ISISCallbacks(
@@ -109,7 +103,7 @@ def dae_scan_plan() -> Generator[Msg, None, None]:
         yield from bps.mv(dae.number_of_periods, NUM_POINTS)  # type: ignore
         # Pyright does not understand as bluesky isn't typed yet
         yield from bp.scan([dae], block, 0, 10, num=NUM_POINTS)
-        print(lf.result.fit_report())
+        print(icc.lf.result.fit_report())
 
     yield from _inner()
 
