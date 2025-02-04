@@ -13,6 +13,7 @@ from bluesky.preprocessors import subs_decorator
 from bluesky.utils import Msg
 from ophyd_async.plan_stubs import ensure_connected
 
+from ibex_bluesky_core.callbacks import ISISCallbacks
 from ibex_bluesky_core.callbacks.file_logger import HumanReadableFileCallback
 from ibex_bluesky_core.callbacks.fitting import LiveFit
 from ibex_bluesky_core.callbacks.fitting.fitting_utils import Linear
@@ -81,52 +82,26 @@ def dae_scan_plan() -> Generator[Msg, None, None]:
 
     yield from ensure_connected(block, dae, force_reconnect=True)
 
-    @subs_decorator(
-        [
-            HumanReadableFileCallback(
-                [
-                    block.name,
-                    controller.run_number.name,
-                    reducer.intensity.name,
-                    reducer.det_counts.name,
-                    dae.good_frames.name,
-                ],
-                output_dir=Path("C:\\")
-                / "instrument"
-                / "var"
-                / "logs"
-                / "bluesky"
-                / "output_files",
-            ),
-            LiveFitPlot(livefit=lf, ax=ax),
-            LivePlot(
-                y=reducer.intensity.name,
-                x=block.name,
-                marker="x",
-                linestyle="none",
-                ax=ax,
-                yerr=reducer.intensity_stddev.name,
-            ),
-            LiveTable(
-                [
-                    block.name,
-                    controller.run_number.name,
-                    reducer.intensity.name,
-                    reducer.intensity_stddev.name,
-                    reducer.det_counts.name,
-                    reducer.det_counts_stddev.name,
-                    dae.good_frames.name,
-                ]
-            ),
-            LiveFitLogger(
-                lf,
-                y=reducer.intensity.name,
-                x=block.name,
-                output_dir=Path("C:\\Instrument\\Var\\logs\\bluesky\\fitting"),
-                yerr=reducer.intensity_stddev.name,
-                postfix="manual_test",
-            ),
-        ]
+    @ISISCallbacks(
+        x=block.name,
+        y=reducer.intensity.name,
+        yerr=reducer.intensity_stddev.name,
+        fit=Linear.fit(),
+        measured_fields=[
+            block.name,
+            controller.run_number.name,
+            reducer.intensity.name,
+            reducer.intensity_stddev.name,
+            reducer.det_counts.name,
+            reducer.det_counts_stddev.name,
+            dae.good_frames.name,
+        ],
+        human_readable_file_output_dir=Path("C:\\")
+        / "instrument"
+        / "var"
+        / "logs"
+        / "bluesky"
+        / "output_files",
     )
     def _inner() -> Generator[Msg, None, None]:
         yield from bps.mv(dae.number_of_periods, NUM_POINTS)  # type: ignore
