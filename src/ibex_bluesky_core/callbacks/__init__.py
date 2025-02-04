@@ -1,4 +1,5 @@
 """Bluesky callbacks which may be attached to the RunEngine."""
+import threading
 from os import PathLike
 from pathlib import Path
 from typing import Callable
@@ -23,12 +24,13 @@ class ISISCallbacks:
         y: str,
         yerr: str | None,
         fit: FitMethod,
+        measured_fields: list[str] | None = None,
+        human_readable_file_output_dir: str | PathLike[str] | None = None,
         add_human_readable_file_cb: bool = True,
         add_plot_cb: bool = True,
         add_fit_cb: bool = True,
         add_table_cb: bool = True,
-        measured_fields: list[str] | None = None,
-        human_readable_file_output_dir: str | PathLike[str] | None = None,
+
     ):
         self.y = y
         self.x = x
@@ -57,15 +59,19 @@ class ISISCallbacks:
             )
 
         fig, ax, exc, result = None, None, None, None
-
+        done_event = threading.Event()
         class _Cb(QtAwareCallback):
             def start(self, doc: RunStart) -> None:
                 nonlocal result, exc, fig, ax
-                plt.close("all")
-                fig, ax = plt.subplots()
+                try:
+                    plt.close("all")
+                    fig, ax = plt.subplots()
+                finally:
+                    done_event.set()
 
         cb = _Cb()
         cb("start", {"time": 0, "uid": ""})
+        done_event.wait(10.0)
 
         # TODO be a bit more cleverer here and auto-add a plot if fit toggled to true etc.
         self.lf = LiveFit(self.fit, y=self.y, x=self.x, yerr=self.yerr)
@@ -95,10 +101,10 @@ class ISISCallbacks:
 
 
 __all__ = [
-    ISISCallbacks,
-    LivePlot,
-    LiveFit,
-    LiveFitPlot,
-    HumanReadableFileCallback,
-    LiveTable,
+    "ISISCallbacks",
+    "LivePlot",
+    "LiveFit",
+    "LiveFitPlot",
+    "HumanReadableFileCallback",
+    "LiveTable",
 ]
