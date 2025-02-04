@@ -83,7 +83,7 @@ class HumanReadableFileCallback(CallbackBase):
         # make sure the parent directory exists, create it if not
         os.makedirs(self.filename.parent, exist_ok=True)
 
-        with open(self.filename, "a", newline="", encoding="utf-8") as outfile:
+        with open(self.filename, "a", newline="\n", encoding="utf-8") as outfile:
             outfile.writelines([f"{key}: {value}\n" for key, value in header_data.items()])
 
         logger.debug("successfully wrote header in %s", self.filename)
