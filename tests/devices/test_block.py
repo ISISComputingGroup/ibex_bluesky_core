@@ -73,7 +73,7 @@ def test_block_naming(rw_rbv_block):
 def test_mot_block_naming(mot_block):
     assert mot_block.name == "mot_block"
     assert mot_block.user_readback.name == "mot_block"
-    assert mot_block.user_setpoint.name == ("mot_block-user_setpoint" "")
+    assert mot_block.user_setpoint.name == ("mot_block-user_setpoint")
 
 
 def test_block_signal_monitors_correct_pv(rw_rbv_block):
