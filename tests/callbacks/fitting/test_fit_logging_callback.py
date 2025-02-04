@@ -30,7 +30,7 @@ def test_after_fitting_callback_writes_to_file_successfully_no_y_uncertainty(
     lfl = LiveFitLogger(lf, y="invariant", x="motor", postfix=postfix, output_dir=filepath)
     with (
         patch("ibex_bluesky_core.callbacks.fitting.livefit_logger.open", m),
-        patch("ibex_bluesky_core.callbacks.fitting.livefit_logger.os.makedirs") as makedirs,
+        patch("ibex_bluesky_core.callbacks.fitting.livefit_logger.os.makedirs"),
     ):
         with patch("time.time", MagicMock(return_value=time)):
             RE(scan([invariant], mot, -1, 1, 3), [lf, lfl], rb_number="0")
@@ -41,7 +41,7 @@ def test_after_fitting_callback_writes_to_file_successfully_no_y_uncertainty(
     )  # type: ignore
 
     handle = m()
-    rows_writelines = [i.args[0] for i in handle.writelines.call_args_list][0]
+    rows_writelines = next(i.args[0] for i in handle.writelines.call_args_list)
     rows = [i.args[0] for i in handle.write.call_args_list]
 
     # Check that it starts writing to the file in the expected way
@@ -105,7 +105,7 @@ def test_after_fitting_callback_writes_to_file_successfully_with_y_uncertainty(
 
     handle = m()
     rows = [i.args[0] for i in handle.write.call_args_list]
-    rows_writelines = [i.args[0] for i in handle.writelines.call_args_list][0]
+    rows_writelines = next(i.args[0] for i in handle.writelines.call_args_list)
 
     # Check that it starts writing to the file in the expected way
 
