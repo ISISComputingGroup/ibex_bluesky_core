@@ -134,8 +134,7 @@ class LiveFitLogger(CallbackBase):
             # Writing the data
             self.csvwriter = csv.writer(csvfile)
 
-            for row in self.stats:
-                csvfile.write(row + os.linesep)
+            csvfile.writelines([row + os.linesep for row in self.stats])
 
             csvfile.write(os.linesep)  # Space out file
             csvfile.write(os.linesep)
