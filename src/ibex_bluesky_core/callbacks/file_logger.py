@@ -29,7 +29,7 @@ UID = "uid"
 RB = "rb_number"
 PRECISION = "precision"
 INSTRUMENT = node()
-DEFAULT_PATH = Path("//isis/inst$") / INSTRUMENT / "user" / "TEST" / "scans"
+DEFAULT_PATH = Path("//isis.cclrc.ac.uk/inst$") / INSTRUMENT / "user" / "TEST" / "scans"
 
 
 class HumanReadableFileCallback(CallbackBase):
