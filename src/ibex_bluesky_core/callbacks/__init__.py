@@ -1,10 +1,12 @@
 """Bluesky callbacks which may be attached to the RunEngine."""
+
 import threading
 from os import PathLike
 from pathlib import Path
 from typing import Callable
 
 from bluesky.callbacks import LiveTable, LiveFitPlot
+from bluesky.callbacks.fitting import PeakStats
 from bluesky.callbacks.mpl_plotting import QtAwareCallback
 from bluesky.utils import make_decorator
 import bluesky.preprocessors as bpp
@@ -30,7 +32,8 @@ class ISISCallbacks:
         add_plot_cb: bool = True,
         add_fit_cb: bool = True,
         add_table_cb: bool = True,
-
+        add_peak_stats=True,
+        ax: plt.Axes = None,
     ):
         self.y = y
         self.x = x
@@ -41,6 +44,8 @@ class ISISCallbacks:
         self.add_plot_cb = add_plot_cb
         self.add_fit_cb = add_fit_cb
         self.add_table_cb = add_table_cb
+        self.add_peak_stats = add_peak_stats
+        self.peak_stats: None | PeakStats = None
         self.fit = fit
 
         self.subs = []
@@ -57,21 +62,22 @@ class ISISCallbacks:
             self.subs.append(
                 LiveTable(self.measured_fields),
             )
+        if not ax:
+            fig, ax, exc, result = None, None, None, None
+            done_event = threading.Event()
 
-        fig, ax, exc, result = None, None, None, None
-        done_event = threading.Event()
-        class _Cb(QtAwareCallback):
-            def start(self, doc: RunStart) -> None:
-                nonlocal result, exc, fig, ax
-                try:
-                    plt.close("all")
-                    fig, ax = plt.subplots()
-                finally:
-                    done_event.set()
+            class _Cb(QtAwareCallback):
+                def start(self, doc: RunStart) -> None:
+                    nonlocal result, exc, fig, ax
+                    try:
+                        plt.close("all")
+                        fig, ax = plt.subplots()
+                    finally:
+                        done_event.set()
 
-        cb = _Cb()
-        cb("start", {"time": 0, "uid": ""})
-        done_event.wait(10.0)
+            cb = _Cb()
+            cb("start", {"time": 0, "uid": ""})
+            done_event.wait(10.0)
 
         # TODO be a bit more cleverer here and auto-add a plot if fit toggled to true etc.
         self.lf = LiveFit(self.fit, y=self.y, x=self.x, yerr=self.yerr)
@@ -88,12 +94,15 @@ class ISISCallbacks:
                     yerr=self.yerr,
                 )
             )
-
+        if self.add_peak_stats:
+            self.peak_stats = PeakStats(x=self.x, y=self.y)
+            self.subs.append(self.peak_stats)
 
     def _icbc_wrapper(self, plan):
         @bpp.subs_decorator(self.subs)
         def _inner():
             return (yield from plan)
+
         return (yield from _inner())
 
     def __call__(self, f: Callable) -> Callable:

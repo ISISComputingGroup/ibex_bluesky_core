@@ -104,6 +104,7 @@ def dae_scan_plan() -> Generator[Msg, None, None]:
         # Pyright does not understand as bluesky isn't typed yet
         yield from bp.scan([dae], block, 0, 10, num=NUM_POINTS)
         print(icc.lf.result.fit_report())
+        print(f"COM: {icc.peak_stats['com']}")
 
     yield from _inner()
 
