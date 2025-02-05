@@ -121,24 +121,45 @@ def wavelength_bounded_spectra(
 
 
 def polarization(a: sc.Variable, b: sc.Variable) -> sc.Variable:
+    """Calculate polarization using quantities a and b.
+
+    Args:
+        a: scipp Variable
+        b: scipp Variable
+
+    Returns:
+        polarization_value: This quantity is calculated as (A-B)/(A+B)
+
+    On SANS instruments e.g. LARMOR, A and B correspond to intensity in different DAE
+    periods (before/after switching a flipper)
+    Or reflectometry instruments e.g. POLREF, the situation is the same as on LARMOR
+    On muon instruments, A and B correspond to measuring from different detector banks
+
+    """
     if a.unit != b.unit:
-        raise ValueError("The units of a and b are not the same. Please provide a and b with equivalent units")
-    if a + b == 0:
-        raise ValueError("The sum of a and b cannot be zero to avoid division by zero")
- 
-    polarization_value = (a.value - b.value) / (a.value + b.value)
+        raise ValueError("The units of a and b are not equivalent.")
+    if a.sizes != b.sizes:
+        raise ValueError("Dimensions/shape of a and b must match.")
 
-    #Calculate partial derivatives
-    partial_a = 2 * b.value / (a.value + b.value)**2
-    partial_b = -2 * a.value / (a.value + b.value)**2
+    # This line allows for dims, units, and dtype to be handled by scipp
+    polarization_value = (a - b) / (a + b)
 
-    #Propagate uncertainties
-    uncertainty = sc.sqrt((partial_a**2 * a.variance) + (partial_b**2 * b.variance))
+    variances_a = a.variances
+    variances_b = b.variances
+    values_a = a.values
+    values_b = b.values
 
-    polarization = sc.scalar(value=polarization_value, variance=uncertainty)
+    # Calculate partial derivatives
+    partial_a = 2 * values_b / (values_a + values_b) ** 2
+    partial_b = -2 * values_a / (values_a + values_b) ** 2
 
-    return polarization
-    
+    variance_return = (partial_a**2 * variances_a) + (partial_b**2 * variances_b)
+
+    # Propagate uncertainties
+    polarization_value.variances = variance_return
+
+    return polarization_value
+
 
 class ScalarNormalizer(Reducer, StandardReadable, ABC):
     """Sum a set of user-specified spectra, then normalize by a scalar signal."""
