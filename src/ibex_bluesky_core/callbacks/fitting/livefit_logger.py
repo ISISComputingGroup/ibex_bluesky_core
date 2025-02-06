@@ -1,4 +1,4 @@
-"""Creates a readable .csv file of Bluesky fitting metrics."""
+"""Creates a readable text file, with comma separated values of Bluesky fitting metrics."""
 
 import csv
 import logging
@@ -72,12 +72,12 @@ class LiveFitLogger(CallbackBase):
 
         """
         datetime_obj = datetime.fromtimestamp(doc[TIME])
-        title_format_datetime = datetime_obj.astimezone(ZoneInfo("Europe/London")).strftime(
+        title_format_datetime = datetime_obj.astimezone(ZoneInfo("UTC")).strftime(
             "%Y-%m-%d_%H-%M-%S"
         )
         self.output_dir.mkdir(parents=True, exist_ok=True)
         self.current_start_document = doc[UID]
-        file = f"{INSTRUMENT}_{self.x}_{self.y}_{title_format_datetime}Z{self.postfix}.csv"
+        file = f"{INSTRUMENT}_{self.x}_{self.y}_{title_format_datetime}Z{self.postfix}.txt"
         rb_num = doc.get("rb_number", "Unknown RB")
         if rb_num == "Unknown RB":
             logger.warning('No RB number found, will save to "Unknown RB"')

@@ -33,13 +33,13 @@ def test_header_data_all_available_on_start(cb):
         result = (
             save_path
             / f"{run_start.get('rb_number', None)}"
-            / f"{node()}_dae_block_2024-10-04_14-43-43Z.txt"
+            / f"{node()}_block_2024-10-04_14-43-43Z.txt"
         )
 
     mock_file.assert_called_with(result, "a", newline="\n", encoding="utf-8")
     writelines_call_args = mock_file().writelines.call_args[0][0]
     # time should have been renamed to start_time and converted to human readable
-    assert "start_time: 2024-10-04 14:43:43\n" in writelines_call_args
+    assert "start_time: 2024-10-04 13:43:43\n" in writelines_call_args
     assert f"uid: {uid}\n" in writelines_call_args
 
 
@@ -54,13 +54,13 @@ def test_no_rb_number_folder(cb):
         patch("ibex_bluesky_core.callbacks.file_logger.os.makedirs") as mock_mkdir,
     ):
         cb.start(run_start)
-        result = save_path / "Unknown RB" / f"{node()}_dae_block_2024-10-04_14-43-43Z.txt"
+        result = save_path / "Unknown RB" / f"{node()}_block_2024-10-04_14-43-43Z.txt"
         assert mock_mkdir.called
 
     mock_file.assert_called_with(result, "a", newline="\n", encoding="utf-8")
     # time should have been renamed to start_time and converted to human readable
     writelines_call_args = mock_file().writelines.call_args[0][0]
-    assert "start_time: 2024-10-04 14:43:43\n" in writelines_call_args
+    assert "start_time: 2024-10-04 13:43:43\n" in writelines_call_args
     assert f"uid: {uid}\n" in writelines_call_args
 
 
@@ -75,13 +75,13 @@ def test_no_motors_doesnt_append_to_filename(cb):
         patch("ibex_bluesky_core.callbacks.file_logger.os.makedirs") as mock_mkdir,
     ):
         cb.start(run_start)
-        result = save_path / "Unknown RB" / f"{node()}_dae_2024-10-04_14-43-43Z.txt"
+        result = save_path / "Unknown RB" / f"{node()}_2024-10-04_14-43-43Z.txt"
         assert mock_mkdir.called
 
     mock_file.assert_called_with(result, "a", newline="\n", encoding="utf-8")
     # time should have been renamed to start_time and converted to human readable
     writelines_call_args = mock_file().writelines.call_args[0][0]
-    assert "start_time: 2024-10-04 14:43:43\n" in writelines_call_args
+    assert "start_time: 2024-10-04 13:43:43\n" in writelines_call_args
     assert f"uid: {uid}\n" in writelines_call_args
 
 

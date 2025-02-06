@@ -62,17 +62,13 @@ class HumanReadableFileCallback(CallbackBase):
         )
         rb_num = doc.get("rb_number", "Unknown RB")
 
-        detectors = doc.get("detectors", [])
         # motors is a tuple, we need to convert to a list to join the two below
-        motors = doc.get("motors", [])
-        if motors:
-            motors = list(motors)
+        motors = list(doc.get("motors", []))
 
-        detectors_and_motors = "_".join(detectors + motors)
         self.filename = (
             self.output_dir
             / f"{rb_num}"
-            / f"{INSTRUMENT}_{detectors_and_motors}_{title_format_datetime}Z.txt"
+            / f"{INSTRUMENT}{'_' + '_'.join(motors) if motors else ''}_{title_format_datetime}Z.txt"
         )
         if rb_num == "Unknown RB":
             logger.warning('No RB number found, saving to "Unknown RB"')
@@ -84,9 +80,7 @@ class HumanReadableFileCallback(CallbackBase):
         ]
         header_data = {k: v for k, v in doc.items() if k not in exclude_list}
 
-        formatted_time = datetime_obj.astimezone(ZoneInfo("Europe/London")).strftime(
-            "%Y-%m-%d %H:%M:%S"
-        )
+        formatted_time = datetime_obj.astimezone(ZoneInfo("UTC")).strftime("%Y-%m-%d %H:%M:%S")
         header_data[START_TIME] = formatted_time
 
         # make sure the parent directory exists, create it if not
