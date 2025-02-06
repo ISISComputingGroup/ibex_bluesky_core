@@ -74,7 +74,7 @@ class HumanReadableFileCallback(CallbackBase):
             / f"{INSTRUMENT}{'_' + '_'.join(motors) if motors else ''}_{title_format_datetime}Z.txt"
         )
         if rb_num == UNKNOWN_RB:
-            logger.warning('No RB number found, saving to "Unknown RB"')
+            logger.warning('No RB number found, saving to "%s"', UNKNOWN_RB)
         assert self.filename is not None
         logger.info("starting new file %s", self.filename)
 

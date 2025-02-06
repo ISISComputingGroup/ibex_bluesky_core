@@ -82,7 +82,7 @@ class LiveFitLogger(CallbackBase):
         file = f"{INSTRUMENT}_{self.x}_{self.y}_{title_format_datetime}Z{self.postfix}.txt"
         rb_num = doc.get(RB, UNKNOWN_RB)
         if rb_num == UNKNOWN_RB:
-            logger.warning('No RB number found, will save to "Unknown RB"')
+            logger.warning('No RB number found, will save to "%s"', UNKNOWN_RB)
         self.filename = self.output_dir / f"{rb_num}" / file
 
     def event(self, doc: Event) -> Event:
