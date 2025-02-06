@@ -999,7 +999,7 @@ def test_polarization_units_mismatch():
     var_b = sc.Variable(dims=["x"], values=[1], variances=[0.1], unit="u", dtype="float64")
 
     with pytest.raises(
-        expected_exception=ValueError, match="The units of a and b are not equivalent."
+        expected_exception=ValueError, match=r"The units of a and b are not equivalent."
     ):
         polarization(var_a, var_b)
 
@@ -1010,7 +1010,7 @@ def test_polarization_arrays_of_different_sizes():
     var_b = sc.Variable(dims=["x"], values=[1], variances=[0.1], unit="m", dtype="float64")
 
     with pytest.raises(
-        expected_exception=ValueError, match="Dimensions/shape of a and b must match."
+        expected_exception=ValueError, match=r"Dimensions/shape of a and b must match."
     ):
         polarization(var_a, var_b)
 
