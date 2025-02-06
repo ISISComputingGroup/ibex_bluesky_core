@@ -5,7 +5,6 @@ import logging
 import os
 from datetime import datetime
 from pathlib import Path
-from platform import node
 from typing import Optional
 from zoneinfo import ZoneInfo
 
@@ -15,21 +14,25 @@ from event_model.documents.event_descriptor import EventDescriptor
 from event_model.documents.run_start import RunStart
 from event_model.documents.run_stop import RunStop
 
-logger = logging.getLogger(__name__)
+from ibex_bluesky_core.callbacks._utils import (
+    DATA,
+    DATA_KEYS,
+    DEFAULT_PATH,
+    DESCRIPTOR,
+    INSTRUMENT,
+    MOTORS,
+    NAME,
+    PRECISION,
+    RB,
+    SEQ_NUM,
+    START_TIME,
+    TIME,
+    UID,
+    UNITS,
+    UNKNOWN_RB,
+)
 
-TIME = "time"
-START_TIME = "start_time"
-NAME = "name"
-SEQ_NUM = "seq_num"
-DATA_KEYS = "data_keys"
-DATA = "data"
-DESCRIPTOR = "descriptor"
-UNITS = "units"
-UID = "uid"
-RB = "rb_number"
-PRECISION = "precision"
-INSTRUMENT = node()
-DEFAULT_PATH = Path("//isis.cclrc.ac.uk/inst$") / INSTRUMENT / "user" / "TEST" / "scans"
+logger = logging.getLogger(__name__)
 
 
 class HumanReadableFileCallback(CallbackBase):
@@ -57,20 +60,20 @@ class HumanReadableFileCallback(CallbackBase):
         self.current_start_document = doc[UID]
 
         datetime_obj = datetime.fromtimestamp(doc[TIME])
-        title_format_datetime = datetime_obj.astimezone(ZoneInfo("Europe/London")).strftime(
+        title_format_datetime = datetime_obj.astimezone(ZoneInfo("UTC")).strftime(
             "%Y-%m-%d_%H-%M-%S"
         )
-        rb_num = doc.get("rb_number", "Unknown RB")
+        rb_num = doc.get(RB, UNKNOWN_RB)
 
         # motors is a tuple, we need to convert to a list to join the two below
-        motors = list(doc.get("motors", []))
+        motors = list(doc.get(MOTORS, []))
 
         self.filename = (
             self.output_dir
             / f"{rb_num}"
             / f"{INSTRUMENT}{'_' + '_'.join(motors) if motors else ''}_{title_format_datetime}Z.txt"
         )
-        if rb_num == "Unknown RB":
+        if rb_num == UNKNOWN_RB:
             logger.warning('No RB number found, saving to "Unknown RB"')
         assert self.filename is not None
         logger.info("starting new file %s", self.filename)

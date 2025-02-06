@@ -5,7 +5,6 @@ import logging
 import os
 from datetime import datetime
 from pathlib import Path
-from platform import node
 from typing import Optional
 from zoneinfo import ZoneInfo
 
@@ -15,14 +14,17 @@ from event_model.documents.event import Event
 from event_model.documents.run_start import RunStart
 from event_model.documents.run_stop import RunStop
 
+from ibex_bluesky_core.callbacks._utils import (
+    DATA,
+    DEFAULT_PATH,
+    INSTRUMENT,
+    RB,
+    TIME,
+    UID,
+    UNKNOWN_RB,
+)
 from ibex_bluesky_core.callbacks.fitting import LiveFit
 
-UID = "uid"
-TIME = "time"
-DATA = "data"
-RB = "rb_number"
-INSTRUMENT = node()
-DEFAULT_PATH = Path("//isis.cclrc.ac.uk/inst$") / INSTRUMENT / "user" / "TEST" / "scans"
 logger = logging.getLogger(__name__)
 
 
@@ -78,8 +80,8 @@ class LiveFitLogger(CallbackBase):
         self.output_dir.mkdir(parents=True, exist_ok=True)
         self.current_start_document = doc[UID]
         file = f"{INSTRUMENT}_{self.x}_{self.y}_{title_format_datetime}Z{self.postfix}.txt"
-        rb_num = doc.get("rb_number", "Unknown RB")
-        if rb_num == "Unknown RB":
+        rb_num = doc.get(RB, UNKNOWN_RB)
+        if rb_num == UNKNOWN_RB:
             logger.warning('No RB number found, will save to "Unknown RB"')
         self.filename = self.output_dir / f"{rb_num}" / file
 
