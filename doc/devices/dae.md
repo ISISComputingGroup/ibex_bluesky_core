@@ -257,6 +257,27 @@ as a list, and `units` (μs/microseconds for time of flight bounding, and angstr
 - If you don't specify either of these options, they will default to an summing over the entire spectrum.
 
 
+### Polarization/Asymmetry
+
+Polarization refers to the property of transverse waves which specifies the geometrical orientation of the 
+oscillations. 
+
+The polarization funtion provided will calculate the polarization between two values, A and B, which 
+have different definitions based on the instrument context.
+
+Instrument-Specific Interpretations
+SANS Instruments (e.g., LARMOR)
+A: Intensity in DAE period before switching a flipper.
+B: Intensity in DAE period after switching a flipper.
+
+Reflectometry Instruments (e.g., POLREF)
+Similar to LARMOR, A and B represent intensities before and after flipper switching.
+
+Muon Instruments
+A and B refer to Measurements from different detector banks.
+
+{py:obj}`ibex_bluesky_core.devices.simpledae.reducers.polarization`
+
 ## Waiters
 
 A `waiter` defines an arbitrary strategy for how long to count at each point.
