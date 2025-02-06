@@ -121,14 +121,17 @@ def wavelength_bounded_spectra(
 
 
 def polarization(a: sc.Variable, b: sc.Variable) -> sc.Variable:
-    """Calculate polarization using quantities a and b.
+    """Calculate polarization value and propagate uncertainties.
+
+    This function computes the polarization given by the formula (a-b)/(a+b)
+    and propagates the uncertainties associated with a and b.
 
     Args:
         a: scipp Variable
         b: scipp Variable
 
     Returns:
-        polarization_value: This quantity is calculated as (A-B)/(A+B)
+        polarization_value: This quantity is calculated as (a-b)/(a+b)
 
     On SANS instruments e.g. LARMOR, A and B correspond to intensity in different DAE
     periods (before/after switching a flipper)
