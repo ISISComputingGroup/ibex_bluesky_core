@@ -32,9 +32,12 @@ class ISISCallbacks:
         add_plot_cb: bool = True,
         add_fit_cb: bool = True,
         add_table_cb: bool = True,
-        add_peak_stats=True,
-        ax: plt.Axes = None,
+        add_peak_stats: bool=True,
+        ax: plt.Axes | None = None,
     ):
+        #todo add docstrings here
+        #todo add tests for any logic here
+        #todo type hinting
         self.y = y
         self.x = x
         self.yerr = yerr
@@ -49,7 +52,9 @@ class ISISCallbacks:
         self.fit = fit
 
         self.subs = []
-        if self.add_human_readable_file_cb and self.measured_fields:
+        if self.add_human_readable_file_cb:
+            if not measured_fields:
+                raise ValueError() #TODO
             self.subs.append(
                 HumanReadableFileCallback(
                     fields=self.measured_fields,
@@ -62,7 +67,12 @@ class ISISCallbacks:
             self.subs.append(
                 LiveTable(self.measured_fields),
             )
-        if not ax:
+
+        if self.add_peak_stats:
+            self.peak_stats = PeakStats(x=self.x, y=self.y)
+            self.subs.append(self.peak_stats)
+
+        if (self.add_plot_cb or self.add_fit_cb) and not ax:
             fig, ax, exc, result = None, None, None, None
             done_event = threading.Event()
 
@@ -79,11 +89,14 @@ class ISISCallbacks:
             cb("start", {"time": 0, "uid": ""})
             done_event.wait(10.0)
 
+        if self.add_fit_cb or self.add_plot_cb and ax is None:
+            raise ValueError("TODO") #TODO
+
         # TODO be a bit more cleverer here and auto-add a plot if fit toggled to true etc.
-        self.lf = LiveFit(self.fit, y=self.y, x=self.x, yerr=self.yerr)
         if self.add_fit_cb:
+            self.lf = LiveFit(self.fit, y=self.y, x=self.x, yerr=self.yerr)
             self.subs.append(LiveFitPlot(livefit=self.lf, ax=ax))
-        if self.add_plot_cb:
+        if (self.add_plot_cb or self.add_fit_cb) and ax is not None:
             self.subs.append(
                 LivePlot(
                     y=self.y,
@@ -94,9 +107,7 @@ class ISISCallbacks:
                     yerr=self.yerr,
                 )
             )
-        if self.add_peak_stats:
-            self.peak_stats = PeakStats(x=self.x, y=self.y)
-            self.subs.append(self.peak_stats)
+
 
     def _icbc_wrapper(self, plan):
         @bpp.subs_decorator(self.subs)
