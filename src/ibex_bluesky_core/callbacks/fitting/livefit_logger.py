@@ -22,7 +22,7 @@ TIME = "time"
 DATA = "data"
 RB = "rb_number"
 INSTRUMENT = node()
-DEFAULT_PATH = Path("//isis/inst$") / INSTRUMENT / "user" / "TEST" / "scans"
+DEFAULT_PATH = Path("//isis.cclrc.ac.uk/inst$") / INSTRUMENT / "user" / "TEST" / "scans"
 logger = logging.getLogger(__name__)
 
 
