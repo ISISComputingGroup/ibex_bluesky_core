@@ -8,17 +8,11 @@ import bluesky.plan_stubs as bps
 import bluesky.plans as bp
 import matplotlib
 import matplotlib.pyplot as plt
-from bluesky.callbacks import LiveFitPlot, LiveTable
-from bluesky.preprocessors import subs_decorator
 from bluesky.utils import Msg
 from ophyd_async.plan_stubs import ensure_connected
 
 from ibex_bluesky_core.callbacks import ISISCallbacks
-from ibex_bluesky_core.callbacks.file_logger import HumanReadableFileCallback
-from ibex_bluesky_core.callbacks.fitting import LiveFit
 from ibex_bluesky_core.callbacks.fitting.fitting_utils import Linear
-from ibex_bluesky_core.callbacks.fitting.livefit_logger import LiveFitLogger
-from ibex_bluesky_core.callbacks.plotting import LivePlot
 from ibex_bluesky_core.devices import get_pv_prefix
 from ibex_bluesky_core.devices.block import block_rw_rbv
 from ibex_bluesky_core.devices.simpledae import SimpleDae
@@ -29,7 +23,6 @@ from ibex_bluesky_core.devices.simpledae.reducers import (
     GoodFramesNormalizer,
 )
 from ibex_bluesky_core.devices.simpledae.waiters import GoodFramesWaiter
-from ibex_bluesky_core.plan_stubs import call_qt_aware
 from ibex_bluesky_core.run_engine import get_run_engine
 
 NUM_POINTS: int = 3
