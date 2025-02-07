@@ -1,3 +1,5 @@
+from unittest.mock import MagicMock
+
 import pytest
 from bluesky.callbacks import LiveTable
 
@@ -89,12 +91,12 @@ def test_add_fit_cb_without_fit_method_raises():
         )
 
 
+
 # test singularly every cb
 
 # test all of callbacks at once
 
-# test concat fields in hrfile
-# test concat fields in livetable
+# test callback decorator
 
 
 def test_add_human_readable_file_with_global_fields_and_specific_both_get_added():

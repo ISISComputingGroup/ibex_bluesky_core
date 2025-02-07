@@ -22,6 +22,7 @@ logger = logging.getLogger(__name__)
 
 
 class ISISCallbacks:
+    """Collection of ISIS standard callbacks for use within plans."""
     def __init__(
         self,
         x: str | None = None,
@@ -39,15 +40,47 @@ class ISISCallbacks:
         add_peak_stats: bool = True,
         show_fit_on_plot: bool = True,
         ax: plt.Axes | None = None,
-    ):
-        """Collection of ISIS standard callbacks for use within plans. By default, this adds:
-        HumanReadableFileCallback, LiveTable, PeakStats, LiveFit, LiveFitPlot and LivePlot.
+    ) -> None:
+        """By default, this adds:
+
+        - HumanReadableFileCallback
+
+        - LiveTable
+
+        - PeakStats
+
+        - LiveFit
+
+        - LiveFitPlot
+
+        - LivePlot
+
         Results such as fitting outcomes can be accessed from the `live_fit` and `peak_stats` properties.
 
+        This is to be used as a member and then as a decorator if results are needed ie::
+
+            def dae_scan_plan():
+                ...
+                icc = ISISCallbacks(
+                    x=block.name,
+                    y=reducer.intensity.name,
+                    yerr=reducer.intensity_stddev.name,
+                    fit=Linear.fit(),
+                    ...
+                )
+                ...
+
+                @icc
+                def _inner():
+                    yield from ...
+                    ...
+                    print(icc.live_fit.result.fit_report())
+                    print(f"COM: {icc.peak_stats['com']}")
+
         Args:
-            x: The signal _name_ to use for X within plots and fits.
-            y: The signal _name_ to use for Y within plots and fits.
-            yerr: The signal _name_ to use for the Y uncertainty within plots and fits.
+            x: The signal name to use for X within plots and fits.
+            y: The signal name to use for Y within plots and fits.
+            yerr: The signal name to use for the Y uncertainty within plots and fits.
             fit: The fit method to use when fitting.
             measured_fields: the fields to use for both the live table and human-readable file.
             fields_for_live_table: the fields to measure for the live table (in addition to `measured_fields`).
@@ -79,12 +112,12 @@ class ISISCallbacks:
 
         self.subs = []
         if add_human_readable_file_cb:
-            _combined_hr_fields = measured_fields + fields_for_hr_file
-            if not _combined_hr_fields:
+            combined_hr_fields = measured_fields + fields_for_hr_file
+            if not combined_hr_fields:
                 raise ValueError("No fields specified for the human-readable file")
             self.subs.append(
                 HumanReadableFileCallback(
-                    fields=_combined_hr_fields,
+                    fields=combined_hr_fields,
                     output_dir=Path(human_readable_file_output_dir)
                     if human_readable_file_output_dir
                     else DEFAULT_PATH,
@@ -92,11 +125,11 @@ class ISISCallbacks:
             )
 
         if add_table_cb:
-            _combined_lt_fields = measured_fields + fields_for_live_table
-            if not _combined_lt_fields:
+            combined_lt_fields = measured_fields + fields_for_live_table
+            if not combined_lt_fields:
                 raise ValueError("No fields specified for the live table")
             self.subs.append(
-                LiveTable(_combined_lt_fields),
+                LiveTable(combined_lt_fields),
             )
 
         if add_peak_stats:
