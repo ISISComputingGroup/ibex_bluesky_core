@@ -2,15 +2,15 @@
 
 import logging
 import warnings
-from typing import Callable
+from collections import namedtuple
+from typing import Any, Callable
 
 import lmfit
 import numpy as np
 import numpy.typing as npt
-from collections import namedtuple
-from bluesky.callbacks.fitting import PeakStats as _DefaultPeakStats
 from bluesky.callbacks import LiveFit as _DefaultLiveFit
 from bluesky.callbacks.core import make_class_safe
+from bluesky.callbacks.fitting import PeakStats as _DefaultPeakStats
 from event_model.documents.event import Event
 
 logger = logging.getLogger(__name__)
@@ -131,7 +131,7 @@ class LiveFit(_DefaultLiveFit):
             self.__stale = False
 
 
-def center_of_mass(x, y):
+def center_of_mass(x: npt.NDArray[np.float64], y: npt.NDArray[np.float64]) -> float:
     """
     Follows these rules:
         Background does not skew CoM
@@ -156,15 +156,14 @@ def center_of_mass(x, y):
     weight = np.append(weight, [x_diff[0]])
 
     for x_diff_i in range(1, x_diff.size):
-            
         w = [(x_diff[x_diff_i] + x_diff[x_diff_i - 1]) / 2]
         weight = np.append(weight, w)
 
     weight = np.append(weight, [x_diff[-1]])
 
-    weight = weight / np.max(weight) # Normalise weights in terms of max(weights)
+    weight = weight / np.max(weight)  # Normalise weights in terms of max(weights)
 
-    sum_xyw = np.sum(x_sorted * y_sorted * weight) # Weighted CoM calculation
+    sum_xyw = np.sum(x_sorted * y_sorted * weight)  # Weighted CoM calculation
     sum_yw = np.sum(y_sorted * weight)
     com_x = sum_xyw / sum_yw
 
@@ -176,7 +175,12 @@ class PeakStats(_DefaultPeakStats):
     """PeakStats, customized for IBEX."""
 
     @staticmethod
-    def _calc_stats(x, y, fields, edge_count=None):
+    def _calc_stats(
+        x: npt.NDArray[np.float64],
+        y: npt.NDArray[np.float64],
+        fields: dict[str, None | float | npt.NDArray[np.float64]],
+        edge_count: int | None = None,
+    ) -> Any:  # noqa: ANN401 Pyright will not understand as return type depends on arguments
         """Call on bluesky PeakStats but calculate our own centre of mass"""
 
         stats = _DefaultPeakStats._calc_stats(x, y, fields, edge_count)
@@ -186,4 +190,3 @@ class PeakStats(_DefaultPeakStats):
         Stats = namedtuple("Stats", field_names=fields.keys())
         stats = Stats(**fields)
         return stats
-    

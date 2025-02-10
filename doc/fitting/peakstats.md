@@ -12,7 +12,7 @@ from ibex_bluesky_core.callbacks.fitting import LiveFit
 
 ## Our CoM Algorithm
 
-Given non-continuous arrays of collected data `x` and `y`, [`center_of_mass(x, y)`](({py:obj}`ibex_bluesky_core.callbacks.fitting.center_of_mass)`) returns the `x` value of the centre of mass.
+Given non-continuous arrays of collected data `x` and `y`, ({py:obj}`ibex_bluesky_core.callbacks.fitting.center_of_mass`) returns the `x` value of the centre of mass.
 
 Our use cases require that our algorithm abides to the following rules:
 - Any background on data does not skew the centre of mass
