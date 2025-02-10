@@ -2,6 +2,7 @@
 
 import logging
 import threading
+from collections.abc import Generator
 from os import PathLike
 from pathlib import Path
 from typing import Callable
@@ -11,7 +12,7 @@ import matplotlib.pyplot as plt
 from bluesky.callbacks import LiveFitPlot, LiveTable
 from bluesky.callbacks.fitting import PeakStats
 from bluesky.callbacks.mpl_plotting import QtAwareCallback
-from bluesky.utils import make_decorator
+from bluesky.utils import Msg, make_decorator
 from event_model import RunStart
 
 from ibex_bluesky_core.callbacks.file_logger import DEFAULT_PATH, HumanReadableFileCallback
@@ -20,9 +21,12 @@ from ibex_bluesky_core.callbacks.plotting import LivePlot
 
 logger = logging.getLogger(__name__)
 
+# ruff: noqa: PLR0913, PLR0912, PLR0917
+
 
 class ISISCallbacks:
-    """Collection of ISIS standard callbacks for use within plans."""
+    """ISIS standard callbacks for use within plans."""
+
     def __init__(
         self,
         x: str | None = None,
@@ -41,7 +45,9 @@ class ISISCallbacks:
         show_fit_on_plot: bool = True,
         ax: plt.Axes | None = None,
     ) -> None:
-        """By default, this adds:
+        """A collection of ISIS standard callbacks for use within plans.
+
+        By default, this adds:
 
         - HumanReadableFileCallback
 
@@ -55,7 +61,7 @@ class ISISCallbacks:
 
         - LivePlot
 
-        Results such as fitting outcomes can be accessed from the `live_fit` and `peak_stats` properties.
+        Results can be accessed from the `live_fit` and `peak_stats` properties.
 
         This is to be used as a member and then as a decorator if results are needed ie::
 
@@ -91,9 +97,10 @@ class ISISCallbacks:
             add_fit_cb: whether to add a fitting callback (which will be displayed on a plot)
             add_table_cb: whether to add a table callback.
             add_peak_stats: whether to add a peak stats callback.
+            show_fit_on_plot: whether to show fit on plot.
             ax: An optional axes object to use for plotting.
 
-        """
+        """  # noqa
         if measured_fields is None:
             measured_fields = []
         if fields_for_live_table is None:
@@ -183,12 +190,13 @@ class ISISCallbacks:
         """The peak stats object containing statistics ie. centre of mass."""
         return self._peak_stats
 
-    def _icbc_wrapper(self, plan):
+    def _icbc_wrapper(self, plan: Callable) -> Generator[Msg, None, None]:
         @bpp.subs_decorator(self.subs)
-        def _inner():
+        def _inner() -> Generator[Msg, None, None]:
             return (yield from plan)
 
         return (yield from _inner())
 
     def __call__(self, f: Callable) -> Callable:
+        """Make a decorator to wrap the plan and subscribe to all callbacks."""
         return make_decorator(self._icbc_wrapper)()(f)

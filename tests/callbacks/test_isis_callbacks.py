@@ -1,12 +1,13 @@
-from unittest.mock import MagicMock
-
 import pytest
-from bluesky.callbacks import LiveTable
+from bluesky.callbacks import LiveFitPlot, LiveTable
+from bluesky.callbacks.fitting import PeakStats
 
 from ibex_bluesky_core.callbacks import (
     HumanReadableFileCallback,
     ISISCallbacks,
+    LivePlot,
 )
+from ibex_bluesky_core.callbacks.fitting.fitting_utils import Linear
 
 
 def test_no_measured_fields_for_human_readable_file_raises():
@@ -91,7 +92,6 @@ def test_add_fit_cb_without_fit_method_raises():
         )
 
 
-
 # test singularly every cb
 
 # test all of callbacks at once
@@ -144,3 +144,77 @@ def test_add_livetable_with_global_fields_and_specific_both_get_added():
 
     assert isinstance(icc.subs[0], LiveTable)
     assert icc.subs[0]._fields == global_fields + specific_fields
+
+
+def test_add_livefit_then_get_livefit_property_returns_livefit():
+    x = "X_signal"
+    y = "Y_signal"
+
+    fit_method = Linear().fit()
+
+    icc = ISISCallbacks(
+        x=x,
+        y=y,
+        fit=fit_method,
+        add_table_cb=False,
+        add_plot_cb=True,
+        show_fit_on_plot=False,
+        add_peak_stats=False,
+        add_fit_cb=True,
+        add_human_readable_file_cb=False,
+    )
+
+    assert icc.live_fit.method == fit_method
+
+
+def test_add_peakstats_then_get_peakstats_property_returns_peakstats():
+    x = "X_signal"
+    y = "Y_signal"
+
+    icc = ISISCallbacks(
+        x=x,
+        y=y,
+        add_table_cb=False,
+        add_plot_cb=False,
+        show_fit_on_plot=False,
+        add_peak_stats=True,
+        add_fit_cb=False,
+        add_human_readable_file_cb=False,
+    )
+
+    assert isinstance(icc.peak_stats, PeakStats)
+
+
+def test_raises_when_fit_requested_with_no_method():
+    x = "X_signal"
+    y = "Y_signal"
+    with pytest.raises(ValueError, match=r"fit method must be specified if add_fit_cb is True"):
+        _ = ISISCallbacks(
+            x=x,
+            y=y,
+            add_table_cb=False,
+            add_plot_cb=False,
+            show_fit_on_plot=False,
+            add_peak_stats=False,
+            add_fit_cb=True,
+            add_human_readable_file_cb=False,
+        )
+
+
+def test_add_livefitplot_without_plot_then_plot_is_set_up_regardless():
+    x = "X_signal"
+    y = "Y_signal"
+
+    icc = ISISCallbacks(
+        x=x,
+        y=y,
+        fit=Linear().fit(),
+        add_table_cb=False,
+        add_plot_cb=False,
+        show_fit_on_plot=True,
+        add_peak_stats=False,
+        add_fit_cb=True,
+        add_human_readable_file_cb=False,
+    )
+    assert isinstance(icc.subs[0], LiveFitPlot)
+    assert isinstance(icc.subs[1], LivePlot)
