@@ -1,3 +1,5 @@
+# pyright: reportMissingParameterType=false
+import bluesky.plan_stubs as bps
 import pytest
 from bluesky.callbacks import LiveFitPlot, LiveTable
 from bluesky.callbacks.fitting import PeakStats
@@ -164,7 +166,7 @@ def test_add_livefit_then_get_livefit_property_returns_livefit():
         add_human_readable_file_cb=False,
     )
 
-    assert icc.live_fit.method == fit_method
+    assert icc.live_fit.method == fit_method  # pyright: ignore reportOptionalMemberAccess
 
 
 def test_add_peakstats_then_get_peakstats_property_returns_peakstats():
@@ -218,3 +220,31 @@ def test_add_livefitplot_without_plot_then_plot_is_set_up_regardless():
     )
     assert isinstance(icc.subs[0], LiveFitPlot)
     assert isinstance(icc.subs[1], LivePlot)
+
+
+def test_call_decorator(RE):
+    x = "X_signal"
+    y = "Y_signal"
+    icc = ISISCallbacks(
+        x=x,
+        y=y,
+        add_plot_cb=True,
+        add_fit_cb=False,
+        add_table_cb=False,
+        add_peak_stats=False,
+        add_human_readable_file_cb=False,
+        show_fit_on_plot=False,
+    )
+
+    def f():
+        def _outer():
+            @icc
+            def _inner():
+                assert isinstance(icc.subs[0], LivePlot)
+                yield from bps.null()
+
+            yield from _inner()
+
+        return (yield from _outer())
+
+    RE(f())

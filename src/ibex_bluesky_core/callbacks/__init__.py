@@ -5,7 +5,7 @@ import threading
 from collections.abc import Generator
 from os import PathLike
 from pathlib import Path
-from typing import Callable
+from typing import Any, Callable
 
 import bluesky.preprocessors as bpp
 import matplotlib.pyplot as plt
@@ -14,6 +14,7 @@ from bluesky.callbacks.fitting import PeakStats
 from bluesky.callbacks.mpl_plotting import QtAwareCallback
 from bluesky.utils import Msg, make_decorator
 from event_model import RunStart
+from matplotlib.axes import Axes
 
 from ibex_bluesky_core.callbacks.file_logger import DEFAULT_PATH, HumanReadableFileCallback
 from ibex_bluesky_core.callbacks.fitting import FitMethod, LiveFit
@@ -43,7 +44,7 @@ class ISISCallbacks:
         add_table_cb: bool = True,
         add_peak_stats: bool = True,
         show_fit_on_plot: bool = True,
-        ax: plt.Axes | None = None,
+        ax: Axes | None = None,
     ) -> None:
         """A collection of ISIS standard callbacks for use within plans.
 
@@ -112,7 +113,7 @@ class ISISCallbacks:
             raise ValueError(
                 "Fit has been requested to show on plot without a fitting method or callback."
             )
-        if (add_peak_stats or add_fit_cb or add_plot_cb) and (not x or not y):
+        if (add_peak_stats or add_fit_cb or add_plot_cb) and (x is None or y is None):
             raise ValueError(
                 "X and/or Y not specified when trying to add a plot, fit or peak stats."
             )
@@ -164,14 +165,14 @@ class ISISCallbacks:
         if add_fit_cb:
             if fit is None:
                 raise ValueError("fit method must be specified if add_fit_cb is True")
-            self._live_fit = LiveFit(fit, y=y, x=x, yerr=yerr)
+            self._live_fit = LiveFit(fit, y=y, x=x, yerr=yerr)  # pyright: ignore reportArgumentType
             if show_fit_on_plot:
                 self.subs.append(LiveFitPlot(livefit=self._live_fit, ax=ax))
 
         if add_plot_cb or show_fit_on_plot:
             self.subs.append(
                 LivePlot(
-                    y=y,
+                    y=y,  # pyright: ignore reportArgumentType
                     x=x,
                     marker="x",
                     linestyle="none",
@@ -190,13 +191,13 @@ class ISISCallbacks:
         """The peak stats object containing statistics ie. centre of mass."""
         return self._peak_stats
 
-    def _icbc_wrapper(self, plan: Callable) -> Generator[Msg, None, None]:
+    def _icbc_wrapper(self, plan: Generator[Msg, None, None]) -> Generator[Msg, None, None]:
         @bpp.subs_decorator(self.subs)
         def _inner() -> Generator[Msg, None, None]:
             return (yield from plan)
 
         return (yield from _inner())
 
-    def __call__(self, f: Callable) -> Callable:
+    def __call__(self, f: Callable[..., Any]) -> Callable[..., Any]:
         """Make a decorator to wrap the plan and subscribe to all callbacks."""
         return make_decorator(self._icbc_wrapper)()(f)
