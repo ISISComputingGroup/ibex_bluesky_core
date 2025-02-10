@@ -89,6 +89,12 @@ def dae_scan_plan() -> Generator[Msg, None, None]:
         / "logs"
         / "bluesky"
         / "output_files",
+        live_fit_logger_output_dir=Path("C:\\")
+        / "instrument"
+        / "var"
+        / "logs"
+        / "bluesky"
+        / "fitting",
     )
 
     @icc
