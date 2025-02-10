@@ -132,17 +132,16 @@ class LiveFit(_DefaultLiveFit):
 
 
 def center_of_mass(x: npt.NDArray[np.float64], y: npt.NDArray[np.float64]) -> float:
-    """
-    Follows these rules:
+    """Compute our own centre of mass.
+
+    Follow these rules:
         Background does not skew CoM
         Order of data does not skew CoM
         Non constant point spacing does not skew CoM
     Assumes that the peak is positive
     """
-
     # Offset points for any background
     # Sort points in terms of x
-
     arg_sorted = np.argsort(x)
     x_sorted = np.take_along_axis(x, arg_sorted, axis=None)
     y_sorted = np.take_along_axis(y - np.min(y), arg_sorted, axis=None)
@@ -150,7 +149,7 @@ def center_of_mass(x: npt.NDArray[np.float64], y: npt.NDArray[np.float64]) -> fl
     # Each point has its own weight given by its distance to its neighbouring point
     # Edge cases are calculated as x_1 - x_0 and x_-1 - x_-2
 
-    weight = np.empty((0))
+    weight = np.empty(0)
     x_diff = np.diff(x_sorted)
 
     weight = np.append(weight, [x_diff[0]])
@@ -161,7 +160,7 @@ def center_of_mass(x: npt.NDArray[np.float64], y: npt.NDArray[np.float64]) -> fl
 
     weight = np.append(weight, [x_diff[-1]])
 
-    weight = weight / np.max(weight)  # Normalise weights in terms of max(weights)
+    weight /= np.max(weight)  # Normalise weights in terms of max(weights)
 
     sum_xyw = np.sum(x_sorted * y_sorted * weight)  # Weighted CoM calculation
     sum_yw = np.sum(y_sorted * weight)
@@ -178,12 +177,11 @@ class PeakStats(_DefaultPeakStats):
     def _calc_stats(
         x: npt.NDArray[np.float64],
         y: npt.NDArray[np.float64],
-        fields: dict[str, None | float | npt.NDArray[np.float64]],
+        fields: dict[str, float | npt.NDArray[np.float64] | None],
         edge_count: int | None = None,
     ) -> Any:  # noqa: ANN401 Pyright will not understand as return type depends on arguments
-        """Call on bluesky PeakStats but calculate our own centre of mass"""
-
-        stats = _DefaultPeakStats._calc_stats(x, y, fields, edge_count)
+        """Call on bluesky PeakStats but calculate our own centre of mass."""
+        stats = _DefaultPeakStats._calc_stats(x, y, fields, edge_count)  # noqa: SLF001
         (fields["com"],) = (center_of_mass(x, y),)
         # This will calculate CoM twice, once for Bluesky's calc and one for us
         # but keeps our value. Done this way for sleekness.
