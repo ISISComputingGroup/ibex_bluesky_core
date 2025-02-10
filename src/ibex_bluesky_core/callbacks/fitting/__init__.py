@@ -135,9 +135,9 @@ def center_of_mass(x: npt.NDArray[np.float64], y: npt.NDArray[np.float64]) -> fl
     """Compute our own centre of mass.
 
     Follow these rules:
-        Background does not skew CoM
-        Order of data does not skew CoM
-        Non constant point spacing does not skew CoM
+    Background does not skew CoM
+    Order of data does not skew CoM
+    Non constant point spacing does not skew CoM
     Assumes that the peak is positive
     """
     # Offset points for any background
