@@ -165,6 +165,8 @@ class ISISCallbacks:
             self._live_fit = LiveFit(fit, y=y, x=x, yerr=yerr)
             if show_fit_on_plot:
                 self._subs.append(LiveFitPlot(livefit=self._live_fit, ax=ax))
+            else:
+                self._subs.append(self._live_fit)
 
         if add_plot_cb or show_fit_on_plot:
             self._subs.append(
