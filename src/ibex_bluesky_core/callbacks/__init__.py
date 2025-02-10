@@ -16,8 +16,19 @@ from bluesky.utils import Msg, make_decorator
 from event_model import RunStart
 from matplotlib.axes import Axes
 
-from ibex_bluesky_core.callbacks.file_logger import DEFAULT_PATH, HumanReadableFileCallback
+from ibex_bluesky_core.callbacks.file_logger import (
+    DEFAULT_PATH as DEFAULT_PATH_HRF,
+)
+from ibex_bluesky_core.callbacks.file_logger import (
+    HumanReadableFileCallback,
+)
 from ibex_bluesky_core.callbacks.fitting import FitMethod, LiveFit
+from ibex_bluesky_core.callbacks.fitting.livefit_logger import (
+    DEFAULT_PATH as DEFAULT_PATH_LFL,
+)
+from ibex_bluesky_core.callbacks.fitting.livefit_logger import (
+    LiveFitLogger,
+)
 from ibex_bluesky_core.callbacks.plotting import LivePlot
 
 logger = logging.getLogger(__name__)
@@ -33,18 +44,21 @@ class ISISCallbacks:
         x: str,
         y: str,
         yerr: str | None = None,
-        fit: FitMethod | None = None,
         measured_fields: list[str] | None = None,
+        add_table_cb: bool = True,
         fields_for_live_table: list[str] | None = None,
+        add_human_readable_file_cb: bool = True,
         fields_for_hr_file: list[str] | None = None,
         human_readable_file_output_dir: str | PathLike[str] | None = None,
-        add_human_readable_file_cb: bool = True,
         add_plot_cb: bool = True,
-        add_fit_cb: bool = True,
-        add_table_cb: bool = True,
-        add_peak_stats: bool = True,
-        show_fit_on_plot: bool = True,
         ax: Axes | None = None,
+        add_fit_cb: bool = True,
+        fit: FitMethod | None = None,
+        show_fit_on_plot: bool = True,
+        add_peak_stats: bool = True,
+        add_live_fit_logger: bool = True,
+        live_fit_logger_output_dir: Path | None = None,
+        live_fit_logger_postfix: str = "isc",
     ) -> None:
         """A collection of ISIS standard callbacks for use within plans.
 
@@ -88,19 +102,21 @@ class ISISCallbacks:
             x: The signal name to use for X within plots and fits.
             y: The signal name to use for Y within plots and fits.
             yerr: The signal name to use for the Y uncertainty within plots and fits.
-            fit: The fit method to use when fitting.
             measured_fields: the fields to use for both the live table and human-readable file.
+            add_table_cb: whether to add a table callback.
             fields_for_live_table: the fields to measure for the live table (in addition to `measured_fields`).
+            add_human_readable_file_cb: whether to add a human-readable file callback.
             fields_for_hr_file: the fields to measure for the human-readable file (in addition to `measured_fields`).
             human_readable_file_output_dir: the output directory for human-readable files. can be blank and will default.
-            add_human_readable_file_cb: whether to add a human-readable file callback.
             add_plot_cb: whether to add a plot callback.
-            add_fit_cb: whether to add a fitting callback (which will be displayed on a plot)
-            add_table_cb: whether to add a table callback.
-            add_peak_stats: whether to add a peak stats callback.
-            show_fit_on_plot: whether to show fit on plot.
             ax: An optional axes object to use for plotting.
-
+            add_fit_cb: whether to add a fitting callback (which will be displayed on a plot)
+            fit: The fit method to use when fitting.
+            show_fit_on_plot: whether to show fit on plot.
+            add_peak_stats: whether to add a peak stats callback.
+            add_live_fit_logger: whether to add a live fit logger.
+            live_fit_logger_output_dir: the output directory for live fit logger.
+            live_fit_logger_postfix: the postfix to add to live fit logger.
         """  # noqa
         self._subs = []
         self._peak_stats = None
@@ -127,7 +143,7 @@ class ISISCallbacks:
                     fields=combined_hr_fields,
                     output_dir=Path(human_readable_file_output_dir)
                     if human_readable_file_output_dir
-                    else DEFAULT_PATH,
+                    else DEFAULT_PATH_HRF,
                 ),
             )
 
@@ -167,6 +183,19 @@ class ISISCallbacks:
                 self._subs.append(LiveFitPlot(livefit=self._live_fit, ax=ax))
             else:
                 self._subs.append(self._live_fit)
+            if add_live_fit_logger:
+                self._subs.append(
+                    LiveFitLogger(
+                        livefit=self._live_fit,
+                        x=x,
+                        y=y,
+                        yerr=yerr,
+                        output_dir=DEFAULT_PATH_LFL
+                        if live_fit_logger_output_dir is None
+                        else live_fit_logger_output_dir,
+                        postfix=live_fit_logger_postfix,
+                    )
+                )
 
         if add_plot_cb or show_fit_on_plot:
             self._subs.append(

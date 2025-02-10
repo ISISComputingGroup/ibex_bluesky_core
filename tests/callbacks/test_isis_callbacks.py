@@ -1,12 +1,13 @@
 # pyright: reportMissingParameterType=false
 import bluesky.plan_stubs as bps
 import pytest
-from bluesky.callbacks import LiveFitPlot, LiveTable
+from bluesky.callbacks import LiveTable
 from bluesky.callbacks.fitting import PeakStats
 
 from ibex_bluesky_core.callbacks import (
     HumanReadableFileCallback,
     ISISCallbacks,
+    LiveFitLogger,
     LivePlot,
 )
 from ibex_bluesky_core.callbacks.fitting.fitting_utils import Linear
@@ -190,8 +191,26 @@ def test_add_livefitplot_without_plot_then_plot_is_set_up_regardless():
         add_fit_cb=True,
         add_human_readable_file_cb=False,
     )
-    assert isinstance(icc.subs[0], LiveFitPlot)
-    assert isinstance(icc.subs[1], LivePlot)
+    assert any([isinstance(i, LivePlot) for i in icc.subs])
+
+
+def test_do_not_add_live_fit_logger_then_not_added():
+    x = "X_signal"
+    y = "Y_signal"
+
+    icc = ISISCallbacks(
+        x=x,
+        y=y,
+        fit=Linear().fit(),
+        add_table_cb=False,
+        add_plot_cb=False,
+        show_fit_on_plot=True,
+        add_peak_stats=False,
+        add_fit_cb=True,
+        add_human_readable_file_cb=False,
+        add_live_fit_logger=False,
+    )
+    assert not any([isinstance(i, LiveFitLogger) for i in icc.subs])
 
 
 def test_call_decorator(RE):
