@@ -428,7 +428,7 @@ A [`DaeSpectra`](ibex_bluesky_core.devices.dae.dae_spectra) object provides 3 ar
   - Not suitable for summing counts directly
   - Gives a continuous plot when plotted against x directly.
 
-The `Dae` base class does not provide any spectra by default. User-level classes should specify 
+The [`Dae`](ibex_bluesky_core.devices.dae) base class does not provide any spectra by default. User-level classes should specify 
 the set of spectra which they are interested in.
 
 
