@@ -96,8 +96,8 @@ def dae_scan_plan() -> Generator[Msg, None, None]:
         yield from bps.mv(dae.number_of_periods, NUM_POINTS)  # type: ignore
         # Pyright does not understand as bluesky isn't typed yet
         yield from bp.scan([dae], block, 0, 10, num=NUM_POINTS)
-        print(icc.live_fit.result.fit_report())
-        print(f"COM: {icc.peak_stats['com']}")
+        print(icc.live_fit.result.fit_report())  # pyright: ignore reportOptionalMemberAccess
+        print(f"COM: {icc.peak_stats['com']}")  # pyright: ignore reportOptionalSubscript
 
     yield from _inner()
 
