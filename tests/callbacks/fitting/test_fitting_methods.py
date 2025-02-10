@@ -267,7 +267,7 @@ class TestPolynomial:
             x = np.zeros(3)
 
             with pytest.raises(
-                ValueError, match="The polynomial degree should be at least 0 and smaller than 8."
+                ValueError, match=r"The polynomial degree should be at least 0 and smaller than 8."
             ):
                 Polynomial.model(deg).func(x)
 
@@ -304,7 +304,7 @@ class TestPolynomial:
 
             # -1 and 8 are both invalid polynomial degrees
             with pytest.raises(
-                ValueError, match="The polynomial degree should be at least 0 and smaller than 8."
+                ValueError, match=r"The polynomial degree should be at least 0 and smaller than 8."
             ):
                 Polynomial.guess(deg)(x, y)
 
