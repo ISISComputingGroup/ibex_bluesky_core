@@ -9,7 +9,7 @@ from typing import Any, Callable
 
 import bluesky.preprocessors as bpp
 import matplotlib.pyplot as plt
-from bluesky.callbacks import LiveFitPlot, LiveTable
+from bluesky.callbacks import CallbackBase, LiveFitPlot, LiveTable
 from bluesky.callbacks.fitting import PeakStats
 from bluesky.callbacks.mpl_plotting import QtAwareCallback
 from bluesky.utils import Msg, make_decorator
@@ -30,8 +30,8 @@ class ISISCallbacks:
 
     def __init__(
         self,
-        x: str | None = None,
-        y: str | None = None,
+        x: str,
+        y: str,
         yerr: str | None = None,
         fit: FitMethod | None = None,
         measured_fields: list[str] | None = None,
@@ -102,6 +102,9 @@ class ISISCallbacks:
             ax: An optional axes object to use for plotting.
 
         """  # noqa
+        self._subs = []
+        self._peak_stats = None
+        self._live_fit = None
         if measured_fields is None:
             measured_fields = []
         if fields_for_live_table is None:
@@ -109,21 +112,17 @@ class ISISCallbacks:
         if fields_for_hr_file is None:
             fields_for_hr_file = []
 
+        measured_fields.append(x)
+        measured_fields.append(y)
+
         if show_fit_on_plot and (not add_fit_cb or fit is None):
             raise ValueError(
                 "Fit has been requested to show on plot without a fitting method or callback."
             )
-        if (add_peak_stats or add_fit_cb or add_plot_cb) and (x is None or y is None):
-            raise ValueError(
-                "X and/or Y not specified when trying to add a plot, fit or peak stats."
-            )
 
-        self.subs = []
         if add_human_readable_file_cb:
             combined_hr_fields = measured_fields + fields_for_hr_file
-            if not combined_hr_fields:
-                raise ValueError("No fields specified for the human-readable file")
-            self.subs.append(
+            self._subs.append(
                 HumanReadableFileCallback(
                     fields=combined_hr_fields,
                     output_dir=Path(human_readable_file_output_dir)
@@ -134,15 +133,13 @@ class ISISCallbacks:
 
         if add_table_cb:
             combined_lt_fields = measured_fields + fields_for_live_table
-            if not combined_lt_fields:
-                raise ValueError("No fields specified for the live table")
-            self.subs.append(
+            self._subs.append(
                 LiveTable(combined_lt_fields),
             )
 
         if add_peak_stats:
             self._peak_stats = PeakStats(x=x, y=y)
-            self.subs.append(self._peak_stats)
+            self._subs.append(self._peak_stats)
 
         if (add_plot_cb or show_fit_on_plot) and not ax:
             logger.debug("No axis provided, creating a new one")
@@ -165,14 +162,14 @@ class ISISCallbacks:
         if add_fit_cb:
             if fit is None:
                 raise ValueError("fit method must be specified if add_fit_cb is True")
-            self._live_fit = LiveFit(fit, y=y, x=x, yerr=yerr)  # pyright: ignore reportArgumentType
+            self._live_fit = LiveFit(fit, y=y, x=x, yerr=yerr)
             if show_fit_on_plot:
-                self.subs.append(LiveFitPlot(livefit=self._live_fit, ax=ax))
+                self._subs.append(LiveFitPlot(livefit=self._live_fit, ax=ax))
 
         if add_plot_cb or show_fit_on_plot:
-            self.subs.append(
+            self._subs.append(
                 LivePlot(
-                    y=y,  # pyright: ignore reportArgumentType
+                    y=y,
                     x=x,
                     marker="x",
                     linestyle="none",
@@ -182,14 +179,23 @@ class ISISCallbacks:
             )
 
     @property
-    def live_fit(self) -> LiveFit | None:
+    def live_fit(self) -> LiveFit:
         """The live fit object containing fitting results."""
+        if self._live_fit is None:
+            raise ValueError("live_fit was not added as a callback.")
         return self._live_fit
 
     @property
-    def peak_stats(self) -> PeakStats | None:
+    def peak_stats(self) -> PeakStats:
         """The peak stats object containing statistics ie. centre of mass."""
+        if self._peak_stats is None:
+            raise ValueError("peak stats was not added as a callback.")
         return self._peak_stats
+
+    @property
+    def subs(self) -> list[CallbackBase]:
+        """The list of subscribed callbacks."""
+        return self._subs
 
     def _icbc_wrapper(self, plan: Generator[Msg, None, None]) -> Generator[Msg, None, None]:
         @bpp.subs_decorator(self.subs)
