@@ -15,7 +15,7 @@ from bluesky.utils import Msg
 from ophyd_async.plan_stubs import ensure_connected
 
 from ibex_bluesky_core.callbacks.file_logger import HumanReadableFileCallback
-from ibex_bluesky_core.callbacks.fitting import LiveFit
+from ibex_bluesky_core.callbacks.fitting import FitMethod, LiveFit
 from ibex_bluesky_core.callbacks.fitting.fitting_utils import Fit, Linear, Trapezoid
 from ibex_bluesky_core.callbacks.plotting import LivePlot
 from ibex_bluesky_core.devices import get_pv_prefix
@@ -33,13 +33,13 @@ NUM_POINTS: int = 3
 DEFAULT_DET = 3
 DEFAULT_MON = 1
 READABLE_FILE_OUTPUT_DIR = Path("C:\\") / "instrument" / "var" / "logs" / "bluesky" / "output_files"
-
+DEFAULT_FIT_METHOD= Linear().fit()
 
 def continuous_scan_plan(
     mot_block: BlockMot, centre: float, size: float, time: float, iterations: int
 ) -> Generator[Msg, None, None]:
     """Continuous scan plan for scanning a motor against a laser diode readback.
-    time is given as the time taken for one 'sweep' for the total size (width)
+    time is given as the time taken for one 'sweep' for the total size (width).
 
     """
     motor = mot_block
@@ -100,7 +100,7 @@ def continuous_scan_plan(
 
         yield from bps.mv(motor, initial_position)
         yield from bps.mv(motor.velocity, size / time)
-        for i in range(iterations):
+        for _i in range(iterations):
             yield from polling_plan(final_position)
             yield from polling_plan(initial_position)
 
@@ -164,7 +164,7 @@ def scan(
     frames: int,
     det: int = DEFAULT_DET,
     mon: int = DEFAULT_MON,
-    model: Fit = Linear(),
+    model: FitMethod = DEFAULT_FIT_METHOD,
     periods: bool = True,
     save_run: bool = False,
     rel: bool = False,
@@ -180,7 +180,7 @@ def scan(
     _, ax = yield from call_qt_aware(plt.subplots)
 
     livefit = LiveFit(
-        model.fit(),
+        model,
         y=dae.reducer.intensity.name,
         yerr=dae.reducer.intensity_stddev.name,
         x=block.name,  # type: ignore
@@ -203,7 +203,7 @@ def scan(
 
     @bpp.subs_decorator(
         [
-            HumanReadableFileCallback(READABLE_FILE_OUTPUT_DIR, fields),
+            HumanReadableFileCallback(output_dir=READABLE_FILE_OUTPUT_DIR, fields=fields),
             LivePlot(
                 y=dae.reducer.intensity.name,  # type: ignore
                 yerr=dae.reducer.intensity_stddev.name,  # type: ignore
@@ -248,7 +248,7 @@ def adaptive_scan(
     frames: int,
     det: int = DEFAULT_DET,
     mon: int = DEFAULT_MON,
-    model: Fit = Linear(),
+    model: FitMethod = Linear().fit(),
     periods: bool = True,
     save_run: bool = False,
     rel: bool = False,
@@ -264,7 +264,7 @@ def adaptive_scan(
     _, ax = yield from call_qt_aware(plt.subplots)
 
     livefit = LiveFit(
-        model.fit(),
+        model,
         y=dae.reducer.intensity.name,
         yerr=dae.reducer.intensity_stddev.name,
         x=block.name,  # type: ignore

@@ -12,7 +12,12 @@ from ophyd_async.epics.core import epics_signal_r, epics_signal_w
 
 
 class ReflParameter(StandardReadable):
-    def __init__(self, prefix: str, name: str):
+    """Utility device for a reflectometry server parameter."""
+
+    def __init__(self, prefix: str, name: str) -> None:
+        """
+
+        """
         with self.add_children_as_readables(HintedSignal):
             self.readback: SignalR[float] = epics_signal_r(float, f"{prefix}REFL_01:PARAM:{name}")
         self.setpoint: SignalW[float] = epics_signal_w(float, f"{prefix}REFL_01:PARAM:{name}:SP")

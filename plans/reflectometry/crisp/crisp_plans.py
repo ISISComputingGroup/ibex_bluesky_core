@@ -1,5 +1,5 @@
 """e.g.
-RE(scan("S4VG", -1, 1, 25, frames=20, model=fitting_utils.SlitScan()))
+RE(scan("S4VG", -1, 1, 25, frames=20, model=fitting_utils.SlitScan())).
 """
 
 from pathlib import Path
@@ -12,7 +12,7 @@ from bluesky.callbacks import LiveFitPlot, LiveTable
 from ophyd_async.plan_stubs import ensure_connected
 
 from ibex_bluesky_core.callbacks.file_logger import HumanReadableFileCallback
-from ibex_bluesky_core.callbacks.fitting import LiveFit
+from ibex_bluesky_core.callbacks.fitting import FitMethod, LiveFit
 from ibex_bluesky_core.callbacks.fitting.fitting_utils import Fit, Linear
 from ibex_bluesky_core.callbacks.fitting.livefit_logger import LiveFitLogger
 from ibex_bluesky_core.callbacks.plotting import LivePlot
@@ -84,7 +84,7 @@ def scan(
     det: int = DEFAULT_DET,
     mon: int = DEFAULT_MON,
     pixel_range: int = 0,
-    model: Fit = Linear(),
+    model: FitMethod = Linear().fit(),
     periods: bool = True,
     save_run: bool = False,
     rel: bool = False,
@@ -103,7 +103,7 @@ def scan(
     _, ax = yield from call_qt_aware(plt.subplots)
 
     livefit = LiveFit(
-        model.fit(),
+        model,
         y=dae.reducer.intensity.name,
         yerr=dae.reducer.intensity_stddev.name,
         x=block.name,  # type: ignore
@@ -124,7 +124,7 @@ def scan(
 
     @bpp.subs_decorator(
         [
-            HumanReadableFileCallback(READABLE_FILE_OUTPUT_DIR, fields),
+            HumanReadableFileCallback(output_dir=READABLE_FILE_OUTPUT_DIR, fields=fields),
             LivePlot(
                 y=dae.reducer.intensity.name,  # type: ignore
                 yerr=dae.reducer.intensity_stddev.name,  # type: ignore
