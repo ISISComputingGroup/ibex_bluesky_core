@@ -1,11 +1,10 @@
-"""Creates a readable .csv file of Bluesky fitting metrics."""
+"""Creates a readable text file, with comma separated values of Bluesky fitting metrics."""
 
 import csv
 import logging
 import os
 from datetime import datetime
 from pathlib import Path
-from platform import node
 from typing import Optional
 from zoneinfo import ZoneInfo
 
@@ -15,14 +14,17 @@ from event_model.documents.event import Event
 from event_model.documents.run_start import RunStart
 from event_model.documents.run_stop import RunStop
 
+from ibex_bluesky_core.callbacks._utils import (
+    DATA,
+    DEFAULT_PATH,
+    INSTRUMENT,
+    RB,
+    TIME,
+    UID,
+    UNKNOWN_RB,
+)
 from ibex_bluesky_core.callbacks.fitting import LiveFit
 
-UID = "uid"
-TIME = "time"
-DATA = "data"
-RB = "rb_number"
-INSTRUMENT = node()
-DEFAULT_PATH = Path("//isis/inst$") / INSTRUMENT / "user" / "TEST" / "scans"
 logger = logging.getLogger(__name__)
 
 
@@ -72,15 +74,15 @@ class LiveFitLogger(CallbackBase):
 
         """
         datetime_obj = datetime.fromtimestamp(doc[TIME])
-        title_format_datetime = datetime_obj.astimezone(ZoneInfo("Europe/London")).strftime(
+        title_format_datetime = datetime_obj.astimezone(ZoneInfo("UTC")).strftime(
             "%Y-%m-%d_%H-%M-%S"
         )
         self.output_dir.mkdir(parents=True, exist_ok=True)
         self.current_start_document = doc[UID]
-        file = f"{INSTRUMENT}_{self.x}_{self.y}_{title_format_datetime}Z{self.postfix}.csv"
-        rb_num = doc.get("rb_number", "Unknown RB")
-        if rb_num == "Unknown RB":
-            logger.warning('No RB number found, will save to "Unknown RB"')
+        file = f"{INSTRUMENT}_{self.x}_{self.y}_{title_format_datetime}Z{self.postfix}.txt"
+        rb_num = doc.get(RB, UNKNOWN_RB)
+        if rb_num == UNKNOWN_RB:
+            logger.warning('No RB number found, will save to "%s"', UNKNOWN_RB)
         self.filename = self.output_dir / f"{rb_num}" / file
 
     def event(self, doc: Event) -> Event:
@@ -126,13 +128,15 @@ class LiveFitLogger(CallbackBase):
 
         self.stats = self.livefit.result.fit_report().split("\n")
 
+        # make sure the parent directory exists, create it if not
+        os.makedirs(self.filename.parent, exist_ok=True)
+
         # Writing to csv file
         with open(self.filename, "w", newline="", encoding="utf-8") as csvfile:
             # Writing the data
             self.csvwriter = csv.writer(csvfile)
 
-            for row in self.stats:
-                csvfile.write(row + os.linesep)
+            csvfile.writelines([row + os.linesep for row in self.stats])
 
             csvfile.write(os.linesep)  # Space out file
             csvfile.write(os.linesep)
