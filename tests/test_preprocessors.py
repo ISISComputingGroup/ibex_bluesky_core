@@ -6,7 +6,7 @@ from unittest.mock import patch
 import pytest
 from bluesky import preprocessors as bpp
 from bluesky.utils import Msg
-from ophyd_async.core import set_mock_value
+from ophyd_async.testing import set_mock_value
 from ophyd_async.epics.core import epics_signal_r
 
 from ibex_bluesky_core.preprocessors import _get_rb_number_signal, add_rb_number_processor
