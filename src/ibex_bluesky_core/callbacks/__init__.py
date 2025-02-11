@@ -41,6 +41,7 @@ class ISISCallbacks:
 
     def __init__(
         self,
+        *,
         x: str,
         y: str,
         yerr: str | None = None,
@@ -52,12 +53,11 @@ class ISISCallbacks:
         human_readable_file_output_dir: str | PathLike[str] | None = None,
         add_plot_cb: bool = True,
         ax: Axes | None = None,
-        add_fit_cb: bool = True,
         fit: FitMethod | None = None,
         show_fit_on_plot: bool = True,
         add_peak_stats: bool = True,
         add_live_fit_logger: bool = True,
-        live_fit_logger_output_dir: Path | None = None,
+        live_fit_logger_output_dir: str | PathLike[str] | None = None,
         live_fit_logger_postfix: str = "isc",
     ) -> None:
         """A collection of ISIS standard callbacks for use within plans.
@@ -110,7 +110,6 @@ class ISISCallbacks:
             human_readable_file_output_dir: the output directory for human-readable files. can be blank and will default.
             add_plot_cb: whether to add a plot callback.
             ax: An optional axes object to use for plotting.
-            add_fit_cb: whether to add a fitting callback (which will be displayed on a plot)
             fit: The fit method to use when fitting.
             show_fit_on_plot: whether to show fit on plot.
             add_peak_stats: whether to add a peak stats callback.
@@ -130,11 +129,8 @@ class ISISCallbacks:
 
         measured_fields.append(x)
         measured_fields.append(y)
-
-        if show_fit_on_plot and (not add_fit_cb or fit is None):
-            raise ValueError(
-                "Fit has been requested to show on plot without a fitting method or callback."
-            )
+        if yerr is not None:
+            measured_fields.append(yerr)
 
         if add_human_readable_file_cb:
             combined_hr_fields = measured_fields + fields_for_hr_file
@@ -175,9 +171,7 @@ class ISISCallbacks:
             cb("start", {"time": 0, "uid": ""})
             done_event.wait(10.0)
 
-        if add_fit_cb:
-            if fit is None:
-                raise ValueError("fit method must be specified if add_fit_cb is True")
+        if fit is not None:
             self._live_fit = LiveFit(fit, y=y, x=x, yerr=yerr)
             if show_fit_on_plot:
                 self._subs.append(LiveFitPlot(livefit=self._live_fit, ax=ax))

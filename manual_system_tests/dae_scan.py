@@ -75,10 +75,7 @@ def dae_scan_plan() -> Generator[Msg, None, None]:
         yerr=reducer.intensity_stddev.name,
         fit=Linear.fit(),
         measured_fields=[
-            block.name,
             controller.run_number.name,
-            reducer.intensity.name,
-            reducer.intensity_stddev.name,
             reducer.det_counts.name,
             reducer.det_counts_stddev.name,
             dae.good_frames.name,

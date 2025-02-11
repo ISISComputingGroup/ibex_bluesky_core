@@ -13,16 +13,6 @@ from ibex_bluesky_core.callbacks import (
 from ibex_bluesky_core.callbacks.fitting.fitting_utils import Linear
 
 
-def test_show_fit_on_plot_without_fit_callback_raises():
-    with pytest.raises(
-        ValueError,
-        match=r"Fit has been requested to show on plot without a fitting method or callback.",
-    ):
-        ISISCallbacks(
-            x="X_signal", y="Y_signal", yerr="Y_error", show_fit_on_plot=True, add_fit_cb=False
-        )
-
-
 def test_peak_stats_without_peak_stats_callback_raises():
     with pytest.raises(
         ValueError,
@@ -33,7 +23,6 @@ def test_peak_stats_without_peak_stats_callback_raises():
             y="Y_signal",
             yerr="Y_error",
             add_peak_stats=False,
-            add_fit_cb=False,
             show_fit_on_plot=False,
         ).peak_stats
 
@@ -44,34 +33,8 @@ def test_live_fit_without_live_fit_callback_raises():
         match=r"live_fit was not added as a callback.",
     ):
         _ = ISISCallbacks(
-            x="X_signal", y="Y_signal", yerr="Y_error", add_fit_cb=False, show_fit_on_plot=False
+            x="X_signal", y="Y_signal", yerr="Y_error", show_fit_on_plot=False
         ).live_fit
-
-
-def test_show_fit_on_plot_without_fit_method_raises():
-    with pytest.raises(
-        ValueError,
-        match=r"Fit has been requested to show on plot without a fitting method or callback.",
-    ):
-        ISISCallbacks(
-            x="X_signal",
-            y="Y_signal",
-            show_fit_on_plot=True,
-            fit=None,
-        )
-
-
-def test_add_fit_cb_without_fit_method_raises():
-    with pytest.raises(
-        ValueError,
-        match=r"Fit has been requested to show on plot without a fitting method or callback.",
-    ):
-        ISISCallbacks(
-            x="X_signal",
-            y="Y_signal",
-            show_fit_on_plot=True,
-            fit=None,
-        )
 
 
 def test_add_human_readable_file_with_global_fields_and_specific_both_get_added():
@@ -90,7 +53,6 @@ def test_add_human_readable_file_with_global_fields_and_specific_both_get_added(
         add_plot_cb=False,
         show_fit_on_plot=False,
         add_peak_stats=False,
-        add_fit_cb=False,
     )
 
     assert isinstance(icc.subs[0], HumanReadableFileCallback)
@@ -113,7 +75,6 @@ def test_add_livetable_with_global_fields_and_specific_both_get_added():
         add_plot_cb=False,
         show_fit_on_plot=False,
         add_peak_stats=False,
-        add_fit_cb=False,
         add_human_readable_file_cb=False,
     )
 
@@ -135,7 +96,6 @@ def test_add_livefit_then_get_livefit_property_returns_livefit():
         add_plot_cb=True,
         show_fit_on_plot=False,
         add_peak_stats=False,
-        add_fit_cb=True,
         add_human_readable_file_cb=False,
     )
 
@@ -153,27 +113,10 @@ def test_add_peakstats_then_get_peakstats_property_returns_peakstats():
         add_plot_cb=False,
         show_fit_on_plot=False,
         add_peak_stats=True,
-        add_fit_cb=False,
         add_human_readable_file_cb=False,
     )
 
     assert isinstance(icc.peak_stats, PeakStats)
-
-
-def test_raises_when_fit_requested_with_no_method():
-    x = "X_signal"
-    y = "Y_signal"
-    with pytest.raises(ValueError, match=r"fit method must be specified if add_fit_cb is True"):
-        _ = ISISCallbacks(
-            x=x,
-            y=y,
-            add_table_cb=False,
-            add_plot_cb=False,
-            show_fit_on_plot=False,
-            add_peak_stats=False,
-            add_fit_cb=True,
-            add_human_readable_file_cb=False,
-        )
 
 
 def test_add_livefitplot_without_plot_then_plot_is_set_up_regardless():
@@ -188,7 +131,6 @@ def test_add_livefitplot_without_plot_then_plot_is_set_up_regardless():
         add_plot_cb=False,
         show_fit_on_plot=True,
         add_peak_stats=False,
-        add_fit_cb=True,
         add_human_readable_file_cb=False,
     )
     assert any([isinstance(i, LivePlot) for i in icc.subs])
@@ -206,7 +148,6 @@ def test_do_not_add_live_fit_logger_then_not_added():
         add_plot_cb=False,
         show_fit_on_plot=True,
         add_peak_stats=False,
-        add_fit_cb=True,
         add_human_readable_file_cb=False,
         add_live_fit_logger=False,
     )
@@ -220,7 +161,6 @@ def test_call_decorator(RE):
         x=x,
         y=y,
         add_plot_cb=True,
-        add_fit_cb=False,
         add_table_cb=False,
         add_peak_stats=False,
         add_human_readable_file_cb=False,
