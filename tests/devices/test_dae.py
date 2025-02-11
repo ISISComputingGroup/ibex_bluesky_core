@@ -9,7 +9,7 @@ import pytest
 import scipp as sc
 import scipp.testing
 from bluesky.run_engine import RunEngine
-from ophyd_async.core import get_mock_put, set_mock_value
+from ophyd_async.testing import get_mock_put, set_mock_value
 
 from ibex_bluesky_core.devices import compress_and_hex, dehex_and_decompress
 from ibex_bluesky_core.devices.dae.dae import Dae, RunstateEnum
