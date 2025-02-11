@@ -149,15 +149,10 @@ def center_of_mass(x: npt.NDArray[np.float64], y: npt.NDArray[np.float64]) -> fl
     # Each point has its own weight given by its distance to its neighbouring point
     # Edge cases are calculated as x_1 - x_0 and x_-1 - x_-2
 
-    weight = np.empty(0)
     x_diff = np.diff(x_sorted)
 
-    weight = np.append(weight, [x_diff[0]])
-
-    for x_diff_i in range(1, x_diff.size):
-        w = [(x_diff[x_diff_i] + x_diff[x_diff_i - 1]) / 2]
-        weight = np.append(weight, w)
-
+    weight = np.array([x_diff[0]])
+    weight = np.append(weight, (x_diff[1:] + x_diff[:-1]) / 2)
     weight = np.append(weight, [x_diff[-1]])
 
     weight /= np.max(weight)  # Normalise weights in terms of max(weights)

@@ -14,7 +14,7 @@ We will be making our own `CoM` callback.
 
 ## Justification & Consequences
 
-We attempted to make changes to upstream Bluesky which were rejected, as it adds limits to the functionality of the callback. We also found other limitations with using their callback, such as not being able to have disorderd and non-continuous data sent to it without it skewing the calculated value- we need it to work with disordered and non-continuous data as we need to be able to run continuous scans.
+We attempted to make changes to upstream Bluesky which were rejected, as it adds limits to the functionality of the callback. We also found other limitations with using their callback, such as not being able to have disordered and non-continuous data sent to it without it skewing the calculated value- we need it to work with disordered and non-continuous data as we need to be able to run continuous scans.
 
 This will mean that...
 - Our version of the callback will not be supported by Bluesky and may need changes as Bluesky updates.
