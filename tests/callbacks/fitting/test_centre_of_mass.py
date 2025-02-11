@@ -1,114 +1,69 @@
-import numpy as np
-import numpy.typing as npt
 import pytest
 
 from ibex_bluesky_core.callbacks.fitting import PeakStats
 
-# Tests:
-# Test with normal scan with gaussian data
-# Check that asymmetrical data does not skew CoM
-# Check that having a background on data does not skew CoM
-# Check that order of documents does not skew CoM
-# Check that point spacing does not skew CoM
 
-
-def gaussian(
-    x: npt.NDArray[np.float64], amp: float, sigma: float, x0: float, bg: float
-) -> tuple[npt.NDArray[np.float64], npt.NDArray[np.float64]]:
-    return (x, amp * np.exp(-((x - x0) ** 2) / (2 * sigma**2)) + bg)
-
-
-def simulate_run_and_return_com(xy: tuple[npt.NDArray[np.float64], npt.NDArray[np.float64]]):
+@pytest.mark.parametrize(
+    ("data", "expected_com"),
+    [
+        # Simplest case:
+        # - Flat, non-zero Y data
+        # - Evenly spaced, monotonically increasing X data
+        ([(0, 1), (2, 1), (4, 1), (6, 1), (8, 1), (10, 1)], 5.0),
+        # Simple triangular peak
+        ([(0, 0), (1, 1), (2, 2), (3, 1), (4, 0), (5, 0)], 2.0),
+        # Simple triangular peak with non-zero base
+        ([(0, 10), (1, 11), (2, 12), (3, 11), (4, 10), (5, 10)], 2.0),
+        # No data at all
+        ([], None),
+        # Only one point, com should be at that one point regardless whether it
+        # measured zero or some other y value.
+        ([(5, 0)], 5.0),
+        ([(5, 50)], 5.0),
+        # Two points, flat data, com should be in the middle
+        ([(0, 5), (10, 5)], 5.0),
+        # Flat, logarithmically spaced data - CoM should be in centre of measured range.
+        ([(1, 3), (10, 3), (100, 3), (1000, 3), (10000, 3)], 5000.5),
+        # "triangle" defined by area under two points
+        # (CoM of a right triangle is 1/3 along x from right angle)
+        ([(0, 0), (3, 6)], 2.0),
+        ([(0, 6), (3, 0)], 1.0),
+        # Cases with the first/last points not having equal spacings with each other
+        ([(0, 1), (0.1, 1), (4, 1), (5, 0), (6, 1), (10, 1)], 5.0),
+        ([(0, 1), (4, 1), (5, 0), (6, 1), (9.9, 1), (10, 1)], 5.0),
+        # Two triangular peaks next to each other, with different point spacings
+        # but same shapes, over a base of zero.
+        ([(0, 0), (1, 1), (2, 2), (3, 1), (4, 0), (6, 2), (8, 0), (10, 0)], 4.0),
+        ([(0, 0), (2, 2), (4, 0), (5, 1), (6, 2), (7, 1), (8, 0), (10, 0)], 4.0),
+        # Two triangular peaks next to each other, with different point spacings
+        # but same shapes, over a base of 10.
+        ([(0, 10), (1, 11), (2, 12), (3, 11), (4, 10), (6, 12), (8, 10), (10, 10)], 4.0),
+        ([(0, 10), (2, 12), (4, 10), (5, 11), (6, 12), (7, 11), (8, 10), (10, 10)], 4.0),
+        # "Narrow" peak over a base of 0
+        ([(0, 0), (4.999, 0), (5.0, 10), (5.001, 0)], 5.0),
+        # "Narrow" peak as above, over a base of 10 (y translation should not
+        # affect CoM)
+        ([(0, 10), (4.999, 10), (5.0, 20), (5.001, 10)], 5.0),
+        # Non-monotonically increasing x data (e.g. from adaptive scan)
+        ([(0, 0), (2, 2), (1, 1), (3, 1), (4, 0)], 2.0),
+        # Overscanned data (all measurements duplicated, e.g. there-and-back scan)
+        ([(0, 0), (1, 1), (2, 0), (2, 0), (1, 1), (0, 0)], 1.0),
+        # Mixed positive/negative data. This explicitly calculates area *under* curve,
+        # so CoM should still be the CoM of the positive peak in this data.
+        ([(0, -1), (1, 0), (2, -1), (3, -1)], 1.0),
+        # Y data with a single positive peak, which happens
+        # to sum to zero but never contains zero.
+        ([(0, -1), (1, 3), (2, -1), (3, -1)], 1.0),
+        # Y data which happens to sum to *nearly* zero
+        ([(0, -1), (1, 3.000001), (2, -1), (3, -1)], 1.0),
+    ],
+)
+def test_compute_com(data: list[tuple[float, float]], expected_com):
     ps = PeakStats("x", "y")
-
     ps.start({})  # pyright: ignore
 
-    for x, y in np.vstack(xy).T:
+    for x, y in data:
         ps.event({"data": {"x": x, "y": y}})  # pyright: ignore
 
     ps.stop({})  # pyright: ignore
-
-    return ps["com"]
-
-
-@pytest.mark.parametrize(
-    ("x", "amp", "sigma", "x0", "bg"),
-    [
-        (np.arange(-2, 3), 1, 1, 0, 0),
-        (np.arange(-4, 1), 1, 1, -2, 0),
-    ],
-)
-def test_normal_scan(x: npt.NDArray[np.float64], amp: float, sigma: float, x0: float, bg: float):
-    xy = gaussian(x, amp, sigma, x0, bg)
-    com = simulate_run_and_return_com(xy)
-    assert com == pytest.approx(x0, abs=1e-4)
-
-
-@pytest.mark.parametrize(
-    ("x", "amp", "sigma", "x0", "bg"),
-    [
-        (np.arange(-4, 10), 1, 1, 0, 0),
-        (np.arange(-6, 20), 1, 1, -2, 0),
-    ],
-)
-def test_asymmetrical_scan(
-    x: npt.NDArray[np.float64], amp: float, sigma: float, x0: float, bg: float
-):
-    xy = gaussian(x, amp, sigma, x0, bg)
-    com = simulate_run_and_return_com(xy)
-    assert com == pytest.approx(x0, abs=1e-4)
-
-
-@pytest.mark.parametrize(
-    ("x", "amp", "sigma", "x0", "bg"),
-    [
-        (np.arange(-2, 3), 1, 1, 0, 3),
-        (np.arange(-4, 1), 1, 1, -2, -0.5),
-        (np.arange(-4, 1), 1, 1, -2, -3),
-    ],
-)
-def test_background_gaussian_scan(
-    x: npt.NDArray[np.float64], amp: float, sigma: float, x0: float, bg: float
-):
-    xy = gaussian(x, amp, sigma, x0, bg)
-    com = simulate_run_and_return_com(xy)
-    assert com == pytest.approx(x0, abs=1e-4)
-
-
-@pytest.mark.parametrize(
-    ("x", "amp", "sigma", "x0", "bg"),
-    [
-        (np.array([0, -2, 2, -1, 1]), 1, 1, 0, 0),
-        (np.array([-4, 0, -2, -3, -1]), 1, 1, -2, 0),
-    ],
-)
-def test_non_continuous_scan(
-    x: npt.NDArray[np.float64], amp: float, sigma: float, x0: float, bg: float
-):
-    xy = gaussian(x, amp, sigma, x0, bg)
-    com = simulate_run_and_return_com(xy)
-    assert com == pytest.approx(x0, abs=1e-4)
-
-
-@pytest.mark.parametrize(
-    ("x", "amp", "sigma", "x0", "bg"),
-    [
-        (np.append(np.arange(-10, -2, 0.05), np.arange(-2, 4, 0.5)), 1, 0.5, 0, 0),
-        (
-            np.concatenate(
-                (np.arange(-5, -2.0, 0.5), np.arange(-2.5, -1.45, 0.05), np.arange(-1.5, 1, 0.5)),
-                axis=0,
-            ),
-            1,
-            0.25,
-            0,
-            0,
-        ),
-    ],
-)
-def test_non_constant_point_spacing_scan(
-    x: npt.NDArray[np.float64], amp: float, sigma: float, x0: float, bg: float
-):
-    xy = gaussian(x, amp, sigma, x0, bg)
-    com = simulate_run_and_return_com(xy)
-    assert com == pytest.approx(x0, abs=1e-3)
+    assert ps["com"] == pytest.approx(expected_com)

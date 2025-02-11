@@ -132,36 +132,44 @@ class LiveFit(_DefaultLiveFit):
 
 
 def center_of_mass(x: npt.NDArray[np.float64], y: npt.NDArray[np.float64]) -> float:
-    """Compute our own centre of mass.
+    """Compute the centre of mass of the area under a curve.
+
+    The "area under the curve" is a shape bounded by:
+    - Straight line segments joining (x, y) data points, along the top edge
+    - min(y), at the bottom
+    - min(x), on the left-hand side
+    - max(x), on the right-hand side
 
     Follow these rules:
-    Background does not skew CoM
-    Order of data does not skew CoM
-    Non constant point spacing does not skew CoM
-    Assumes that the peak is positive
+    - Positive or negative background does not skew CoM
+    - Order of data does not skew CoM
+    - Non constant point spacing does not skew CoM
+    - Always calculates CoM of the area *under* the curve, regardless of sign of Y data.
     """
-    # Offset points for any background
-    # Sort points in terms of x
-    arg_sorted = np.argsort(x)
-    x_sorted = np.take_along_axis(x, arg_sorted, axis=None)
-    y_sorted = np.take_along_axis(y - np.min(y), arg_sorted, axis=None)
+    # Ensure we do not take CoM of negative masses, sort for ascending X data.
+    sort_indices = np.argsort(x, kind="stable")
+    x = np.take_along_axis(x, sort_indices, axis=None)
+    y = np.take_along_axis(y - np.min(y), sort_indices, axis=None)
 
-    # Each point has its own weight given by its distance to its neighbouring point
-    # Edge cases are calculated as x_1 - x_0 and x_-1 - x_-2
+    widths = np.diff(x)
 
-    x_diff = np.diff(x_sorted)
+    # Area under the curve for two adjacent points is a right trapezoid.
+    # Split that trapezoid into a rectangular region, plus a right triangle.
+    # Find area and effective X CoM for each.
+    rect_areas = widths * np.minimum(y[:-1], y[1:])
+    rect_x_com = (x[:-1] + x[1:]) / 2.0
+    triangle_areas = widths * np.abs(y[:-1] - y[1:]) / 2.0
+    triangle_x_com = np.where(
+        y[:-1] > y[1:], x[:-1] + (widths / 3.0), x[:-1] + (2.0 * widths / 3.0)
+    )
 
-    weight = np.array([x_diff[0]])
-    weight = np.append(weight, (x_diff[1:] + x_diff[:-1]) / 2)
-    weight = np.append(weight, [x_diff[-1]])
+    if np.sum(rect_areas + triangle_areas) == 0.0:
+        # If all data was flat, return central x
+        return (x[0] + x[-1]) / 2.0
 
-    weight /= np.max(weight)  # Normalise weights in terms of max(weights)
-
-    sum_xyw = np.sum(x_sorted * y_sorted * weight)  # Weighted CoM calculation
-    sum_yw = np.sum(y_sorted * weight)
-    com_x = sum_xyw / sum_yw
-
-    return com_x
+    return np.sum(rect_areas * rect_x_com + triangle_areas * triangle_x_com) / np.sum(
+        rect_areas + triangle_areas
+    )
 
 
 @make_class_safe(logger=logger)  # pyright: ignore (pyright doesn't understand this decorator)
