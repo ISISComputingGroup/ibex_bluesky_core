@@ -36,10 +36,10 @@ NUM_POINTS: int = 3
 
 def dae_scan_plan() -> Generator[Msg, None, None]:
 
-    magnet = block_rw_rbv(float, "mot")
+    magnet = block_rw_rbv(float, "p3")
 
-    emu_prefix = "IN:EMU:"
-
+    # emu_prefix = "IN:EMU:"
+    emu_prefix = get_pv_prefix()
     controller_emu = RunPerPointController(save_run=True)
     waiter_emu = GoodFramesWaiter(500)
     reducer_emu = GoodFramesNormalizer(
@@ -54,20 +54,21 @@ def dae_scan_plan() -> Generator[Msg, None, None]:
         reducer=reducer_emu,
     )
 
-    musr_prefix = "IN:MUSR:"
+    # musr_prefix = "IN:MUSR:"
+    musr_prefix = "IN:SCIDEMO:"
 
     controller_musr = RunPerPointController(save_run=True)
     waiter_musr = GoodFramesWaiter(500)
     reducer_musr = GoodFramesNormalizer(
         prefix=musr_prefix,
-        detector_spectra=[i for i in range(1, 100)],
+        detector_spectra=[i for i in range(1, 96)],
     )
 
     dae_musr = SimpleDae(
         prefix=musr_prefix,
         controller=controller_musr,
         waiter=waiter_musr,
-        reducer=reducer_musr,
+        reducer=reducer_musr,name="scidemo_dae"
     )
 
     _, ax = yield from call_qt_aware(plt.subplots)
@@ -76,26 +77,11 @@ def dae_scan_plan() -> Generator[Msg, None, None]:
         Linear.fit(), y=reducer_emu.intensity.name, x=magnet.name, yerr=reducer_emu.intensity_stddev.name
     )
 
-    yield from ensure_connected(magnet, dae_emu, force_reconnect=True)
+    yield from ensure_connected(magnet, dae_emu, dae_musr, force_reconnect=True)
 
     # TODO replace this with standard callbacks
     @subs_decorator(
         [
-            HumanReadableFileCallback(
-                [
-                    magnet.name,
-                    controller_emu.run_number.name,
-                    reducer_emu.intensity.name,
-                    reducer_emu.det_counts.name,
-                    dae_emu.good_frames.name,
-                ],
-                output_dir=Path("C:\\")
-                / "instrument"
-                / "var"
-                / "logs"
-                / "bluesky"
-                / "output_files",
-            ),
             LiveFitPlot(livefit=lf, ax=ax),
             LivePlot(
                 y=reducer_emu.intensity.name,
@@ -116,18 +102,10 @@ def dae_scan_plan() -> Generator[Msg, None, None]:
                     dae_emu.good_frames.name,
                 ]
             ),
-            LiveFitLogger(
-                lf,
-                y=reducer_emu.intensity.name,
-                x=magnet.name,
-                output_dir=Path("C:\\Instrument\\Var\\logs\\bluesky\\fitting"),
-                yerr=reducer_emu.intensity_stddev.name,
-                postfix="manual_test",
-            ),
         ]
     )
     def _inner() -> Generator[Msg, None, None]:
-        yield from bp.scan([dae_emu, dae_musr], magnet, 0, 10, num=NUM_POINTS)
+        yield from bp.scan([dae_musr], magnet, 0, 10, num=NUM_POINTS)
         print(lf.result.fit_report())
 
     yield from _inner()
