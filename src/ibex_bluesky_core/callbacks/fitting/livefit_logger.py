@@ -37,7 +37,7 @@ class LiveFitLogger(CallbackBase):
         y: str,
         x: str,
         postfix: str,
-        output_dir: Path = DEFAULT_PATH,
+        output_dir: str | os.PathLike[str] = DEFAULT_PATH,
         yerr: str | None = None,
     ) -> None:
         """Initialise LiveFitLogger callback.
@@ -55,7 +55,7 @@ class LiveFitLogger(CallbackBase):
         super().__init__()
         self.livefit = livefit
         self.postfix = postfix
-        self.output_dir = output_dir
+        self.output_dir = Path(output_dir)
         self.current_start_document: Optional[str] = None
 
         self.x = x
