@@ -1,5 +1,5 @@
 # Logging
-To invoke the `ibex_bluesky_core` logger, create and use a `logger` object in [the standard way](https://docs.python.org/3/library/logging.html):
+To invoke the [`ibex_bluesky_core`](ibex_bluesky_core) logger, create and use a `logger` object in [the standard way](https://docs.python.org/3/library/logging.html):
 
 ```python
 import logging

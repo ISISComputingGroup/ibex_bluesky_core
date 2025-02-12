@@ -1,6 +1,6 @@
 # `call_sync` (calling external code)
 
-API reference: {py:obj}`ibex_bluesky_core.plan_stubs.call_sync`
+API reference: [`call_sync`](ibex_bluesky_core.plan_stubs.call_sync)
 
 All interaction with the "outside world" should be via bluesky messages, and **not** directly called from
 within a plan. For example, the following is **bad**:
@@ -44,7 +44,7 @@ def good_plan():
 ```
 
 However, if the functionality you want to use is not yet natively available in bluesky, a fallback option
-for synchronous functions is available using the `call_sync` plan stub:
+for synchronous functions is available using the [`call_sync`](ibex_bluesky_core.plan_stubs.call_sync) plan stub:
 
 ```python
 import bluesky.plan_stubs as bps
