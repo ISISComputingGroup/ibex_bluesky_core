@@ -2,13 +2,15 @@
 
 import logging
 import warnings
-from typing import Callable
+from collections import namedtuple
+from typing import Any, Callable
 
 import lmfit
 import numpy as np
 import numpy.typing as npt
 from bluesky.callbacks import LiveFit as _DefaultLiveFit
 from bluesky.callbacks.core import make_class_safe
+from bluesky.callbacks.fitting import PeakStats as _DefaultPeakStats
 from event_model.documents.event import Event
 
 logger = logging.getLogger(__name__)
@@ -127,3 +129,57 @@ class LiveFit(_DefaultLiveFit):
                 self.ydata, weights=None if self.yerr is None else self.weight_data, **kwargs
             )
             self.__stale = False
+
+
+def center_of_mass(x: npt.NDArray[np.float64], y: npt.NDArray[np.float64]) -> float:
+    """Compute our own centre of mass.
+
+    Follow these rules:
+    Background does not skew CoM
+    Order of data does not skew CoM
+    Non constant point spacing does not skew CoM
+    Assumes that the peak is positive
+    """
+    # Offset points for any background
+    # Sort points in terms of x
+    arg_sorted = np.argsort(x)
+    x_sorted = np.take_along_axis(x, arg_sorted, axis=None)
+    y_sorted = np.take_along_axis(y - np.min(y), arg_sorted, axis=None)
+
+    # Each point has its own weight given by its distance to its neighbouring point
+    # Edge cases are calculated as x_1 - x_0 and x_-1 - x_-2
+
+    x_diff = np.diff(x_sorted)
+
+    weight = np.array([x_diff[0]])
+    weight = np.append(weight, (x_diff[1:] + x_diff[:-1]) / 2)
+    weight = np.append(weight, [x_diff[-1]])
+
+    weight /= np.max(weight)  # Normalise weights in terms of max(weights)
+
+    sum_xyw = np.sum(x_sorted * y_sorted * weight)  # Weighted CoM calculation
+    sum_yw = np.sum(y_sorted * weight)
+    com_x = sum_xyw / sum_yw
+
+    return com_x
+
+
+@make_class_safe(logger=logger)  # pyright: ignore (pyright doesn't understand this decorator)
+class PeakStats(_DefaultPeakStats):
+    """PeakStats, customized for IBEX."""
+
+    @staticmethod
+    def _calc_stats(
+        x: npt.NDArray[np.float64],
+        y: npt.NDArray[np.float64],
+        fields: dict[str, float | npt.NDArray[np.float64] | None],
+        edge_count: int | None = None,
+    ) -> Any:  # noqa: ANN401 Pyright will not understand as return type depends on arguments
+        """Call on bluesky PeakStats but calculate our own centre of mass."""
+        stats = _DefaultPeakStats._calc_stats(x, y, fields, edge_count)  # noqa: SLF001
+        (fields["com"],) = (center_of_mass(x, y),)
+        # This will calculate CoM twice, once for Bluesky's calc and one for us
+        # but keeps our value. Done this way for sleekness.
+        Stats = namedtuple("Stats", field_names=fields.keys())
+        stats = Stats(**fields)
+        return stats
