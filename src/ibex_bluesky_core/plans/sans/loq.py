@@ -5,20 +5,15 @@ from pathlib import Path
 
 import bluesky.plan_stubs as bps
 import bluesky.plans as bp
-import bluesky.preprocessors as bpp
 import matplotlib.pyplot as plt
-from bluesky.callbacks import LiveFitPlot, LiveTable
-from bluesky.callbacks.fitting import PeakStats
 from bluesky.plan_stubs import trigger_and_read
 from bluesky.preprocessors import finalize_wrapper, run_decorator
 from bluesky.utils import Msg
 from ophyd_async.plan_stubs import ensure_connected
 
 from ibex_bluesky_core.callbacks import ISISCallbacks
-from ibex_bluesky_core.callbacks.file_logger import HumanReadableFileCallback
-from ibex_bluesky_core.callbacks.fitting import FitMethod, LiveFit
+from ibex_bluesky_core.callbacks.fitting import FitMethod
 from ibex_bluesky_core.callbacks.fitting.fitting_utils import Linear, Trapezoid
-from ibex_bluesky_core.callbacks.plotting import LivePlot
 from ibex_bluesky_core.devices import get_pv_prefix
 from ibex_bluesky_core.devices.block import BlockMot, BlockWriteConfig, block_mot, block_r, block_rw
 from ibex_bluesky_core.devices.simpledae import SimpleDae
@@ -28,7 +23,6 @@ from ibex_bluesky_core.devices.simpledae.controllers import (
 )
 from ibex_bluesky_core.devices.simpledae.reducers import MonitorNormalizer
 from ibex_bluesky_core.devices.simpledae.waiters import GoodFramesWaiter, PeriodGoodFramesWaiter
-from ibex_bluesky_core.plan_stubs import call_qt_aware
 from ibex_bluesky_core.plans import set_num_periods
 
 NUM_POINTS: int = 3
@@ -157,16 +151,6 @@ def scan(
 
     yield from set_num_periods(dae, count if periods else 1)
 
-    yield from call_qt_aware(plt.close, "all")
-    _, ax = yield from call_qt_aware(plt.subplots)
-
-    livefit = LiveFit(
-        model,
-        y=dae.reducer.intensity.name,
-        yerr=dae.reducer.intensity_stddev.name,
-        x=block.name,  # type: ignore
-    )
-
     fields = [block.name]
     if periods:
         fields.append(dae.period_num.name)  # type: ignore
@@ -180,24 +164,11 @@ def scan(
         ]
     )
 
-    peak_stats = PeakStats(x=block.name, y=dae.reducer.intensity.name)  # type: ignore
-
-    @bpp.subs_decorator(
-        [
-            HumanReadableFileCallback(output_dir=READABLE_FILE_OUTPUT_DIR, fields=fields),
-            LivePlot(
-                y=dae.reducer.intensity.name,  # type: ignore
+    icc = ISISCallbacks(y=dae.reducer.intensity.name,  # type: ignore
                 yerr=dae.reducer.intensity_stddev.name,  # type: ignore
-                x=block.name,
-                marker="x",
-                linestyle="none",
-                ax=ax,
-            ),
-            LiveFitPlot(livefit, ax=ax),
-            LiveTable(fields),
-            peak_stats,
-        ]
-    )
+                x=block.name, measured_fields=fields, fit=model)
+
+    @icc
     def _inner():
         if rel:
             plan = bp.rel_scan
@@ -208,11 +179,11 @@ def scan(
     yield from _inner()
 
     print(f"Files written to {READABLE_FILE_OUTPUT_DIR}\n")
-    print(f"Centre-of-mass from PeakStats: {peak_stats['com']}\n")
+    print(f"Centre-of-mass from PeakStats: {icc.peak_stats['com']}\n")
 
-    if livefit.result is not None:
-        print(livefit.result.fit_report())
-        return livefit.result.params
+    if icc.live_fit.result is not None:
+        print(icc.live_fit.result.fit_report())
+        return icc.live_fit.result.params
     else:
         print("No LiveFit result, likely fit failed")
         return None
@@ -241,16 +212,6 @@ def adaptive_scan(
 
     yield from set_num_periods(dae, 100)
 
-    yield from call_qt_aware(plt.close, "all")
-    _, ax = yield from call_qt_aware(plt.subplots)
-
-    livefit = LiveFit(
-        model,
-        y=dae.reducer.intensity.name,
-        yerr=dae.reducer.intensity_stddev.name,
-        x=block.name,  # type: ignore
-    )
-
     fields = [block.name]
     if periods:
         fields.append(dae.period_num.name)  # type: ignore
@@ -264,24 +225,11 @@ def adaptive_scan(
         ]
     )
 
-    peak_stats = PeakStats(x=block.name, y=dae.reducer.intensity.name)  # type: ignore
-
-    @bpp.subs_decorator(
-        [
-            HumanReadableFileCallback(output_dir=READABLE_FILE_OUTPUT_DIR, fields=fields),
-            LivePlot(
-                y=dae.reducer.intensity.name,  # type: ignore
+    icc = ISISCallbacks(y=dae.reducer.intensity.name,  # type: ignore
                 yerr=dae.reducer.intensity_stddev.name,  # type: ignore
-                x=block.name,
-                marker="x",
-                linestyle="none",
-                ax=ax,
-            ),
-            LiveFitPlot(livefit, ax=ax),
-            LiveTable(fields),
-            peak_stats,
-        ]
-    )
+                x=block.name, measured_fields=fields, fit=model)
+
+    @icc
     def _inner():
         if rel:
             plan = bp.rel_adaptive_scan
@@ -302,11 +250,11 @@ def adaptive_scan(
     yield from _inner()
 
     print(f"Files written to {READABLE_FILE_OUTPUT_DIR}\n")
-    print(f"Centre-of-mass from PeakStats: {peak_stats['com']}\n")
+    print(f"Centre-of-mass from PeakStats: {icc.peak_stats['com']}\n")
 
-    if livefit.result is not None:
-        print(livefit.result.fit_report())
-        return livefit.result.params
+    if icc.live_fit.result is not None:
+        print(icc.live_fit.result.fit_report())
+        return icc.live_fit.result.params
     else:
         print("No LiveFit result, likely fit failed")
         return None
