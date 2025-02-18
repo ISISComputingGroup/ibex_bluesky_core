@@ -5,17 +5,13 @@ RE(scan("S4VG", -1, 1, 25, frames=20, model=fitting_utils.SlitScan())).
 from pathlib import Path
 
 import bluesky.plans as bp
-import bluesky.preprocessors as bpp
 import matplotlib
 import matplotlib.pyplot as plt
-from bluesky.callbacks import LiveFitPlot, LiveTable
 from ophyd_async.plan_stubs import ensure_connected
 
-from ibex_bluesky_core.callbacks.file_logger import HumanReadableFileCallback
-from ibex_bluesky_core.callbacks.fitting import FitMethod, LiveFit
+from ibex_bluesky_core.callbacks import ISISCallbacks
+from ibex_bluesky_core.callbacks.fitting import FitMethod
 from ibex_bluesky_core.callbacks.fitting.fitting_utils import Fit, Linear
-from ibex_bluesky_core.callbacks.fitting.livefit_logger import LiveFitLogger
-from ibex_bluesky_core.callbacks.plotting import LivePlot
 from ibex_bluesky_core.devices import get_pv_prefix
 from ibex_bluesky_core.devices.simpledae import SimpleDae
 from ibex_bluesky_core.devices.simpledae.controllers import (
@@ -101,14 +97,6 @@ def scan(
     yield from set_num_periods(dae, count if periods else 1)
 
     yield from call_qt_aware(plt.close, "all")
-    _, ax = yield from call_qt_aware(plt.subplots)
-
-    livefit = LiveFit(
-        model,
-        y=dae.reducer.intensity.name,
-        yerr=dae.reducer.intensity_stddev.name,
-        x=block.name,  # type: ignore
-    )
 
     fields = [block.name]
     if periods:
@@ -123,29 +111,16 @@ def scan(
         ]
     )
 
-    @bpp.subs_decorator(
-        [
-            HumanReadableFileCallback(output_dir=READABLE_FILE_OUTPUT_DIR, fields=fields),
-            LivePlot(
-                y=dae.reducer.intensity.name,  # type: ignore
-                yerr=dae.reducer.intensity_stddev.name,  # type: ignore
-                x=block.name,
-                marker="x",
-                linestyle="none",
-                ax=ax,
-            ),
-            LiveFitLogger(
-                livefit,
-                y=dae.reducer.intensity.name,  # type: ignore
-                x=block.name,  # type: ignore
-                output_dir=READABLE_FILE_OUTPUT_DIR,
-                postfix="fit_2",
-                yerr=dae.reducer.intensity_stddev.name,  # type: ignore
-            ),
-            LiveTable(fields),
-            LiveFitPlot(livefit, ax=ax),
-        ]
+    icc = ISISCallbacks(
+        y=dae.reducer.intensity.name,  # type: ignore
+        yerr=dae.reducer.intensity_stddev.name,  # type: ignore
+        x=block.name,
+        live_fit_logger_postfix="fit_2",
+        measured_fields=fields,
+        fit=model,
     )
+
+    @icc
     def _inner():
         if rel:
             plan = bp.rel_scan
@@ -157,9 +132,9 @@ def scan(
 
     print(f"Files written to {READABLE_FILE_OUTPUT_DIR}\n")
 
-    if livefit.result is not None:
-        print(livefit.result.fit_report())
-        return livefit.result.params
+    if icc.live_fit.result is not None:
+        print(icc.live_fit.result.fit_report())
+        return icc.live_fit.result.params
     else:
         print("No LiveFit result, likely fit failed")
         return None
@@ -195,13 +170,6 @@ def adaptive_scan(
     yield from call_qt_aware(plt.close, "all")
     _, ax = yield from call_qt_aware(plt.subplots)
 
-    livefit = LiveFit(
-        model.fit(),
-        y=dae.reducer.intensity.name,
-        yerr=dae.reducer.intensity_stddev.name,
-        x=block.name,  # type: ignore
-    )
-
     fields = [block.name]
     if periods:
         fields.append(dae.period_num.name)  # type: ignore
@@ -215,29 +183,16 @@ def adaptive_scan(
         ]
     )
 
-    @bpp.subs_decorator(
-        [
-            HumanReadableFileCallback(READABLE_FILE_OUTPUT_DIR, fields),
-            LivePlot(
-                y=dae.reducer.intensity.name,  # type: ignore
-                yerr=dae.reducer.intensity_stddev.name,  # type: ignore
-                x=block.name,
-                marker="x",
-                linestyle="none",
-                ax=ax,
-            ),
-            LiveFitLogger(
-                livefit,
-                y=dae.reducer.intensity.name,  # type: ignore
-                x=block.name,  # type: ignore
-                output_dir=READABLE_FILE_OUTPUT_DIR,
-                postfix="fit_1",
-                yerr=dae.reducer.intensity_stddev.name,  # type: ignore
-            ),
-            LiveTable(fields),
-            LiveFitPlot(livefit, ax=ax),
-        ]
+    icc = ISISCallbacks(
+        y=dae.reducer.intensity.name,  # type: ignore
+        yerr=dae.reducer.intensity_stddev.name,  # type: ignore
+        x=block.name,
+        live_fit_logger_postfix="fit_1",
+        measured_fields=fields,
+        fit=model.fit(),
     )
+
+    @icc
     def _inner():
         if rel:
             plan = bp.rel_adaptive_scan
@@ -259,9 +214,9 @@ def adaptive_scan(
 
     print(f"Files written to {READABLE_FILE_OUTPUT_DIR}\n")
 
-    if livefit.result is not None:
-        print(livefit.result.fit_report())
-        return livefit.result.params
+    if icc.live_fit.result is not None:
+        print(icc.live_fit.result.fit_report())
+        return icc.live_fit.result.params
     else:
         print("No LiveFit result, likely fit failed")
         return None

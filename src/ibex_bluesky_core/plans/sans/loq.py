@@ -10,10 +10,11 @@ import matplotlib.pyplot as plt
 from bluesky.callbacks import LiveFitPlot, LiveTable
 from bluesky.callbacks.fitting import PeakStats
 from bluesky.plan_stubs import trigger_and_read
-from bluesky.preprocessors import finalize_wrapper, run_decorator, subs_decorator
+from bluesky.preprocessors import finalize_wrapper, run_decorator
 from bluesky.utils import Msg
 from ophyd_async.plan_stubs import ensure_connected
 
+from ibex_bluesky_core.callbacks import ISISCallbacks
 from ibex_bluesky_core.callbacks.file_logger import HumanReadableFileCallback
 from ibex_bluesky_core.callbacks.fitting import FitMethod, LiveFit
 from ibex_bluesky_core.callbacks.fitting.fitting_utils import Linear, Trapezoid
@@ -48,7 +49,6 @@ def continuous_scan_plan(
 
     laser_intensity = block_r(float, "changer_scan_intensity")
     _, ax = plt.subplots()
-    lf = LiveFit(Trapezoid.fit(), y=laser_intensity.name, x=motor.name)
 
     initial_position = centre - 0.5 * size
     final_position = centre + 0.5 * size
@@ -59,27 +59,9 @@ def continuous_scan_plan(
     )
     initial_velocity = yield from bps.rd(motor.velocity)
 
-    @subs_decorator(
-        [
-            HumanReadableFileCallback(
-                output_dir=Path("C:\\")
-                / "instrument"
-                / "var"
-                / "logs"
-                / "bluesky"
-                / "output_files",
-                fields=[motor.name, laser_intensity.name],
-            ),
-            LiveFitPlot(livefit=lf, ax=ax),
-            LivePlot(
-                y=laser_intensity.name,
-                x=motor.name,
-                marker="x",
-                linestyle="none",
-                ax=ax,
-            ),
-        ]
-    )
+    icc = ISISCallbacks(y=laser_intensity.name, x=motor.name, fit=Trapezoid.fit())
+
+    @icc
     @run_decorator(md={})
     def _inner() -> Generator[Msg, None, None]:
         def polling_plan(destination: float):
@@ -115,7 +97,7 @@ def continuous_scan_plan(
         yield from bps.mv(motor.velocity, initial_velocity)
 
     yield from finalize_wrapper(_inner(), _set_motor_back_to_original_velocity)
-    return lf.result
+    return icc.live_fit.result
 
 
 def loq_dae(
