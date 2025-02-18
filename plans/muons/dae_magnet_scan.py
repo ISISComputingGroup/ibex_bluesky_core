@@ -19,7 +19,7 @@ from ibex_bluesky_core.callbacks.fitting.fitting_utils import Linear
 from ibex_bluesky_core.callbacks.fitting.livefit_logger import LiveFitLogger
 from ibex_bluesky_core.callbacks.plotting import LivePlot
 from ibex_bluesky_core.devices import get_pv_prefix
-from ibex_bluesky_core.devices.block import block_rw_rbv
+from ibex_bluesky_core.devices.block import block_rw_rbv, BlockWriteConfig
 from ibex_bluesky_core.devices.simpledae import SimpleDae
 from ibex_bluesky_core.devices.simpledae.controllers import (
     RunPerPointController,
@@ -33,10 +33,12 @@ from ibex_bluesky_core.run_engine import get_run_engine
 
 NUM_POINTS: int = 3
 
+MAGNET_SETTLE_TIME = 3
+MAGNET_BLOCK_NAME = "p3"
 
 def dae_scan_plan() -> Generator[Msg, None, None]:
 
-    magnet = block_rw_rbv(float, "p3")
+    magnet = block_rw_rbv(float, MAGNET_BLOCK_NAME, write_config=BlockWriteConfig(settle_time_s=MAGNET_SETTLE_TIME))
 
     emu_prefix = "IN:EMU:"
     controller_emu = RunPerPointController(save_run=True)
@@ -53,29 +55,13 @@ def dae_scan_plan() -> Generator[Msg, None, None]:
         reducer=reducer_emu, name="emu_dae"
     )
 
-    musr_prefix = "IN:MUSR:"
-
-    controller_musr = RunPerPointController(save_run=True)
-    waiter_musr = GoodFramesWaiter(500)
-    reducer_musr = GoodFramesNormalizer(
-        prefix=musr_prefix,
-        detector_spectra=[i for i in range(1, 96)],
-    )
-
-    dae_musr = SimpleDae(
-        prefix=musr_prefix,
-        controller=controller_musr,
-        waiter=waiter_musr,
-        reducer=reducer_musr,name="musr_dae"
-    )
-
     _, ax = yield from call_qt_aware(plt.subplots)
 
     lf = LiveFit(
         Linear.fit(), y=reducer_emu.intensity.name, x=magnet.name, yerr=reducer_emu.intensity_stddev.name
     )
 
-    yield from ensure_connected(magnet, dae_emu, dae_musr, force_reconnect=True)
+    yield from ensure_connected(magnet, dae_emu, force_reconnect=True)
 
     @subs_decorator(
         [
@@ -88,14 +74,6 @@ def dae_scan_plan() -> Generator[Msg, None, None]:
                 ax=ax,
                 yerr=reducer_emu.intensity_stddev.name,
             ),
-            LivePlot(
-                y=reducer_musr.intensity.name,
-                x=magnet.name,
-                marker="x",
-                linestyle="none",
-                ax=ax,
-                yerr=reducer_musr.intensity_stddev.name,
-            ),
             LiveTable(
                 [
                     magnet.name,
@@ -105,18 +83,12 @@ def dae_scan_plan() -> Generator[Msg, None, None]:
                     reducer_emu.det_counts.name,
                     reducer_emu.det_counts_stddev.name,
                     dae_emu.good_frames.name,
-                    controller_musr.run_number.name,
-                    reducer_musr.intensity.name,
-                    reducer_musr.intensity_stddev.name,
-                    reducer_musr.det_counts.name,
-                    reducer_musr.det_counts_stddev.name,
-                    dae_musr.good_frames.name,
                 ]
             ),
         ]
     )
     def _inner() -> Generator[Msg, None, None]:
-        yield from bp.scan([dae_musr, dae_emu], magnet, 0, 10, num=NUM_POINTS)
+        yield from bp.scan([dae_emu], magnet, 0, 10, num=NUM_POINTS)
         print(lf.result.fit_report())
 
     yield from _inner()
