@@ -1,19 +1,17 @@
-"""e.g.
-RE(scan("S4VG", -1, 1, 25, frames=20, model=fitting_utils.SlitScan())).
-"""
+"""CRISP specific plans."""
 
+from collections.abc import Generator
 from pathlib import Path
 
 import bluesky.plans as bp
 import matplotlib
-import matplotlib.pyplot as plt
+from bluesky import Msg
 from ophyd_async.plan_stubs import ensure_connected
 
 from ibex_bluesky_core.callbacks import ISISCallbacks
 from ibex_bluesky_core.callbacks.fitting import FitMethod
 from ibex_bluesky_core.callbacks.fitting.fitting_utils import Fit, Linear
 from ibex_bluesky_core.devices.simpledae import SimpleDae
-from ibex_bluesky_core.plan_stubs import call_qt_aware
 from ibex_bluesky_core.plans import common_dae, set_num_periods
 from ibex_bluesky_core.plans.reflectometry import centred_pixel, refl_parameter
 from ibex_bluesky_core.run_engine import get_run_engine
@@ -42,7 +40,7 @@ def crisp_dae(
     )
 
 
-def scan(
+def scan(  # noqa: PLR0913
     param: str,
     start: float,
     stop: float,
@@ -56,7 +54,7 @@ def scan(
     periods: bool = True,
     save_run: bool = False,
     rel: bool = False,
-):
+) -> Generator[Msg, None, None]:
     block = refl_parameter(param)
     det_pixels = centred_pixel(det, pixel_range)
     dae = crisp_dae(
@@ -66,8 +64,6 @@ def scan(
     yield from ensure_connected(dae, block)
 
     yield from set_num_periods(dae, count if periods else 1)
-
-    yield from call_qt_aware(plt.close, "all")
 
     fields = [block.name]
     if periods:
@@ -92,7 +88,7 @@ def scan(
     )
 
     @icc
-    def _inner():
+    def _inner() -> Generator[Msg, None, None]:
         if rel:
             plan = bp.rel_scan
         else:
@@ -111,7 +107,7 @@ def scan(
         return None
 
 
-def adaptive_scan(
+def adaptive_scan(  # noqa: PLR0913
     param: str,
     start: float,
     stop: float,
@@ -127,7 +123,7 @@ def adaptive_scan(
     periods: bool = True,
     save_run: bool = False,
     rel: bool = False,
-):
+) -> Generator[Msg, None, None]:
     block = refl_parameter(param)
     det_pixels = centred_pixel(det, pixel_range)
     dae = crisp_dae(
@@ -137,9 +133,6 @@ def adaptive_scan(
     yield from ensure_connected(dae, block)
 
     yield from set_num_periods(dae, 100)
-
-    yield from call_qt_aware(plt.close, "all")
-    _, ax = yield from call_qt_aware(plt.subplots)
 
     fields = [block.name]
     if periods:
@@ -164,7 +157,7 @@ def adaptive_scan(
     )
 
     @icc
-    def _inner():
+    def _inner() -> Generator[Msg, None, None]:
         if rel:
             plan = bp.rel_adaptive_scan
         else:

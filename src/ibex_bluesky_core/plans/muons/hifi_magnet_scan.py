@@ -1,13 +1,13 @@
-"""e.g.
-RE(magnet_scan("X", 0, 1, 2)).
-"""
+"""HIFI magnet scan."""
 
+from collections.abc import Generator
 from pathlib import Path
 
 import bluesky.plans as bp
 import bluesky.preprocessors as bpp
 import matplotlib
 import matplotlib.pyplot as plt
+from bluesky import Msg
 from bluesky.callbacks import LiveFitPlot, LiveTable
 from ophyd_async.epics.signal import epics_signal_r
 from ophyd_async.plan_stubs import ensure_connected
@@ -20,12 +20,9 @@ from ibex_bluesky_core.callbacks.plotting import LivePlot
 from ibex_bluesky_core.devices import get_pv_prefix
 from ibex_bluesky_core.devices.block import block_r
 from ibex_bluesky_core.devices.muons.hifi_magnet import HIFIMagnetAxis
-from ibex_bluesky_core.run_engine import get_run_engine
 
 matplotlib.rcParams["figure.autolayout"] = True
 matplotlib.rcParams["font.size"] = 8
-
-RE = get_run_engine()
 
 READABLE_FILE_OUTPUT_DIR = Path("C:\\") / "instrument" / "var" / "logs" / "bluesky" / "output_files"
 
@@ -35,7 +32,7 @@ def magnet_axis(axis: str) -> HIFIMagnetAxis:
     return HIFIMagnetAxis(prefix=prefix, axis=axis)
 
 
-def magnet_scan(
+def magnet_scan(  # noqa: PLR0914
     axis: str,
     start: float,
     stop: float,
@@ -43,7 +40,10 @@ def magnet_scan(
     *,
     model: Fit = Linear(),
     rel: bool = False,
-):
+) -> Generator[Msg, None, None]:
+    """e.g.
+    RE(magnet_scan("X", 0, 1, 2)).
+    """
     magnet = magnet_axis(axis)
     magnetometer_x1 = epics_signal_r(float, "IN:HIFI:G3HALLPR_01:0:FIELD", name="x1")
     magnetometer_x2 = epics_signal_r(float, "IN:HIFI:G3HALLPR_02:0:FIELD", name="x2")
@@ -136,7 +136,7 @@ def magnet_scan(
             *fitloggers,
         ]
     )
-    def _inner():
+    def _inner() -> Generator[Msg, None, None]:
         if rel:
             plan = bp.rel_scan
         else:

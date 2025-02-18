@@ -1,4 +1,4 @@
-"""Demonstration plan showing basic bluesky functionality."""
+"""Muon scan that uses two DAEs to scan a magnet."""
 
 import os
 from collections.abc import Generator

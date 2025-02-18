@@ -1,10 +1,12 @@
+"""Reflectometry plans and helpers."""
+
 from ibex_bluesky_core.devices import get_pv_prefix
 from ibex_bluesky_core.devices.block import BlockWriteConfig, block_rw
 from ibex_bluesky_core.devices.reflectometry.refl_param import ReflParameter
 
 
 def centred_pixel(centre: int, pixel_range: int) -> list[int]:
-    """Given a centre and range, return a contiguous range of pixels surrounding the centre, inclusive.
+    """Given a centre and range, return a contiguous range of pixels around the centre, inclusive.
 
     ie. a centre of 50 with a range of 3 will give [47, 48, 49, 50, 51, 52, 53]
 
@@ -19,7 +21,7 @@ def centred_pixel(centre: int, pixel_range: int) -> list[int]:
 
 
 def motor_with_tolerance(name: str, tolerance: float):
-    """Helper for a motor with a settle time and tolerance to wait for before motion is considered complete.
+    """Helper for a motor with a settle time and tolerance to wait for before motion is "complete".
 
     Args:
         name (str): The motor PV.

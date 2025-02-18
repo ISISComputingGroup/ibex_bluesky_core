@@ -17,6 +17,8 @@ from ibex_bluesky_core.devices.block import BlockMot, BlockWriteConfig, block_mo
 from ibex_bluesky_core.devices.simpledae import SimpleDae
 from ibex_bluesky_core.plans import common_dae, set_num_periods
 
+LASER_INTENSITY_BLOCK_NAME = "changer_scan_intensity"
+
 NUM_POINTS: int = 3
 DEFAULT_DET = 3
 DEFAULT_MON = 1
@@ -28,12 +30,18 @@ def continuous_scan_plan(
     mot_block: BlockMot, centre: float, size: float, time: float, iterations: int
 ) -> Generator[Msg, None, None]:
     """Continuous scan plan for scanning a motor against a laser diode readback.
-    time is given as the time taken for one 'sweep' for the total size (width).
+
+    Args:
+        mot_block: The motor block to move.
+        centre: The center of the scan.
+        size: The size of the scan for one sweep.
+        time: The time taken for one sweep.
+        iterations: The number of iterations to run.
 
     """
     motor = mot_block
 
-    laser_intensity = block_r(float, "changer_scan_intensity")
+    laser_intensity = block_r(float, LASER_INTENSITY_BLOCK_NAME)
 
     initial_position = centre - 0.5 * size
     final_position = centre + 0.5 * size
@@ -50,6 +58,19 @@ def continuous_scan_plan(
     @run_decorator(md={})
     def _inner() -> Generator[Msg, None, None]:
         def polling_plan(destination: float):
+            """This is a custom plan that essenitally drops updates if the motor position has
+                not changed as that is our measurement's limiting factor.
+
+            if we just used bp.scan() here we would have lots of laser intensity updates with
+                the same motor position, which isn't really helpful.
+
+            it also uses a finaliser to set the motor's velocity back to what it was initially,
+                regardless of if the script fails halfway-through.
+
+            Args:
+                 destination: the destination position.
+
+            """
             yield from bps.checkpoint()
             yield from bps.create()
             reading = yield from bps.read(motor)
@@ -102,7 +123,7 @@ def loq_dae(
     )
 
 
-def scan(
+def scan(  # noqa: PLR0913
     block_name: str,
     start: float,
     stop: float,
@@ -115,7 +136,7 @@ def scan(
     periods: bool = True,
     save_run: bool = False,
     rel: bool = False,
-):
+) -> Generator[Msg, None, None]:
     block = block_rw(float, block_name, write_config=BlockWriteConfig(use_global_moving_flag=True))
     dae = loq_dae(det_pixels=[det], frames=frames, periods=periods, save_run=save_run, monitor=mon)
 
@@ -145,7 +166,7 @@ def scan(
     )
 
     @icc
-    def _inner():
+    def _inner() -> Generator[Msg, None, None]:
         if rel:
             plan = bp.rel_scan
         else:
@@ -165,7 +186,7 @@ def scan(
         return None
 
 
-def adaptive_scan(
+def adaptive_scan(  # noqa: PLR0913
     block_name: str,
     start: float,
     stop: float,
@@ -180,7 +201,7 @@ def adaptive_scan(
     periods: bool = True,
     save_run: bool = False,
     rel: bool = False,
-):
+) -> Generator[Msg, None, None]:
     block = block_rw(float, block_name, write_config=BlockWriteConfig(use_global_moving_flag=True))
     dae = loq_dae(det_pixels=[det], frames=frames, periods=periods, save_run=save_run, monitor=mon)
 
@@ -210,7 +231,7 @@ def adaptive_scan(
     )
 
     @icc
-    def _inner():
+    def _inner() -> Generator[Msg, None, None]:
         if rel:
             plan = bp.rel_adaptive_scan
         else:
@@ -240,7 +261,9 @@ def adaptive_scan(
         return None
 
 
-def sample_changer_scan(position: str, width: float = 22, time: float = 20, iterations: int = 1):
+def sample_changer_scan(
+    position: str, width: float = 22, time: float = 20, iterations: int = 1
+) -> Generator[Msg, None, None]:
     changer_position = block_rw(
         str, "Changer", write_config=BlockWriteConfig(use_global_moving_flag=True)
     )
@@ -273,7 +296,8 @@ def sample_changer_scan(position: str, width: float = 22, time: float = 20, iter
 
 def aperture_continuous_scan(
     position: str, width: float = 22, time: float = 30, iterations: int = 1
-):
+) -> Generator[Msg, None, None]:
+    """Perform a continuous scan over an aperture to find its centre."""
     changer_position = block_rw(
         str, "Aperture_2", write_config=BlockWriteConfig(use_global_moving_flag=True)
     )
