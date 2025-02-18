@@ -1,16 +1,15 @@
 """CRISP specific plans."""
 
 from collections.abc import Generator
-from pathlib import Path
 
 import bluesky.plans as bp
 import matplotlib
-from bluesky import Msg
+from bluesky.utils import Msg
 from ophyd_async.plan_stubs import ensure_connected
 
 from ibex_bluesky_core.callbacks import ISISCallbacks
 from ibex_bluesky_core.callbacks.fitting import FitMethod
-from ibex_bluesky_core.callbacks.fitting.fitting_utils import Fit, Linear
+from ibex_bluesky_core.callbacks.fitting.fitting_utils import Linear
 from ibex_bluesky_core.devices.simpledae import SimpleDae
 from ibex_bluesky_core.plans import common_dae, set_num_periods
 from ibex_bluesky_core.plans.reflectometry import centred_pixel, refl_parameter
@@ -24,7 +23,7 @@ RE = get_run_engine()
 DEFAULT_DET = 3
 DEFAULT_MON = 1
 
-READABLE_FILE_OUTPUT_DIR = Path("C:\\") / "instrument" / "var" / "logs" / "bluesky" / "output_files"
+LINEAR_FIT = Linear().fit()
 
 
 def crisp_dae(
@@ -50,7 +49,7 @@ def scan(  # noqa: PLR0913
     det: int = DEFAULT_DET,
     mon: int = DEFAULT_MON,
     pixel_range: int = 0,
-    model: FitMethod = Linear().fit(),
+    model: FitMethod = LINEAR_FIT,
     periods: bool = True,
     save_run: bool = False,
     rel: bool = False,
@@ -97,8 +96,6 @@ def scan(  # noqa: PLR0913
 
     yield from _inner()
 
-    print(f"Files written to {READABLE_FILE_OUTPUT_DIR}\n")
-
     if icc.live_fit.result is not None:
         print(icc.live_fit.result.fit_report())
         return icc.live_fit.result.params
@@ -119,7 +116,7 @@ def adaptive_scan(  # noqa: PLR0913
     det: int = DEFAULT_DET,
     mon: int = DEFAULT_MON,
     pixel_range: int = 0,
-    model: Fit = Linear(),
+    model: FitMethod = LINEAR_FIT,
     periods: bool = True,
     save_run: bool = False,
     rel: bool = False,
@@ -153,7 +150,7 @@ def adaptive_scan(  # noqa: PLR0913
         x=block.name,
         live_fit_logger_postfix="fit_1",
         measured_fields=fields,
-        fit=model.fit(),
+        fit=model,
     )
 
     @icc
@@ -175,9 +172,6 @@ def adaptive_scan(  # noqa: PLR0913
         )  # type: ignore
 
     yield from _inner()
-
-    print(f"Files written to {READABLE_FILE_OUTPUT_DIR}\n")
-
     if icc.live_fit.result is not None:
         print(icc.live_fit.result.fit_report())
         return icc.live_fit.result.params

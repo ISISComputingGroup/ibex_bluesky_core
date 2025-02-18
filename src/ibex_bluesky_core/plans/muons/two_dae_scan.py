@@ -4,6 +4,7 @@ import os
 from collections.abc import Generator
 
 import bluesky.plans as bp
+import matplotlib
 import matplotlib.pyplot as plt
 from bluesky.callbacks import LiveFitPlot, LiveTable
 from bluesky.preprocessors import subs_decorator
@@ -121,8 +122,8 @@ def dae_scan_plan() -> Generator[Msg, None, None]:
 
 
 if __name__ == "__main__" and not os.environ.get("FROM_IBEX") == "True":
-    # matplotlib.use("qtagg")
-    # plt.ion()
+    matplotlib.use("qtagg")
+    plt.ion()
     RE = get_run_engine()
     RE(dae_scan_plan())
     input("Plan complete, press return to close plot and exit")

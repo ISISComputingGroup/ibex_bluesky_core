@@ -1,3 +1,5 @@
+"""Device for a HIFI magnet axis."""
+
 import asyncio
 
 from ophyd_async.core import AsyncStatus, HintedSignal, StandardReadable, observe_value
@@ -5,7 +7,16 @@ from ophyd_async.epics.core import epics_signal_r, epics_signal_rw, epics_signal
 
 
 class HIFIMagnetAxis(StandardReadable):
+    """Device for a HIFI magnet axis."""
+
     def __init__(self, prefix: str, axis: str) -> None:
+        """Create a HIFI magnet axis.
+
+        Args:
+            prefix: the PV prefix.
+            axis: the axis name where (prefix)CS:SB:Field_(axis)_{Target, Ready, Go)
+
+        """
         with self.add_children_as_readables(HintedSignal):
             self.setpoint = epics_signal_rw(float, f"{prefix}CS:SB:Field_{axis}_Target")
 
@@ -17,7 +28,7 @@ class HIFIMagnetAxis(StandardReadable):
         self.setpoint.set_name(f"Field_{axis}_magnet")
 
     @AsyncStatus.wrap
-    async def trigger(self) -> None:
+    async def trigger(self) -> None:  # noqa: D102
         pass
 
     @AsyncStatus.wrap

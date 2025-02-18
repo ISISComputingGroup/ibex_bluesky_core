@@ -1,3 +1,5 @@
+"""Device that provides utility functions for a reflectometry server parameter."""
+
 import asyncio
 
 from ophyd_async.core import (
@@ -15,7 +17,13 @@ class ReflParameter(StandardReadable):
     """Utility device for a reflectometry server parameter."""
 
     def __init__(self, prefix: str, name: str) -> None:
-        """ """
+        """Reflectometry server parameter.
+
+        Args:
+            prefix: the PV prefix.
+            name: the name of the parameter.
+
+        """
         with self.add_children_as_readables(HintedSignal):
             self.readback: SignalR[float] = epics_signal_r(float, f"{prefix}REFL_01:PARAM:{name}")
         self.setpoint: SignalW[float] = epics_signal_w(float, f"{prefix}REFL_01:PARAM:{name}:SP")
@@ -26,7 +34,7 @@ class ReflParameter(StandardReadable):
         self.readback.set_name(name)
 
     @AsyncStatus.wrap
-    async def trigger(self) -> None:
+    async def trigger(self) -> None:  # noqa: D102
         pass
 
     @AsyncStatus.wrap

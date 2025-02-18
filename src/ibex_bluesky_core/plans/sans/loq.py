@@ -57,18 +57,18 @@ def continuous_scan_plan(
     @icc
     @run_decorator(md={})
     def _inner() -> Generator[Msg, None, None]:
-        def polling_plan(destination: float):
-            """This is a custom plan that essenitally drops updates if the motor position has
-                not changed as that is our measurement's limiting factor.
+        def polling_plan(destination: float) -> Generator[Msg, None, None]:
+            """Drop updates if the motor position has not changed as that is
+             our measurement's limiting factor.
+
+            Args:
+                 destination: the destination position.
 
             if we just used bp.scan() here we would have lots of laser intensity updates with
                 the same motor position, which isn't really helpful.
 
             it also uses a finaliser to set the motor's velocity back to what it was initially,
                 regardless of if the script fails halfway-through.
-
-            Args:
-                 destination: the destination position.
 
             """
             yield from bps.checkpoint()
@@ -99,7 +99,7 @@ def continuous_scan_plan(
             yield from polling_plan(final_position)
             yield from polling_plan(initial_position)
 
-    def _set_motor_back_to_original_velocity():
+    def _set_motor_back_to_original_velocity() -> Generator[Msg, None, None]:
         yield from bps.mv(motor.velocity, initial_velocity)
 
     yield from finalize_wrapper(_inner(), _set_motor_back_to_original_velocity)

@@ -20,8 +20,8 @@ def centred_pixel(centre: int, pixel_range: int) -> list[int]:
     return [s for s in range(centre - pixel_range, centre + pixel_range + 1)]
 
 
-def motor_with_tolerance(name: str, tolerance: float):
-    """Helper for a motor with a settle time and tolerance to wait for before motion is "complete".
+def motor_with_tolerance(name: str, tolerance: float) -> block_rw:
+    """Create a motor block with a settle time and tolerance to wait for before motion is complete.
 
     Args:
         name (str): The motor PV.

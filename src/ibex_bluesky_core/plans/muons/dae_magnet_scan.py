@@ -4,6 +4,8 @@ import os
 from collections.abc import Generator
 
 import bluesky.plans as bp
+import matplotlib
+import matplotlib.pyplot as plt
 from bluesky.utils import Msg
 from ophyd_async.plan_stubs import ensure_connected
 
@@ -27,7 +29,7 @@ MAGNET_BLOCK_NAME = "p3"
 MAGNET_TOLERANCE = 0.1
 
 
-def dae_scan_plan() -> Generator[Msg, None, None]:
+def dae_magnet_plan() -> Generator[Msg, None, None]:
     def check(setpoint: float, actual: float) -> bool:
         return setpoint - MAGNET_TOLERANCE <= actual <= setpoint + MAGNET_TOLERANCE
 
@@ -69,8 +71,8 @@ def dae_scan_plan() -> Generator[Msg, None, None]:
 
 
 if __name__ == "__main__" and not os.environ.get("FROM_IBEX") == "True":
-    # matplotlib.use("qtagg")
-    # plt.ion()
+    matplotlib.use("qtagg")
+    plt.ion()
     RE = get_run_engine()
-    RE(dae_scan_plan())
+    RE(dae_magnet_plan())
     input("Plan complete, press return to close plot and exit")

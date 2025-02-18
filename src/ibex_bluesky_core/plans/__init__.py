@@ -2,8 +2,8 @@
 
 from collections.abc import Generator
 
-from bluesky import Msg
 from bluesky import plan_stubs as bps
+from bluesky.utils import Msg
 
 from ibex_bluesky_core.devices import get_pv_prefix
 from ibex_bluesky_core.devices.simpledae import SimpleDae
@@ -27,7 +27,8 @@ def set_num_periods(dae: SimpleDae, nperiods: int) -> Generator[Msg, None, None]
     actual = yield from bps.rd(dae.number_of_periods)
     if actual != nperiods:
         raise ValueError(
-            f"Could not set {nperiods} periods on DAE (probably requesting too many points, or already running)"
+            f"Could not set {nperiods} periods on DAE (probably requesting too many points, "
+            f"or already running)"
         )
 
 
@@ -42,7 +43,7 @@ def common_dae(
     monitor: int = DEFAULT_MON,
     save_run: bool = False,
 ) -> SimpleDae:
-    """Helper method for creating a simple DAE which normalises using a monitor.
+    """Create a simple DAE which normalises using a monitor.
 
     This is really a shortcut to reduce code in plans used on the majority of instruments that
        normalise using a monitor, wait for a number of frames and optionally use hardware periods.

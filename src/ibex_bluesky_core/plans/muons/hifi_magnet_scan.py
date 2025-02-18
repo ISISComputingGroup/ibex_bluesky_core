@@ -1,20 +1,19 @@
 """HIFI magnet scan."""
 
 from collections.abc import Generator
-from pathlib import Path
 
 import bluesky.plans as bp
 import bluesky.preprocessors as bpp
 import matplotlib
 import matplotlib.pyplot as plt
-from bluesky import Msg
 from bluesky.callbacks import LiveFitPlot, LiveTable
+from bluesky.utils import Msg
 from ophyd_async.epics.signal import epics_signal_r
 from ophyd_async.plan_stubs import ensure_connected
 
 from ibex_bluesky_core.callbacks.file_logger import HumanReadableFileCallback
-from ibex_bluesky_core.callbacks.fitting import LiveFit
-from ibex_bluesky_core.callbacks.fitting.fitting_utils import Fit, Linear
+from ibex_bluesky_core.callbacks.fitting import FitMethod, LiveFit
+from ibex_bluesky_core.callbacks.fitting.fitting_utils import Linear
 from ibex_bluesky_core.callbacks.fitting.livefit_logger import LiveFitLogger
 from ibex_bluesky_core.callbacks.plotting import LivePlot
 from ibex_bluesky_core.devices import get_pv_prefix
@@ -24,12 +23,14 @@ from ibex_bluesky_core.devices.muons.hifi_magnet import HIFIMagnetAxis
 matplotlib.rcParams["figure.autolayout"] = True
 matplotlib.rcParams["font.size"] = 8
 
-READABLE_FILE_OUTPUT_DIR = Path("C:\\") / "instrument" / "var" / "logs" / "bluesky" / "output_files"
-
 
 def magnet_axis(axis: str) -> HIFIMagnetAxis:
+    """Create a magnet axis device with the instrument's PV prefix."""
     prefix = get_pv_prefix()
     return HIFIMagnetAxis(prefix=prefix, axis=axis)
+
+
+LINEAR = Linear().fit()
 
 
 def magnet_scan(  # noqa: PLR0914
@@ -38,11 +39,19 @@ def magnet_scan(  # noqa: PLR0914
     stop: float,
     count: int,
     *,
-    model: Fit = Linear(),
+    model: FitMethod = LINEAR,
     rel: bool = False,
 ) -> Generator[Msg, None, None]:
-    """e.g.
-    RE(magnet_scan("X", 0, 1, 2)).
+    """Scan a magnet axis.
+
+    Args:
+        axis: the magnet axis
+        start: the initial magnet sp
+        stop: the final magnet sp
+        count: the number of points to scan.
+        model: the fitting method.
+        rel: whether to perform a relative scan.
+
     """
     magnet = magnet_axis(axis)
     magnetometer_x1 = epics_signal_r(float, "IN:HIFI:G3HALLPR_01:0:FIELD", name="x1")
@@ -112,7 +121,7 @@ def magnet_scan(  # noqa: PLR0914
 
     fits = [
         LiveFit(
-            model.fit(),
+            model,
             y=r,
             x=magnet.name,  # type: ignore
         )
@@ -121,14 +130,11 @@ def magnet_scan(  # noqa: PLR0914
 
     fitplots = [LiveFitPlot(fit, ax=ax) for fit in fits]
 
-    fitloggers = [
-        LiveFitLogger(fit, r, magnet.name, output_dir=READABLE_FILE_OUTPUT_DIR, postfix=r)
-        for fit, r in zip(fits, readbacks)
-    ]
+    fitloggers = [LiveFitLogger(fit, r, magnet.name, postfix=r) for fit, r in zip(fits, readbacks)]
 
     @bpp.subs_decorator(
         [
-            HumanReadableFileCallback(output_dir=READABLE_FILE_OUTPUT_DIR, fields=fields),
+            HumanReadableFileCallback(fields=fields),
             LiveTable(fields),
             *plots,
             *fits,
@@ -172,13 +178,21 @@ def magnet_scan(  # noqa: PLR0914
             print("No LiveFit result, likely fit failed")
 
 
-def three_axis_scan(start=-4, stop=4, num=9):
+def three_axis_scan(start: int = -4, stop: int = 4, num: int = 9) -> Generator[Msg, None, None]:
+    """Scan against three magnet axes.
+
+    Args:
+        start:
+        stop:
+        num:
+
+    """
     yield from magnet_scan("X", start, stop, num, rel=True)
     yield from magnet_scan("Y", start, stop, num, rel=True)
     yield from magnet_scan("Z", start, stop, num, rel=True)
 
 
-def three_axis_full_scan(num=20):
+def three_axis_full_scan(num: int = 20) -> Generator[Msg, None, None]:
     yield from magnet_scan("X", -95.0, 95.0, num, rel=True)
     yield from magnet_scan("Y", -95.0, 95.0, num, rel=True)
     yield from magnet_scan("Z", -390.0, 390.0, num, rel=True)
