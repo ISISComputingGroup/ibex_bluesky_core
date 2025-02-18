@@ -1,7 +1,7 @@
 """Reflectometry plans and helpers."""
 
 from ibex_bluesky_core.devices import get_pv_prefix
-from ibex_bluesky_core.devices.block import BlockWriteConfig, block_rw
+from ibex_bluesky_core.devices.block import BlockRw, BlockWriteConfig, block_rw
 from ibex_bluesky_core.devices.reflectometry.refl_param import ReflParameter
 
 
@@ -20,7 +20,7 @@ def centred_pixel(centre: int, pixel_range: int) -> list[int]:
     return [s for s in range(centre - pixel_range, centre + pixel_range + 1)]
 
 
-def motor_with_tolerance(name: str, tolerance: float) -> block_rw:
+def motor_with_tolerance(name: str, tolerance: float) -> BlockRw[float]:
     """Create a motor block with a settle time and tolerance to wait for before motion is complete.
 
     Args:
