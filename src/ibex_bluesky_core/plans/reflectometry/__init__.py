@@ -4,10 +4,31 @@ from ibex_bluesky_core.devices.reflectometry.refl_param import ReflParameter
 
 
 def centred_pixel(centre: int, pixel_range: int) -> list[int]:
+    """Given a centre and range, return a contiguous range of pixels surrounding the centre, inclusive.
+
+    ie. a centre of 50 with a range of 3 will give [47, 48, 49, 50, 51, 52, 53]
+
+    Args:
+          centre (int): The centre pixel number.
+          pixel_range (int): The range of pixels either side to surround the centre.
+
+    Returns a list of pixel numbers.
+
+    """
     return [s for s in range(centre - pixel_range, centre + pixel_range + 1)]
 
 
 def motor_with_tolerance(name: str, tolerance: float):
+    """Helper for a motor with a settle time and tolerance to wait for before motion is considered complete.
+
+    Args:
+        name (str): The motor PV.
+        tolerance (float): The motor tolerance to get to before a move is considered complete.
+
+    Returns A device pointing to a motor.
+
+    """
+
     def check(setpoint: float, actual: float) -> bool:
         return setpoint - tolerance <= actual <= setpoint + tolerance
 
@@ -21,5 +42,15 @@ def motor_with_tolerance(name: str, tolerance: float):
 
 
 def refl_parameter(name: str) -> ReflParameter:
+    """Small wrapper around a reflectometry parameter device.
+
+    This automatically applies the current instrument's PV prefix.
+
+    Args:
+        name: the reflectometry parameter name.
+
+    Returns a device pointing to a reflectometry parameter.
+
+    """
     prefix = get_pv_prefix()
     return ReflParameter(prefix=prefix, name=name)

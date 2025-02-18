@@ -5,7 +5,6 @@ from pathlib import Path
 
 import bluesky.plan_stubs as bps
 import bluesky.plans as bp
-import matplotlib.pyplot as plt
 from bluesky.plan_stubs import trigger_and_read
 from bluesky.preprocessors import finalize_wrapper, run_decorator
 from bluesky.utils import Msg
@@ -14,16 +13,9 @@ from ophyd_async.plan_stubs import ensure_connected
 from ibex_bluesky_core.callbacks import ISISCallbacks
 from ibex_bluesky_core.callbacks.fitting import FitMethod
 from ibex_bluesky_core.callbacks.fitting.fitting_utils import Linear, Trapezoid
-from ibex_bluesky_core.devices import get_pv_prefix
 from ibex_bluesky_core.devices.block import BlockMot, BlockWriteConfig, block_mot, block_r, block_rw
 from ibex_bluesky_core.devices.simpledae import SimpleDae
-from ibex_bluesky_core.devices.simpledae.controllers import (
-    PeriodPerPointController,
-    RunPerPointController,
-)
-from ibex_bluesky_core.devices.simpledae.reducers import MonitorNormalizer
-from ibex_bluesky_core.devices.simpledae.waiters import GoodFramesWaiter, PeriodGoodFramesWaiter
-from ibex_bluesky_core.plans import set_num_periods
+from ibex_bluesky_core.plans import common_dae, set_num_periods
 
 NUM_POINTS: int = 3
 DEFAULT_DET = 3
@@ -42,7 +34,6 @@ def continuous_scan_plan(
     motor = mot_block
 
     laser_intensity = block_r(float, "changer_scan_intensity")
-    _, ax = plt.subplots()
 
     initial_position = centre - 0.5 * size
     final_position = centre + 0.5 * size
@@ -91,7 +82,10 @@ def continuous_scan_plan(
         yield from bps.mv(motor.velocity, initial_velocity)
 
     yield from finalize_wrapper(_inner(), _set_motor_back_to_original_velocity)
-    return icc.live_fit.result
+    if icc.live_fit is not None and icc.live_fit:
+        return icc.live_fit.result
+    else:
+        raise ValueError("No LiveFit result, likely fit failed")
 
 
 def loq_dae(
@@ -103,31 +97,9 @@ def loq_dae(
     save_run: bool = False,
 ) -> SimpleDae:
     """DAE instance for LOQ which can use periods or frames to count and normalise."""
-    prefix = get_pv_prefix()
-
-    if periods:
-        controller = PeriodPerPointController(save_run=save_run)
-        waiter = PeriodGoodFramesWaiter(frames)
-    else:
-        controller = RunPerPointController(save_run=save_run)
-        waiter = GoodFramesWaiter(frames)
-
-    reducer = MonitorNormalizer(
-        prefix=prefix,
-        detector_spectra=det_pixels,
-        monitor_spectra=[monitor],
+    return common_dae(
+        det_pixels=det_pixels, frames=frames, periods=periods, monitor=monitor, save_run=save_run
     )
-
-    dae = SimpleDae(
-        prefix=prefix,
-        controller=controller,
-        waiter=waiter,
-        reducer=reducer,
-    )
-
-    dae.reducer.intensity.set_name("intensity")  # type: ignore
-    dae.reducer.intensity_stddev.set_name("intensity_stddev")  # type: ignore
-    return dae
 
 
 def scan(
@@ -164,9 +136,13 @@ def scan(
         ]
     )
 
-    icc = ISISCallbacks(y=dae.reducer.intensity.name,  # type: ignore
-                yerr=dae.reducer.intensity_stddev.name,  # type: ignore
-                x=block.name, measured_fields=fields, fit=model)
+    icc = ISISCallbacks(
+        y=dae.reducer.intensity.name,  # type: ignore
+        yerr=dae.reducer.intensity_stddev.name,  # type: ignore
+        x=block.name,
+        measured_fields=fields,
+        fit=model,
+    )
 
     @icc
     def _inner():
@@ -200,7 +176,7 @@ def adaptive_scan(
     frames: int,
     det: int = DEFAULT_DET,
     mon: int = DEFAULT_MON,
-    model: FitMethod = Linear().fit(),
+    model: FitMethod = DEFAULT_FIT_METHOD,
     periods: bool = True,
     save_run: bool = False,
     rel: bool = False,
@@ -225,9 +201,13 @@ def adaptive_scan(
         ]
     )
 
-    icc = ISISCallbacks(y=dae.reducer.intensity.name,  # type: ignore
-                yerr=dae.reducer.intensity_stddev.name,  # type: ignore
-                x=block.name, measured_fields=fields, fit=model)
+    icc = ISISCallbacks(
+        y=dae.reducer.intensity.name,  # type: ignore
+        yerr=dae.reducer.intensity_stddev.name,  # type: ignore
+        x=block.name,
+        measured_fields=fields,
+        fit=model,
+    )
 
     @icc
     def _inner():
