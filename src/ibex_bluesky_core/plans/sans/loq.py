@@ -1,4 +1,4 @@
-"""Demonstration plan showing basic bluesky functionality."""
+"""LOQ specific plans."""
 
 from collections.abc import Generator
 from pathlib import Path
@@ -61,7 +61,12 @@ def continuous_scan_plan(
     @subs_decorator(
         [
             HumanReadableFileCallback(
-                output_dir=Path("C:\\") / "instrument" / "var" / "logs" / "bluesky" / "output_files",
+                output_dir=Path("C:\\")
+                / "instrument"
+                / "var"
+                / "logs"
+                / "bluesky"
+                / "output_files",
                 fields=[motor.name, laser_intensity.name],
             ),
             LiveFitPlot(livefit=lf, ax=ax),
@@ -120,6 +125,7 @@ def loq_dae(
     monitor: int = DEFAULT_MON,
     save_run: bool = False,
 ) -> SimpleDae:
+    """DAE instance for LOQ which can use periods or frames to count and normalise."""
     prefix = get_pv_prefix()
 
     if periods:

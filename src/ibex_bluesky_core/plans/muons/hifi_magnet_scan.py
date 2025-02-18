@@ -1,5 +1,5 @@
 """e.g.
-RE(magnet_scan("X", 0, 1, 2))
+RE(magnet_scan("X", 0, 1, 2)).
 """
 
 import asyncio
@@ -37,7 +37,7 @@ READABLE_FILE_OUTPUT_DIR = Path("C:\\") / "instrument" / "var" / "logs" / "blues
 
 
 class MagnetAxis(StandardReadable):
-    def __init__(self, prefix: str, axis: str):
+    def __init__(self, prefix: str, axis: str) -> None:
         with self.add_children_as_readables(HintedSignal):
             self.setpoint = epics_signal_rw(float, f"{prefix}CS:SB:Field_{axis}_Target")
 
@@ -137,7 +137,7 @@ def magnet_scan(
         psu_z.name,
     ]
 
-    fields = [magnet.name] + readbacks
+    fields = [magnet.name, *readbacks]
 
     plots = [
         LivePlot(
@@ -162,19 +162,19 @@ def magnet_scan(
     fitplots = [LiveFitPlot(fit, ax=ax) for fit in fits]
 
     fitloggers = [
-        LiveFitLogger(fit, r, magnet.name, READABLE_FILE_OUTPUT_DIR, postfix=r)
+        LiveFitLogger(fit, r, magnet.name, output_dir=READABLE_FILE_OUTPUT_DIR, postfix=r)
         for fit, r in zip(fits, readbacks)
     ]
 
     @bpp.subs_decorator(
         [
-            HumanReadableFileCallback(READABLE_FILE_OUTPUT_DIR, fields),
+            HumanReadableFileCallback(output_dir=READABLE_FILE_OUTPUT_DIR, fields=fields),
             LiveTable(fields),
+            *plots,
+            *fits,
+            *fitplots,
+            *fitloggers,
         ]
-        + plots
-        + fits
-        + fitplots
-        + fitloggers
     )
     def _inner():
         if rel:

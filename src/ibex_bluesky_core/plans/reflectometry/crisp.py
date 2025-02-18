@@ -25,8 +25,12 @@ from ibex_bluesky_core.devices.simpledae.controllers import (
 from ibex_bluesky_core.devices.simpledae.reducers import MonitorNormalizer
 from ibex_bluesky_core.devices.simpledae.waiters import GoodFramesWaiter, PeriodGoodFramesWaiter
 from ibex_bluesky_core.plan_stubs import call_qt_aware
+from ibex_bluesky_core.plans.reflectometry.utils import (
+    centred_pixel,
+    refl_parameter,
+    set_num_periods,
+)
 from ibex_bluesky_core.run_engine import get_run_engine
-from plans.reflectometry.utils import centred_pixel, refl_parameter, set_num_periods
 
 matplotlib.rcParams["figure.autolayout"] = True
 matplotlib.rcParams["font.size"] = 8
