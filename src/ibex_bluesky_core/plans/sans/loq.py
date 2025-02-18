@@ -28,6 +28,7 @@ from ibex_bluesky_core.devices.simpledae.controllers import (
 from ibex_bluesky_core.devices.simpledae.reducers import MonitorNormalizer
 from ibex_bluesky_core.devices.simpledae.waiters import GoodFramesWaiter, PeriodGoodFramesWaiter
 from ibex_bluesky_core.plan_stubs import call_qt_aware
+from ibex_bluesky_core.plans import set_num_periods
 
 NUM_POINTS: int = 3
 DEFAULT_DET = 3
@@ -151,15 +152,6 @@ def loq_dae(
     dae.reducer.intensity.set_name("intensity")  # type: ignore
     dae.reducer.intensity_stddev.set_name("intensity_stddev")  # type: ignore
     return dae
-
-
-def set_num_periods(dae: SimpleDae, nperiods: int):
-    yield from bps.mv(dae.number_of_periods, nperiods)  # type: ignore
-    actual = yield from bps.rd(dae.number_of_periods)
-    if actual != nperiods:
-        raise ValueError(
-            f"Could not set {nperiods} periods on DAE (probably requesting too many points, or already running)"
-        )
 
 
 def scan(
