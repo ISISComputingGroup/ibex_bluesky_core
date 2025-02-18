@@ -29,7 +29,8 @@ from ibex_bluesky_core.run_engine import get_run_engine
 NUM_POINTS: int = 3
 
 
-def dae_scan_plan() -> Generator[Msg, None, None]:
+def two_dae_scan() -> Generator[Msg, None, None]:
+    """Scan a block using two DAEs."""
     magnet = block_rw_rbv(float, "p3")
 
     emu_prefix = "IN:EMU:"
@@ -125,5 +126,5 @@ if __name__ == "__main__" and not os.environ.get("FROM_IBEX") == "True":
     matplotlib.use("qtagg")
     plt.ion()
     RE = get_run_engine()
-    RE(dae_scan_plan())
+    RE(two_dae_scan())
     input("Plan complete, press return to close plot and exit")

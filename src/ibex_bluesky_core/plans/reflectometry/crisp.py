@@ -34,6 +34,7 @@ def crisp_dae(
     monitor: int = 1,
     save_run: bool = False,
 ) -> SimpleDae:
+    """Create a CRISP DAE device."""
     return common_dae(
         det_pixels=det_pixels, frames=frames, periods=periods, monitor=monitor, save_run=save_run
     )
@@ -54,6 +55,23 @@ def scan(  # noqa: PLR0913
     save_run: bool = False,
     rel: bool = False,
 ) -> Generator[Msg, None, None]:
+    """Scan over a reflectometry parameter.
+
+    Args:
+        param: the reflectometry parameter.
+        start: the starting setpoint of the parameter.
+        stop: the final setpoint of the parameter.
+        count: the number of points to scan.
+        frames: the number of frames to wait for.
+        det: the detector spectra to use.
+        mon: the monitor spectra to use.
+        pixel_range: the range of pixels to scan over, using `det` as a centred pixel.
+        model: the model to use.
+        periods: whether to use periods.
+        save_run: whether to save the run of the scan.
+        rel: whether to use a relative scan around the current position.
+
+    """
     block = refl_parameter(param)
     det_pixels = centred_pixel(det, pixel_range)
     dae = crisp_dae(
@@ -121,6 +139,25 @@ def adaptive_scan(  # noqa: PLR0913
     save_run: bool = False,
     rel: bool = False,
 ) -> Generator[Msg, None, None]:
+    """Perform an adaptive scan over a reflectometry parameter.
+
+    Args:
+        param: The parameter to scan.
+        start: The initial setpoint.
+        stop: The final setpoint.
+        min_step: the minimum step size to plot
+        max_step: the maximum step size to plot
+        target_delta: desired fractional change in detector signal between steps
+        frames: the number of frames to wait for.
+        det: the detector spectra to use.
+        mon: the monitor spectra to use.
+        pixel_range: the range of pixels to scan.
+        model: the fit method to use.
+        periods: whether to use periods.
+        save_run: whether to save the run of the scan.
+        rel: whether to use a relative scan around the current position.
+
+    """
     block = refl_parameter(param)
     det_pixels = centred_pixel(det, pixel_range)
     dae = crisp_dae(

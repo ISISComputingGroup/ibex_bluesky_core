@@ -30,13 +30,17 @@ MAGNET_TOLERANCE = 0.1
 
 
 def dae_magnet_plan() -> Generator[Msg, None, None]:
-    def check(setpoint: float, actual: float) -> bool:
+    """Scan a DAE against a magnet."""
+
+    def check_within_tolerance(setpoint: float, actual: float) -> bool:
         return setpoint - MAGNET_TOLERANCE <= actual <= setpoint + MAGNET_TOLERANCE
 
     magnet = block_rw_rbv(
         float,
         MAGNET_BLOCK_NAME,
-        write_config=BlockWriteConfig(settle_time_s=MAGNET_SETTLE_TIME, set_success_func=check),
+        write_config=BlockWriteConfig(
+            settle_time_s=MAGNET_SETTLE_TIME, set_success_func=check_within_tolerance
+        ),
     )
 
     prefix = get_pv_prefix()

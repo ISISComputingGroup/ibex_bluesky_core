@@ -1,7 +1,6 @@
 """LOQ specific plans."""
 
 from collections.abc import Generator
-from pathlib import Path
 
 import bluesky.plan_stubs as bps
 import bluesky.plans as bp
@@ -22,7 +21,6 @@ LASER_INTENSITY_BLOCK_NAME = "changer_scan_intensity"
 NUM_POINTS: int = 3
 DEFAULT_DET = 3
 DEFAULT_MON = 1
-READABLE_FILE_OUTPUT_DIR = Path("C:\\") / "instrument" / "var" / "logs" / "bluesky" / "output_files"
 DEFAULT_FIT_METHOD = Linear().fit()
 
 
@@ -58,8 +56,7 @@ def continuous_scan_plan(
     @run_decorator(md={})
     def _inner() -> Generator[Msg, None, None]:
         def polling_plan(destination: float) -> Generator[Msg, None, None]:
-            """Drop updates if the motor position has not changed as that is
-             our measurement's limiting factor.
+            """Drop updates if motor pos has not changed as we only care if it has changed.
 
             Args:
                  destination: the destination position.
@@ -137,6 +134,22 @@ def scan(  # noqa: PLR0913
     save_run: bool = False,
     rel: bool = False,
 ) -> Generator[Msg, None, None]:
+    """Scan the DAE against a block.
+
+    Args:
+        block_name: the name of the block to move.
+        start: the starting position of the block.
+        stop: the final position of the block.
+        count: the number of points to make.
+        frames: the number of frames to wait for.
+        det: the detector spectra to use.
+        mon: the monitor spectra to use for normalisation.
+        model: the fit method to use.
+        periods: whether or not to use hardware periods.
+        save_run: whether or not to save run.
+        rel: whether or not to scan around the current position or use absolute positions.
+
+    """
     block = block_rw(float, block_name, write_config=BlockWriteConfig(use_global_moving_flag=True))
     dae = loq_dae(det_pixels=[det], frames=frames, periods=periods, save_run=save_run, monitor=mon)
 
@@ -175,7 +188,6 @@ def scan(  # noqa: PLR0913
 
     yield from _inner()
 
-    print(f"Files written to {READABLE_FILE_OUTPUT_DIR}\n")
     print(f"Centre-of-mass from PeakStats: {icc.peak_stats['com']}\n")
 
     if icc.live_fit.result is not None:
@@ -202,6 +214,26 @@ def adaptive_scan(  # noqa: PLR0913
     save_run: bool = False,
     rel: bool = False,
 ) -> Generator[Msg, None, None]:
+    """Scan the DAE against a block using an adaptive scan.
+
+    This will scan coarsely until target_delta occurs, then it will go back and perform finer scans.
+
+    Args:
+        block_name: the name of the block to move.
+        start: the starting position of the block.
+        stop: the final position of the block.
+        min_step: smallest step for fine regions.
+        max_step: largest step for coarse regions.
+        target_delta: desired fractional change in detector signal between steps
+        frames: the number of frames to wait for.
+        det: the detector spectra to use.
+        mon: the monitor spectra to use for normalisation.
+        model: the fit method to use.
+        periods: whether or not to use hardware periods.
+        save_run: whether or not to save run.
+        rel: whether or not to scan around the current position or use absolute positions.
+
+    """
     block = block_rw(float, block_name, write_config=BlockWriteConfig(use_global_moving_flag=True))
     dae = loq_dae(det_pixels=[det], frames=frames, periods=periods, save_run=save_run, monitor=mon)
 
@@ -250,7 +282,6 @@ def adaptive_scan(  # noqa: PLR0913
 
     yield from _inner()
 
-    print(f"Files written to {READABLE_FILE_OUTPUT_DIR}\n")
     print(f"Centre-of-mass from PeakStats: {icc.peak_stats['com']}\n")
 
     if icc.live_fit.result is not None:
@@ -264,6 +295,7 @@ def adaptive_scan(  # noqa: PLR0913
 def sample_changer_scan(
     position: str, width: float = 22, time: float = 20, iterations: int = 1
 ) -> Generator[Msg, None, None]:
+    """Perform a continuous scan over a sample changer holder to find its centre."""
     changer_position = block_rw(
         str, "Changer", write_config=BlockWriteConfig(use_global_moving_flag=True)
     )

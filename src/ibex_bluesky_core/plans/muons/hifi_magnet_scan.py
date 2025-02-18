@@ -182,9 +182,9 @@ def three_axis_scan(start: int = -4, stop: int = 4, num: int = 9) -> Generator[M
     """Scan against three magnet axes.
 
     Args:
-        start:
-        stop:
-        num:
+        start: the starting magnet setpoint
+        stop: the final magnet setpoint
+        num: the number of points to scan over
 
     """
     yield from magnet_scan("X", start, stop, num, rel=True)
@@ -193,6 +193,12 @@ def three_axis_scan(start: int = -4, stop: int = 4, num: int = 9) -> Generator[M
 
 
 def three_axis_full_scan(num: int = 20) -> Generator[Msg, None, None]:
+    """Perform a full scan of three magnet axes.
+
+    Args:
+        num: the number of points to scan over.
+
+    """
     yield from magnet_scan("X", -95.0, 95.0, num, rel=True)
     yield from magnet_scan("Y", -95.0, 95.0, num, rel=True)
     yield from magnet_scan("Z", -390.0, 390.0, num, rel=True)
