@@ -16,7 +16,7 @@ from ophyd_async.plan_stubs import ensure_connected
 
 from ibex_bluesky_core.callbacks.file_logger import HumanReadableFileCallback
 from ibex_bluesky_core.callbacks.fitting import FitMethod, LiveFit
-from ibex_bluesky_core.callbacks.fitting.fitting_utils import Fit, Linear, Trapezoid
+from ibex_bluesky_core.callbacks.fitting.fitting_utils import Linear, Trapezoid
 from ibex_bluesky_core.callbacks.plotting import LivePlot
 from ibex_bluesky_core.devices import get_pv_prefix
 from ibex_bluesky_core.devices.block import BlockMot, BlockWriteConfig, block_mot, block_r, block_rw
@@ -33,7 +33,8 @@ NUM_POINTS: int = 3
 DEFAULT_DET = 3
 DEFAULT_MON = 1
 READABLE_FILE_OUTPUT_DIR = Path("C:\\") / "instrument" / "var" / "logs" / "bluesky" / "output_files"
-DEFAULT_FIT_METHOD= Linear().fit()
+DEFAULT_FIT_METHOD = Linear().fit()
+
 
 def continuous_scan_plan(
     mot_block: BlockMot, centre: float, size: float, time: float, iterations: int
@@ -60,8 +61,8 @@ def continuous_scan_plan(
     @subs_decorator(
         [
             HumanReadableFileCallback(
-                Path("C:\\") / "instrument" / "var" / "logs" / "bluesky" / "output_files",
-                [motor.name, laser_intensity.name],
+                output_dir=Path("C:\\") / "instrument" / "var" / "logs" / "bluesky" / "output_files",
+                fields=[motor.name, laser_intensity.name],
             ),
             LiveFitPlot(livefit=lf, ax=ax),
             LivePlot(
@@ -287,7 +288,7 @@ def adaptive_scan(
 
     @bpp.subs_decorator(
         [
-            HumanReadableFileCallback(READABLE_FILE_OUTPUT_DIR, fields),
+            HumanReadableFileCallback(output_dir=READABLE_FILE_OUTPUT_DIR, fields=fields),
             LivePlot(
                 y=dae.reducer.intensity.name,  # type: ignore
                 yerr=dae.reducer.intensity_stddev.name,  # type: ignore

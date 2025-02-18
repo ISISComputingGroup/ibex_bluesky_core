@@ -2,23 +2,17 @@
 
 import os
 from collections.abc import Generator
-from pathlib import Path
 
-import bluesky.plan_stubs as bps
 import bluesky.plans as bp
-# import matplotlib
-# import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 from bluesky.callbacks import LiveFitPlot, LiveTable
 from bluesky.preprocessors import subs_decorator
 from bluesky.utils import Msg
 from ophyd_async.plan_stubs import ensure_connected
 
-from ibex_bluesky_core.callbacks.file_logger import HumanReadableFileCallback
 from ibex_bluesky_core.callbacks.fitting import LiveFit
 from ibex_bluesky_core.callbacks.fitting.fitting_utils import Linear
-from ibex_bluesky_core.callbacks.fitting.livefit_logger import LiveFitLogger
 from ibex_bluesky_core.callbacks.plotting import LivePlot
-from ibex_bluesky_core.devices import get_pv_prefix
 from ibex_bluesky_core.devices.block import block_rw_rbv
 from ibex_bluesky_core.devices.simpledae import SimpleDae
 from ibex_bluesky_core.devices.simpledae.controllers import (
@@ -35,7 +29,6 @@ NUM_POINTS: int = 3
 
 
 def dae_scan_plan() -> Generator[Msg, None, None]:
-
     magnet = block_rw_rbv(float, "p3")
 
     emu_prefix = "IN:EMU:"
@@ -50,7 +43,8 @@ def dae_scan_plan() -> Generator[Msg, None, None]:
         prefix=emu_prefix,
         controller=controller_emu,
         waiter=waiter_emu,
-        reducer=reducer_emu, name="emu_dae"
+        reducer=reducer_emu,
+        name="emu_dae",
     )
 
     musr_prefix = "IN:MUSR:"
@@ -66,13 +60,17 @@ def dae_scan_plan() -> Generator[Msg, None, None]:
         prefix=musr_prefix,
         controller=controller_musr,
         waiter=waiter_musr,
-        reducer=reducer_musr,name="musr_dae"
+        reducer=reducer_musr,
+        name="musr_dae",
     )
 
     _, ax = yield from call_qt_aware(plt.subplots)
 
     lf = LiveFit(
-        Linear.fit(), y=reducer_emu.intensity.name, x=magnet.name, yerr=reducer_emu.intensity_stddev.name
+        Linear.fit(),
+        y=reducer_emu.intensity.name,
+        x=magnet.name,
+        yerr=reducer_emu.intensity_stddev.name,
     )
 
     yield from ensure_connected(magnet, dae_emu, dae_musr, force_reconnect=True)
