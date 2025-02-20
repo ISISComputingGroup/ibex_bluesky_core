@@ -1,6 +1,7 @@
 """Muon scan that uses two DAEs to scan a magnet."""
 
 from collections.abc import Generator
+from pathlib import Path
 
 import bluesky.plans as bp
 import matplotlib.pyplot as plt
@@ -8,6 +9,7 @@ from bluesky.callbacks import LiveFitPlot, LiveTable
 from bluesky.preprocessors import subs_decorator
 from bluesky.utils import Msg
 from ibex_bluesky_core.callbacks import LiveFitLogger
+from ibex_bluesky_core.plans import set_num_periods
 from ophyd_async.plan_stubs import ensure_connected
 
 from ibex_bluesky_core.callbacks.fitting import LiveFit
@@ -17,11 +19,12 @@ from ibex_bluesky_core.devices.block import block_rw_rbv, BlockWriteConfig
 from ibex_bluesky_core.devices.simpledae import SimpleDae
 from ibex_bluesky_core.devices.simpledae.controllers import (
     RunPerPointController,
+    PeriodPerPointController,
 )
 from ibex_bluesky_core.devices.simpledae.reducers import (
     PeriodGoodFramesNormalizer,
 )
-from ibex_bluesky_core.devices.simpledae.waiters import GoodFramesWaiter
+from ibex_bluesky_core.devices.simpledae.waiters import GoodFramesWaiter, PeriodGoodFramesWaiter
 from ibex_bluesky_core.plan_stubs import call_qt_aware
 
 from ibex_bluesky_core.callbacks.file_logger import HumanReadableFileCallback
@@ -41,7 +44,7 @@ def two_dae_scan(
     magnet_settle_time=1,
     dae_1_prefix="IN:ARGUS:",
     dae_2_prefix="IN:CHRONUS:",
-    spectra_total_1=96,
+    spectra_total_1=192,
     spectra_total_2=32,
 ) -> Generator[Msg, None, None]:
     """Scan a block using two DAEs and two magnets."""
@@ -65,8 +68,8 @@ def two_dae_scan(
         ),
     )
 
-    controller_1 = RunPerPointController(save_run=save_run)
-    waiter_1 = GoodFramesWaiter(frames)
+    controller_1 = PeriodPerPointController(save_run=save_run)
+    waiter_1 = PeriodGoodFramesWaiter(frames)
     reducer_1 = PeriodGoodFramesNormalizer(
         prefix=dae_1_prefix,
         detector_spectra=[i for i in range(1, spectra_total_1 + 1)],
@@ -80,8 +83,8 @@ def two_dae_scan(
         name="dae_1",
     )
 
-    controller_2 = RunPerPointController(save_run=save_run)
-    waiter_2 = GoodFramesWaiter(frames)
+    controller_2 = PeriodPerPointController(save_run=save_run)
+    waiter_2 = PeriodGoodFramesWaiter(frames)
     reducer_2 = PeriodGoodFramesNormalizer(
         prefix=dae_2_prefix,
         detector_spectra=[i for i in range(1, spectra_total_2 + 1)],
@@ -112,6 +115,9 @@ def two_dae_scan(
 
     yield from ensure_connected(magnet_1, magnet_2, dae_1, dae_2, force_reconnect=True)
 
+    yield from set_num_periods(dae_1, num)
+    yield from set_num_periods(dae_2, num)
+
     @subs_decorator(
         [
             LiveFitPlot(livefit=lf_1, ax=ax),
@@ -122,6 +128,7 @@ def two_dae_scan(
                 marker="x",
                 linestyle="none",
                 ax=ax,
+                legend_keys=["argus"],
                 yerr=reducer_1.intensity_stddev.name,
             ),
             LivePlot(
@@ -130,43 +137,33 @@ def two_dae_scan(
                 marker="x",
                 linestyle="none",
                 ax=ax,
+                legend_keys=["chronus"],
                 yerr=reducer_2.intensity_stddev.name,
             ),
             LiveTable(
                 [
                     magnet_1.name,
                     magnet_2.name,
-                    controller_1.run_number.name,
                     reducer_1.intensity.name,
                     reducer_1.intensity_stddev.name,
-                    reducer_1.det_counts.name,
-                    reducer_1.det_counts_stddev.name,
-                    dae_1.good_frames.name,
-                    controller_2.run_number.name,
                     reducer_2.intensity.name,
                     reducer_2.intensity_stddev.name,
-                    reducer_2.det_counts.name,
-                    reducer_2.det_counts_stddev.name,
-                    dae_2.good_frames.name,
                 ]
             ),
             HumanReadableFileCallback(
                 fields=[
                     magnet_1.name,
                     magnet_2.name,
-                    controller_1.run_number.name,
                     reducer_1.intensity.name,
                     reducer_1.intensity_stddev.name,
-                    reducer_1.det_counts.name,
-                    reducer_1.det_counts_stddev.name,
-                    dae_1.good_frames.name,
-                    controller_2.run_number.name,
                     reducer_2.intensity.name,
                     reducer_2.intensity_stddev.name,
-                    reducer_2.det_counts.name,
-                    reducer_2.det_counts_stddev.name,
-                    dae_2.good_frames.name,
-                ]
+                ],
+                output_dir=Path("//isis.cclrc.ac.uk/inst$")
+                / "NDXARGUS"
+                / "user"
+                / "TEST"
+                / "scans",
             ),
             LiveFitLogger(
                 lf_1,
@@ -174,6 +171,11 @@ def two_dae_scan(
                 y=reducer_1.intensity.name,
                 yerr=reducer_1.intensity_stddev.name,
                 postfix="lf_1",
+                output_dir=Path("//isis.cclrc.ac.uk/inst$")
+                / "NDXARGUS"
+                / "user"
+                / "TEST"
+                / "scans",
             ),
             LiveFitLogger(
                 lf_2,
@@ -181,6 +183,11 @@ def two_dae_scan(
                 y=reducer_2.intensity.name,
                 yerr=reducer_2.intensity_stddev.name,
                 postfix="lf_2",
+                output_dir=Path("//isis.cclrc.ac.uk/inst$")
+                / "NDXARGUS"
+                / "user"
+                / "TEST"
+                / "scans",
             ),
         ]
     )
