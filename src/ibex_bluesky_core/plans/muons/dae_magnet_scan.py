@@ -15,71 +15,75 @@ from ibex_bluesky_core.devices.block import BlockWriteConfig, block_rw_rbv
 from ibex_bluesky_core.devices.simpledae import SimpleDae
 from ibex_bluesky_core.devices.simpledae.controllers import (
     RunPerPointController,
+    PeriodPerPointController,
 )
-from ibex_bluesky_core.devices.simpledae.reducers import (
-    GoodFramesNormalizer,
-)
-from ibex_bluesky_core.devices.simpledae.waiters import GoodFramesWaiter
+from ibex_bluesky_core.devices.simpledae.reducers import PeriodGoodFramesNormalizer
+from ibex_bluesky_core.devices.simpledae.waiters import GoodFramesWaiter, PeriodGoodFramesWaiter
 from ibex_bluesky_core.plans import set_num_periods
 from ibex_bluesky_core.run_engine import get_run_engine
 
-NUM_POINTS: int = 3
-
-MAGNET_SETTLE_TIME = 3
-MAGNET_BLOCK_NAME = "p3"
-MAGNET_TOLERANCE = 0.1
+from ibex_bluesky_core.callbacks.fitting.fitting_utils import Gaussian
 
 
-def dae_magnet_plan() -> Generator[Msg, None, None]:
+def dae_magnet_plan(
+    block,
+    start,
+    stop,
+    num,
+    periods=True,
+    frames=500,
+    save_run=True,
+    magnet_tolerance=0.01,
+    magnet_settle_time=1,
+) -> Generator[Msg, None, None]:
     """Scan a DAE against a magnet."""
 
     def check_within_tolerance(setpoint: float, actual: float) -> bool:
-        return setpoint - MAGNET_TOLERANCE <= actual <= setpoint + MAGNET_TOLERANCE
+        return setpoint - magnet_tolerance <= actual <= setpoint + magnet_tolerance
 
     magnet = block_rw_rbv(
         float,
-        MAGNET_BLOCK_NAME,
+        block,
         write_config=BlockWriteConfig(
-            settle_time_s=MAGNET_SETTLE_TIME, set_success_func=check_within_tolerance
+            settle_time_s=magnet_settle_time, set_success_func=check_within_tolerance
         ),
     )
 
     prefix = get_pv_prefix()
-    controller_chronus = RunPerPointController(save_run=True)
-    waiter_chronus = GoodFramesWaiter(500)
-    reducer_chronus = GoodFramesNormalizer(
+
+    if periods:
+        controller = PeriodPerPointController(save_run=save_run)
+        waiter = PeriodGoodFramesWaiter(frames)
+    else:
+        controller = RunPerPointController(save_run=save_run)
+        waiter = GoodFramesWaiter(frames)
+
+    reducer = PeriodGoodFramesNormalizer(prefix, detector_spectra=[i for i in range(1, 32 + 1)])
+
+    dae = SimpleDae(
         prefix=prefix,
-        detector_spectra=[i for i in range(1, 32 + 1)],
+        controller=controller,
+        waiter=waiter,
+        reducer=reducer,
     )
 
-    dae_chronus = SimpleDae(
-        prefix=prefix,
-        controller=controller_chronus,
-        waiter=waiter_chronus,
-        reducer=reducer_chronus,
-    )
+    yield from ensure_connected(magnet, dae, force_reconnect=True)
 
-    # yield from set_num_periods(dae_chronus, 100)
-
-    yield from ensure_connected(magnet, dae_chronus, force_reconnect=True)
+    if periods:
+        yield from set_num_periods(dae, num)
+    else:
+        yield from set_num_periods(dae, 1)
 
     icc = ISISCallbacks(
-        y=reducer_chronus.intensity.name,
+        y=reducer.intensity.name,
         x=magnet.name,
-        yerr=reducer_chronus.intensity_stddev.name,
+        yerr=reducer.intensity_stddev.name,
+        fit=Gaussian().fit(),
     )
 
     @icc
     def _inner() -> Generator[Msg, None, None]:
-        yield from bp.scan([dae_chronus], magnet, 0, 10, num=NUM_POINTS)
+        yield from bp.scan([dae], magnet, start, stop, num=num)
 
     yield from _inner()
     print(icc.live_fit.result.fit_report())
-
-
-if __name__ == "__main__" and not os.environ.get("FROM_IBEX") == "True":
-    matplotlib.use("qtagg")
-    plt.ion()
-    RE = get_run_engine()
-    RE(dae_magnet_plan())
-    input("Plan complete, press return to close plot and exit")
