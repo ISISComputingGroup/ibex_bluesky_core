@@ -24,6 +24,7 @@ from ibex_bluesky_core.run_engine import get_run_engine
 
 from ibex_bluesky_core.callbacks.fitting.fitting_utils import Gaussian
 
+default_prefix = get_pv_prefix()
 
 def dae_magnet_plan(
     block,
@@ -35,6 +36,7 @@ def dae_magnet_plan(
     save_run=True,
     magnet_tolerance=0.01,
     magnet_settle_time=1,
+    prefix = default_prefix
 ) -> Generator[Msg, None, None]:
     """Scan a DAE against a magnet."""
 
@@ -48,8 +50,6 @@ def dae_magnet_plan(
             settle_time_s=magnet_settle_time, set_success_func=check_within_tolerance
         ),
     )
-
-    prefix = get_pv_prefix()
 
     if periods:
         controller = PeriodPerPointController(save_run=save_run)
