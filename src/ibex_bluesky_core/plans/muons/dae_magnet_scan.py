@@ -20,6 +20,7 @@ from ibex_bluesky_core.devices.simpledae.reducers import (
     GoodFramesNormalizer,
 )
 from ibex_bluesky_core.devices.simpledae.waiters import GoodFramesWaiter
+from ibex_bluesky_core.plans import set_num_periods
 from ibex_bluesky_core.run_engine import get_run_engine
 
 NUM_POINTS: int = 3
@@ -57,6 +58,8 @@ def dae_magnet_plan() -> Generator[Msg, None, None]:
         waiter=waiter_chronus,
         reducer=reducer_chronus,
     )
+
+    # yield from set_num_periods(dae_chronus, 100)
 
     yield from ensure_connected(magnet, dae_chronus, force_reconnect=True)
 
