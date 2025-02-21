@@ -102,8 +102,6 @@ class Dae(StandardReadable):
         self.users: SignalRW[str] = isis_epics_signal_rw(str, f"{dae_prefix}_USERNAME")
         self.rb_number: SignalRW[str] = isis_epics_signal_rw(str, f"{dae_prefix}_RBNUMBER")
 
-        self.spectra_1_period_1 = DaeSpectra(dae_prefix, period=1, spectra=1)
-
         self.controls: DaeControls = DaeControls(dae_prefix)
 
         super().__init__(name=name)
