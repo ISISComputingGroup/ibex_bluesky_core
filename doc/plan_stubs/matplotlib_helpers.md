@@ -1,4 +1,4 @@
-# `call_qt_aware` (matplotlib helpers)
+# [`call_qt_aware`](ibex_bluesky_core.plan_stubs.call_qt_aware) (matplotlib helpers)
 
 When attempting to use `matplotlib` UI functions directly in a plan, and running `matplotlib` using a `Qt`
 backend (e.g. in a standalone shell outside IBEX), you may see a hang or an error of the form:
@@ -11,7 +11,7 @@ UserWarning: Starting a Matplotlib GUI outside of the main thread will likely fa
 This is because the `RunEngine` runs plans in a worker thread, not in the main thread, which then requires special
 handling when calling functions that will update a UI.
 
-The {py:obj}`ibex_bluesky_core.plan_stubs.call_qt_aware` plan stub can call `matplotlib` functions in a
+The [`call_qt_aware`](ibex_bluesky_core.plan_stubs.call_qt_aware) plan stub can call `matplotlib` functions in a
 Qt-aware context, which allows them to be run directly from a plan. It allows the same arguments and 
 keyword-arguments as the underlying matplotlib function it is passed.
 
