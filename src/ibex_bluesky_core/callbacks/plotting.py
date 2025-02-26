@@ -73,3 +73,8 @@ class LivePlot(_DefaultLivePlot):
         """Process an start document (delegate to superclass, then show the plot)."""
         super().start(doc)
         self._show_plot()
+
+
+# @make_class_safe(logger=logger)
+# class LivePColorMesh(QtAwareCallback):
+#     pass
