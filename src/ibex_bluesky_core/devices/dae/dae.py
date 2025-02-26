@@ -11,7 +11,6 @@ from ibex_bluesky_core.devices.dae.dae_monitor import DaeMonitor
 from ibex_bluesky_core.devices.dae.dae_period import DaePeriod
 from ibex_bluesky_core.devices.dae.dae_period_settings import DaePeriodSettings
 from ibex_bluesky_core.devices.dae.dae_settings import DaeSettings
-from ibex_bluesky_core.devices.dae.dae_spectra import DaeSpectra
 from ibex_bluesky_core.devices.dae.dae_tcb_settings import DaeTCBSettings
 
 
@@ -101,8 +100,6 @@ class Dae(StandardReadable):
 
         self.users: SignalRW[str] = isis_epics_signal_rw(str, f"{dae_prefix}_USERNAME")
         self.rb_number: SignalRW[str] = isis_epics_signal_rw(str, f"{dae_prefix}_RBNUMBER")
-
-        self.spectra_1_period_1 = DaeSpectra(dae_prefix, period=1, spectra=1)
 
         self.controls: DaeControls = DaeControls(dae_prefix)
 
