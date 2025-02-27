@@ -1,5 +1,13 @@
 # Local development
 
+## Resources for bluesky and ophyd-async development
+
+[bluesky user documentation - plans, plan stubs, callbacks etc.](https://blueskyproject.io/bluesky/main/userindex.html)
+
+[ophyd-async documentation - devices](https://blueskyproject.io/ophyd-async/main/index.html)
+
+[ophyd-async - choosing base classes when writing a device](https://blueskyproject.io/ophyd-async/main/how-to/choose-right-baseclass.html)
+
 ## Checkout the repository locally
 
 ```
