@@ -1,0 +1,24 @@
+
+
+``ibex_bluesky_core.devices.dae.dae_event_mode``
+================================================
+        
+
+.. automodule:: ibex_bluesky_core.devices.dae.dae_event_mode
+    :members:
+    :show-inheritance:
+
+    
+    
+    
+
+    
+    
+    .. rubric:: Members
+
+    .. autosummary::
+        :nosignatures:
+    
+        DaeEventMode
+    
+    
