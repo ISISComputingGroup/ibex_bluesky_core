@@ -5,6 +5,8 @@ import pytest
 
 from ibex_bluesky_core.log import file_handler, set_bluesky_log_levels, setup_logging
 
+def test_bad():
+    assert False
 
 @pytest.mark.parametrize("name", ["ibex_bluesky_core", "ophyd_async", "bluesky"])
 def test_setup_logging(name: str):
