@@ -6,8 +6,16 @@ from unittest.mock import MagicMock, patch
 import matplotlib.pyplot as plt
 import pytest
 from bluesky.utils import Msg
+from ophyd_async.testing import (
+    set_mock_value,
+)
 
-from ibex_bluesky_core.plan_stubs import CALL_QT_AWARE_MSG_KEY, call_qt_aware, call_sync
+from ibex_bluesky_core.plan_stubs import (
+    CALL_QT_AWARE_MSG_KEY,
+    call_qt_aware,
+    call_sync,
+    set_num_periods,
+)
 from ibex_bluesky_core.run_engine._msg_handlers import call_sync_handler
 
 
@@ -119,3 +127,26 @@ def test_call_qt_aware_non_matplotlib_function(RE):
         RE(plan())
 
     mock.assert_not_called()
+
+
+async def test_set_num_periods_works(RE, simpledae):
+    set_mock_value(simpledae.number_of_periods, 1)
+    RE(set_num_periods(simpledae, 5))
+    assert (await simpledae.number_of_periods.get_value()) == 5
+
+
+def test_set_num_periods_fails(RE, simpledae):
+    class UnequalInt(int):
+        """An int that is never equal to anything..."""
+
+        def __eq__(self, other):
+            return False
+
+        def __ne__(self, other):
+            return True
+
+        def __hash__(self):
+            pass
+
+    with pytest.raises(ValueError, match=r"Could not set 5 periods on DAE .*"):
+        RE(set_num_periods(simpledae, UnequalInt(5)))
