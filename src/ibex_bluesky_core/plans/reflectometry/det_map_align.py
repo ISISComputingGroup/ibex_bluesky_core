@@ -134,17 +134,14 @@ def mapping_alignment_plan(  # noqa: PLR0913, this is intentionally quite generi
     """
     if detectors.shape != angle_map.shape:
         raise ValueError(
-            f"detectors ({detectors.shape}) and "
-            f"angle_map ({angle_map.shape}) must have same shape"
+            f"detectors ({detectors.shape}) and angle_map ({angle_map.shape}) must have same shape"
         )
 
     dae, reducer = _dae_and_reducer(frames, monitor, detectors)
     yield from ensure_connected(height, dae)  # type: ignore
 
     yield from call_qt_aware(plt.close, "all")
-    yield from call_qt_aware(plt.show)
     _, (grid_ax, height_ax, angle_ax) = yield from call_qt_aware(plt.subplots, nrows=3)
-    yield from call_qt_aware(plt.show)
 
     live_grid = LivePColorMesh(
         x=reducer.det_integrals.name,

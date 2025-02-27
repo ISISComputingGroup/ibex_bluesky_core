@@ -961,9 +961,9 @@ async def test_period_spec_integrals_reducer(
 
     set_mock_value(simpledae.period_num, current_period)
 
-    set_mock_value(simpledae.specdata_nord, 2 * (3 + 1) * (4 + 1))
+    set_mock_value(simpledae.raw_spec_data_nord, 2 * (3 + 1) * (4 + 1))
     set_mock_value(
-        simpledae.specdata,
+        simpledae.raw_spec_data,
         np.array(
             [
                 # Period 1
@@ -999,7 +999,7 @@ async def test_period_spec_integrals_reducer(
 
     await reducer.reduce_data(simpledae)
 
-    get_mock_put(simpledae.specdata_proc).assert_called_with(1, wait=True)
+    get_mock_put(simpledae.raw_spec_data_proc).assert_called_with(1, wait=True)
 
     np.testing.assert_equal(await reducer.mon_integrals.get_value(), mon_integrals)
     np.testing.assert_equal(await reducer.det_integrals.get_value(), det_integrals)
