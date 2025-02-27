@@ -17,14 +17,19 @@ at once.
 """
 
 import math
+import threading
 import time
 from typing import Any
 
 import numpy as np
 import numpy.typing as npt
 import scipp as sc
+from bluesky.callbacks.mpl_plotting import QtAwareCallback
 from bluesky.callbacks.stream import LiveDispatcher
-from event_model import Event, EventDescriptor, RunStop
+from event_model import Event, EventDescriptor, RunStart, RunStop
+from matplotlib.axes import Axes
+
+from ibex_bluesky_core.callbacks.plotting import show_plot
 
 
 class DetMapHeightScanLiveDispatcher(LiveDispatcher):
@@ -148,3 +153,71 @@ class DetMapAngleScanLiveDispatcher(LiveDispatcher):
             }
             self.process_event(event)
         return super().stop(doc, _md)
+
+
+class LivePColorMesh(QtAwareCallback):
+    """Live PColorMesh-based Live Heatmap for reflectometry mapping-alignment."""
+
+    def __init__(
+        self,
+        *,
+        y: str,
+        x: str,
+        x_name: str,
+        x_coord: npt.NDArray[np.float64],
+        ax: Axes,
+        **kwargs: Any,  # noqa: ANN401
+    ) -> None:
+        """Create a new heatmap."""
+        super().__init__(use_teleporter=kwargs.pop("use_teleporter", None))
+        self.__setup_lock = threading.Lock()
+        self.__setup_event = threading.Event()
+        self._data = None
+        self._x = x
+        self._y = y
+        self._y_coords = []
+        self._x_name = x_name
+        self._x_coords = x_coord
+
+        self.ax = ax
+        self.kwargs = kwargs
+
+    def start(self, doc: RunStart) -> None:
+        """Start a new plot (clear any old data)."""
+        # The doc is not used; we just use the signal that a new run began.
+        self._data = None
+        self._y_coords = []
+
+        super().start(doc)
+
+    def event(self, doc: Event) -> None:
+        """Unpack data from the event and call self.update()."""
+        new_x = doc["data"][self._x]
+        new_y = doc["data"][self._y]
+
+        if self._data is None:
+            self._data = np.asarray(new_x).reshape((1, len(new_x)))
+        else:
+            self._data = np.vstack((self._data, np.asarray(new_x)))
+
+        self._y_coords.append(new_y)
+
+        self.update_plot()
+        super().event(doc)
+
+    def update_plot(self) -> None:
+        """Redraw the heatmap."""
+        self.ax.clear()
+        self.ax.set_xlabel(self._x_name)
+        self.ax.set_ylabel(self._y)
+
+        self.ax.pcolormesh(
+            self._x_coords,
+            self._y_coords,
+            self._data,
+            vmin=np.min(self._data),
+            vmax=np.max(self._data),
+            **self.kwargs,
+        )
+        self.ax.figure.canvas.draw_idle()
+        show_plot()

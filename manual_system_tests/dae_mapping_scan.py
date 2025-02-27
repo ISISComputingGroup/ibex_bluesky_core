@@ -12,8 +12,6 @@ from ibex_bluesky_core.devices.block import block_rw
 from ibex_bluesky_core.plans.reflectometry.det_map_align import mapping_alignment_plan
 from ibex_bluesky_core.run_engine import get_run_engine
 
-NUM_POINTS: int = 15
-
 matplotlib.rcParams["figure.autolayout"] = True
 matplotlib.rcParams["font.size"] = 8
 
@@ -27,10 +25,10 @@ def map_align() -> Generator[Msg, None, None]:
             5,
             15,
             num=51,
-            frames=10,
-            detectors=np.arange(2, 33),
+            frames=50,
+            detectors=np.arange(2, 129),
             monitor=1,
-            angle_map=np.linspace(-5, 5, num=31),
+            angle_map=np.linspace(-5, 5, num=127),
         )
     )
 

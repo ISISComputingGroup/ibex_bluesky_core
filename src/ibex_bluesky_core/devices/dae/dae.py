@@ -86,11 +86,11 @@ class Dae(StandardReadable):
             int, f"{dae_prefix}SPECINTEGRALS.NORD"
         )
 
-        self.specdata: SignalR[Array1D[int32]] = epics_signal_r(
+        self.raw_spec_data: SignalR[Array1D[int32]] = epics_signal_r(
             Array1D[int32], f"{dae_prefix}SPECDATA"
         )
-        self.specdata_proc: SignalW[int] = epics_signal_w(int, f"{dae_prefix}SPECDATA.PROC")
-        self.specdata_nord: SignalR[int] = epics_signal_r(int, f"{dae_prefix}SPECDATA.NORD")
+        self.raw_spec_data_proc: SignalW[int] = epics_signal_w(int, f"{dae_prefix}SPECDATA.PROC")
+        self.raw_spec_data_nord: SignalR[int] = epics_signal_r(int, f"{dae_prefix}SPECDATA.NORD")
 
         self.monitor = DaeMonitor(dae_prefix)
         self.event_mode = DaeEventMode(dae_prefix)

@@ -120,6 +120,10 @@ async def call_qt_aware_handler(msg: Msg) -> Any:  # noqa: ANN401
                     msg.kwargs,
                 )
                 result = func(*msg.args, **msg.kwargs)
+
+                import matplotlib.pyplot as plt  # noqa: PLC0415: run import in Qt context...
+
+                plt.show()
                 logger.debug("Running '%s' (Qt) successful", func.__name__)
             except BaseException as e:
                 logger.error(

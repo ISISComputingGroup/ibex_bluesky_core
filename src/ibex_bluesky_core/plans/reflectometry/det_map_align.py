@@ -6,7 +6,6 @@ import bluesky.plans as bp
 import matplotlib.pyplot as plt
 import numpy as np
 import numpy.typing as npt
-from bluesky.callbacks import LiveGrid
 from bluesky.preprocessors import subs_decorator
 from bluesky.protocols import NamedMovable
 from bluesky.utils import Msg
@@ -18,6 +17,7 @@ from ibex_bluesky_core.callbacks.fitting.fitting_utils import Gaussian
 from ibex_bluesky_core.callbacks.reflectometry.det_map import (
     DetMapAngleScanLiveDispatcher,
     DetMapHeightScanLiveDispatcher,
+    LivePColorMesh,
 )
 from ibex_bluesky_core.devices import get_pv_prefix
 from ibex_bluesky_core.devices.simpledae import SimpleDae
@@ -133,15 +133,28 @@ def mapping_alignment_plan(  # noqa: PLR0913, this is intentionally quite generi
 
     """
     if detectors.shape != angle_map.shape:
-        raise ValueError("detectors and angle_map must have same shape")
+        raise ValueError(
+            f"detectors ({detectors.shape}) and "
+            f"angle_map ({angle_map.shape}) must have same shape"
+        )
 
     dae, reducer = _dae_and_reducer(frames, monitor, detectors)
     yield from ensure_connected(height, dae)  # type: ignore
 
-    yield from call_qt_aware(plt.close)
+    yield from call_qt_aware(plt.close, "all")
+    yield from call_qt_aware(plt.show)
     _, (grid_ax, height_ax, angle_ax) = yield from call_qt_aware(plt.subplots, nrows=3)
+    yield from call_qt_aware(plt.show)
 
-    live_grid = LiveGrid((num, detectors.size), I=reducer.det_integrals.name, ax=grid_ax, title="")
+    live_grid = LivePColorMesh(
+        x=reducer.det_integrals.name,
+        y=height.name,
+        x_name="angle",
+        x_coord=angle_map,
+        ax=grid_ax,
+        cmap="hot",
+        shading="auto",
+    )
     height_cb, height_fit = _height_scan_callback_and_fit(reducer, height, height_ax)
     angle_cb, angle_fit = _angle_scan_callback_and_fit(reducer, angle_map, angle_ax)
 
@@ -169,6 +182,3 @@ def mapping_alignment_plan(  # noqa: PLR0913, this is intentionally quite generi
     print("ANGLE FIT:")
     print(angle_fit.result.fit_report(show_correl=False))
     print("\n\n")
-
-    # height_rsq = height_fit.result.rsquared
-    # angle_rsq = angle_fit.result.rsquared

@@ -367,15 +367,28 @@ class PeriodSpecIntegralsReducer(Reducer, StandardReadable):
 
     async def _trigger_and_get_specdata(self, dae: "SimpleDae") -> npt.NDArray[np.int32]:
         await dae.controls.update_run.trigger()
-        await dae.specdata_proc.set(1, wait=True)
+        await dae.raw_spec_data_proc.set(1, wait=True)
         (raw_data, nord) = await asyncio.gather(
-            dae.specdata.get_value(),
-            dae.specdata_nord.get_value(),
+            dae.raw_spec_data.get_value(),
+            dae.raw_spec_data_nord.get_value(),
         )
         return raw_data[:nord]
 
     async def reduce_data(self, dae: "SimpleDae") -> None:
-        """Expose detector & monitor integrals."""
+        """Expose detector & monitor integrals.
+
+        After this method returns, it is valid to read from det_integrals and
+        mon_integrals.
+
+        Note:
+            Could use SPECINTEGRALS PV here, which seems more efficient initially,
+            but it gets bounded by some areadetector settings under-the-hood which
+            may be a bit surprising on some instruments.
+
+            We can't just change these settings in this reducer, as they only apply
+            to new events that come in.
+
+        """
         (
             raw_data,
             num_periods,
