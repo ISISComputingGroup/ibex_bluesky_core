@@ -26,16 +26,3 @@ jobs:
       - name: run pytest (windows)
         run: python -m pytest
         if: startsWith(matrix.os,'windows')
-  results:
-    if: ${{ always() }}
-    runs-on: ubuntu-latest
-    name: Final Results
-    needs: [call-linter-workflow, tests]
-    steps:
-    - run: exit 1
-      # see https://stackoverflow.com/a/67532120/4907315
-      if: >-
-          ${{
-               contains(needs.*.result, 'failure')
-            || contains(needs.*.result, 'cancelled')
-          }}
