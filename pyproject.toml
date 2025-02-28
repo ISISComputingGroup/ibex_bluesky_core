@@ -41,12 +41,14 @@ classifiers = [
 ]
 
 dependencies = [
+  "aiohttp",
   "bluesky",
   "ophyd-async[ca] >= 0.8.0",
   "matplotlib",
   "lmfit",
   "scipy",
   "numpy",
+  "orjson",
   "scipp",
   "tzdata",
   "scippneutron",
