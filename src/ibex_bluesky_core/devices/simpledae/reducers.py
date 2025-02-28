@@ -5,8 +5,12 @@ import logging
 import math
 from abc import ABC, abstractmethod
 from collections.abc import Awaitable, Collection, Sequence
-from typing import TYPE_CHECKING, Callable
+from typing import TYPE_CHECKING, Any, Callable
 
+import aiohttp
+import numpy as np
+import numpy.typing as npt
+import orjson
 import scipp as sc
 from ophyd_async.core import (
     Device,
@@ -311,4 +315,126 @@ class MonitorNormalizer(Reducer, StandardReadable):
             self.det_counts_stddev,
             self.mon_counts_stddev,
             self.intensity_stddev,
+        ]
+
+
+class FiaMantidReducer(Reducer, StandardReadable):
+    def __init__(self, *, username: str, password: str):
+        self._username = username
+        self._password = password
+
+        self.result, self._result_setter = soft_signal_r_and_setter(float, 0.0)
+        self.result_err, self._result_err_setter = soft_signal_r_and_setter(float, 0.0)
+
+        super().__init__(name="")
+
+    async def _get_specdata(self, dae: "SimpleDae") -> npt.NDArray[np.int64]:
+        await dae.controls.update_run.trigger()
+        await dae.raw_spectra_data_proc.set(1, wait=True)
+        return await dae.raw_spectra_data.get_value()
+
+    async def _fia_authenticate(self, session: aiohttp.ClientSession) -> str:
+        data = {
+            "username": self._username,
+            "password": self._password,
+        }
+        async with session.post("auth/api/jwt/authenticate", json=data) as resp:
+            # TODO: handle failed auth
+            return (await resp.json())["token"]
+
+    async def _submit_job(self, session: aiohttp.ClientSession, data) -> None:
+        async with session.post("api/job/simple", json=data) as resp:
+            # TODO: this should eventually return JobID.
+            if resp.status != 200:
+                # TODO: insert on-call number for ISIS FIA team.
+                raise ValueError("Failed to submit Job")
+
+    async def _get_latest_job(self, session: aiohttp.ClientSession) -> int:
+        """TODO TODO TODO
+        Binary search for the job id we just submitted
+
+        As well as being horribly inefficient, this is unreliable
+        if some other job gets submitted around the same time.
+
+        FIA will hopefully return the jobid we need from submit_job, at some point.
+        """
+        low = 1
+        high = 1_000_000_000
+
+        while low < high - 1:
+            mid = (high + low) // 2
+            async with session.get(f"api/job/{mid}") as resp:
+                if resp.status == 200:
+                    low = mid
+                else:
+                    high = mid
+
+        return low
+
+    async def _get_reduction_result_str(
+        self, session: aiohttp.ClientSession, job_id: int
+    ) -> dict[str, Any]:
+        while True:
+            await asyncio.sleep(0.1)
+
+            async with session.get(f"api/job/{job_id}") as resp:
+                data = await resp.json()
+                match data["state"]:
+                    case "NOT_STARTED":
+                        continue
+                    case "SUCCESSFUL":
+                        return data
+                    case _:
+                        # TODO: insert on-call number for FIA team.
+                        raise ValueError(f"Job failed: {data}")
+
+    async def reduce_data(self, dae: "SimpleDae") -> None:
+        async with aiohttp.ClientSession("https://reduce.isis.cclrc.ac.uk/") as session:
+            # Can authenticate to FIA and get DAE data in parallel.
+            fia_auth_token, spec_data = await asyncio.gather(
+                self._fia_authenticate(session),
+                self._get_specdata(dae),
+            )
+
+            # TODO: make actually generic
+            data = {
+                "runner_image": "ghcr.io/fiaisis/mantid:6.11.0",
+                "script": f"""
+from mantid.simpleapi import *
+import json
+import numpy as np
+
+data = np.array(json.loads({orjson.dumps(spec_data, option=orjson.OPT_SERIALIZE_NUMPY)}))
+
+ws = CreateWorkspace(DataX=np.ones(data.shape), DataY=data, NSpec=len(data))
+ws = SetUncertainties(ws, SetError="sqrt")
+ws = SumSpectra(ws)
+result = float(ws.readY(0)[0])
+result_err = float(ws.readE(0)[0])
+
+# Input files?
+# FIA breaks if this is deleted.
+print(json.dumps({{}}))
+
+# Job status
+# Abuse output_files to return non-file outputs...
+print(json.dumps({{'status': 'Successful', 'output_files': [result, result_err]}}))
+""",
+            }
+
+            session.headers["Authorization"] = f"Bearer {fia_auth_token}"
+
+            await self._submit_job(session, data)
+            job_id = await self._get_latest_job(session)
+            # TODO: set timeout
+            result = await self._get_reduction_result_str(session, job_id)
+            (ans, ans_err) = orjson.loads(result["outputs"])
+
+        self._result_setter(ans)
+        self._result_err_setter(ans_err)
+
+    def additional_readable_signals(self, dae: "SimpleDae") -> list[Device]:
+        return [
+            self.result,
+            self.result_err,
         ]
