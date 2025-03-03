@@ -92,7 +92,7 @@ def theta_checks(result: ModelResult, param_value: float) -> bool:
 
 parameters = [
     autoalign_utils.AlignmentParam("theta", 5, Gaussian.fit(), "x0", 0.0, do_checks=theta_checks),
-    # add when one beamline?
+    # add when on beamline?
 ]
 
 
