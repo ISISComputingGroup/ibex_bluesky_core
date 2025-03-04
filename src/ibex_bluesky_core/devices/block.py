@@ -5,7 +5,7 @@ import logging
 from dataclasses import dataclass
 from typing import Callable, Generic, TypeVar
 
-from bluesky.protocols import Locatable, Location, Movable, Triggerable, HasName, NamedMovable
+from bluesky.protocols import Locatable, Location, NamedMovable, Triggerable
 from ophyd_async.core import (
     AsyncStatus,
     SignalDatatype,

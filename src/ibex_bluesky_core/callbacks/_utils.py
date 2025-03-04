@@ -7,8 +7,11 @@ OUTPUT_DIR_ENV_VAR = "IBEX_BLUESKY_OUTPUT_DIR"
 
 _OUTPUT_DIR_ENV_VALUE = os.environ.get(OUTPUT_DIR_ENV_VAR)
 
-DEFAULT_PATH = Path("//isis.cclrc.ac.uk/inst$") / INSTRUMENT / "user" / "TEST" / "scans" \
-    if _OUTPUT_DIR_ENV_VALUE is None else Path(_OUTPUT_DIR_ENV_VALUE)
+DEFAULT_PATH = (
+    Path("//isis.cclrc.ac.uk/inst$") / INSTRUMENT / "user" / "TEST" / "scans"
+    if _OUTPUT_DIR_ENV_VALUE is None
+    else Path(_OUTPUT_DIR_ENV_VALUE)
+)
 
 # Common document metadata
 UID = "uid"

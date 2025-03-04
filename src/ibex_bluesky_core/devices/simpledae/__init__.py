@@ -1,28 +1,27 @@
 """A simple interface to the DAE for bluesky."""
 
 import logging
-from typing import Generic, TYPE_CHECKING
-from typing_extensions import TypeVar
+from typing import Generic
 
 from bluesky.protocols import Triggerable
 from ophyd_async.core import (
     AsyncStageable,
     AsyncStatus,
 )
+from typing_extensions import TypeVar
 
 from ibex_bluesky_core.devices.dae.dae import Dae
-from ibex_bluesky_core.devices.simpledae.strategies import Controller, Waiter, Reducer
-
+from ibex_bluesky_core.devices.simpledae.strategies import Controller, Reducer, Waiter
 
 logger = logging.getLogger(__name__)
 
 
-TController = TypeVar("TController", bound="Controller", default="Controller", covariant=True)
-TWaiter = TypeVar("TWaiter", bound="Waiter", default="Waiter", covariant=True)
-TReducer = TypeVar("TReducer", bound="Reducer", default="Reducer", covariant=True)
+TController_co = TypeVar("TController_co", bound="Controller", default="Controller", covariant=True)
+TWaiter_co = TypeVar("TWaiter_co", bound="Waiter", default="Waiter", covariant=True)
+TReducer_co = TypeVar("TReducer_co", bound="Reducer", default="Reducer", covariant=True)
 
 
-class SimpleDae(Dae, Triggerable, AsyncStageable, Generic[TController, TWaiter, TReducer]):
+class SimpleDae(Dae, Triggerable, AsyncStageable, Generic[TController_co, TWaiter_co, TReducer_co]):
     """Configurable DAE with pluggable strategies for data collection, waiting, and reduction.
 
     This class should cover many simple DAE use-cases, but for complex use-cases a custom Dae
@@ -34,9 +33,9 @@ class SimpleDae(Dae, Triggerable, AsyncStageable, Generic[TController, TWaiter, 
         *,
         prefix: str,
         name: str = "DAE",
-        controller: TController,
-        waiter: TWaiter,
-        reducer: TReducer,
+        controller: TController_co,
+        waiter: TWaiter_co,
+        reducer: TReducer_co,
     ) -> None:
         """Initialize a simple DAE interface.
 
@@ -53,9 +52,9 @@ class SimpleDae(Dae, Triggerable, AsyncStageable, Generic[TController, TWaiter, 
 
         """
         self.prefix = prefix
-        self.controller: TController = controller
-        self.waiter: TWaiter = waiter
-        self.reducer: TReducer = reducer
+        self.controller: TController_co = controller
+        self.waiter: TWaiter_co = waiter
+        self.reducer: TReducer_co = reducer
 
         logger.info(
             "created simpledae with prefix=%s, controller=%s, waiter=%s, reducer=%s",

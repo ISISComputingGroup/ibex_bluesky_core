@@ -1,17 +1,16 @@
 """Implements detector-mapping alignment."""
-from collections.abc import Generator
 
-from typing import TypedDict, cast, Any
-from lmfit.model import ModelResult
+from collections.abc import Generator
+from typing import TypedDict, cast
 
 import bluesky.plans as bp
 import matplotlib.pyplot as plt
 import numpy as np
 import numpy.typing as npt
-
 from bluesky.preprocessors import subs_decorator
 from bluesky.protocols import NamedMovable
 from bluesky.utils import Msg
+from lmfit.model import ModelResult
 from matplotlib.axes import Axes
 from ophyd_async.plan_stubs import ensure_connected
 
@@ -85,11 +84,13 @@ def _angle_scan_callback_and_fit(
 
 
 class DetMapAlignResult(TypedDict):
+    """Result from mapping alignment plan."""
+
     height_fit: ModelResult | None
     angle_fit: ModelResult | None
 
 
-def mapping_alignment_plan(
+def mapping_alignment_plan(  # noqa PLR0913
     dae: SimpleDae[PeriodPerPointController, Waiter, PeriodSpecIntegralsReducer],
     height: NamedMovable[float],
     start: float,
@@ -112,11 +113,11 @@ def mapping_alignment_plan(
         rel: whether this scan should be absolute (default) or relative
 
     """
-
     reducer = dae.reducer
     if reducer.detectors.shape != angle_map.shape:
         raise ValueError(
-            f"detectors ({reducer.detectors.shape}) and angle_map ({angle_map.shape}) must have same shape"
+            f"detectors ({reducer.detectors.shape}) and "
+            f"angle_map ({angle_map.shape}) must have same shape"
         )
 
     yield from ensure_connected(height, dae)  # type: ignore

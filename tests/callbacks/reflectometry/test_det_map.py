@@ -2,14 +2,14 @@
 # pyright: reportArgumentType=false
 import numpy as np
 import pytest
-from event_model import RunStart, EventDescriptor, RunStop
+from event_model import EventDescriptor, RunStart, RunStop
 from matplotlib import pyplot as plt
 
 from ibex_bluesky_core.callbacks.reflectometry.det_map import (
     DetMapAngleScanLiveDispatcher,
-    DetMapHeightScanLiveDispatcher, LivePColorMesh,
+    DetMapHeightScanLiveDispatcher,
+    LivePColorMesh,
 )
-
 
 FAKE_START_DOC: RunStart = {"uid": "1"}  # type: ignore
 FAKE_DESCRIPTOR: EventDescriptor = {"uid": "2", "data_keys": {}}  # type: ignore
@@ -127,6 +127,7 @@ def test_height_scan_livedispatcher():
         (101 + 201 + 301 + 401) / (9 + 8 + 7 + 6)
     )
 
+
 def test_height_scan_livedispatcher_zero_monitor():
     dispatcher = DetMapHeightScanLiveDispatcher(
         mon_name="mon",
@@ -149,25 +150,29 @@ def test_height_scan_livedispatcher_zero_monitor():
 
 
 def test_live_pcolormap():
-    fix, ax = plt.subplots()
+    _, ax = plt.subplots()
     cb = LivePColorMesh(y="y", x="x", x_name="angle", x_coord=np.array([1, 2, 3]), ax=ax)
 
     cb.start(FAKE_START_DOC)
     cb.descriptor(FAKE_DESCRIPTOR)
-    cb.event({
+    cb.event(
+        {
             "data": {
                 "y": 1001,
                 "x": np.array([11, 12, 13]),
             },
             "descriptor": "2",
-        })
-    cb.event({
-        "data": {
-            "y": 1002,
-            "x": np.array([33, 44, 55]),
-        },
-        "descriptor": "2",
-    })
+        }
+    )
+    cb.event(
+        {
+            "data": {
+                "y": 1002,
+                "x": np.array([33, 44, 55]),
+            },
+            "descriptor": "2",
+        }
+    )
 
     np.testing.assert_equal(cb._data, np.array([[11, 12, 13], [33, 44, 55]]))
 
