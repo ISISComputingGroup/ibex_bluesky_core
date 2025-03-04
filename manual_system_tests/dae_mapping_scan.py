@@ -51,14 +51,16 @@ def map_align() -> Generator[Msg, None, DetMapAlignResult]:
         5,
         15,
         num=51,
-        angle_map=np.linspace(-5, 5, num=127),
+        angle_map=np.linspace(-5, 5, num=127, dtype=np.float64),
     )
 
     print("HEIGHT FIT:")
-    print(result["height_fit"].fit_report(show_correl=False))
+    if height_fit := result["height_fit"]:
+        print(height_fit.fit_report(show_correl=False))
     print("\n\n")
     print("ANGLE FIT:")
-    print(result["angle_fit"].fit_report(show_correl=False))
+    if angle_fit := result["angle_fit"]:
+        print(angle_fit.fit_report(show_correl=False))
     print("\n\n")
 
     return result

@@ -1,3 +1,4 @@
+# pyright: reportMissingParameterType=false
 from unittest.mock import patch
 
 import numpy as np
