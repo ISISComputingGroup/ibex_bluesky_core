@@ -1,0 +1,24 @@
+
+
+``ibex_bluesky_core.devices.dae.dae_spectra``
+=============================================
+        
+
+.. automodule:: ibex_bluesky_core.devices.dae.dae_spectra
+    :members:
+    :show-inheritance:
+
+    
+    
+    
+
+    
+    
+    .. rubric:: Members
+
+    .. autosummary::
+        :nosignatures:
+    
+        DaeSpectra
+    
+    
