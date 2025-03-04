@@ -323,6 +323,7 @@ class FiaMantidReducer(Reducer, StandardReadable):
         self._username = username
         self._password = password
 
+        self.fia_jobid, self._fia_jobid_setter = soft_signal_r_and_setter(int, 0)
         self.result, self._result_setter = soft_signal_r_and_setter(float, 0.0)
         self.result_err, self._result_err_setter = soft_signal_r_and_setter(float, 0.0)
 
@@ -334,16 +335,21 @@ class FiaMantidReducer(Reducer, StandardReadable):
         return await dae.raw_spectra_data.get_value()
 
     async def _fia_authenticate(self, session: aiohttp.ClientSession) -> str:
+        logger.info("Authenticating to FIA")
         data = {
             "username": self._username,
             "password": self._password,
         }
         async with session.post("auth/api/jwt/authenticate", json=data) as resp:
             # TODO: handle failed auth
-            return (await resp.json())["token"]
+            logger.debug(f"_fia_authenticate response: {resp}")
+            response = await resp.json()
+            logger.debug(f"Auth response: {response}")
+            return response["token"]
 
     async def _submit_job(self, session: aiohttp.ClientSession, data) -> None:
         async with session.post("api/job/simple", json=data) as resp:
+            logger.debug(f"_submit_job response: {resp}")
             # TODO: this should eventually return JobID.
             if resp.status != 200:
                 # TODO: insert on-call number for ISIS FIA team.
@@ -359,16 +365,20 @@ class FiaMantidReducer(Reducer, StandardReadable):
         FIA will hopefully return the jobid we need from submit_job, at some point.
         """
         low = 1
-        high = 1_000_000_000
+        high = 65536
 
         while low < high - 1:
             mid = (high + low) // 2
             async with session.get(f"api/job/{mid}") as resp:
+                logger.debug(f"_get_latest_job response: {resp}")
                 if resp.status == 200:
+                    logger.debug(f"Job {mid} exists")
                     low = mid
                 else:
+                    logger.debug(f"Job {mid} doesn't exist")
                     high = mid
 
+        logger.info(f"JobID {low}")
         return low
 
     async def _get_reduction_result_str(
@@ -378,22 +388,31 @@ class FiaMantidReducer(Reducer, StandardReadable):
             await asyncio.sleep(0.1)
 
             async with session.get(f"api/job/{job_id}") as resp:
+                logger.debug(f"get_reduction_result response: {resp}")
+
+                if resp.status != 200:
+                    raise ValueError(f"Failed to poll for reduction result (HTTP {resp.status})")
+
                 data = await resp.json()
                 match data["state"]:
                     case "NOT_STARTED":
+                        logger.debug(f"JobID {job_id} not done yet")
                         continue
                     case "SUCCESSFUL":
+                        logger.info(f"JobID {job_id} success: {data}")
                         return data
                     case _:
+                        logger.info(f"JobID {job_id} failed: {data}")
                         # TODO: insert on-call number for FIA team.
                         raise ValueError(f"Job failed: {data}")
 
     async def reduce_data(self, dae: "SimpleDae") -> None:
         async with aiohttp.ClientSession("https://reduce.isis.cclrc.ac.uk/") as session:
             # Can authenticate to FIA and get DAE data in parallel.
-            fia_auth_token, spec_data = await asyncio.gather(
+            fia_auth_token, spec_data, period_num = await asyncio.gather(
                 self._fia_authenticate(session),
                 self._get_specdata(dae),
+                dae.period_num.get_value(),
             )
 
             # TODO: make actually generic
@@ -404,7 +423,8 @@ from mantid.simpleapi import *
 import json
 import numpy as np
 
-data = np.array(json.loads({orjson.dumps(spec_data, option=orjson.OPT_SERIALIZE_NUMPY)}))
+# period = {period_num}
+data = np.array({orjson.dumps(spec_data, option=orjson.OPT_SERIALIZE_NUMPY).decode("utf-8")})
 
 ws = CreateWorkspace(DataX=np.ones(data.shape), DataY=data, NSpec=len(data))
 ws = SetUncertainties(ws, SetError="sqrt")
@@ -430,11 +450,13 @@ print(json.dumps({{'status': 'Successful', 'output_files': [result, result_err]}
             result = await self._get_reduction_result_str(session, job_id)
             (ans, ans_err) = orjson.loads(result["outputs"])
 
+        self._fia_jobid_setter(job_id)
         self._result_setter(ans)
         self._result_err_setter(ans_err)
 
     def additional_readable_signals(self, dae: "SimpleDae") -> list[Device]:
         return [
+            self.fia_jobid,
             self.result,
             self.result_err,
         ]
