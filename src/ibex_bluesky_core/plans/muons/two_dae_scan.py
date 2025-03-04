@@ -24,8 +24,7 @@ from ibex_bluesky_core.devices.simpledae.reducers import (
     PeriodGoodFramesNormalizer,
 )
 from ibex_bluesky_core.devices.simpledae.waiters import PeriodGoodFramesWaiter
-from ibex_bluesky_core.plan_stubs import call_qt_aware
-from ibex_bluesky_core.plans import set_num_periods
+from ibex_bluesky_core.plan_stubs import call_qt_aware, set_num_periods
 
 
 def two_dae_scan(

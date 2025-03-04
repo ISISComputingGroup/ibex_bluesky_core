@@ -19,8 +19,7 @@ from ibex_bluesky_core.devices.simpledae.controllers import (
 )
 from ibex_bluesky_core.devices.simpledae.reducers import PeriodGoodFramesNormalizer
 from ibex_bluesky_core.devices.simpledae.waiters import GoodFramesWaiter, PeriodGoodFramesWaiter
-from ibex_bluesky_core.plan_stubs import call_sync
-from ibex_bluesky_core.plans import set_num_periods
+from ibex_bluesky_core.plan_stubs import call_sync, set_num_periods
 
 try:
     from itertools import batched
@@ -42,6 +41,7 @@ default_prefix = get_pv_prefix()
 
 def dae_magnet_plan(
     *args,
+        dae:SimpleDae,
     num,
     periods=True,
     frames=500,

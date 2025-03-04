@@ -12,6 +12,8 @@ from ophyd_async.core import (
 )
 from ophyd_async.epics.core import epics_signal_r, epics_signal_w
 
+from ibex_bluesky_core.devices import get_pv_prefix
+
 
 class ReflParameter(StandardReadable):
     """Utility device for a reflectometry server parameter."""
@@ -75,3 +77,18 @@ class ReflParameterRedefine(StandardReadable):
         async for chg in observe_value(self.changed):
             if not chg:
                 break
+
+
+def refl_parameter(name: str) -> ReflParameter:
+    """Small wrapper around a reflectometry parameter device.
+
+    This automatically applies the current instrument's PV prefix.
+
+    Args:
+        name: the reflectometry parameter name.
+
+    Returns a device pointing to a reflectometry parameter.
+
+    """
+    prefix = get_pv_prefix()
+    return ReflParameter(prefix=prefix, name=name)

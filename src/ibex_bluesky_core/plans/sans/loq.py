@@ -23,6 +23,9 @@ def continuous_laser_scan(
 ) -> Generator[Msg, None, None]:
     """Continuous scan plan for scanning a motor against a laser diode readback.
 
+    TODO: make this take two devices and refactor to make it general, then move to general area
+    #TODO explain why this is needed vs normal scan
+
     Args:
         mot_block: The motor block to move.
         centre: The center of the scan.

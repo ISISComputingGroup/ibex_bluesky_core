@@ -5,6 +5,8 @@ import asyncio
 from ophyd_async.core import AsyncStatus, HintedSignal, StandardReadable, observe_value
 from ophyd_async.epics.core import epics_signal_r, epics_signal_rw, epics_signal_w
 
+from ibex_bluesky_core.devices import get_pv_prefix
+
 
 class HIFIMagnetAxis(StandardReadable):
     """Device for a HIFI magnet axis."""
@@ -46,3 +48,9 @@ class HIFIMagnetAxis(StandardReadable):
     def __repr__(self) -> str:
         """Debug representation."""
         return f"{self.__class__.__name__}(name={self.name})"
+
+
+def magnet_axis(axis: str) -> HIFIMagnetAxis:
+    """Create a magnet axis device with the instrument's PV prefix."""
+    prefix = get_pv_prefix()
+    return HIFIMagnetAxis(prefix=prefix, axis=axis)
