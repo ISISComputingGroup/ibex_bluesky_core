@@ -47,7 +47,9 @@ dependencies = [
   "lmfit",
   "scipy",
   "numpy",
+  "orjson",
   "scipp",
+  "typing-extensions",
   "tzdata",
   "scippneutron",
 ]
