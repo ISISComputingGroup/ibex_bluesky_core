@@ -30,6 +30,9 @@ class ReflParameter(StandardReadable):
         self.changing: SignalR[bool] = epics_signal_r(
             bool, f"{prefix}REFL_01:PARAM:{name}:CHANGING"
         )
+        self.redefine = ReflParameterRedefine(
+            prefix=f"{prefix}REFL_01:PARAM:{name}:", name=name + "redefine"
+        )
         super().__init__(name=name)
         self.readback.set_name(name)
 
@@ -49,3 +52,26 @@ class ReflParameter(StandardReadable):
     def __repr__(self) -> str:
         """Debug representation."""
         return f"{self.__class__.__name__}(name={self.name})"
+
+
+class ReflParameterRedefine(StandardReadable):
+    """Utility device for redefining a reflectometry server parameter."""
+
+    def __init__(self, prefix: str, name: str) -> None:
+        with self.add_children_as_readables(HintedSignal):
+            self.changed: SignalR[bool] = epics_signal_r(bool, f"{prefix}DEFINE_POS_CHANGED")
+        self.define_pos_sp = epics_signal_w(float, f"{prefix}DEFINE_POS:SP")
+        super().__init__(name)
+
+    @AsyncStatus.wrap
+    async def trigger(self) -> None:  # noqa: D102
+        pass
+
+    @AsyncStatus.wrap
+    async def set(self, value: float) -> None:
+        """Set the setpoint."""
+        await self.define_pos_sp.set(value, wait=True, timeout=None)
+        await asyncio.sleep(0.1)
+        async for chg in observe_value(self.changed):
+            if not chg:
+                break

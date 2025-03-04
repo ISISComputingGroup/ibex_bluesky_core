@@ -8,26 +8,24 @@ import matplotlib.pyplot as plt
 from bluesky.callbacks import LiveFitPlot, LiveTable
 from bluesky.preprocessors import subs_decorator
 from bluesky.utils import Msg
-from ibex_bluesky_core.callbacks import LiveFitLogger
-from ibex_bluesky_core.plans import set_num_periods
 from ophyd_async.plan_stubs import ensure_connected
 
+from ibex_bluesky_core.callbacks import LiveFitLogger
+from ibex_bluesky_core.callbacks.file_logger import HumanReadableFileCallback
 from ibex_bluesky_core.callbacks.fitting import LiveFit
 from ibex_bluesky_core.callbacks.fitting.fitting_utils import Gaussian
 from ibex_bluesky_core.callbacks.plotting import LivePlot
-from ibex_bluesky_core.devices.block import block_rw_rbv, BlockWriteConfig
+from ibex_bluesky_core.devices.block import BlockWriteConfig, block_rw_rbv
 from ibex_bluesky_core.devices.simpledae import SimpleDae
 from ibex_bluesky_core.devices.simpledae.controllers import (
-    RunPerPointController,
     PeriodPerPointController,
 )
 from ibex_bluesky_core.devices.simpledae.reducers import (
     PeriodGoodFramesNormalizer,
 )
-from ibex_bluesky_core.devices.simpledae.waiters import GoodFramesWaiter, PeriodGoodFramesWaiter
+from ibex_bluesky_core.devices.simpledae.waiters import PeriodGoodFramesWaiter
 from ibex_bluesky_core.plan_stubs import call_qt_aware
-
-from ibex_bluesky_core.callbacks.file_logger import HumanReadableFileCallback
+from ibex_bluesky_core.plans import set_num_periods
 
 
 def two_dae_scan(

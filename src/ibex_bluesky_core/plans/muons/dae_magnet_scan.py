@@ -1,44 +1,41 @@
 """Demonstration plan showing basic bluesky functionality."""
 
-import os
 from collections.abc import Generator
 
-import bluesky.plans as bp
 import bluesky.plan_stubs as bps
-import matplotlib
+import bluesky.plans as bp
 import matplotlib.pyplot as plt
 from bluesky.utils import Msg
-from ophyd_async.plan_stubs import ensure_connected
 from ophyd_async.core import Device
+from ophyd_async.plan_stubs import ensure_connected
 
 from ibex_bluesky_core.callbacks import ISISCallbacks
+from ibex_bluesky_core.callbacks.fitting.fitting_utils import Gaussian
 from ibex_bluesky_core.devices import get_pv_prefix
-from ibex_bluesky_core.devices.block import BlockWriteConfig, block_rw_rbv
 from ibex_bluesky_core.devices.simpledae import SimpleDae
 from ibex_bluesky_core.devices.simpledae.controllers import (
-    RunPerPointController,
     PeriodPerPointController,
+    RunPerPointController,
 )
 from ibex_bluesky_core.devices.simpledae.reducers import PeriodGoodFramesNormalizer
 from ibex_bluesky_core.devices.simpledae.waiters import GoodFramesWaiter, PeriodGoodFramesWaiter
-from ibex_bluesky_core.plans import set_num_periods
-from ibex_bluesky_core.run_engine import get_run_engine
-
-from ibex_bluesky_core.callbacks.fitting.fitting_utils import Gaussian
-import matplotlib.pyplot as plt
 from ibex_bluesky_core.plan_stubs import call_sync
+from ibex_bluesky_core.plans import set_num_periods
+
 try:
     from itertools import batched
 except ImportError:
     from itertools import islice
+
     def batched(iterable, n, *, strict=False):
         if n < 1:
-            raise ValueError('n must be at least one')
+            raise ValueError("n must be at least one")
         iterator = iter(iterable)
         while batch := tuple(islice(iterator, n)):
             if strict and len(batch) != n:
-                raise ValueError('batched(): incomplete batch')
+                raise ValueError("batched(): incomplete batch")
             yield batch
+
 
 default_prefix = get_pv_prefix()
 
@@ -49,11 +46,10 @@ def dae_magnet_plan(
     periods=True,
     frames=500,
     save_run=True,
-    prefix = default_prefix,
+    prefix=default_prefix,
     confident: bool = False,
 ) -> Generator[Msg, None, None]:
     """Scan a DAE against a magnet."""
-    
     plt.close("all")
     plt.show()
 

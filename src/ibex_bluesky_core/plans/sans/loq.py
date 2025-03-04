@@ -3,28 +3,22 @@
 from collections.abc import Generator
 
 import bluesky.plan_stubs as bps
-import bluesky.plans as bp
 from bluesky.plan_stubs import trigger_and_read
 from bluesky.preprocessors import finalize_wrapper, run_decorator
 from bluesky.utils import Msg
 from ophyd_async.plan_stubs import ensure_connected
 
 from ibex_bluesky_core.callbacks import ISISCallbacks
-from ibex_bluesky_core.callbacks.fitting import FitMethod
-from ibex_bluesky_core.callbacks.fitting.fitting_utils import Linear, Trapezoid
+from ibex_bluesky_core.callbacks.fitting.fitting_utils import Trapezoid
 from ibex_bluesky_core.devices.block import BlockMot, BlockWriteConfig, block_mot, block_r, block_rw
-from ibex_bluesky_core.devices.simpledae import SimpleDae
-from ibex_bluesky_core.plans import common_dae, set_num_periods
 
 LASER_INTENSITY_BLOCK_NAME = "changer_scan_intensity"
 
 NUM_POINTS: int = 3
-DEFAULT_DET = 3
 DEFAULT_MON = 1
-DEFAULT_FIT_METHOD = Linear().fit()
 
 
-def continuous_scan_plan(
+def continuous_laser_scan(
     mot_block: BlockMot, centre: float, size: float, time: float, iterations: int
 ) -> Generator[Msg, None, None]:
     """Continuous scan plan for scanning a motor against a laser diode readback.
@@ -106,196 +100,10 @@ def continuous_scan_plan(
         raise ValueError("No LiveFit result, likely fit failed")
 
 
-def loq_dae(
-    *,
-    det_pixels: list[int],
-    frames: int,
-    periods: bool = True,
-    monitor: int = DEFAULT_MON,
-    save_run: bool = False,
-) -> SimpleDae:
-    """DAE instance for LOQ which can use periods or frames to count and normalise."""
-    return common_dae(
-        det_pixels=det_pixels, frames=frames, periods=periods, monitor=monitor, save_run=save_run
-    )
-
-
-def scan(  # noqa: PLR0913
-    block_name: str,
-    start: float,
-    stop: float,
-    count: int,
-    *,
-    frames: int,
-    det: int = DEFAULT_DET,
-    mon: int = DEFAULT_MON,
-    model: FitMethod = DEFAULT_FIT_METHOD,
-    periods: bool = True,
-    save_run: bool = False,
-    rel: bool = False,
-) -> Generator[Msg, None, None]:
-    """Scan the DAE against a block.
-
-    Args:
-        block_name: the name of the block to move.
-        start: the starting position of the block.
-        stop: the final position of the block.
-        count: the number of points to make.
-        frames: the number of frames to wait for.
-        det: the detector spectra to use.
-        mon: the monitor spectra to use for normalisation.
-        model: the fit method to use.
-        periods: whether or not to use hardware periods.
-        save_run: whether or not to save run.
-        rel: whether or not to scan around the current position or use absolute positions.
-
-    """
-    block = block_rw(float, block_name, write_config=BlockWriteConfig(use_global_moving_flag=True))
-    dae = loq_dae(det_pixels=[det], frames=frames, periods=periods, save_run=save_run, monitor=mon)
-
-    yield from ensure_connected(dae, block)
-
-    yield from set_num_periods(dae, count if periods else 1)
-
-    fields = [block.name]
-    if periods:
-        fields.append(dae.period_num.name)  # type: ignore
-    elif save_run:
-        fields.append(dae.controller.run_number.name)  # type: ignore
-
-    fields.extend(
-        [
-            dae.reducer.intensity.name,  # type: ignore
-            dae.reducer.intensity_stddev.name,  # type: ignore
-        ]
-    )
-
-    icc = ISISCallbacks(
-        y=dae.reducer.intensity.name,  # type: ignore
-        yerr=dae.reducer.intensity_stddev.name,  # type: ignore
-        x=block.name,
-        measured_fields=fields,
-        fit=model,
-    )
-
-    @icc
-    def _inner() -> Generator[Msg, None, None]:
-        if rel:
-            plan = bp.rel_scan
-        else:
-            plan = bp.scan
-        yield from plan([dae], block, start, stop, num=count)
-
-    yield from _inner()
-
-    print(f"Centre-of-mass from PeakStats: {icc.peak_stats['com']}\n")
-
-    if icc.live_fit.result is not None:
-        print(icc.live_fit.result.fit_report())
-        return icc.live_fit.result.params
-    else:
-        print("No LiveFit result, likely fit failed")
-        return None
-
-
-def adaptive_scan(  # noqa: PLR0913
-    block_name: str,
-    start: float,
-    stop: float,
-    min_step: float,
-    max_step: float,
-    target_delta: float,
-    *,
-    frames: int,
-    det: int = DEFAULT_DET,
-    mon: int = DEFAULT_MON,
-    model: FitMethod = DEFAULT_FIT_METHOD,
-    periods: bool = True,
-    save_run: bool = False,
-    rel: bool = False,
-) -> Generator[Msg, None, None]:
-    """Scan the DAE against a block using an adaptive scan.
-
-    This will scan coarsely until target_delta occurs, then it will go back and perform finer scans.
-
-    Args:
-        block_name: the name of the block to move.
-        start: the starting position of the block.
-        stop: the final position of the block.
-        min_step: smallest step for fine regions.
-        max_step: largest step for coarse regions.
-        target_delta: desired fractional change in detector signal between steps
-        frames: the number of frames to wait for.
-        det: the detector spectra to use.
-        mon: the monitor spectra to use for normalisation.
-        model: the fit method to use.
-        periods: whether or not to use hardware periods.
-        save_run: whether or not to save run.
-        rel: whether or not to scan around the current position or use absolute positions.
-
-    """
-    block = block_rw(float, block_name, write_config=BlockWriteConfig(use_global_moving_flag=True))
-    dae = loq_dae(det_pixels=[det], frames=frames, periods=periods, save_run=save_run, monitor=mon)
-
-    yield from ensure_connected(dae, block)
-
-    yield from set_num_periods(dae, 100)
-
-    fields = [block.name]
-    if periods:
-        fields.append(dae.period_num.name)  # type: ignore
-    elif save_run:
-        fields.append(dae.controller.run_number.name)  # type: ignore
-
-    fields.extend(
-        [
-            dae.reducer.intensity.name,  # type: ignore
-            dae.reducer.intensity_stddev.name,  # type: ignore
-        ]
-    )
-
-    icc = ISISCallbacks(
-        y=dae.reducer.intensity.name,  # type: ignore
-        yerr=dae.reducer.intensity_stddev.name,  # type: ignore
-        x=block.name,
-        measured_fields=fields,
-        fit=model,
-    )
-
-    @icc
-    def _inner() -> Generator[Msg, None, None]:
-        if rel:
-            plan = bp.rel_adaptive_scan
-        else:
-            plan = bp.adaptive_scan
-        yield from plan(
-            [dae],
-            dae.reducer.intensity.name,
-            block,
-            start,
-            stop,
-            min_step,
-            max_step,
-            target_delta,
-            backstep=True,
-        )  # type: ignore
-
-    yield from _inner()
-
-    print(f"Centre-of-mass from PeakStats: {icc.peak_stats['com']}\n")
-
-    if icc.live_fit.result is not None:
-        print(icc.live_fit.result.fit_report())
-        return icc.live_fit.result.params
-    else:
-        print("No LiveFit result, likely fit failed")
-        return None
-
-
 def sample_changer_scan(
     position: str, width: float = 22, time: float = 20, iterations: int = 1
 ) -> Generator[Msg, None, None]:
-    """Perform a continuous scan over a sample changer holder to find its centre."""
+    """Perform a continuous scan over a sample changer holder, using a laser, to find its centre."""
     changer_position = block_rw(
         str, "Changer", write_config=BlockWriteConfig(use_global_moving_flag=True)
     )
@@ -306,7 +114,7 @@ def sample_changer_scan(
     yield from bps.mv(changer_position, position)
     current_position = yield from bps.rd(motor)
 
-    result = yield from continuous_scan_plan(motor, current_position, width, time, iterations)
+    result = yield from continuous_laser_scan(motor, current_position, width, time, iterations)
 
     print(result.fit_report())
 
@@ -329,7 +137,7 @@ def sample_changer_scan(
 def aperture_continuous_scan(
     position: str, width: float = 22, time: float = 30, iterations: int = 1
 ) -> Generator[Msg, None, None]:
-    """Perform a continuous scan over an aperture to find its centre."""
+    """Perform a continuous scan over an aperture, using a laser, to find its centre."""
     changer_position = block_rw(
         str, "Aperture_2", write_config=BlockWriteConfig(use_global_moving_flag=True)
     )
@@ -339,7 +147,7 @@ def aperture_continuous_scan(
     yield from bps.mv(changer_position, position)
     current_position = yield from bps.rd(motor)
 
-    result = yield from continuous_scan_plan(motor, current_position, width, time, iterations)
+    result = yield from continuous_laser_scan(motor, current_position, width, time, iterations)
 
     print(result.fit_report())
 
