@@ -49,6 +49,7 @@ dependencies = [
   "numpy",
   "orjson",
   "scipp",
+  "typing-extensions",
   "tzdata",
   "scippneutron",
 ]

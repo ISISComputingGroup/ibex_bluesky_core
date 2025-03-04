@@ -1,11 +1,14 @@
 """Implements detector-mapping alignment."""
-
 from collections.abc import Generator
+
+from typing import TypedDict, cast, Any
+from lmfit.model import ModelResult
 
 import bluesky.plans as bp
 import matplotlib.pyplot as plt
 import numpy as np
 import numpy.typing as npt
+
 from bluesky.preprocessors import subs_decorator
 from bluesky.protocols import NamedMovable
 from bluesky.utils import Msg
@@ -19,17 +22,14 @@ from ibex_bluesky_core.callbacks.reflectometry.det_map import (
     DetMapHeightScanLiveDispatcher,
     LivePColorMesh,
 )
-from ibex_bluesky_core.devices import get_pv_prefix
-from ibex_bluesky_core.devices.simpledae import SimpleDae
+from ibex_bluesky_core.devices.simpledae import SimpleDae, Waiter
 from ibex_bluesky_core.devices.simpledae.controllers import (
     PeriodPerPointController,
 )
 from ibex_bluesky_core.devices.simpledae.reducers import (
     PeriodSpecIntegralsReducer,
 )
-from ibex_bluesky_core.devices.simpledae.waiters import PeriodGoodFramesWaiter
-from ibex_bluesky_core.plan_stubs import call_qt_aware
-from ibex_bluesky_core.plans import set_num_periods
+from ibex_bluesky_core.plan_stubs import call_qt_aware, set_num_periods
 
 
 def _height_scan_callback_and_fit(
@@ -84,60 +84,41 @@ def _angle_scan_callback_and_fit(
     return angle_scan_ld, angle_scan_callbacks.live_fit
 
 
-def _dae_and_reducer(
-    frames: int, monitor: int, detectors: npt.NDArray[np.int64]
-) -> tuple[SimpleDae, PeriodSpecIntegralsReducer]:
-    controller = PeriodPerPointController(save_run=True)
-    waiter = PeriodGoodFramesWaiter(frames)
-    reducer = PeriodSpecIntegralsReducer(
-        monitors=np.array([monitor], dtype=np.int64),
-        detectors=detectors,
-    )
-
-    prefix = get_pv_prefix()
-    dae = SimpleDae(
-        prefix=prefix,
-        controller=controller,
-        waiter=waiter,
-        reducer=reducer,
-    )
-
-    return dae, reducer
+class DetMapAlignResult(TypedDict):
+    height_fit: ModelResult | None
+    angle_fit: ModelResult | None
 
 
-def mapping_alignment_plan(  # noqa: PLR0913, this is intentionally quite generic
+def mapping_alignment_plan(
+    dae: SimpleDae[PeriodPerPointController, Waiter, PeriodSpecIntegralsReducer],
     height: NamedMovable[float],
     start: float,
     stop: float,
     *,
     num: int,
-    detectors: npt.NDArray[np.int64],
-    monitor: int,
     angle_map: npt.NDArray[np.float64],
-    frames: int,
     rel: bool = False,
-) -> Generator[Msg, None, None]:
+) -> Generator[Msg, None, DetMapAlignResult]:
     """Reflectometry detector-mapping alignment plan.
 
     Args:
-        height: A bluesky Movable corresponding to the height stage
+        dae: The DAE to acquire from
+        height: A bluesky Movable corresponding to a height stage
         start: start point for scan
         stop: stop point for scan
         num: how many points to measure
-        detectors: numpy array of detector spectra to integrate
-        monitor: a single monitor spectrum to use for normalization
         angle_map: a numpy array, with the same shape as detectors,
             describing the detector angle of each detector pixel
-        frames: how many frames to measure at each scan point
         rel: whether this scan should be absolute (default) or relative
 
     """
-    if detectors.shape != angle_map.shape:
+
+    reducer = dae.reducer
+    if reducer.detectors.shape != angle_map.shape:
         raise ValueError(
-            f"detectors ({detectors.shape}) and angle_map ({angle_map.shape}) must have same shape"
+            f"detectors ({reducer.detectors.shape}) and angle_map ({angle_map.shape}) must have same shape"
         )
 
-    dae, reducer = _dae_and_reducer(frames, monitor, detectors)
     yield from ensure_connected(height, dae)  # type: ignore
 
     yield from call_qt_aware(plt.close, "all")
@@ -165,17 +146,12 @@ def mapping_alignment_plan(  # noqa: PLR0913, this is intentionally quite generi
     def _inner() -> Generator[Msg, None, None]:
         nonlocal start, stop, num
         yield from set_num_periods(dae, num)
-        if rel:
-            plan = bp.rel_scan
-        else:
-            plan = bp.scan
+        plan = bp.rel_scan if rel else bp.scan
         yield from plan([dae], height, start, stop, num=num)
 
     yield from _inner()
 
-    print("HEIGHT FIT:")
-    print(height_fit.result.fit_report(show_correl=False))
-    print("\n\n")
-    print("ANGLE FIT:")
-    print(angle_fit.result.fit_report(show_correl=False))
-    print("\n\n")
+    return {
+        "height_fit": cast(ModelResult | None, height_fit.result),
+        "angle_fit": cast(ModelResult | None, angle_fit.result),
+    }

@@ -331,28 +331,21 @@ class PeriodSpecIntegralsReducer(Reducer, StandardReadable):
     def __init__(
         self,
         *,
-        monitors: slice | npt.NDArray[np.int64] | None = None,
-        detectors: slice | npt.NDArray[np.int64] | None = None,
+        monitors: npt.NDArray[np.int64],
+        detectors: npt.NDArray[np.int64],
     ) -> None:
         """Init.
 
         Args:
-        monitors: a slice representing the mapping of monitors to acquire integrals from.
-            The default is np.array([]), which means no monitor data is acquired.
-        detectors: a slice representing the mapping of detectors to acquire integrals from.
+        monitors: an array representing the mapping of monitors to acquire integrals from.
+            For example, passing np.array([1]) selects spectrum 1.
+        detectors: an array representing the mapping of detectors to acquire integrals from.
             For example, passing np.array([5, 6, 7, 8]) would select detector spectra 5-8 inclusive,
             and so the output of this reducer would be an array of dimension 4. Note that the array
             contains spectrum 0 (which contains unmapped DAE data) so np.array([1]) selects
             spectrum 1.
-            The default is slice(1,), which selects all detector spectra, excluding the "junk"
-            spectrum 0
 
         """
-        if monitors is None:
-            monitors = np.array([], dtype=np.int64)
-        if detectors is None:
-            detectors = slice(1)
-
         self._detectors = detectors
         self._monitors = monitors
 
@@ -364,6 +357,14 @@ class PeriodSpecIntegralsReducer(Reducer, StandardReadable):
         )
 
         super().__init__(name="")
+
+    @property
+    def detectors(self) -> npt.NDArray[np.int64]:
+        return self._detectors
+
+    @property
+    def monitors(self) -> npt.NDArray[np.int64]:
+        return self._monitors
 
     async def _trigger_and_get_specdata(self, dae: "SimpleDae") -> npt.NDArray[np.int32]:
         await dae.controls.update_run.trigger()

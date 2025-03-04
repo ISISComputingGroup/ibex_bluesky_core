@@ -1,7 +1,8 @@
 """A simple interface to the DAE for bluesky."""
 
 import logging
-import typing
+from typing import Generic, TYPE_CHECKING
+from typing_extensions import TypeVar
 
 from bluesky.protocols import Triggerable
 from ophyd_async.core import (
@@ -10,17 +11,18 @@ from ophyd_async.core import (
 )
 
 from ibex_bluesky_core.devices.dae.dae import Dae
-
-if typing.TYPE_CHECKING:
-    from ibex_bluesky_core.devices.simpledae.controllers import Controller
-    from ibex_bluesky_core.devices.simpledae.reducers import Reducer
-    from ibex_bluesky_core.devices.simpledae.waiters import Waiter
+from ibex_bluesky_core.devices.simpledae.strategies import Controller, Waiter, Reducer
 
 
 logger = logging.getLogger(__name__)
 
 
-class SimpleDae(Dae, Triggerable, AsyncStageable):
+TController = TypeVar("TController", bound="Controller", default="Controller", covariant=True)
+TWaiter = TypeVar("TWaiter", bound="Waiter", default="Waiter", covariant=True)
+TReducer = TypeVar("TReducer", bound="Reducer", default="Reducer", covariant=True)
+
+
+class SimpleDae(Dae, Triggerable, AsyncStageable, Generic[TController, TWaiter, TReducer]):
     """Configurable DAE with pluggable strategies for data collection, waiting, and reduction.
 
     This class should cover many simple DAE use-cases, but for complex use-cases a custom Dae
@@ -32,9 +34,9 @@ class SimpleDae(Dae, Triggerable, AsyncStageable):
         *,
         prefix: str,
         name: str = "DAE",
-        controller: "Controller",
-        waiter: "Waiter",
-        reducer: "Reducer",
+        controller: TController,
+        waiter: TWaiter,
+        reducer: TReducer,
     ) -> None:
         """Initialize a simple DAE interface.
 
@@ -51,9 +53,9 @@ class SimpleDae(Dae, Triggerable, AsyncStageable):
 
         """
         self.prefix = prefix
-        self.controller: Controller = controller
-        self.waiter: Waiter = waiter
-        self.reducer: Reducer = reducer
+        self.controller: TController = controller
+        self.waiter: TWaiter = waiter
+        self.reducer: TReducer = reducer
 
         logger.info(
             "created simpledae with prefix=%s, controller=%s, waiter=%s, reducer=%s",

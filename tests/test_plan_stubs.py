@@ -146,7 +146,7 @@ def test_set_num_periods_fails(RE, simpledae):
             return True
 
         def __hash__(self):
-            pass
+            return 0
 
     with pytest.raises(ValueError, match=r"Could not set 5 periods on DAE .*"):
         RE(set_num_periods(simpledae, UnequalInt(5)))

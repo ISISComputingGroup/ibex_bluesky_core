@@ -135,9 +135,11 @@ class DetMapAngleScanLiveDispatcher(LiveDispatcher):
     def stop(self, doc: RunStop, _md: dict[str, Any] | None = None) -> None:
         """Process a stop event."""
         if self._descriptor_uid is None:
-            raise ValueError("Got stop before descriptor")
+            # No data to emit... don't do anything.
+            return super().stop(doc, _md)
+
         current_time = time.time()
-        for x, y in zip(self.x_data, self.y_data):
+        for x, y in zip(self.x_data, self.y_data, strict=True):
             event = {
                 "data": {
                     self.x_name: x,
@@ -172,25 +174,25 @@ class LivePColorMesh(QtAwareCallback):
         super().__init__(use_teleporter=kwargs.pop("use_teleporter", None))
         self.__setup_lock = threading.Lock()
         self.__setup_event = threading.Event()
-        self._data = None
-        self._x = x
-        self._y = y
-        self._y_coords = []
-        self._x_name = x_name
-        self._x_coords = x_coord
+        self._data: npt.NDArray[np.float64] | None = None
+        self._x: str = x
+        self._y: str = y
+        self._y_coords: list[float] = []
+        self._x_name: str = x_name
+        self._x_coords: npt.NDArray[np.float64] = x_coord
 
-        self.ax = ax
+        self.ax: Axes = ax
         self.kwargs = kwargs
 
-    def start(self, doc: RunStart) -> None:
+    def start(self, doc: RunStart) -> RunStart | None:
         """Start a new plot (clear any old data)."""
         # The doc is not used; we just use the signal that a new run began.
         self._data = None
         self._y_coords = []
 
-        super().start(doc)
+        return super().start(doc)
 
-    def event(self, doc: Event) -> None:
+    def event(self, doc: Event) -> Event:
         """Unpack data from the event and call self.update()."""
         new_x = doc["data"][self._x]
         new_y = doc["data"][self._y]
@@ -203,21 +205,23 @@ class LivePColorMesh(QtAwareCallback):
         self._y_coords.append(new_y)
 
         self.update_plot()
-        super().event(doc)
+        return super().event(doc)
 
     def update_plot(self) -> None:
         """Redraw the heatmap."""
+        assert self._data is not None
+        assert self.ax is not None
+
         self.ax.clear()
         self.ax.set_xlabel(self._x_name)
         self.ax.set_ylabel(self._y)
-
         self.ax.pcolormesh(
             self._x_coords,
             self._y_coords,
             self._data,
-            vmin=np.min(self._data),
-            vmax=np.max(self._data),
+            vmin=float(np.min(self._data)),
+            vmax=float(np.max(self._data)),
             **self.kwargs,
         )
-        self.ax.figure.canvas.draw_idle()
+        self.ax.figure.canvas.draw_idle()  # type: ignore
         show_plot()

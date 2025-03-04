@@ -2,11 +2,18 @@
 # pyright: reportArgumentType=false
 import numpy as np
 import pytest
+from event_model import RunStart, EventDescriptor, RunStop
+from matplotlib import pyplot as plt
 
 from ibex_bluesky_core.callbacks.reflectometry.det_map import (
     DetMapAngleScanLiveDispatcher,
-    DetMapHeightScanLiveDispatcher,
+    DetMapHeightScanLiveDispatcher, LivePColorMesh,
 )
+
+
+FAKE_START_DOC: RunStart = {"uid": "1"}  # type: ignore
+FAKE_DESCRIPTOR: EventDescriptor = {"uid": "2", "data_keys": {}}  # type: ignore
+FAKE_STOP_DOC: RunStop = {"exit_status": "success"}  # type: ignore
 
 
 def test_angle_scan_livedispatcher():
@@ -25,8 +32,14 @@ def test_angle_scan_livedispatcher():
 
     dispatcher.subscribe(sub)
 
-    dispatcher.start({"uid": "1"})
-    dispatcher.descriptor({"uid": "2", "data_keys": {}})
+    dispatcher.start(FAKE_START_DOC)
+    dispatcher.stop(FAKE_STOP_DOC)
+
+    # No events should be emitted if no descriptor emitted
+    assert captured_events == []
+
+    dispatcher.start(FAKE_START_DOC)
+    dispatcher.descriptor(FAKE_DESCRIPTOR)
     dispatcher.event(
         {
             "data": {
@@ -43,7 +56,18 @@ def test_angle_scan_livedispatcher():
             "descriptor": "2",
         }
     )
-    dispatcher.stop({"exit_status": "success"})
+
+    with pytest.raises(ValueError, match=r"Shape of data .* does not match .*"):
+        dispatcher.event(
+            {
+                "data": {
+                    "det": np.array([0, 0, 100]),
+                },
+                "descriptor": "2",
+            }
+        )
+
+    dispatcher.stop(FAKE_STOP_DOC)
 
     assert len(captured_events) == 4
 
@@ -75,8 +99,8 @@ def test_height_scan_livedispatcher():
 
     dispatcher.subscribe(sub)
 
-    dispatcher.start({"uid": "1"})
-    dispatcher.descriptor({"uid": "2", "data_keys": {}})
+    dispatcher.start(FAKE_START_DOC)
+    dispatcher.descriptor(FAKE_DESCRIPTOR)
     dispatcher.event(
         {
             "data": {
@@ -95,10 +119,56 @@ def test_height_scan_livedispatcher():
             "descriptor": "2",
         }
     )
-    dispatcher.stop({"exit_status": "success"})
+    dispatcher.stop(FAKE_STOP_DOC)
 
     assert len(captured_events) == 2
     assert captured_events[0]["data"]["normalized_counts"] == pytest.approx(10 / 4)
     assert captured_events[1]["data"]["normalized_counts"] == pytest.approx(
         (101 + 201 + 301 + 401) / (9 + 8 + 7 + 6)
     )
+
+def test_height_scan_livedispatcher_zero_monitor():
+    dispatcher = DetMapHeightScanLiveDispatcher(
+        mon_name="mon",
+        det_name="det",
+        out_name="normalized_counts",
+    )
+
+    dispatcher.start(FAKE_START_DOC)
+    dispatcher.descriptor(FAKE_DESCRIPTOR)
+    with pytest.raises(ValueError, match=r"No monitor counts.*"):
+        dispatcher.event(
+            {
+                "data": {
+                    "mon": np.array([0, 0, 0, 0]),
+                    "det": np.array([1, 2, 3, 4]),
+                },
+                "descriptor": "2",
+            }
+        )
+
+
+def test_live_pcolormap():
+    fix, ax = plt.subplots()
+    cb = LivePColorMesh(y="y", x="x", x_name="angle", x_coord=np.array([1, 2, 3]), ax=ax)
+
+    cb.start(FAKE_START_DOC)
+    cb.descriptor(FAKE_DESCRIPTOR)
+    cb.event({
+            "data": {
+                "y": 1001,
+                "x": np.array([11, 12, 13]),
+            },
+            "descriptor": "2",
+        })
+    cb.event({
+        "data": {
+            "y": 1002,
+            "x": np.array([33, 44, 55]),
+        },
+        "descriptor": "2",
+    })
+
+    np.testing.assert_equal(cb._data, np.array([[11, 12, 13], [33, 44, 55]]))
+
+    cb.stop(FAKE_STOP_DOC)
