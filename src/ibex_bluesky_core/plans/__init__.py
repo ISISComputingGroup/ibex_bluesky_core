@@ -1,18 +1,19 @@
 """Generic plan helpers."""
 
+from abc import ABC
 from collections.abc import Generator
 
 import bluesky.plans as bp
-from bluesky.protocols import Movable, NamedMovable
+from bluesky import plan_stubs as bps
+from bluesky.plan_stubs import trigger_and_read
+from bluesky.protocols import NamedMovable, Readable
 from bluesky.utils import Msg
-from ophyd_async.core import Device
 from ophyd_async.plan_stubs import ensure_connected
 
 from ibex_bluesky_core.callbacks import FitMethod, ISISCallbacks
 from ibex_bluesky_core.callbacks.fitting.fitting_utils import Linear
 from ibex_bluesky_core.devices import get_pv_prefix
 from ibex_bluesky_core.devices.block import BlockMot
-from ibex_bluesky_core.devices.block import block_mot as block_mot
 from ibex_bluesky_core.devices.dae import common_dae
 from ibex_bluesky_core.devices.simpledae import SimpleDae
 from ibex_bluesky_core.plan_stubs import set_num_periods
@@ -36,14 +37,12 @@ def scan(  # noqa: PLR0913
 ) -> Generator[Msg, None, ISISCallbacks]:
     """Scan the DAE against a Movable.
 
-    Args: TODO sort docstring out
-        block_name: the name of the block to move.
+    Args:
+        dae: the simple DAE object to use.
+        block: a movable to move during the scan.
         start: the starting position of the block.
         stop: the final position of the block.
         count: the number of points to make.
-        frames: the number of frames to wait for.
-        det: the detector spectra to use.
-        mon: the monitor spectra to use for normalisation.
         model: the fit method to use.
         periods: whether or not to use hardware periods.
         save_run: whether or not to save run.
@@ -106,16 +105,14 @@ def adaptive_scan(  # noqa: PLR0913
 
     This will scan coarsely until target_delta occurs, then it will go back and perform finer scans.
 
-    Args: TODO sort docstring out
-        block_name: the name of the block to move.
+    Args:
+        dae: the simple DAE object to use.
+        block: a movable to move during the scan.
         start: the starting position of the block.
         stop: the final position of the block.
         min_step: smallest step for fine regions.
         max_step: largest step for coarse regions.
         target_delta: desired fractional change in detector signal between steps
-        frames: the number of frames to wait for.
-        det: the detector spectra to use.
-        mon: the monitor spectra to use for normalisation.
         model: the fit method to use.
         periods: whether or not to use hardware periods.
         save_run: whether or not to save run.
@@ -170,9 +167,7 @@ def adaptive_scan(  # noqa: PLR0913
     return icc
 
 
-DEFAULT_DET = 3
 DEFAULT_MON = 1
-LINEAR_FIT = Linear().fit()
 
 
 def motor_scan(
@@ -185,12 +180,31 @@ def motor_scan(
     det: int = DEFAULT_DET,
     mon: int = DEFAULT_MON,
     pixel_range: int = 0,
-    model: FitMethod = LINEAR_FIT,
+    model: FitMethod = DEFAULT_FIT_METHOD,
     periods: bool = True,
     save_run: bool = False,
     rel: bool = False,
 ):
-    """TODO add docstring"""
+    """Wrapper around our scan() plan which takes a block name and creates a block_mot for use
+    within the scan. Also creates a DAE object.
+
+    This only works with blocks that are pointing at motor records.
+
+    Args:
+        block_name: the name of the block to scan.
+        start: the starting position of the block.
+        stop: the final position of the block.
+        count: the number of points to make.
+        frames: the number of frames to wait for when scanning.
+        det: the detector number.
+        mon: the monitor number.
+        pixel_range: the range of pixels to scan over, using `det` as a centred pixel.
+        model: the fit method to use.
+        periods: whether or not to use hardware periods.
+        save_run: whether or not to save run.
+        rel: whether or not to scan around the current position or use absolute positions.
+
+    """
     block = BlockMot(prefix=get_pv_prefix(), block_name=block_name)
     det_pixels = centred_pixel(det, pixel_range)
     dae = common_dae(
@@ -221,12 +235,33 @@ def motor_adaptive_scan(
     det: int = DEFAULT_DET,
     mon: int = DEFAULT_MON,
     pixel_range: int = 0,
-    model: FitMethod = LINEAR_FIT,
+    model: FitMethod = DEFAULT_FIT_METHOD,
     periods: bool = True,
     save_run: bool = False,
     rel: bool = False,
 ):
-    """TODO add docstring"""
+    """Wrapper around our adaptive_scan() plan which takes a block name and creates a block_mot
+    for use within the scan. Also creates a DAE object.
+
+    This only works with blocks that are pointing at motor records.
+
+    Args:
+        block_name: the name of the block to scan.
+        start: the starting position of the block.
+        stop: the final position of the block.
+        min_step: smallest step for fine regions.
+        max_step: largest step for coarse regions.
+        target_delta: desired fractional change in detector signal between steps.
+        frames: the number of frames to wait for when scanning.
+        det: the detector number.
+        mon: the monitor number.
+        pixel_range: the range of pixels to scan over, using `det` as a centred pixel.
+        model: the fit method to use.
+        periods: whether or not to use hardware periods.
+        save_run: whether or not to save run.
+        rel: whether or not to scan around the current position or use absolute positions.
+
+    """
     block = BlockMot(prefix=get_pv_prefix(), block_name=block_name)
     det_pixels = centred_pixel(det, pixel_range)
     dae = common_dae(
@@ -251,3 +286,45 @@ def motor_adaptive_scan(
     else:
         print("No LiveFit result, likely fit failed")
         return None
+
+
+class NamedReadableAndMovable(Readable, NamedMovable, ABC):
+    """Abstract class for type checking that an object is readable, named and movable."""
+
+
+def polling_plan(
+    motor: NamedReadableAndMovable, readable: Readable, destination: float
+) -> Generator[Msg, None, None]:
+    """Move to a destination but drop updates from readable if motor position has not changed.
+
+    Args:
+        motor: the motor to move.
+        readable: the readable to read updates from, but drop if motor has not moved.
+        destination: the destination position.
+
+    If we just used bp.scan() with a readable that updates more frequently than a motor can
+    register that it has moved, we would have lots of updates with the same motor position,
+    which may not be helpful.
+
+    """
+    yield from bps.checkpoint()
+    yield from bps.create()
+    reading = yield from bps.read(motor)
+    yield from bps.read(readable)
+    yield from bps.save()
+
+    # start the ramp
+    status = yield from bps.abs_set(motor, destination, wait=False)
+    while not status.done:
+        yield from bps.create()
+        new_reading = yield from bps.read(motor)
+        yield from bps.read(readable)
+
+        if new_reading[motor.name]["value"] == reading[motor.name]["value"]:
+            yield from bps.drop()
+        else:
+            reading = new_reading
+            yield from bps.save()
+
+    # take a 'post' data point
+    yield from trigger_and_read([motor, readable])

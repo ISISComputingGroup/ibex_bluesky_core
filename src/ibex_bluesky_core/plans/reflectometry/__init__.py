@@ -1,18 +1,19 @@
-"""Reflectometry plans and helpers."""
+"""Plans specific to Reflectometry beamlines."""
 
 from collections.abc import Generator
 
 from bluesky import Msg
-from bluesky import plans as bp
-from ophyd_async.plan_stubs import ensure_connected
 
 from ibex_bluesky_core.callbacks import FitMethod
-from ibex_bluesky_core.callbacks import ISISCallbacks as ISISCallbacks
-from ibex_bluesky_core.callbacks.fitting.fitting_utils import Linear as Linear
 from ibex_bluesky_core.devices.dae import common_dae
-from ibex_bluesky_core.devices.reflectometry.refl_param import refl_parameter
-from ibex_bluesky_core.plan_stubs import set_num_periods as set_num_periods
-from ibex_bluesky_core.plans import DEFAULT_DET, DEFAULT_MON, LINEAR_FIT, adaptive_scan, scan
+from ibex_bluesky_core.devices.reflectometry import refl_parameter
+from ibex_bluesky_core.plans import (
+    DEFAULT_DET,
+    DEFAULT_FIT_METHOD,
+    DEFAULT_MON,
+    adaptive_scan,
+    scan,
+)
 from ibex_bluesky_core.run_engine import get_run_engine
 from ibex_bluesky_core.utils import centred_pixel
 
@@ -29,7 +30,7 @@ def refl_scan(  # noqa: PLR0913
     det: int = DEFAULT_DET,
     mon: int = DEFAULT_MON,
     pixel_range: int = 0,
-    model: FitMethod = LINEAR_FIT,
+    model: FitMethod = DEFAULT_FIT_METHOD,
     periods: bool = True,
     save_run: bool = False,
     rel: bool = False,
@@ -83,7 +84,7 @@ def refl_adaptive_scan(  # noqa: PLR0913
     det: int = DEFAULT_DET,
     mon: int = DEFAULT_MON,
     pixel_range: int = 0,
-    model: FitMethod = LINEAR_FIT,
+    model: FitMethod = DEFAULT_FIT_METHOD,
     periods: bool = True,
     save_run: bool = False,
     rel: bool = False,
@@ -100,7 +101,7 @@ def refl_adaptive_scan(  # noqa: PLR0913
         frames: the number of frames to wait for.
         det: the detector spectra to use.
         mon: the monitor spectra to use.
-        pixel_range: the range of pixels to scan.
+        pixel_range: the range of pixels to scan over, using `det` as a centred pixel.
         model: the fit method to use.
         periods: whether to use periods.
         save_run: whether to save the run of the scan.

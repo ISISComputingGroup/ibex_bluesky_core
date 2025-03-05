@@ -1,1 +1,1 @@
-"""SANS Plans and helpers."""
+"""Plans specific to SANS beamlines."""
