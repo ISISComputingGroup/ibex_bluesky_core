@@ -12,7 +12,7 @@ from ophyd_async.core import (
 )
 from ophyd_async.epics.core import epics_signal_r, epics_signal_w
 
-from ibex_bluesky_core.devices import get_pv_prefix
+from ibex_bluesky_core.utils import get_pv_prefix
 
 
 class ReflParameter(StandardReadable):

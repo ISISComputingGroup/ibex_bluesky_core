@@ -1,9 +1,16 @@
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
 
 import pytest
 from ophyd_async.core import Device, StandardReadable, soft_signal_rw
 
-from ibex_bluesky_core.devices.simpledae import SimpleDae
+from ibex_bluesky_core.devices.simpledae import (
+    GoodFramesWaiter,
+    PeriodGoodFramesWaiter,
+    PeriodPerPointController,
+    RunPerPointController,
+    SimpleDae,
+    monitor_normalising_dae,
+)
 from ibex_bluesky_core.devices.simpledae.strategies import Controller, Reducer, Waiter
 
 
@@ -101,3 +108,33 @@ async def test_simpledae_publishes_interesting_signals_in_read():
     # Check that non-interesting signals are *not* read by default
     assert dae.good_frames not in reading
     assert len(reading) == 2
+
+
+def test_monitor_normalising_dae_sets_up_periods_correctly():
+    det_pixels = [1, 2, 3]
+    frames = 200
+    monitor = 20
+    save_run = False
+    with patch("ibex_bluesky_core.devices.simpledae.get_pv_prefix"):
+        dae = monitor_normalising_dae(
+            det_pixels=det_pixels, frames=frames, periods=True, monitor=monitor, save_run=save_run
+        )
+
+    assert isinstance(dae.waiter, PeriodGoodFramesWaiter)
+    assert dae.waiter._value == frames
+    assert isinstance(dae.controller, PeriodPerPointController)
+
+
+def test_monitor_normalising_dae_sets_up_single_period_correctly():
+    det_pixels = [2, 3, 4]
+    frames = 400
+    monitor = 20
+    save_run = False
+    with patch("ibex_bluesky_core.devices.simpledae.get_pv_prefix"):
+        dae = monitor_normalising_dae(
+            det_pixels=det_pixels, frames=frames, periods=False, monitor=monitor, save_run=save_run
+        )
+
+    assert isinstance(dae.waiter, GoodFramesWaiter)
+    assert dae.waiter._value == frames
+    assert isinstance(dae.controller, RunPerPointController)

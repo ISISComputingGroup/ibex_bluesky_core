@@ -14,11 +14,10 @@ from ophyd_async.plan_stubs import ensure_connected
 
 from ibex_bluesky_core.callbacks import FitMethod, ISISCallbacks
 from ibex_bluesky_core.callbacks.fitting.fitting_utils import Linear
-from ibex_bluesky_core.devices import get_pv_prefix
 from ibex_bluesky_core.devices.block import BlockMot
 from ibex_bluesky_core.devices.simpledae import SimpleDae, monitor_normalising_dae
 from ibex_bluesky_core.plan_stubs import set_num_periods
-from ibex_bluesky_core.utils import centred_pixel
+from ibex_bluesky_core.utils import centred_pixel, get_pv_prefix
 
 DEFAULT_DET = 3
 DEFAULT_FIT_METHOD = Linear().fit()

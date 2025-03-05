@@ -1,5 +1,9 @@
 """Utilities for plans which are not plan stubs."""
 
+from __future__ import annotations
+
+import os
+
 
 def centred_pixel(centre: int, pixel_range: int) -> list[int]:
     """Given a centre and range, return a contiguous range of pixels around the centre, inclusive.
@@ -14,3 +18,13 @@ def centred_pixel(centre: int, pixel_range: int) -> list[int]:
 
     """
     return [s for s in range(centre - pixel_range, centre + pixel_range + 1)]
+
+
+def get_pv_prefix() -> str:
+    """Return the PV prefix for the current instrument."""
+    prefix = os.getenv("MYPVPREFIX")
+
+    if prefix is None:
+        raise OSError("MYPVPREFIX environment variable not available - please define")
+
+    return prefix
