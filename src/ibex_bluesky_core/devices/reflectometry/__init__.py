@@ -60,6 +60,13 @@ class ReflParameterRedefine(StandardReadable):
     """Utility device for redefining a reflectometry server parameter."""
 
     def __init__(self, prefix: str, name: str) -> None:
+        """Reflectometry server parameter redefinition.
+
+        Args:
+            prefix: the reflectometry parameter full address.
+            name: the name of the parameter redefinition.
+
+        """
         with self.add_children_as_readables(HintedSignal):
             self.changed: SignalR[bool] = epics_signal_r(bool, f"{prefix}DEFINE_POS_CHANGED")
         self.define_pos_sp = epics_signal_w(float, f"{prefix}DEFINE_POS:SP")

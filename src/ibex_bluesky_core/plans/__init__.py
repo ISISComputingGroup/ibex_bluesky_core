@@ -2,19 +2,21 @@
 
 from abc import ABC
 from collections.abc import Generator
+from typing import Union
 
 import bluesky.plans as bp
 from bluesky import plan_stubs as bps
 from bluesky.plan_stubs import trigger_and_read
 from bluesky.protocols import NamedMovable, Readable
 from bluesky.utils import Msg
+from lmfit import Parameters
 from ophyd_async.plan_stubs import ensure_connected
 
 from ibex_bluesky_core.callbacks import FitMethod, ISISCallbacks
 from ibex_bluesky_core.callbacks.fitting.fitting_utils import Linear
 from ibex_bluesky_core.devices import get_pv_prefix
 from ibex_bluesky_core.devices.block import BlockMot
-from ibex_bluesky_core.devices.dae import common_dae
+from ibex_bluesky_core.devices.dae import monitor_normalising_dae
 from ibex_bluesky_core.devices.simpledae import SimpleDae
 from ibex_bluesky_core.plan_stubs import set_num_periods
 from ibex_bluesky_core.utils import centred_pixel
@@ -87,7 +89,7 @@ def scan(  # noqa: PLR0913
     return icc
 
 
-def adaptive_scan(  # noqa: PLR0913
+def adaptive_scan(  # noqa: PLR0913, PLR0917
     dae: SimpleDae,
     block: NamedMovable,
     start: float,
@@ -170,7 +172,7 @@ def adaptive_scan(  # noqa: PLR0913
 DEFAULT_MON = 1
 
 
-def motor_scan(
+def motor_scan(  # noqa: PLR0913
     block_name: str,
     start: float,
     stop: float,
@@ -184,9 +186,8 @@ def motor_scan(
     periods: bool = True,
     save_run: bool = False,
     rel: bool = False,
-):
-    """Wrapper around our scan() plan which takes a block name and creates a block_mot for use
-    within the scan. Also creates a DAE object.
+) -> Generator[Msg, None, Union[Parameters, None]]:
+    """Wrap our scan() plan and create a block_mot and a DAE object.
 
     This only works with blocks that are pointing at motor records.
 
@@ -207,7 +208,7 @@ def motor_scan(
     """
     block = BlockMot(prefix=get_pv_prefix(), block_name=block_name)
     det_pixels = centred_pixel(det, pixel_range)
-    dae = common_dae(
+    dae = monitor_normalising_dae(
         det_pixels=det_pixels, frames=frames, periods=periods, save_run=save_run, monitor=mon
     )
 
@@ -223,7 +224,7 @@ def motor_scan(
         return None
 
 
-def motor_adaptive_scan(
+def motor_adaptive_scan(  # noqa: PLR0913
     block_name: str,
     start: float,
     stop: float,
@@ -239,9 +240,8 @@ def motor_adaptive_scan(
     periods: bool = True,
     save_run: bool = False,
     rel: bool = False,
-):
-    """Wrapper around our adaptive_scan() plan which takes a block name and creates a block_mot
-    for use within the scan. Also creates a DAE object.
+) -> Generator[Msg, None, Union[Parameters, None]]:
+    """Wrap adaptive_scan() plan and create a block_mot and a DAE object.
 
     This only works with blocks that are pointing at motor records.
 
@@ -264,7 +264,7 @@ def motor_adaptive_scan(
     """
     block = BlockMot(prefix=get_pv_prefix(), block_name=block_name)
     det_pixels = centred_pixel(det, pixel_range)
-    dae = common_dae(
+    dae = monitor_normalising_dae(
         det_pixels=det_pixels, frames=frames, periods=periods, save_run=save_run, monitor=mon
     )
 

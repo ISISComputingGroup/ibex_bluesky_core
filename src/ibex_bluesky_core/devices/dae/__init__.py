@@ -58,7 +58,7 @@ def set_value_in_dae_xml(
                 return
 
 
-def common_dae(
+def monitor_normalising_dae(
     *,
     det_pixels: list[int],
     frames: int,
@@ -66,7 +66,7 @@ def common_dae(
     monitor: int = 1,
     save_run: bool = False,
 ) -> SimpleDae:
-    """Create a simple DAE which normalises using a monitor.
+    """Create a simple DAE which normalises using a monitor and waits for frames.
 
     This is really a shortcut to reduce code in plans used on the majority of instruments that
        normalise using a monitor, wait for a number of frames and optionally use hardware periods.
