@@ -3,12 +3,13 @@
 from collections.abc import Generator
 
 import bluesky.plans as bp
+from bluesky.protocols import Movable, NamedMovable
 from bluesky.utils import Msg
+from ophyd_async.core import Device
 from ophyd_async.plan_stubs import ensure_connected
 
 from ibex_bluesky_core.callbacks import FitMethod, ISISCallbacks
 from ibex_bluesky_core.callbacks.fitting.fitting_utils import Linear
-from ibex_bluesky_core.devices.block import BlockR
 from ibex_bluesky_core.devices.simpledae import SimpleDae
 from ibex_bluesky_core.plan_stubs import set_num_periods
 
@@ -18,7 +19,7 @@ DEFAULT_FIT_METHOD = Linear().fit()
 
 def scan(  # noqa: PLR0913
     dae: SimpleDae,
-    block: BlockR,
+    block: NamedMovable,
     start: float,
     stop: float,
     count: int,
@@ -27,8 +28,8 @@ def scan(  # noqa: PLR0913
     periods: bool = True,
     save_run: bool = False,
     rel: bool = False,
-) -> Generator[Msg, None, None]:
-    """Scan the DAE against a block.
+) -> Generator[Msg, None, ISISCallbacks]:
+    """Scan the DAE against a Movable.
 
     Args: TODO sort docstring out
         block_name: the name of the block to move.
@@ -80,19 +81,12 @@ def scan(  # noqa: PLR0913
 
     yield from _inner()
 
-    print(f"Centre-of-mass from PeakStats: {icc.peak_stats['com']}\n")
-
-    if icc.live_fit.result is not None:
-        print(icc.live_fit.result.fit_report())
-        return icc.live_fit.result.params
-    else:
-        print("No LiveFit result, likely fit failed")
-        return None
+    return icc
 
 
 def adaptive_scan(  # noqa: PLR0913
         dae: SimpleDae,
-        block: BlockR,
+        block: NamedMovable,
     start: float,
     stop: float,
     min_step: float,
@@ -103,7 +97,7 @@ def adaptive_scan(  # noqa: PLR0913
     periods: bool = True,
     save_run: bool = False,
     rel: bool = False,
-) -> Generator[Msg, None, None]:
+) -> Generator[Msg, None, ISISCallbacks]:
     """Scan the DAE against a block using an adaptive scan.
 
     This will scan coarsely until target_delta occurs, then it will go back and perform finer scans.
@@ -157,24 +151,20 @@ def adaptive_scan(  # noqa: PLR0913
         else:
             plan = bp.adaptive_scan
         yield from plan(
-            [dae],
-            dae.reducer.intensity.name,
-            block,
-            start,
-            stop,
-            min_step,
-            max_step,
-            target_delta,
+            detectors=[dae],
+            target_field=dae.reducer.intensity.name,
+            motor=block,
+            start=start,
+            stop=stop,
+            min_step=min_step,
+            max_step=max_step,
+            target_delta=target_delta,
             backstep=True,
         )  # type: ignore
 
     yield from _inner()
 
-    print(f"Centre-of-mass from PeakStats: {icc.peak_stats['com']}\n")
+    return icc
 
-    if icc.live_fit.result is not None:
-        print(icc.live_fit.result.fit_report())
-        return icc.live_fit.result.params
-    else:
-        print("No LiveFit result, likely fit failed")
-        return None
+
+# todo do we add a thin wrapper around both these two that constructs a common dae and a block?

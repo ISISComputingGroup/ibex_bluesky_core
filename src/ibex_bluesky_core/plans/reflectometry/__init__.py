@@ -10,6 +10,7 @@ from ibex_bluesky_core.callbacks import FitMethod, ISISCallbacks
 from ibex_bluesky_core.callbacks.fitting.fitting_utils import Linear
 from ibex_bluesky_core.devices.dae import common_dae
 from ibex_bluesky_core.devices.reflectometry.refl_param import refl_parameter
+from ibex_bluesky_core.plans import scan, adaptive_scan
 from ibex_bluesky_core.utils import centred_pixel
 from ibex_bluesky_core.plan_stubs import set_num_periods
 from ibex_bluesky_core.run_engine import get_run_engine
@@ -20,7 +21,7 @@ DEFAULT_MON = 1
 LINEAR_FIT = Linear().fit()
 
 
-def scan(  # noqa: PLR0913
+def refl_scan(  # noqa: PLR0913
     param: str,
     start: float,
     stop: float,
@@ -36,6 +37,8 @@ def scan(  # noqa: PLR0913
     rel: bool = False,
 ) -> Generator[Msg, None, None]:
     """Scan over a reflectometry parameter.
+
+    This is really just a wrapper around our scan()
 
     Args:
         param: the reflectometry parameter.
@@ -58,41 +61,7 @@ def scan(  # noqa: PLR0913
         det_pixels=det_pixels, frames=frames, periods=periods, save_run=save_run, monitor=mon
     )
 
-    yield from ensure_connected(dae, block)
-
-    yield from set_num_periods(dae, count if periods else 1)
-
-    fields = [block.name]
-    if periods:
-        fields.append(dae.period_num.name)  # type: ignore
-    elif save_run:
-        fields.append(dae.controller.run_number.name)  # type: ignore
-
-    fields.extend(
-        [
-            dae.reducer.intensity.name,  # type: ignore
-            dae.reducer.intensity_stddev.name,  # type: ignore
-        ]
-    )
-
-    icc = ISISCallbacks(
-        y=dae.reducer.intensity.name,  # type: ignore
-        yerr=dae.reducer.intensity_stddev.name,  # type: ignore
-        x=block.name,
-        live_fit_logger_postfix="fit_2",
-        measured_fields=fields,
-        fit=model,
-    )
-
-    @icc
-    def _inner() -> Generator[Msg, None, None]:
-        if rel:
-            plan = bp.rel_scan
-        else:
-            plan = bp.scan
-        yield from plan([dae], block, start, stop, num=count)
-
-    yield from _inner()
+    icc = (yield from scan(dae, block, start, stop,count, model=model, save_run=save_run, periods=periods, rel=rel ))
 
     if icc.live_fit.result is not None:
         print(icc.live_fit.result.fit_report())
@@ -102,7 +71,7 @@ def scan(  # noqa: PLR0913
         return None
 
 
-def adaptive_scan(  # noqa: PLR0913
+def refl_adaptive_scan(  # noqa: PLR0913
     param: str,
     start: float,
     stop: float,
@@ -144,51 +113,7 @@ def adaptive_scan(  # noqa: PLR0913
         det_pixels=det_pixels, frames=frames, periods=periods, save_run=save_run, monitor=mon
     )
 
-    yield from ensure_connected(dae, block)
-
-    yield from set_num_periods(dae, 100)
-
-    fields = [block.name]
-    if periods:
-        fields.append(dae.period_num.name)  # type: ignore
-    elif save_run:
-        fields.append(dae.controller.run_number.name)  # type: ignore
-
-    fields.extend(
-        [
-            dae.reducer.intensity.name,  # type: ignore
-            dae.reducer.intensity_stddev.name,  # type: ignore
-        ]
-    )
-
-    icc = ISISCallbacks(
-        y=dae.reducer.intensity.name,  # type: ignore
-        yerr=dae.reducer.intensity_stddev.name,  # type: ignore
-        x=block.name,
-        live_fit_logger_postfix="fit_1",
-        measured_fields=fields,
-        fit=model,
-    )
-
-    @icc
-    def _inner() -> Generator[Msg, None, None]:
-        if rel:
-            plan = bp.rel_adaptive_scan
-        else:
-            plan = bp.adaptive_scan
-        yield from plan(
-            [dae],
-            dae.reducer.intensity.name,
-            block,
-            start,
-            stop,
-            min_step,
-            max_step,
-            target_delta,
-            backstep=True,
-        )  # type: ignore
-
-    yield from _inner()
+    icc = (yield from adaptive_scan(dae=dae, block=block, start=start, stop=stop, min_step=min_step, max_step=max_step, target_delta=target_delta, model=model, save_run=save_run, rel=rel))
     if icc.live_fit.result is not None:
         print(icc.live_fit.result.fit_report())
         return icc.live_fit.result.params
