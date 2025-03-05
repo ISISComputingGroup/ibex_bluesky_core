@@ -6,19 +6,17 @@ from bluesky import Msg
 from bluesky import plans as bp
 from ophyd_async.plan_stubs import ensure_connected
 
-from ibex_bluesky_core.callbacks import FitMethod, ISISCallbacks
-from ibex_bluesky_core.callbacks.fitting.fitting_utils import Linear
+from ibex_bluesky_core.callbacks import FitMethod
+from ibex_bluesky_core.callbacks import ISISCallbacks as ISISCallbacks
+from ibex_bluesky_core.callbacks.fitting.fitting_utils import Linear as Linear
 from ibex_bluesky_core.devices.dae import common_dae
 from ibex_bluesky_core.devices.reflectometry.refl_param import refl_parameter
-from ibex_bluesky_core.plans import scan, adaptive_scan
-from ibex_bluesky_core.utils import centred_pixel
-from ibex_bluesky_core.plan_stubs import set_num_periods
+from ibex_bluesky_core.plan_stubs import set_num_periods as set_num_periods
+from ibex_bluesky_core.plans import DEFAULT_DET, DEFAULT_MON, LINEAR_FIT, adaptive_scan, scan
 from ibex_bluesky_core.run_engine import get_run_engine
+from ibex_bluesky_core.utils import centred_pixel
 
 RE = get_run_engine()
-DEFAULT_DET = 3
-DEFAULT_MON = 1
-LINEAR_FIT = Linear().fit()
 
 
 def refl_scan(  # noqa: PLR0913
@@ -61,7 +59,9 @@ def refl_scan(  # noqa: PLR0913
         det_pixels=det_pixels, frames=frames, periods=periods, save_run=save_run, monitor=mon
     )
 
-    icc = (yield from scan(dae, block, start, stop,count, model=model, save_run=save_run, periods=periods, rel=rel ))
+    icc = yield from scan(
+        dae, block, start, stop, count, model=model, save_run=save_run, periods=periods, rel=rel
+    )
 
     if icc.live_fit.result is not None:
         print(icc.live_fit.result.fit_report())
@@ -113,7 +113,18 @@ def refl_adaptive_scan(  # noqa: PLR0913
         det_pixels=det_pixels, frames=frames, periods=periods, save_run=save_run, monitor=mon
     )
 
-    icc = (yield from adaptive_scan(dae=dae, block=block, start=start, stop=stop, min_step=min_step, max_step=max_step, target_delta=target_delta, model=model, save_run=save_run, rel=rel))
+    icc = yield from adaptive_scan(
+        dae=dae,
+        block=block,
+        start=start,
+        stop=stop,
+        min_step=min_step,
+        max_step=max_step,
+        target_delta=target_delta,
+        model=model,
+        save_run=save_run,
+        rel=rel,
+    )
     if icc.live_fit.result is not None:
         print(icc.live_fit.result.fit_report())
         return icc.live_fit.result.params

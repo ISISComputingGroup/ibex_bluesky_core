@@ -41,7 +41,7 @@ default_prefix = get_pv_prefix()
 
 def dae_magnet_plan(
     *args,
-        dae:SimpleDae,
+    dae: SimpleDae,
     num,
     periods=True,
     frames=500,
