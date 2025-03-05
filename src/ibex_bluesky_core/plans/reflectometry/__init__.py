@@ -5,8 +5,8 @@ from collections.abc import Generator
 from bluesky import Msg
 
 from ibex_bluesky_core.callbacks import FitMethod
-from ibex_bluesky_core.devices.dae import monitor_normalising_dae
 from ibex_bluesky_core.devices.reflectometry import refl_parameter
+from ibex_bluesky_core.devices.simpledae import monitor_normalising_dae
 from ibex_bluesky_core.plans import (
     DEFAULT_DET,
     DEFAULT_FIT_METHOD,
@@ -14,10 +14,7 @@ from ibex_bluesky_core.plans import (
     adaptive_scan,
     scan,
 )
-from ibex_bluesky_core.run_engine import get_run_engine
 from ibex_bluesky_core.utils import centred_pixel
-
-RE = get_run_engine()
 
 
 def refl_scan(  # noqa: PLR0913
