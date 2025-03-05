@@ -6,11 +6,8 @@ from unittest.mock import MagicMock, patch
 import matplotlib.pyplot as plt
 import pytest
 from bluesky.utils import Msg
-from ophyd_async.testing import mock_puts_blocked
 
-from ibex_bluesky_core.devices.simpledae import SimpleDae, monitor_normalising_dae
-from ibex_bluesky_core.plan_stubs import CALL_QT_AWARE_MSG_KEY, call_qt_aware, call_sync, \
-    set_num_periods
+from ibex_bluesky_core.plan_stubs import CALL_QT_AWARE_MSG_KEY, call_qt_aware, call_sync
 from ibex_bluesky_core.run_engine._msg_handlers import call_sync_handler
 
 
@@ -122,22 +119,3 @@ def test_call_qt_aware_non_matplotlib_function(RE):
         RE(plan())
 
     mock.assert_not_called()
-
-async def test_set_num_periods_sets_periods(RE):
-    with patch("ibex_bluesky_core.devices.simpledae.get_pv_prefix"):
-        dae = monitor_normalising_dae(det_pixels=[1,2,3], frames=100, periods=True)
-    await dae.number_of_periods.connect(mock=True)
-    expected = 21
-    RE(set_num_periods(dae, expected))
-    actual = await dae.number_of_periods.get_value()
-    assert actual == expected
-
-async def test_set_num_periods_raises_if_not_successful(RE):
-    with patch("ibex_bluesky_core.devices.simpledae.get_pv_prefix"):
-        dae = monitor_normalising_dae(det_pixels=[1, 2, 3], frames=100, periods=True)
-    await dae.number_of_periods.connect(mock=True) # TODO, try and pass in a lazy mock here and dont let its value change?
-    expected = 22
-    with pytest.raises(ValueError, match="Could not set 22 periods on DAE (probably requesting too many points, or already running)"):
-        with mock_puts_blocked(dae.number_of_periods):
-            RE(set_num_periods(dae, expected))
-

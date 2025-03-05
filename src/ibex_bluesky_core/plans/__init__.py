@@ -16,7 +16,6 @@ from ibex_bluesky_core.callbacks import FitMethod, ISISCallbacks
 from ibex_bluesky_core.callbacks.fitting.fitting_utils import Linear
 from ibex_bluesky_core.devices.block import BlockMot
 from ibex_bluesky_core.devices.simpledae import SimpleDae, monitor_normalising_dae
-from ibex_bluesky_core.plan_stubs import set_num_periods
 from ibex_bluesky_core.utils import centred_pixel, get_pv_prefix
 
 DEFAULT_DET = 3
@@ -51,7 +50,7 @@ def scan(  # noqa: PLR0913
     """
     yield from ensure_connected(dae, block)
 
-    yield from set_num_periods(dae, count if periods else 1)
+    yield from bps.mv(dae.number_of_periods, count if periods else 1)
 
     fields = [block.name]
     if periods:
@@ -121,7 +120,7 @@ def adaptive_scan(  # noqa: PLR0913, PLR0917
     """
     yield from ensure_connected(dae, block)
 
-    yield from set_num_periods(dae, 100)
+    yield from bps.mv(dae.number_of_periods, 100)
 
     fields = [block.name]
     if periods:

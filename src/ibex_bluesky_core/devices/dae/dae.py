@@ -5,6 +5,7 @@ from ophyd_async.core import Array1D, SignalR, SignalRW, StandardReadable, Stric
 from ophyd_async.epics.core import epics_signal_r, epics_signal_rw
 
 from ibex_bluesky_core.devices import isis_epics_signal_rw
+from ibex_bluesky_core.devices.dae import DaeCheckingSignal
 from ibex_bluesky_core.devices.dae.dae_controls import DaeControls
 from ibex_bluesky_core.devices.dae.dae_event_mode import DaeEventMode
 from ibex_bluesky_core.devices.dae.dae_monitor import DaeMonitor
@@ -72,7 +73,9 @@ class Dae(StandardReadable):
 
         self.period = DaePeriod(dae_prefix)
         self.period_num: SignalRW[int] = isis_epics_signal_rw(int, f"{dae_prefix}PERIOD")
-        self.number_of_periods: SignalRW[int] = isis_epics_signal_rw(int, f"{dae_prefix}NUMPERIODS")
+        self.number_of_periods: DaeCheckingSignal[int] = DaeCheckingSignal(
+            int, f"{dae_prefix}NUMPERIODS"
+        )
 
         self.dae_settings = DaeSettings(dae_prefix)
         self.period_settings = DaePeriodSettings(dae_prefix)
