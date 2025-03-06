@@ -68,6 +68,5 @@ async def test_det_map_align(RE):
             )
         )
 
-    print(result.plan_result)
     assert result.plan_result["height_fit"].params["x0"].value == pytest.approx(5.0)
     assert result.plan_result["angle_fit"].params["x0"].value == pytest.approx(23.0)
