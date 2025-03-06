@@ -1,0 +1,295 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ibex_bluesky_core.devices.simpledae.waiters &mdash; ibex_bluesky_core 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=e59714d7" />
+
+  
+    <link rel="shortcut icon" href="../../../../_static/favicon.png"/>
+      <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #343131" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            ibex_bluesky_core
+              <img src="../../../../_static/logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Tutorial</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../tutorial/overview.html">Getting started</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Devices</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../devices/blocks.html">Blocks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../devices/dae.html">DAE (Data Acquisition Electronics)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Callbacks</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../callbacks/docs_logging_callback.html">Document Logging Callback</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../callbacks/file_writing.html">File writing callbacks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../callbacks/plotting.html">Plotting</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Fitting</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../fitting/fitting.html">Fitting Callback</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../fitting/livefit_logger.html">Fitting Files Callback</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../fitting/standard_fits.html">Standard Fitting Models</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Plan stubs</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../plan_stubs/external_code.html"><code class="docutils literal notranslate"><span class="pre">call_sync</span></code> (calling external code)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../plan_stubs/matplotlib_helpers.html"><code class="docutils literal notranslate"><span class="pre">call_qt_aware</span></code> (matplotlib helpers)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Preprocessors</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../preprocessors/rbnumberpp.html">RB Number injection preprocessor</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Developer information</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../dev/create_a_release.html">Release Process</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../dev/logging.html">Logging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../dev/manual_system_testing.html">Manual system testing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../dev/set_up_dev_environment.html">Local development</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../dev/sphinx_notes.html">Notes on Sphinx and addons</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Architectural decisions</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../architectural_decisions/001-repo-structure.html">Repository structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../architectural_decisions/002-use-ophyd-async.html">Use <code class="docutils literal notranslate"><span class="pre">ophyd-async</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../architectural_decisions/003-run-in-process.html">Run in-process</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../architectural_decisions/004-use-scipp.html">Use <code class="docutils literal notranslate"><span class="pre">scipp</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../architectural_decisions/005-variance-addition.html">Variance addition to counts data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../architectural_decisions/006-where-to-put-code.html">Where to put code</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../_api.html">API</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #343131" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">ibex_bluesky_core</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">Module code</a></li>
+          <li class="breadcrumb-item"><a href="../../devices.html">ibex_bluesky_core.devices</a></li>
+          <li class="breadcrumb-item"><a href="../simpledae.html">ibex_bluesky_core.devices.simpledae</a></li>
+      <li class="breadcrumb-item active">ibex_bluesky_core.devices.simpledae.waiters</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for ibex_bluesky_core.devices.simpledae.waiters</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;DAE waiting strategies.&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">abstractmethod</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Generic</span><span class="p">,</span> <span class="n">TypeVar</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">ophyd_async.core</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">Device</span><span class="p">,</span>
+    <span class="n">SignalR</span><span class="p">,</span>
+    <span class="n">wait_for_value</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibex_bluesky_core.devices.simpledae.strategies</span><span class="w"> </span><span class="kn">import</span> <span class="n">Waiter</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">ibex_bluesky_core.devices.simpledae</span><span class="w"> </span><span class="kn">import</span> <span class="n">SimpleDae</span>
+
+
+<span class="n">T</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;T&quot;</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="SimpleWaiter">
+<a class="viewcode-back" href="../../../../generated/ibex_bluesky_core.devices.simpledae.waiters.html#ibex_bluesky_core.devices.simpledae.waiters.SimpleWaiter">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">SimpleWaiter</span><span class="p">(</span><span class="n">Waiter</span><span class="p">,</span> <span class="n">Generic</span><span class="p">[</span><span class="n">T</span><span class="p">],</span> <span class="n">ABC</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Wait for a single DAE variable to be greater or equal to a specified numeric value.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">T</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Wait for a value to be at least equal to the specified value.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            value: the value to wait for</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_value</span><span class="p">:</span> <span class="n">T</span> <span class="o">=</span> <span class="n">value</span>
+
+<div class="viewcode-block" id="SimpleWaiter.wait">
+<a class="viewcode-back" href="../../../../generated/ibex_bluesky_core.devices.simpledae.waiters.html#ibex_bluesky_core.devices.simpledae.waiters.SimpleWaiter.wait">[docs]</a>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">wait</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dae</span><span class="p">:</span> <span class="s2">&quot;SimpleDae&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Wait for signal to reach the user-specified value.&quot;&quot;&quot;</span>
+        <span class="n">signal</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_signal</span><span class="p">(</span><span class="n">dae</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;starting wait for signal </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">signal</span><span class="o">.</span><span class="n">source</span><span class="p">)</span>
+        <span class="k">await</span> <span class="n">wait_for_value</span><span class="p">(</span><span class="n">signal</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">v</span><span class="p">:</span> <span class="n">v</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_value</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;completed wait for signal </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">signal</span><span class="o">.</span><span class="n">source</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="SimpleWaiter.additional_readable_signals">
+<a class="viewcode-back" href="../../../../generated/ibex_bluesky_core.devices.simpledae.waiters.html#ibex_bluesky_core.devices.simpledae.waiters.SimpleWaiter.additional_readable_signals">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">additional_readable_signals</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dae</span><span class="p">:</span> <span class="s2">&quot;SimpleDae&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Device</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Publish the signal we&#39;re waiting on as an interesting signal.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">get_signal</span><span class="p">(</span><span class="n">dae</span><span class="p">)]</span></div>
+
+
+<div class="viewcode-block" id="SimpleWaiter.get_signal">
+<a class="viewcode-back" href="../../../../generated/ibex_bluesky_core.devices.simpledae.waiters.html#ibex_bluesky_core.devices.simpledae.waiters.SimpleWaiter.get_signal">[docs]</a>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_signal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dae</span><span class="p">:</span> <span class="s2">&quot;SimpleDae&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SignalR</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the numeric signal to wait for.&quot;&quot;&quot;</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="PeriodGoodFramesWaiter">
+<a class="viewcode-back" href="../../../../generated/ibex_bluesky_core.devices.simpledae.waiters.html#ibex_bluesky_core.devices.simpledae.waiters.PeriodGoodFramesWaiter">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">PeriodGoodFramesWaiter</span><span class="p">(</span><span class="n">SimpleWaiter</span><span class="p">[</span><span class="nb">int</span><span class="p">]):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Wait for period good frames to reach a user-specified value.&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="PeriodGoodFramesWaiter.get_signal">
+<a class="viewcode-back" href="../../../../generated/ibex_bluesky_core.devices.simpledae.waiters.html#ibex_bluesky_core.devices.simpledae.waiters.PeriodGoodFramesWaiter.get_signal">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_signal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dae</span><span class="p">:</span> <span class="s2">&quot;SimpleDae&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SignalR</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Wait for period good frames.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">dae</span><span class="o">.</span><span class="n">period</span><span class="o">.</span><span class="n">good_frames</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="GoodFramesWaiter">
+<a class="viewcode-back" href="../../../../generated/ibex_bluesky_core.devices.simpledae.waiters.html#ibex_bluesky_core.devices.simpledae.waiters.GoodFramesWaiter">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">GoodFramesWaiter</span><span class="p">(</span><span class="n">SimpleWaiter</span><span class="p">[</span><span class="nb">int</span><span class="p">]):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Wait for good frames to reach a user-specified value.&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="GoodFramesWaiter.get_signal">
+<a class="viewcode-back" href="../../../../generated/ibex_bluesky_core.devices.simpledae.waiters.html#ibex_bluesky_core.devices.simpledae.waiters.GoodFramesWaiter.get_signal">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_signal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dae</span><span class="p">:</span> <span class="s2">&quot;SimpleDae&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SignalR</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Wait for good frames.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">dae</span><span class="o">.</span><span class="n">good_frames</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="GoodUahWaiter">
+<a class="viewcode-back" href="../../../../generated/ibex_bluesky_core.devices.simpledae.waiters.html#ibex_bluesky_core.devices.simpledae.waiters.GoodUahWaiter">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">GoodUahWaiter</span><span class="p">(</span><span class="n">SimpleWaiter</span><span class="p">[</span><span class="nb">float</span><span class="p">]):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Wait for good microamp-hours to reach a user-specified value.&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="GoodUahWaiter.get_signal">
+<a class="viewcode-back" href="../../../../generated/ibex_bluesky_core.devices.simpledae.waiters.html#ibex_bluesky_core.devices.simpledae.waiters.GoodUahWaiter.get_signal">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_signal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dae</span><span class="p">:</span> <span class="s2">&quot;SimpleDae&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SignalR</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Wait for good uah.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">dae</span><span class="o">.</span><span class="n">good_uah</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="MEventsWaiter">
+<a class="viewcode-back" href="../../../../generated/ibex_bluesky_core.devices.simpledae.waiters.html#ibex_bluesky_core.devices.simpledae.waiters.MEventsWaiter">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">MEventsWaiter</span><span class="p">(</span><span class="n">SimpleWaiter</span><span class="p">[</span><span class="nb">float</span><span class="p">]):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Wait for a user-specified number of millions of events.&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="MEventsWaiter.get_signal">
+<a class="viewcode-back" href="../../../../generated/ibex_bluesky_core.devices.simpledae.waiters.html#ibex_bluesky_core.devices.simpledae.waiters.MEventsWaiter.get_signal">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_signal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dae</span><span class="p">:</span> <span class="s2">&quot;SimpleDae&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SignalR</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Wait for mevents.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">dae</span><span class="o">.</span><span class="n">m_events</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="TimeWaiter">
+<a class="viewcode-back" href="../../../../generated/ibex_bluesky_core.devices.simpledae.waiters.html#ibex_bluesky_core.devices.simpledae.waiters.TimeWaiter">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">TimeWaiter</span><span class="p">(</span><span class="n">Waiter</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Wait for a user-specified time duration.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">seconds</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Init.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            seconds: number of seconds to wait for.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_secs</span> <span class="o">=</span> <span class="n">seconds</span>
+
+<div class="viewcode-block" id="TimeWaiter.wait">
+<a class="viewcode-back" href="../../../../generated/ibex_bluesky_core.devices.simpledae.waiters.html#ibex_bluesky_core.devices.simpledae.waiters.TimeWaiter.wait">[docs]</a>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">wait</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dae</span><span class="p">:</span> <span class="s2">&quot;SimpleDae&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Wait for the specified time duration.&quot;&quot;&quot;</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;starting wait for </span><span class="si">%f</span><span class="s2"> seconds&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_secs</span><span class="p">)</span>
+        <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_secs</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;completed wait&quot;</span><span class="p">)</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

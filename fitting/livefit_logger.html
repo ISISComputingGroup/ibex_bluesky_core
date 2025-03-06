@@ -1,0 +1,196 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fitting Files Callback &mdash; ibex_bluesky_core 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+
+  
+    <link rel="shortcut icon" href="../_static/favicon.png"/>
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Standard Fitting Models" href="standard_fits.html" />
+    <link rel="prev" title="Fitting Callback" href="fitting.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #343131" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            ibex_bluesky_core
+              <img src="../_static/logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Tutorial</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/overview.html">Getting started</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Devices</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../devices/blocks.html">Blocks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devices/dae.html">DAE (Data Acquisition Electronics)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Callbacks</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../callbacks/docs_logging_callback.html">Document Logging Callback</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../callbacks/file_writing.html">File writing callbacks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../callbacks/plotting.html">Plotting</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Fitting</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="fitting.html">Fitting Callback</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Fitting Files Callback</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#fitting-files">Fitting Files</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#example">Example</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="standard_fits.html">Standard Fitting Models</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Plan stubs</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/external_code.html"><code class="docutils literal notranslate"><span class="pre">call_sync</span></code> (calling external code)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/matplotlib_helpers.html"><code class="docutils literal notranslate"><span class="pre">call_qt_aware</span></code> (matplotlib helpers)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Preprocessors</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../preprocessors/rbnumberpp.html">RB Number injection preprocessor</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Developer information</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../dev/create_a_release.html">Release Process</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dev/logging.html">Logging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dev/manual_system_testing.html">Manual system testing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dev/set_up_dev_environment.html">Local development</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dev/sphinx_notes.html">Notes on Sphinx and addons</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Architectural decisions</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../architectural_decisions/001-repo-structure.html">Repository structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../architectural_decisions/002-use-ophyd-async.html">Use <code class="docutils literal notranslate"><span class="pre">ophyd-async</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../architectural_decisions/003-run-in-process.html">Run in-process</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../architectural_decisions/004-use-scipp.html">Use <code class="docutils literal notranslate"><span class="pre">scipp</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../architectural_decisions/005-variance-addition.html">Variance addition to counts data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../architectural_decisions/006-where-to-put-code.html">Where to put code</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../_api.html">API</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #343131" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">ibex_bluesky_core</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Fitting Files Callback</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/ISISComputingGroup/ibex_bluesky_core/blob/main/doc/fitting/livefit_logger.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="fitting-files-callback">
+<h1>Fitting Files Callback<a class="headerlink" href="#fitting-files-callback" title="Link to this heading"></a></h1>
+<section id="fitting-files">
+<h2>Fitting Files<a class="headerlink" href="#fitting-files" title="Link to this heading"></a></h2>
+<p>The callback (<a class="reference internal" href="../generated/ibex_bluesky_core.callbacks.fitting.livefit_logger.html#ibex_bluesky_core.callbacks.fitting.livefit_logger.LiveFitLogger" title="ibex_bluesky_core.callbacks.fitting.livefit_logger.LiveFitLogger"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ibex_bluesky_core.callbacks.fitting.livefit_logger.LiveFitLogger</span></code></a>) exists to write all fitting metrics from <code class="docutils literal notranslate"><span class="pre">LiveFit</span></code> to file. These are designed to be human readable files rather than machine readable.</p>
+<p>This callback provides you with useful metrics such as <code class="docutils literal notranslate"><span class="pre">R-squared</span></code> and <code class="docutils literal notranslate"><span class="pre">chi-square</span></code>, then providing you with a table of the raw collected data included modelled <code class="docutils literal notranslate"><span class="pre">y</span></code> data and <code class="docutils literal notranslate"><span class="pre">y</span></code> uncertainty.</p>
+<section id="example">
+<h3>Example<a class="headerlink" href="#example" title="Link to this heading"></a></h3>
+<p>An example of using this could be:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">some_plan</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="n">Msg</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+    <span class="o">...</span> <span class="c1"># Set up prefix, reducers, controllers etc. here</span>
+
+    <span class="nd">@subs_decorator</span><span class="p">(</span>
+        <span class="p">[</span>
+            <span class="n">LiveFitLogger</span><span class="p">(</span>
+                <span class="n">lf</span><span class="p">,</span> <span class="c1"># LiveFit</span>
+                <span class="n">y</span><span class="o">=</span><span class="n">reducer</span><span class="o">.</span><span class="n">intensity</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                <span class="n">x</span><span class="o">=</span><span class="n">block</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                <span class="n">output_dir</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;C:</span><span class="se">\\</span><span class="s2">Instrument</span><span class="se">\\</span><span class="s2">Var</span><span class="se">\\</span><span class="s2">logs</span><span class="se">\\</span><span class="s2">bluesky</span><span class="se">\\</span><span class="s2">fitting&quot;</span><span class="p">),</span>
+                <span class="n">postfix</span><span class="o">=</span><span class="s2">&quot;bob&quot;</span> <span class="c1"># Make sure to have different postfixes if using </span>
+                    <span class="c1"># more than 1 LiveFitLogger per run</span>
+                <span class="n">yerr</span><span class="o">=</span><span class="n">reducer</span><span class="o">.</span><span class="n">intensity_stddev</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="c1"># Not required</span>
+            <span class="p">)</span>
+            <span class="o">...</span> <span class="c1"># Other callbacks ie. live table/plot here - you can use multiple!</span>
+        <span class="p">]</span>
+    <span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_inner</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="n">Msg</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+        <span class="o">...</span> <span class="c1"># Continue to plan</span>
+</pre></div>
+</div>
+<p>This will put the all fitting data collected over the run into a <code class="docutils literal notranslate"><span class="pre">.csv</span></code> file, named after the <code class="docutils literal notranslate"><span class="pre">uid</span></code> of the scan, in the <code class="docutils literal notranslate"><span class="pre">C:\\Instrument\\Var\\logs\\bluesky\\fitting</span></code> path provided to the callback. You should provide a <code class="docutils literal notranslate"><span class="pre">postfix</span></code> to append to the end of the filename to disambiguate different fits and to avoid overwriting fitting files- it is only one file per fit completed.</p>
+<p>If you provide a signal name for the <code class="docutils literal notranslate"><span class="pre">yerr</span></code> argument then an extra column for <code class="docutils literal notranslate"><span class="pre">y</span> <span class="pre">uncertainty</span></code> will be displayed in the fitting file. You have the option to not provide anything for this argument if you do not want to have uncertainty information in your fitting file. Keep in mind that even if you provide <code class="docutils literal notranslate"><span class="pre">yerr</span></code> in <code class="docutils literal notranslate"><span class="pre">LiveFitLogger</span></code>, you will still need to provide <code class="docutils literal notranslate"><span class="pre">yerr</span></code> in <code class="docutils literal notranslate"><span class="pre">LiveFit</span></code> if you want uncertainty/weight per point to influence the fit.</p>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="fitting.html" class="btn btn-neutral float-left" title="Fitting Callback" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="standard_fits.html" class="btn btn-neutral float-right" title="Standard Fitting Models" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
