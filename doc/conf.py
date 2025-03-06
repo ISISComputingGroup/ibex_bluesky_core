@@ -25,6 +25,8 @@ nitpick_ignore_regex = [
     ("py:class", r"^(?!ibex_bluesky_core\.).*$"),
     ("py:class", r"^.*\.T$"),
     ("py:obj", r"^.*\.T$"),
+    ("py:class", r"^.*\.T.*_co$"),
+    ("py:obj", r"^.*\.T.*_co$"),
 ]
 
 myst_enable_extensions = ["dollarmath"]
