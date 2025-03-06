@@ -82,7 +82,7 @@ class ReflParameterRedefine(StandardReadable):
         await self.define_pos_sp.set(value, wait=True, timeout=None)
         await asyncio.sleep(0.1)
         async for chg in observe_value(self.changed):
-            if not chg:
+            if chg:
                 break
 
 

@@ -2,7 +2,7 @@
 
 from abc import ABC
 from collections.abc import Generator
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import bluesky.plans as bp
 from bluesky import plan_stubs as bps
@@ -14,15 +14,18 @@ from ophyd_async.plan_stubs import ensure_connected
 from ibex_bluesky_core.callbacks import FitMethod, ISISCallbacks
 from ibex_bluesky_core.callbacks.fitting.fitting_utils import Linear
 from ibex_bluesky_core.devices.block import BlockMot
-from ibex_bluesky_core.devices.simpledae import SimpleDae, monitor_normalising_dae
+from ibex_bluesky_core.devices.simpledae import monitor_normalising_dae
 from ibex_bluesky_core.utils import centred_pixel, get_pv_prefix
+
+if TYPE_CHECKING:
+    from ibex_bluesky_core.devices.simpledae import SimpleDae
 
 DEFAULT_DET = 3
 DEFAULT_FIT_METHOD = Linear().fit()
 
 
 def scan(  # noqa: PLR0913
-    dae: SimpleDae,
+    dae: "SimpleDae",
     block: NamedMovable[Any],
     start: float,
     stop: float,
@@ -86,7 +89,7 @@ def scan(  # noqa: PLR0913
 
 
 def adaptive_scan(  # noqa: PLR0913, PLR0917
-    dae: SimpleDae,
+    dae: "SimpleDae",
     block: NamedMovable[Any],
     start: float,
     stop: float,
@@ -186,6 +189,7 @@ def motor_scan(  # noqa: PLR0913
     """Wrap our scan() plan and create a block_mot and a DAE object.
 
     This only works with blocks that are pointing at motor records.
+    This is really just a wrapper around our scan()
 
     Args:
         block_name: the name of the block to scan.
@@ -235,6 +239,7 @@ def motor_adaptive_scan(  # noqa: PLR0913
     """Wrap adaptive_scan() plan and create a block_mot and a DAE object.
 
     This only works with blocks that are pointing at motor records.
+    This is really just a wrapper around our adaptive_scan()
 
     Args:
         block_name: the name of the block to scan.
