@@ -46,7 +46,6 @@ class Waiter(ProvidesExtraReadables):
 
     async def wait(self, dae: "SimpleDae") -> None:
         """Wait for the acquisition to complete."""
-        ...
 
 
 class Reducer(ProvidesExtraReadables):
