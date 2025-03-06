@@ -80,6 +80,9 @@ dev = [
 testpaths = "tests"
 asyncio_mode = "auto"
 addopts = "--cov --cov-report=html -vv"
+filterwarnings = [
+    'ignore:FigureCanvasAgg is non-interactive, and thus cannot be shown:UserWarning',
+]
 
 [tool.coverage.run]
 branch = true

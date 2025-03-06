@@ -41,7 +41,8 @@ async def call_sync_handler(msg: Msg) -> Any:  # noqa: ANN401
             logger.error("Running '%s' failed with %s: %s", func.__name__, e.__class__.__name__, e)
             exc = e
         finally:
-            loop.call_soon_threadsafe(done_event.set)
+            if not loop.is_closed():
+                loop.call_soon_threadsafe(done_event.set)
 
     logger.info(
         "Spawning thread to run '%s' with args=(%s), kwargs=(%s)",
