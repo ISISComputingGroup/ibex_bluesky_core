@@ -12,7 +12,8 @@ from ibex_bluesky_core.devices.simpledae.strategies import Controller, Waiter
 from ibex_bluesky_core.plans.reflectometry.det_map_align import mapping_alignment_plan
 
 
-async def test_det_map_align(RE):
+@pytest.fixture
+async def dae():
     noop_controller = Controller()
     noop_waiter = Waiter()
     reducer = PeriodSpecIntegralsReducer(
@@ -26,11 +27,18 @@ async def test_det_map_align(RE):
         waiter=noop_waiter,
         reducer=reducer,
     )
-    height = soft_signal_rw(float, name="height")
-
     await dae.connect(mock=True)
-    await height.connect(mock=True)
+    return dae
 
+
+@pytest.fixture
+async def height():
+    height = soft_signal_rw(float, name="height")
+    await height.connect(mock=True)
+    return height
+
+
+def test_det_map_align(RE, dae, height):
     set_mock_value(dae.number_of_periods, 6)
     set_mock_value(dae.num_spectra, 6)
     set_mock_value(dae.num_time_channels, 1)
@@ -70,3 +78,18 @@ async def test_det_map_align(RE):
 
     assert result.plan_result["height_fit"].params["x0"].value == pytest.approx(5.0)
     assert result.plan_result["angle_fit"].params["x0"].value == pytest.approx(23.0)
+
+
+def test_det_map_align_bad_angle_map_shape(RE, dae, height):
+    with patch("ibex_bluesky_core.plans.reflectometry.det_map_align.ensure_connected"):
+        with pytest.raises(ValueError, match=r".* must have same shape"):
+            RE(
+                mapping_alignment_plan(
+                    dae=dae,  # type: ignore
+                    height=height,  # type: ignore
+                    start=0,
+                    stop=10,
+                    num=6,
+                    angle_map=np.array([21, 22, 23, 24]),
+                )
+            )

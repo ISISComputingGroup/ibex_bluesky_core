@@ -1009,3 +1009,6 @@ def test_period_spec_integrals_reducer_publishes_signals(simpledae: SimpleDae):
     reducer = PeriodSpecIntegralsReducer(detectors=np.array([]), monitors=np.array([]))
     assert reducer.mon_integrals in reducer.additional_readable_signals(simpledae)
     assert reducer.det_integrals in reducer.additional_readable_signals(simpledae)
+
+    np.testing.assert_equal(reducer.detectors, np.array([]))
+    np.testing.assert_equal(reducer.monitors, np.array([]))
