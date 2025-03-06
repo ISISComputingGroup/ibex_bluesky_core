@@ -2,14 +2,13 @@
 
 from abc import ABC
 from collections.abc import Generator
-from typing import Any, Union
+from typing import Any
 
 import bluesky.plans as bp
 from bluesky import plan_stubs as bps
 from bluesky.plan_stubs import trigger_and_read
 from bluesky.protocols import NamedMovable, Readable
 from bluesky.utils import Msg
-from lmfit import Parameters
 from ophyd_async.plan_stubs import ensure_connected
 
 from ibex_bluesky_core.callbacks import FitMethod, ISISCallbacks
@@ -183,7 +182,7 @@ def motor_scan(  # noqa: PLR0913
     periods: bool = True,
     save_run: bool = False,
     rel: bool = False,
-) -> Generator[Msg, None, Union[Parameters, None]]:
+) -> Generator[Msg, None, ISISCallbacks]:
     """Wrap our scan() plan and create a block_mot and a DAE object.
 
     This only works with blocks that are pointing at motor records.
@@ -209,16 +208,11 @@ def motor_scan(  # noqa: PLR0913
         det_pixels=det_pixels, frames=frames, periods=periods, save_run=save_run, monitor=mon
     )
 
-    icc = yield from scan(
-        dae, block, start, stop, count, model=model, save_run=save_run, periods=periods, rel=rel
+    return (
+        yield from scan(
+            dae, block, start, stop, count, model=model, save_run=save_run, periods=periods, rel=rel
+        )
     )
-
-    if icc.live_fit.result is not None:
-        print(icc.live_fit.result.fit_report())
-        return icc.live_fit.result.params
-    else:
-        print("No LiveFit result, likely fit failed")
-        return None
 
 
 def motor_adaptive_scan(  # noqa: PLR0913
@@ -237,7 +231,7 @@ def motor_adaptive_scan(  # noqa: PLR0913
     periods: bool = True,
     save_run: bool = False,
     rel: bool = False,
-) -> Generator[Msg, None, Union[Parameters, None]]:
+) -> Generator[Msg, None, ISISCallbacks]:
     """Wrap adaptive_scan() plan and create a block_mot and a DAE object.
 
     This only works with blocks that are pointing at motor records.
@@ -265,24 +259,20 @@ def motor_adaptive_scan(  # noqa: PLR0913
         det_pixels=det_pixels, frames=frames, periods=periods, save_run=save_run, monitor=mon
     )
 
-    icc = yield from adaptive_scan(
-        dae=dae,
-        block=block,
-        start=start,
-        stop=stop,
-        min_step=min_step,
-        max_step=max_step,
-        target_delta=target_delta,
-        model=model,
-        save_run=save_run,
-        rel=rel,
+    return (
+        yield from adaptive_scan(
+            dae=dae,
+            block=block,
+            start=start,
+            stop=stop,
+            min_step=min_step,
+            max_step=max_step,
+            target_delta=target_delta,
+            model=model,
+            save_run=save_run,
+            rel=rel,
+        )
     )
-    if icc.live_fit.result is not None:
-        print(icc.live_fit.result.fit_report())
-        return icc.live_fit.result.params
-    else:
-        print("No LiveFit result, likely fit failed")
-        return None
 
 
 class NamedReadableAndMovable(Readable[Any], NamedMovable[Any], ABC):

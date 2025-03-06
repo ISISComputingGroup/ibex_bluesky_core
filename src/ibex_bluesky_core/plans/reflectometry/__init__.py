@@ -4,7 +4,7 @@ from collections.abc import Generator
 
 from bluesky import Msg
 
-from ibex_bluesky_core.callbacks import FitMethod
+from ibex_bluesky_core.callbacks import FitMethod, ISISCallbacks
 from ibex_bluesky_core.devices.reflectometry import refl_parameter
 from ibex_bluesky_core.devices.simpledae import monitor_normalising_dae
 from ibex_bluesky_core.plans import (
@@ -31,7 +31,7 @@ def refl_scan(  # noqa: PLR0913
     periods: bool = True,
     save_run: bool = False,
     rel: bool = False,
-) -> Generator[Msg, None, None]:
+) -> Generator[Msg, None, ISISCallbacks]:
     """Scan over a reflectometry parameter.
 
     This is really just a wrapper around our scan()
@@ -57,16 +57,11 @@ def refl_scan(  # noqa: PLR0913
         det_pixels=det_pixels, frames=frames, periods=periods, save_run=save_run, monitor=mon
     )
 
-    icc = yield from scan(
-        dae, block, start, stop, count, model=model, save_run=save_run, periods=periods, rel=rel
+    return (
+        yield from scan(
+            dae, block, start, stop, count, model=model, save_run=save_run, periods=periods, rel=rel
+        )
     )
-
-    if icc.live_fit.result is not None:
-        print(icc.live_fit.result.fit_report())
-        return icc.live_fit.result.params
-    else:
-        print("No LiveFit result, likely fit failed")
-        return None
 
 
 def refl_adaptive_scan(  # noqa: PLR0913
@@ -85,7 +80,7 @@ def refl_adaptive_scan(  # noqa: PLR0913
     periods: bool = True,
     save_run: bool = False,
     rel: bool = False,
-) -> Generator[Msg, None, None]:
+) -> Generator[Msg, None, ISISCallbacks]:
     """Perform an adaptive scan over a reflectometry parameter.
 
     Args:
@@ -111,21 +106,17 @@ def refl_adaptive_scan(  # noqa: PLR0913
         det_pixels=det_pixels, frames=frames, periods=periods, save_run=save_run, monitor=mon
     )
 
-    icc = yield from adaptive_scan(
-        dae=dae,
-        block=block,
-        start=start,
-        stop=stop,
-        min_step=min_step,
-        max_step=max_step,
-        target_delta=target_delta,
-        model=model,
-        save_run=save_run,
-        rel=rel,
+    return (
+        yield from adaptive_scan(
+            dae=dae,
+            block=block,
+            start=start,
+            stop=stop,
+            min_step=min_step,
+            max_step=max_step,
+            target_delta=target_delta,
+            model=model,
+            save_run=save_run,
+            rel=rel,
+        )
     )
-    if icc.live_fit.result is not None:
-        print(icc.live_fit.result.fit_report())
-        return icc.live_fit.result.params
-    else:
-        print("No LiveFit result, likely fit failed")
-        return None
