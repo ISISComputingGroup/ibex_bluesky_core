@@ -5,7 +5,7 @@ from typing import Any, Generic, TypeVar
 from xml.etree.ElementTree import Element
 
 from bluesky.protocols import Movable
-from ophyd_async.core import AsyncStatus, StandardReadable, StandardReadableFormat
+from ophyd_async.core import AsyncStatus, SignalDatatype, StandardReadable, StandardReadableFormat
 from ophyd_async.epics.core import epics_signal_rw
 
 
@@ -53,7 +53,7 @@ def set_value_in_dae_xml(
                 return
 
 
-T = TypeVar("T")
+T = TypeVar("T", bound=SignalDatatype)
 
 
 class DaeCheckingSignal(StandardReadable, Movable[T], Generic[T]):

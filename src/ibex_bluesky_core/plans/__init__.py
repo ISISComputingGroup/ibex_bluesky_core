@@ -2,7 +2,7 @@
 
 from abc import ABC
 from collections.abc import Generator
-from typing import Union
+from typing import Any, Union
 
 import bluesky.plans as bp
 from bluesky import plan_stubs as bps
@@ -24,7 +24,7 @@ DEFAULT_FIT_METHOD = Linear().fit()
 
 def scan(  # noqa: PLR0913
     dae: SimpleDae,
-    block: NamedMovable,
+    block: NamedMovable[Any],
     start: float,
     stop: float,
     count: int,
@@ -48,7 +48,7 @@ def scan(  # noqa: PLR0913
         rel: whether or not to scan around the current position or use absolute positions.
 
     """
-    yield from ensure_connected(dae, block)
+    yield from ensure_connected(dae, block)  # type: ignore
 
     yield from bps.mv(dae.number_of_periods, count if periods else 1)
 
@@ -88,7 +88,7 @@ def scan(  # noqa: PLR0913
 
 def adaptive_scan(  # noqa: PLR0913, PLR0917
     dae: SimpleDae,
-    block: NamedMovable,
+    block: NamedMovable[Any],
     start: float,
     stop: float,
     min_step: float,
@@ -118,7 +118,7 @@ def adaptive_scan(  # noqa: PLR0913, PLR0917
         rel: whether or not to scan around the current position or use absolute positions.
 
     """
-    yield from ensure_connected(dae, block)
+    yield from ensure_connected(dae, block)  # type: ignore
 
     yield from bps.mv(dae.number_of_periods, 100)
 
@@ -151,7 +151,7 @@ def adaptive_scan(  # noqa: PLR0913, PLR0917
             plan = bp.adaptive_scan
         yield from plan(
             detectors=[dae],
-            target_field=dae.reducer.intensity.name,
+            target_field=dae.reducer.intensity.name,  # type: ignore
             motor=block,
             start=start,
             stop=stop,
@@ -285,12 +285,12 @@ def motor_adaptive_scan(  # noqa: PLR0913
         return None
 
 
-class NamedReadableAndMovable(Readable, NamedMovable, ABC):
+class NamedReadableAndMovable(Readable[Any], NamedMovable[Any], ABC):
     """Abstract class for type checking that an object is readable, named and movable."""
 
 
 def polling_plan(
-    motor: NamedReadableAndMovable, readable: Readable, destination: float
+    motor: NamedReadableAndMovable, readable: Readable[Any], destination: float
 ) -> Generator[Msg, None, None]:
     """Move to a destination but drop updates from readable if motor position has not changed.
 
