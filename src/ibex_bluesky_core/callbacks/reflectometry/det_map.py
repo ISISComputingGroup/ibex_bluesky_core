@@ -2,6 +2,7 @@
 
 These callbacks form part of a joint height/angle scanning workflow on
 reflectometers, where a single scan is interpreted in two different ways simultaneously:
+
 - Height scan: sums together intensity within each data point, in a way very similar to
   the existing MonitorNormalizer dae reducer.
 - Angle scan: sums together intensity across different data points, and then emits new
@@ -14,6 +15,7 @@ used by all of our normal callbacks (e.g. file-writing, fitting, plotting and so
 For these callbacks, the underlying data is provided by a reducer named
 PeriodSpecIntegralsReducer, which simultaneously exposes the integrals of many DAE spectra
 at once.
+
 """
 
 import math
