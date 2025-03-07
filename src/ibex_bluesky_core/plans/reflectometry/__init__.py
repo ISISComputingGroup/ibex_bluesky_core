@@ -59,7 +59,15 @@ def refl_scan(  # noqa: PLR0913
 
     return (
         yield from scan(
-            dae, block, start, stop, count, model=model, save_run=save_run, periods=periods, rel=rel
+            dae=dae,
+            block=block,
+            start=start,
+            stop=stop,
+            count=count,
+            model=model,
+            save_run=save_run,
+            periods=periods,
+            rel=rel,
         )
     )
 
