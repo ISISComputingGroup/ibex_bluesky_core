@@ -1,3 +1,4 @@
+# pyright: reportMissingParameterType=false
 import asyncio
 from unittest.mock import patch
 
