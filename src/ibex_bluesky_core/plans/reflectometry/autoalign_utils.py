@@ -27,7 +27,7 @@ class AlignmentParam:
 
     Args:
         name (str): The name of the alignment parameter.
-            Should be same as the respective relectometry parameter.
+            Should be same as the respective relectometry parameter or read/write block.
         rel_scan_ranges (list[float]): Scan range relative to the current motor position.
             If the list has more than one element then it will rescan for each range.
         fit_method (FitMethod): The relationship to expect between the alignment parameter
@@ -38,12 +38,12 @@ class AlignmentParam:
         pre_align_param_positions (dict[str, float], optional): A dictionary of alignment
             parameter names to values. Before alignment, each supplied alignment parameter
             will be moved to their respective value.
-        do_checks (Callable[[ModelResult, float], bool]): Checks to ensure that the optimised
+        do_checks (Callable[[ModelResult, float], bool], optional): Checks to ensure that the optimised
             value for this alignment parameter is sensible, must return True if NOT a sensible
             value.
-        _prefix (str): The PV prefix for the respective reflectometry parameter. Defaults to
+        _prefix (str, optional): The PV prefix for the respective reflectometry parameter. Defaults to
             the current instrument PV prefix.
-        _alignment_param (ReflParameter, BlockRw[float]): A reflectometry parameter or block
+        _alignment_param (ReflParameter, BlockRw[float], optional): A reflectometry parameter or block
             read/write signal. Use this if you want to create your own signal.
 
     """
@@ -278,21 +278,22 @@ def optimise_axis_against_intensity(
     Args:
         dae (SimpleDae | BlockR[float]): A readable signal that represents beam intensity.
         alignment_param (AlignmentParam): The alignment parameter to be scanned over and optimised.
-        kwargs:
-            num_points (int): The number of points across the scan. Defaults to 10.
-            fields (list[str]): Fields to measure and document in outputted files.
-            periods (bool): Are periods being used. Defaults to True.
-            save_run (bool): Should runs be saved. Defaults to True.
-            files_output_dir (Path): Where to save any outputted files. Defaults to
-                C:/instrument/var/logs/bluesky/output_files.
-            callback_if_problem (Callable[[], Generator[Msg, None, None]] | Callable[[], None]):
-                Either a plan or standard function, called if optimised value is not found to be
-                sensible.
-            callback_pre_align (Callable[[], Generator[Msg, None, None]] | Callable[[], None]):
-                Either a plan or standard function, called before all scans.
-            callback_pre_align (Callable[[], Generator[Msg, None, None]] | Callable[[], None]):
-                Either a plan or standard function, called after all scans.
-            ax (matplotlib.axes.Axes): The Axes to plot points and fits to.
+    
+    **kwargs:
+        num_points (int): The number of points across the scan. Defaults to 10.
+        fields (list[str]): Fields to measure and document in outputted files.
+        periods (bool): Are periods being used. Defaults to True.
+        save_run (bool): Should runs be saved. Defaults to True.
+        files_output_dir (Path): Where to save any outputted files. Defaults to
+            C:/instrument/var/logs/bluesky/output_files.
+        callback_if_problem (Callable[[], Generator[Msg, None, None]] | Callable[[], None]):
+            Either a plan or standard function, called if optimised value is not found to be
+            sensible.
+        callback_pre_align (Callable[[], Generator[Msg, None, None]] | Callable[[], None]):
+            Either a plan or standard function, called before all scans.
+        callback_pre_align (Callable[[], Generator[Msg, None, None]] | Callable[[], None]):
+            Either a plan or standard function, called after all scans.
+        ax (matplotlib.axes.Axes): The Axes to plot points and fits to.
 
     Returns:
         An lmfit fitting result or nothing (ModelResult | None)
@@ -337,7 +338,7 @@ def optimise_axis_against_intensity(
         callback_pre_align()
 
     problem_loop = True
-    while problem_loop:
+    while problem_loop: # If a problem is found, then start the alignment again
         problem_loop = False
 
         for rel_scan_range in alignment_param.rel_scan_ranges:
