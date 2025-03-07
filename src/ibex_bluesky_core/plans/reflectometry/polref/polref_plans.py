@@ -14,7 +14,7 @@ from ibex_bluesky_core.devices.simpledae.controllers import (
 )
 from ibex_bluesky_core.devices.simpledae.reducers import MonitorNormalizer
 from ibex_bluesky_core.devices.simpledae.waiters import GoodFramesWaiter, PeriodGoodFramesWaiter
-from ibex_bluesky_core.plans import set_num_periods
+from ibex_bluesky_core.plans import set_num_periods, common_dae
 from ibex_bluesky_core.plans.reflectometry import centred_pixel, autoalign_utils
 from lmfit.model import ModelResult
 import matplotlib.pyplot as plt
@@ -30,44 +30,6 @@ DEFAULT_MON = 1
 PIXEL_RANGE = 0
 PERIODS = True
 SAVE_RUN = True
-
-####################
-
-
-def get_dae(
-    *,
-    det_pixels: list[int],
-    frames: int,
-    periods: bool = True,
-    monitor: int = DEFAULT_MON,
-    save_run: bool = False,
-) -> SimpleDae:
-    if periods:
-        controller = PeriodPerPointController(save_run=save_run)
-        waiter = PeriodGoodFramesWaiter(frames)
-    else:
-        controller = RunPerPointController(save_run=save_run)
-        waiter = GoodFramesWaiter(frames)
-
-    reducer = MonitorNormalizer(
-        prefix=PREFIX,
-        detector_spectra=det_pixels,
-        monitor_spectra=[monitor],
-    )
-
-    dae = SimpleDae(
-        prefix=PREFIX,
-        controller=controller,
-        waiter=waiter,
-        reducer=reducer,
-    )
-
-    dae.reducer.intensity.set_name("intensity")  # type: ignore
-    dae.reducer.intensity_stddev.set_name("intensity_stddev")  # type: ignore
-    return dae
-
-
-#################### ^^ above to be removed
 
 
 def s1vg_checks(result: ModelResult, param_value: float) -> bool:
@@ -114,14 +76,9 @@ parameters = [
 
 
 def full_autoalign_plan() -> Generator[Msg, None, None]:
+    
     det_pixels = centred_pixel(DEFAULT_DET, PIXEL_RANGE)
-    dae = get_dae(
-        det_pixels=det_pixels,
-        frames=FRAMES,
-        periods=PERIODS,
-        save_run=SAVE_RUN,
-        monitor=DEFAULT_MON,
-    )
+    dae = common_dae(det_pixels=det_pixels, frames=FRAMES, periods=PERIODS, save_run=SAVE_RUN, monitor=DEFAULT_MON)
 
     yield from set_num_periods(dae, COUNT if PERIODS else 1)
 

@@ -242,7 +242,13 @@ def _inner_loop(
     else:
         print(f"Moving {alignment_param.name} to {alignment_param_value} and rezeroing...")
         yield from bps.mv(alignment_param.get_signal(), alignment_param_value)  # type: ignore
+
+
+
         # redefine motor pos to be 0 TODODDDDDDDDDDDDDDODODODOD!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
+
         return False
 
 

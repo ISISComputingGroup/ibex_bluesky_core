@@ -90,3 +90,11 @@ Reference documentation
    :caption: API reference
 
    _api
+
+.. toctree::
+   :titlesonly:
+   :caption: Plans
+   :glob:
+   :maxdepth: 2
+
+   plans/*
