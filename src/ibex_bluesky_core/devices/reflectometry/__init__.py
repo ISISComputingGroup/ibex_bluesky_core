@@ -18,7 +18,7 @@ from ibex_bluesky_core.utils import get_pv_prefix
 class ReflParameter(StandardReadable):
     """Utility device for a reflectometry server parameter."""
 
-    def __init__(self, prefix: str, name: str, changing_timeout: float = 60.0) -> None:
+    def __init__(self, prefix: str, name: str, changing_timeout: float) -> None:
         """Reflectometry server parameter.
 
         Args:
@@ -42,7 +42,7 @@ class ReflParameter(StandardReadable):
 
     @AsyncStatus.wrap
     async def trigger(self) -> None:  # noqa: D102
-        pass
+        pass  # pragma: no cover
 
     @AsyncStatus.wrap
     async def set(self, value: float) -> None:
@@ -78,7 +78,7 @@ class ReflParameterRedefine(StandardReadable):
 
     @AsyncStatus.wrap
     async def trigger(self) -> None:  # noqa: D102
-        pass
+        pass  # pragma: no cover
 
     @AsyncStatus.wrap
     async def set(self, value: float) -> None:
@@ -90,16 +90,17 @@ class ReflParameterRedefine(StandardReadable):
                 break
 
 
-def refl_parameter(name: str) -> ReflParameter:
+def refl_parameter(name: str, changing_timeout: float = 60.0) -> ReflParameter:
     """Small wrapper around a reflectometry parameter device.
 
     This automatically applies the current instrument's PV prefix.
 
     Args:
         name: the reflectometry parameter name.
+        changing_timeout: time to wait for the CHANGED signal to go to False after a set.
 
     Returns a device pointing to a reflectometry parameter.
 
     """
     prefix = get_pv_prefix()
-    return ReflParameter(prefix=prefix, name=name)
+    return ReflParameter(prefix=prefix, name=name, changing_timeout=changing_timeout)
