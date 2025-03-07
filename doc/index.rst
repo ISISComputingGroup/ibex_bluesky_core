@@ -92,9 +92,8 @@ Reference documentation
    _api
 
 .. toctree::
-   :titlesonly:
+   :maxdepth: 2
    :caption: Plans
    :glob:
-   :maxdepth: 2
 
    plans/*
