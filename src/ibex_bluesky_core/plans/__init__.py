@@ -189,7 +189,7 @@ def motor_scan(  # noqa: PLR0913
     """Wrap our scan() plan and create a block_mot and a DAE object.
 
     This only works with blocks that are pointing at motor records.
-    This is really just a wrapper around our scan()
+    This is really just a wrapper around :func:`ibex_bluesky_core.plans.scan`
 
     Args:
         block_name: the name of the block to scan.
@@ -239,7 +239,7 @@ def motor_adaptive_scan(  # noqa: PLR0913
     """Wrap adaptive_scan() plan and create a block_mot and a DAE object.
 
     This only works with blocks that are pointing at motor records.
-    This is really just a wrapper around our adaptive_scan()
+    This is really just a wrapper around :func:`ibex_bluesky_core.plans.adaptive_scan`
 
     Args:
         block_name: the name of the block to scan.

@@ -34,7 +34,7 @@ def refl_scan(  # noqa: PLR0913
 ) -> Generator[Msg, None, ISISCallbacks]:
     """Scan over a reflectometry parameter.
 
-    This is really just a wrapper around our scan()
+    This is really just a wrapper around :func:`ibex_bluesky_core.plans.scan`
 
     Args:
         param: the reflectometry parameter.
@@ -82,6 +82,8 @@ def refl_adaptive_scan(  # noqa: PLR0913
     rel: bool = False,
 ) -> Generator[Msg, None, ISISCallbacks]:
     """Perform an adaptive scan over a reflectometry parameter.
+
+    This is really just a wrapper around :func:`ibex_bluesky_core.plans.adaptive_scan`
 
     Args:
         param: The parameter to scan.
