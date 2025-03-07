@@ -57,7 +57,7 @@ def scan(  # noqa: PLR0913
     fields = [block.name]
     if periods:
         fields.append(dae.period_num.name)  # type: ignore
-    elif save_run:
+    elif save_run:  # pragma: no cover
         fields.append(dae.controller.run_number.name)  # type: ignore
 
     fields.extend(
@@ -127,7 +127,7 @@ def adaptive_scan(  # noqa: PLR0913, PLR0917
     fields = [block.name]
     if periods:
         fields.append(dae.period_num.name)  # type: ignore
-    elif save_run:
+    elif save_run:  # pragma: no cover
         fields.append(dae.controller.run_number.name)  # type: ignore
 
     fields.extend(
