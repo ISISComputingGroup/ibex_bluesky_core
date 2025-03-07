@@ -5,7 +5,11 @@ from unittest.mock import patch
 import pytest
 
 from ibex_bluesky_core.devices.block import BlockMot
-from ibex_bluesky_core.devices.simpledae import SimpleDae
+from ibex_bluesky_core.devices.simpledae import (
+    PeriodPerPointController,
+    RunPerPointController,
+    SimpleDae,
+)
 from ibex_bluesky_core.devices.simpledae.reducers import MonitorNormalizer
 from ibex_bluesky_core.devices.simpledae.strategies import Controller, Waiter
 from ibex_bluesky_core.plans import adaptive_scan, motor_adaptive_scan, motor_scan, scan
@@ -151,13 +155,44 @@ def test_adaptive_scan_does_relative_scan_when_relative_true(RE, dae, block):
     assert target_delta == bp_scan.call_args[1]["target_delta"]
 
 
-# test scan summarise
-# test adaptive_scan summarise
+def test_save_run_adds_run_number_to_fields_in_scan(RE, dae, block):
+    with (
+        patch("ibex_bluesky_core.plans.ensure_connected"),
+        patch("ibex_bluesky_core.plans.ISISCallbacks") as icc,
+    ):
+        dae.controller = RunPerPointController(save_run=True)
+        _ = RE(scan(dae, block, 1, 2, 3, save_run=True, periods=False))
+        assert dae.controller.run_number.name in icc.call_args[1]["measured_fields"]
 
-# test save_run for scan
-# test save_run for adaptive_scan
 
-# test periods for scan
-# test periods for adaptive_scan
+def test_save_run_adds_run_number_to_fields_in_adaptive_scan(RE, dae, block):
+    with (
+        patch("ibex_bluesky_core.plans.ensure_connected"),
+        patch("ibex_bluesky_core.plans.ISISCallbacks") as icc,
+    ):
+        dae.controller = RunPerPointController(save_run=True)
+        _ = RE(adaptive_scan(dae, block, 1, 2, 3, 4, 5, save_run=True, periods=False))
+        assert dae.controller.run_number.name in icc.call_args[1]["measured_fields"]
+
+
+def test_periods_adds_period_number_to_fields_in_scan(RE, dae, block):
+    with (
+        patch("ibex_bluesky_core.plans.ensure_connected"),
+        patch("ibex_bluesky_core.plans.ISISCallbacks") as icc,
+    ):
+        dae.controller = PeriodPerPointController(save_run=False)
+        _ = RE(scan(dae, block, 1, 2, 3, save_run=False, periods=True))
+        assert dae.period_num.name in icc.call_args[1]["measured_fields"]
+
+
+def test_periods_adds_period_number_to_fields_in_adaptive_scan(RE, dae, block):
+    with (
+        patch("ibex_bluesky_core.plans.ensure_connected"),
+        patch("ibex_bluesky_core.plans.ISISCallbacks") as icc,
+    ):
+        dae.controller = PeriodPerPointController(save_run=False)
+        _ = RE(adaptive_scan(dae, block, 1, 2, 3, 4, 5, save_run=False, periods=True))
+        assert dae.period_num.name in icc.call_args[1]["measured_fields"]
+
 
 # test polling plan
