@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import binascii
-import os
 import zlib
 from typing import TypeVar
 
@@ -11,16 +10,6 @@ from ophyd_async.core import SignalDatatype, SignalRW
 from ophyd_async.epics.core import epics_signal_rw
 
 T = TypeVar("T", bound=SignalDatatype)
-
-
-def get_pv_prefix() -> str:
-    """Return the PV prefix for the current instrument."""
-    prefix = os.getenv("MYPVPREFIX")
-
-    if prefix is None:
-        raise OSError("MYPVPREFIX environment variable not available - please define")
-
-    return prefix
 
 
 def dehex_and_decompress(value: bytes) -> bytes:
