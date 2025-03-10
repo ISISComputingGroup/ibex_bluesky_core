@@ -231,5 +231,4 @@ async def test_polling_plan_drops_readable_updates_if_no_new_motor_position(RE):
         {"event": lambda x, y: captured_events.append(y["data"])},
     )
 
-    print(captured_events)
     assert all([readable == 10 for motor, readable in [x.values() for x in captured_events]])
