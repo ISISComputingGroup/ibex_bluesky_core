@@ -205,6 +205,17 @@ Published signals:
 - `reducer.mon_counts_stddev` - uncertainty (standard deviation) of the summed monitor counts
 - `reducer.intensity_stddev` - uncertainty (standard deviation) of the normalised intensity
 
+### PeriodSpecIntegralsReducer
+
+This reducer exposes the raw integrals of the configured detector and monitor spectra, as
+numpy arrays. By itself, this reducer is not useful in a scan, but is useful for downstream
+processing as performed by {py:obj}`ibex_bluesky_core.plans.reflectometry.det_map_align` for
+example.
+
+Published signals:
+- `reducer.mon_integrals` - `numpy` array of integrated counts on each configured monitor pixel.
+- `reducer.det_integrals` - `numpy` array of integrated counts on each configured detector pixel.
+
 ### Time of Flight and Wavelength Bounding Spectra
 
 Scalar Normalizers (such as PeriodGoodFramesNormalizer, GoodFramesNormalizer) can be passed a
