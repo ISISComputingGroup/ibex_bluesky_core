@@ -1,4 +1,4 @@
-"""Implements detector-mapping alignment."""
+"""Reflectometry detector-mapping alignment plans."""
 
 from collections.abc import Generator
 from typing import TypedDict, cast
@@ -29,6 +29,8 @@ from ibex_bluesky_core.devices.simpledae.reducers import (
     PeriodSpecIntegralsReducer,
 )
 from ibex_bluesky_core.plan_stubs import call_qt_aware, set_num_periods
+
+__all__ = ["DetMapAlignResult", "angle_scan_plan", "height_and_angle_scan_plan"]
 
 
 def _height_scan_callback_and_fit(
