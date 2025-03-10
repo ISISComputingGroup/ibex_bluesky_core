@@ -173,10 +173,14 @@ class ISISCallbacks:
 
         if fit is not None:
             self._live_fit = LiveFit(fit, y=y, x=x, yerr=yerr)
+
+            # Ideally this would append either livefitplot or livefit, not both, but there's a
+            # race condition if using the Qt backend where a fit result can be returned before
+            # the QtAwareCallback has had a chance to process it.
+            self._subs.append(self._live_fit)
             if show_fit_on_plot:
                 self._subs.append(LiveFitPlot(livefit=self._live_fit, ax=ax))
-            else:
-                self._subs.append(self._live_fit)
+
             if add_live_fit_logger:
                 self._subs.append(
                     LiveFitLogger(

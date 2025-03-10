@@ -9,7 +9,10 @@ from ophyd_async.testing import callback_on_mock_put, set_mock_value
 from ibex_bluesky_core.devices.simpledae import SimpleDae
 from ibex_bluesky_core.devices.simpledae.reducers import PeriodSpecIntegralsReducer
 from ibex_bluesky_core.devices.simpledae.strategies import Controller, Waiter
-from ibex_bluesky_core.plans.reflectometry.det_map_align import mapping_alignment_plan
+from ibex_bluesky_core.plans.reflectometry.det_map_align import (
+    angle_scan_plan,
+    height_and_angle_scan_plan,
+)
 
 
 @pytest.fixture
@@ -66,7 +69,7 @@ def test_det_map_align(RE, dae, height):
 
     with patch("ibex_bluesky_core.plans.reflectometry.det_map_align.ensure_connected"):
         result = RE(
-            mapping_alignment_plan(
+            height_and_angle_scan_plan(
                 dae=dae,  # type: ignore
                 height=height,  # type: ignore
                 start=0,
@@ -80,11 +83,34 @@ def test_det_map_align(RE, dae, height):
     assert result.plan_result["angle_fit"].params["x0"].value == pytest.approx(23.0)
 
 
+def test_angle_align(RE, dae):
+    set_mock_value(dae.num_spectra, 6)
+    set_mock_value(dae.num_time_channels, 1)
+    set_mock_value(dae.number_of_periods, 1)
+
+    specdata = np.array([
+        0, 0, 0, 5000, 0, 1, 0, 2, 0, 3, 0, 2, 0, 1,
+    ])  # fmt: skip
+
+    set_mock_value(dae.raw_spec_data, specdata)
+    set_mock_value(dae.raw_spec_data_nord, len(specdata))
+
+    with patch("ibex_bluesky_core.plans.reflectometry.det_map_align.ensure_connected"):
+        result = RE(
+            angle_scan_plan(
+                dae=dae,  # type: ignore
+                angle_map=np.array([21, 22, 23, 24, 25]),
+            )
+        )
+
+    assert result.plan_result.params["x0"].value == pytest.approx(23.0)
+
+
 def test_det_map_align_bad_angle_map_shape(RE, dae, height):
     with patch("ibex_bluesky_core.plans.reflectometry.det_map_align.ensure_connected"):
         with pytest.raises(ValueError, match=r".* must have same shape"):
             RE(
-                mapping_alignment_plan(
+                height_and_angle_scan_plan(
                     dae=dae,  # type: ignore
                     height=height,  # type: ignore
                     start=0,

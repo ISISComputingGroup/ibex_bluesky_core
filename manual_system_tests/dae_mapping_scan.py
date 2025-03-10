@@ -18,7 +18,7 @@ from ibex_bluesky_core.devices.simpledae.reducers import (
 from ibex_bluesky_core.devices.simpledae.waiters import PeriodGoodFramesWaiter
 from ibex_bluesky_core.plans.reflectometry.det_map_align import (
     DetMapAlignResult,
-    mapping_alignment_plan,
+    height_and_angle_scan_plan,
 )
 from ibex_bluesky_core.run_engine import get_run_engine
 
@@ -45,7 +45,7 @@ def map_align() -> Generator[Msg, None, DetMapAlignResult]:
         reducer=reducer,
     )
 
-    result = yield from mapping_alignment_plan(
+    result = yield from height_and_angle_scan_plan(
         dae,
         block,
         5,

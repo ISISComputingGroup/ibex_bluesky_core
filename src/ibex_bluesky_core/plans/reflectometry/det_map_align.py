@@ -83,6 +83,53 @@ def _angle_scan_callback_and_fit(
     return angle_scan_ld, angle_scan_callbacks.live_fit
 
 
+def _check_angle_map_shape(
+    reducer: PeriodSpecIntegralsReducer,
+    angle_map: npt.NDArray[np.float64],
+) -> None:
+    if reducer.detectors.shape != angle_map.shape:
+        raise ValueError(
+            f"detectors ({reducer.detectors.shape}) and "
+            f"angle_map ({angle_map.shape}) must have same shape"
+        )
+
+
+def angle_scan_plan(
+    dae: SimpleDae[PeriodPerPointController, Waiter, PeriodSpecIntegralsReducer],
+    *,
+    angle_map: npt.NDArray[np.float64],
+) -> Generator[Msg, None, ModelResult | None]:
+    """Reflectometry detector-mapping angle alignment plan.
+
+    Args:
+        dae: The DAE to acquire from
+        angle_map: a numpy array, with the same shape as detectors,
+            describing the detector angle of each detector pixel
+
+    """
+    reducer = dae.reducer
+    _check_angle_map_shape(reducer, angle_map)
+
+    yield from ensure_connected(dae)
+
+    yield from call_qt_aware(plt.close, "all")
+    _, ax = yield from call_qt_aware(plt.subplots)
+
+    angle_cb, angle_fit = _angle_scan_callback_and_fit(reducer, angle_map, ax)
+
+    @subs_decorator(
+        [
+            angle_cb,
+        ]
+    )
+    def _inner() -> Generator[Msg, None, None]:
+        yield from bp.count([dae])
+
+    yield from _inner()
+
+    return cast(ModelResult | None, angle_fit.result)
+
+
 class DetMapAlignResult(TypedDict):
     """Result from mapping alignment plan."""
 
@@ -90,7 +137,7 @@ class DetMapAlignResult(TypedDict):
     angle_fit: ModelResult | None
 
 
-def mapping_alignment_plan(  # noqa PLR0913
+def height_and_angle_scan_plan(  # noqa PLR0913
     dae: SimpleDae[PeriodPerPointController, Waiter, PeriodSpecIntegralsReducer],
     height: NamedMovable[float],
     start: float,
@@ -100,7 +147,7 @@ def mapping_alignment_plan(  # noqa PLR0913
     angle_map: npt.NDArray[np.float64],
     rel: bool = False,
 ) -> Generator[Msg, None, DetMapAlignResult]:
-    """Reflectometry detector-mapping alignment plan.
+    """Reflectometry detector-mapping simultaneous height & angle alignment plan.
 
     Args:
         dae: The DAE to acquire from
@@ -114,11 +161,7 @@ def mapping_alignment_plan(  # noqa PLR0913
 
     """
     reducer = dae.reducer
-    if reducer.detectors.shape != angle_map.shape:
-        raise ValueError(
-            f"detectors ({reducer.detectors.shape}) and "
-            f"angle_map ({angle_map.shape}) must have same shape"
-        )
+    _check_angle_map_shape(reducer, angle_map)
 
     yield from ensure_connected(height, dae)  # type: ignore
 
