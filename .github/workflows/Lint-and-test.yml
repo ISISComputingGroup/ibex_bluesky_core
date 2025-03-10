@@ -38,15 +38,17 @@ jobs:
         run: python -m pip install uv
       - name: venv
         run: uv venv .venv
-      - name: setuptools
-        run: uv pip install setuptools==75.9.1
       - name: install requirements
         run: uv pip install -e .[dev]
       - name: run pytest (linux)
-        run: IBEX_BLUESKY_CORE_LOGS=/tmp/ibex_bluesky_core_logs/ uv run pytest
+        run: |
+          source .venv/bin/activate
+          IBEX_BLUESKY_CORE_LOGS=/tmp/ibex_bluesky_core_logs/ python -m pytest
         if: startsWith(matrix.os,'ubuntu')
       - name: run pytest (windows)
-        run: uv run pytest
+        run: |
+          .venv\\scripts\\activate
+          python -m pytest
         if: startsWith(matrix.os,'windows')
   results:
     if: ${{ always() }}
