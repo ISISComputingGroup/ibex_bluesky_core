@@ -68,6 +68,7 @@ dev = [
   "pytest",
   "pytest-asyncio",
   "pytest-cov",
+  "pytest-env",
   "pyqt6",  # For dev testing with matplotlib's qt backend.
 ]
 
@@ -83,6 +84,10 @@ addopts = "--cov --cov-report=html -vv"
 filterwarnings = [
     'ignore:FigureCanvasAgg is non-interactive, and thus cannot be shown:UserWarning',
 ]
+
+[tool.pytest_env]
+IBEX_BLUESKY_CORE_LOGS = {value = "./ibex-bluesky-core-pytest-logs", skip_if_set = true}
+IBEX_BLUESKY_CORE_OUTPUT = {value = "./ibex-bluesky-core-pytest-output", skip_if_set = true}
 
 [tool.coverage.run]
 branch = true

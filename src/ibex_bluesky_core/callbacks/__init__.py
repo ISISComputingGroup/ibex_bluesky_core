@@ -59,6 +59,7 @@ class ISISCallbacks:
         add_live_fit_logger: bool = True,
         live_fit_logger_output_dir: str | PathLike[str] | None = None,
         live_fit_logger_postfix: str = "isc",
+        human_readable_file_postfix: str = "",
     ) -> None:
         """A collection of ISIS standard callbacks for use within plans.
 
@@ -116,6 +117,7 @@ class ISISCallbacks:
             add_live_fit_logger: whether to add a live fit logger.
             live_fit_logger_output_dir: the output directory for live fit logger.
             live_fit_logger_postfix: the postfix to add to live fit logger.
+            human_readable_file_postfix: optional postfix to add to human-readable file logger.
         """  # noqa
         self._subs = []
         self._peak_stats = None
@@ -140,6 +142,7 @@ class ISISCallbacks:
                     output_dir=Path(human_readable_file_output_dir)
                     if human_readable_file_output_dir
                     else DEFAULT_PATH_HRF,
+                    postfix=human_readable_file_postfix,
                 ),
             )
 

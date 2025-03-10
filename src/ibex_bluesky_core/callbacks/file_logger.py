@@ -38,7 +38,9 @@ logger = logging.getLogger(__name__)
 class HumanReadableFileCallback(CallbackBase):
     """Outputs bluesky runs to human-readable output files in the specified directory path."""
 
-    def __init__(self, fields: list[str], *, output_dir: Path = DEFAULT_PATH) -> None:
+    def __init__(
+        self, fields: list[str], *, output_dir: Path = DEFAULT_PATH, postfix: str = ""
+    ) -> None:
         """Output human-readable output files of bluesky runs.
 
         If fields are given, just output those, otherwise output all hinted signals.
@@ -49,6 +51,7 @@ class HumanReadableFileCallback(CallbackBase):
         self.current_start_document: Optional[str] = None
         self.descriptors: dict[str, EventDescriptor] = {}
         self.filename: Optional[Path] = None
+        self.postfix: str = postfix
 
     def start(self, doc: RunStart) -> None:
         """Start writing an output file.
@@ -71,7 +74,8 @@ class HumanReadableFileCallback(CallbackBase):
         self.filename = (
             self.output_dir
             / f"{rb_num}"
-            / f"{INSTRUMENT}{'_' + '_'.join(motors) if motors else ''}_{title_format_datetime}Z.txt"
+            / f"{INSTRUMENT}{'_' + '_'.join(motors) if motors else ''}_"
+            f"{title_format_datetime}Z{self.postfix}.txt"
         )
         if rb_num == UNKNOWN_RB:
             logger.warning('No RB number found, saving to "%s"', UNKNOWN_RB)

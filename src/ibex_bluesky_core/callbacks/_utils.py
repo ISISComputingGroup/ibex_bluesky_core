@@ -3,7 +3,7 @@ from pathlib import Path
 from platform import node
 
 INSTRUMENT = node()
-OUTPUT_DIR_ENV_VAR = "IBEX_BLUESKY_OUTPUT_DIR"
+OUTPUT_DIR_ENV_VAR = "IBEX_BLUESKY_CORE_OUTPUT"
 
 _OUTPUT_DIR_ENV_VALUE = os.environ.get(OUTPUT_DIR_ENV_VAR)
 

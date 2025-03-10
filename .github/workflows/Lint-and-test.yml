@@ -38,8 +38,6 @@ jobs:
         run: pip install -e .[dev]
       - name: run pytest
         env:
-          IBEX_BLUESKY_CORE_LOGS: ${{ runner.temp }}
-          IBEX_BLUESKY_OUTPUT_DIR: ${{ runner.temp }}
           MPLBACKEND: agg
         run: python -m pytest
   results:

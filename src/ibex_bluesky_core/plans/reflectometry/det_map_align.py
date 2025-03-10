@@ -50,6 +50,8 @@ def _height_scan_callback_and_fit(
         fit=Gaussian().fit(),
         add_peak_stats=False,
         ax=ax,
+        live_fit_logger_postfix="_height",
+        human_readable_file_postfix="_height",
     )
     for cb in height_scan_callbacks.subs:
         height_scan_ld.subscribe(cb)
@@ -78,6 +80,8 @@ def _angle_scan_callback_and_fit(
         add_peak_stats=False,
         add_table_cb=False,
         ax=ax,
+        live_fit_logger_postfix="_angle",
+        human_readable_file_postfix="_angle",
     )
     for cb in angle_scan_callbacks.subs:
         angle_scan_ld.subscribe(cb)
