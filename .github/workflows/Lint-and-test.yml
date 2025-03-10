@@ -39,7 +39,7 @@ jobs:
       - name: venv
         run: uv venv .venv
       - name: setuptools
-        run: uv pip install --upgrade setuptools
+        run: uv pip install setuptools==75.9.1
       - name: install requirements
         run: uv pip install -e .[dev]
       - name: run pytest (linux)
