@@ -1,1 +1,1 @@
-"""Muon plans and helpers."""
+"""Plans specific to Muon beamlines."""

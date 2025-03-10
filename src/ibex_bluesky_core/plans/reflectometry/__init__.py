@@ -1,58 +1,132 @@
-"""Reflectometry plans and helpers."""
+"""Plans specific to Reflectometry beamlines."""
 
-from ibex_bluesky_core.devices import get_pv_prefix
-from ibex_bluesky_core.devices.block import BlockRw, BlockWriteConfig, block_rw
-from ibex_bluesky_core.devices.reflectometry.refl_param import ReflParameter
+from collections.abc import Generator
+
+from bluesky import Msg
+
+from ibex_bluesky_core.callbacks import FitMethod, ISISCallbacks
+from ibex_bluesky_core.devices.reflectometry import refl_parameter
+from ibex_bluesky_core.devices.simpledae import monitor_normalising_dae
+from ibex_bluesky_core.plans import (
+    DEFAULT_DET,
+    DEFAULT_FIT_METHOD,
+    DEFAULT_MON,
+    adaptive_scan,
+    scan,
+)
+from ibex_bluesky_core.utils import centred_pixel
 
 
-def centred_pixel(centre: int, pixel_range: int) -> list[int]:
-    """Given a centre and range, return a contiguous range of pixels around the centre, inclusive.
+def refl_scan(  # noqa: PLR0913
+    param: str,
+    start: float,
+    stop: float,
+    count: int,
+    *,
+    frames: int,
+    det: int = DEFAULT_DET,
+    mon: int = DEFAULT_MON,
+    pixel_range: int = 0,
+    model: FitMethod = DEFAULT_FIT_METHOD,
+    periods: bool = True,
+    save_run: bool = False,
+    rel: bool = False,
+) -> Generator[Msg, None, ISISCallbacks]:
+    """Scan over a reflectometry parameter.
 
-    ie. a centre of 50 with a range of 3 will give [47, 48, 49, 50, 51, 52, 53]
+    This is really just a wrapper around :func:`ibex_bluesky_core.plans.scan`
 
     Args:
-          centre (int): The centre pixel number.
-          pixel_range (int): The range of pixels either side to surround the centre.
-
-    Returns a list of pixel numbers.
-
-    """
-    return [s for s in range(centre - pixel_range, centre + pixel_range + 1)]
-
-
-def motor_with_tolerance(name: str, tolerance: float) -> BlockRw[float]:
-    """Create a motor block with a settle time and tolerance to wait for before motion is complete.
-
-    Args:
-        name (str): The motor PV.
-        tolerance (float): The motor tolerance to get to before a move is considered complete.
-
-    Returns A device pointing to a motor.
+        param: the reflectometry parameter.
+        start: the starting setpoint of the parameter.
+        stop: the final setpoint of the parameter.
+        count: the number of points to scan.
+        frames: the number of frames to wait for.
+        det: the detector spectra to use.
+        mon: the monitor spectra to use.
+        pixel_range: the range of pixels to scan over, using `det` as a centred pixel.
+        model: the model to use.
+        periods: whether to use periods.
+        save_run: whether to save the run of the scan.
+        rel: whether to use a relative scan around the current position.
 
     """
+    block = refl_parameter(param)
+    det_pixels = centred_pixel(det, pixel_range)
+    dae = monitor_normalising_dae(
+        det_pixels=det_pixels, frames=frames, periods=periods, save_run=save_run, monitor=mon
+    )
 
-    def check(setpoint: float, actual: float) -> bool:
-        return setpoint - tolerance <= actual <= setpoint + tolerance
-
-    return block_rw(
-        float,
-        name,
-        write_config=BlockWriteConfig(
-            set_success_func=check, set_timeout_s=30.0, settle_time_s=0.5
-        ),
+    return (
+        yield from scan(
+            dae=dae,
+            block=block,
+            start=start,
+            stop=stop,
+            count=count,
+            model=model,
+            save_run=save_run,
+            periods=periods,
+            rel=rel,
+        )
     )
 
 
-def refl_parameter(name: str) -> ReflParameter:
-    """Small wrapper around a reflectometry parameter device.
+def refl_adaptive_scan(  # noqa: PLR0913
+    param: str,
+    start: float,
+    stop: float,
+    min_step: float,
+    max_step: float,
+    target_delta: float,
+    *,
+    frames: int,
+    det: int = DEFAULT_DET,
+    mon: int = DEFAULT_MON,
+    pixel_range: int = 0,
+    model: FitMethod = DEFAULT_FIT_METHOD,
+    periods: bool = True,
+    save_run: bool = False,
+    rel: bool = False,
+) -> Generator[Msg, None, ISISCallbacks]:
+    """Perform an adaptive scan over a reflectometry parameter.
 
-    This automatically applies the current instrument's PV prefix.
+    This is really just a wrapper around :func:`ibex_bluesky_core.plans.adaptive_scan`
 
     Args:
-        name: the reflectometry parameter name.
-
-    Returns a device pointing to a reflectometry parameter.
+        param: The parameter to scan.
+        start: The initial setpoint.
+        stop: The final setpoint.
+        min_step: the minimum step size to plot
+        max_step: the maximum step size to plot
+        target_delta: desired fractional change in detector signal between steps
+        frames: the number of frames to wait for.
+        det: the detector spectra to use.
+        mon: the monitor spectra to use.
+        pixel_range: the range of pixels to scan over, using `det` as a centred pixel.
+        model: the fit method to use.
+        periods: whether to use periods.
+        save_run: whether to save the run of the scan.
+        rel: whether to use a relative scan around the current position.
 
     """
-    prefix = get_pv_prefix()
-    return ReflParameter(prefix=prefix, name=name)
+    block = refl_parameter(param)
+    det_pixels = centred_pixel(det, pixel_range)
+    dae = monitor_normalising_dae(
+        det_pixels=det_pixels, frames=frames, periods=periods, save_run=save_run, monitor=mon
+    )
+
+    return (
+        yield from adaptive_scan(
+            dae=dae,
+            block=block,
+            start=start,
+            stop=stop,
+            min_step=min_step,
+            max_step=max_step,
+            target_delta=target_delta,
+            model=model,
+            save_run=save_run,
+            rel=rel,
+        )
+    )

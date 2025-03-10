@@ -5,13 +5,13 @@ from ophyd_async.core import Array1D, SignalR, SignalRW, StandardReadable, Stric
 from ophyd_async.epics.core import epics_signal_r, epics_signal_rw
 
 from ibex_bluesky_core.devices import isis_epics_signal_rw
+from ibex_bluesky_core.devices.dae import DaeCheckingSignal
 from ibex_bluesky_core.devices.dae.dae_controls import DaeControls
 from ibex_bluesky_core.devices.dae.dae_event_mode import DaeEventMode
 from ibex_bluesky_core.devices.dae.dae_monitor import DaeMonitor
 from ibex_bluesky_core.devices.dae.dae_period import DaePeriod
 from ibex_bluesky_core.devices.dae.dae_period_settings import DaePeriodSettings
 from ibex_bluesky_core.devices.dae.dae_settings import DaeSettings
-from ibex_bluesky_core.devices.dae.dae_spectra import DaeSpectra
 from ibex_bluesky_core.devices.dae.dae_tcb_settings import DaeTCBSettings
 
 
@@ -73,7 +73,9 @@ class Dae(StandardReadable):
 
         self.period = DaePeriod(dae_prefix)
         self.period_num: SignalRW[int] = isis_epics_signal_rw(int, f"{dae_prefix}PERIOD")
-        self.number_of_periods: SignalRW[int] = isis_epics_signal_rw(int, f"{dae_prefix}NUMPERIODS")
+        self.number_of_periods: DaeCheckingSignal[int] = DaeCheckingSignal(
+            int, f"{dae_prefix}NUMPERIODS"
+        )
 
         self.dae_settings = DaeSettings(dae_prefix)
         self.period_settings = DaePeriodSettings(dae_prefix)
@@ -101,8 +103,6 @@ class Dae(StandardReadable):
 
         self.users: SignalRW[str] = isis_epics_signal_rw(str, f"{dae_prefix}_USERNAME")
         self.rb_number: SignalRW[str] = isis_epics_signal_rw(str, f"{dae_prefix}_RBNUMBER")
-
-        self.spectra_1_period_1 = DaeSpectra(dae_prefix, period=1, spectra=1)
 
         self.controls: DaeControls = DaeControls(dae_prefix)
 
