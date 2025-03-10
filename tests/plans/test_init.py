@@ -3,8 +3,11 @@
 from unittest.mock import patch
 
 import pytest
+from ophyd_async.plan_stubs import ensure_connected
+from ophyd_async.sim import SimMotor
+from ophyd_async.testing import callback_on_mock_put, set_mock_value
 
-from ibex_bluesky_core.devices.block import BlockMot
+from ibex_bluesky_core.devices.block import BlockMot, BlockR
 from ibex_bluesky_core.devices.simpledae import (
     PeriodPerPointController,
     RunPerPointController,
@@ -12,7 +15,13 @@ from ibex_bluesky_core.devices.simpledae import (
 )
 from ibex_bluesky_core.devices.simpledae.reducers import MonitorNormalizer
 from ibex_bluesky_core.devices.simpledae.strategies import Controller, Waiter
-from ibex_bluesky_core.plans import adaptive_scan, motor_adaptive_scan, motor_scan, scan
+from ibex_bluesky_core.plans import (
+    adaptive_scan,
+    motor_adaptive_scan,
+    motor_scan,
+    polling_plan,
+    scan,
+)
 
 
 def test_scan_motor_creates_block_device_and_dae(RE):
@@ -195,4 +204,32 @@ def test_periods_adds_period_number_to_fields_in_adaptive_scan(RE, dae, block):
         assert dae.period_num.name in icc.call_args[1]["measured_fields"]
 
 
-# test polling plan
+async def test_polling_plan_drops_readable_updates_if_no_new_motor_position(RE):
+    motor = SimMotor(name="motor1", instant=False)
+    motor.user_readback.set_name("motor1")
+    await motor.velocity.set(1)
+    block_readable = BlockR(prefix="UNITTEST:", block_name="READABLE", datatype=int)
+    initial_pos = 0
+    destination = 2
+    initial_reading = 10
+    RE(ensure_connected(motor, block_readable, mock=True))
+    set_mock_value(block_readable.readback, initial_reading)
+    await motor.set(initial_pos)
+
+    def lots_of_updates_between_set(*args, **kwargs):
+        # this will be called on a motor update, we will then make lots of readings for
+        # the readable which will be dropped
+        set_mock_value(block_readable.readback, initial_reading + 10)
+        set_mock_value(block_readable.readback, initial_reading + 20)
+        set_mock_value(block_readable.readback, initial_reading + 30)
+
+    callback_on_mock_put(motor.user_readback, lots_of_updates_between_set)
+    captured_events = []
+
+    RE(
+        polling_plan(motor=motor, readable=block_readable, destination=destination),  # pyright: ignore[reportArgumentType]
+        {"event": lambda x, y: captured_events.append(y["data"])},
+    )
+
+    print(captured_events)
+    assert all([readable == 10 for motor, readable in [x.values() for x in captured_events]])

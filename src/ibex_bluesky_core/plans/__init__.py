@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING, Any
 import bluesky.plans as bp
 from bluesky import plan_stubs as bps
 from bluesky.plan_stubs import trigger_and_read
+from bluesky.preprocessors import run_decorator
 from bluesky.protocols import NamedMovable, Readable
 from bluesky.utils import Msg
 from ophyd_async.plan_stubs import ensure_connected
@@ -292,6 +293,7 @@ class NamedReadableAndMovable(Readable[Any], NamedMovable[Any], ABC):
     """Abstract class for type checking that an object is readable, named and movable."""
 
 
+@run_decorator(md={})
 def polling_plan(
     motor: NamedReadableAndMovable, readable: Readable[Any], destination: float
 ) -> Generator[Msg, None, None]:
