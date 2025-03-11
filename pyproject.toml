@@ -42,6 +42,8 @@ classifiers = [
 
 dependencies = [
   "bluesky",
+  "epicscorelibs>=7.0.3.99.2.0a1",
+  "pvxslibs>=0.3.0a1",
   "ophyd-async[ca] >= 0.8.0",
   "matplotlib",
   "lmfit",
