@@ -6,4 +6,3 @@ __all__ = []
 
 setup_logging()
 
-password = "apassword"
