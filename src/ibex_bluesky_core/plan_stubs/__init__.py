@@ -78,7 +78,6 @@ def call_qt_aware(
     if not getattr(func, "__module__", "").startswith("matplotlib"):
         raise ValueError("Only matplotlib functions should be passed to call_qt_aware")
 
-    yield from bps.clear_checkpoint()
     return cast(T, (yield Msg(CALL_QT_AWARE_MSG_KEY, func, *args, **kwargs)))
 
 
