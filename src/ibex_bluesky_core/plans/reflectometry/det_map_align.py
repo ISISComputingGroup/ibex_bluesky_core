@@ -107,6 +107,10 @@ def angle_scan_plan(
 ) -> Generator[Msg, None, ModelResult | None]:
     """Reflectometry detector-mapping angle alignment plan.
 
+    This plan does not move any axes, but takes a single DAE measurement at the current
+    position. It processes this single DAE measurement to produce an angle scan, mapping
+    the detector intensity against angular pixel position.
+
     Args:
         dae: The DAE to acquire from
         angle_map: a numpy array, with the same shape as detectors,
@@ -137,7 +141,16 @@ def angle_scan_plan(
 
 
 class DetMapAlignResult(TypedDict):
-    """Result from mapping alignment plan."""
+    """Result from mapping alignment plan.
+
+    Keys:
+        height_fit:
+            An lmfit ModelResult object describing the height fit,
+            if the fit succeeded, or None otherwise.
+        angle_fit:
+            An lmfit ModelResult object describing the angle fit,
+            if the fit succeeded, or None otherwise.
+    """
 
     height_fit: ModelResult | None
     angle_fit: ModelResult | None
@@ -155,6 +168,9 @@ def height_and_angle_scan_plan(  # noqa PLR0913
 ) -> Generator[Msg, None, DetMapAlignResult]:
     """Reflectometry detector-mapping simultaneous height & angle alignment plan.
 
+    This plan does a step scan over the specified height axis, taking *num* measurements
+    from the DAE, evenly spaced between *start* and *stop*.
+
     Args:
         dae: The DAE to acquire from
         height: A bluesky Movable corresponding to a height stage
@@ -164,6 +180,9 @@ def height_and_angle_scan_plan(  # noqa PLR0913
         angle_map: a numpy array, with the same shape as detectors,
             describing the detector angle of each detector pixel
         rel: whether this scan should be absolute (default) or relative
+
+    Returns:
+        A dictionary containing the fit results from gaussian height and angle fits.
 
     """
     reducer = dae.reducer

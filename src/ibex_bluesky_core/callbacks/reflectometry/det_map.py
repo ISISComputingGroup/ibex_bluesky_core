@@ -42,14 +42,6 @@ class DetMapHeightScanLiveDispatcher(LiveDispatcher):
 
     In the typical case, the array of monitor integrals will be of size 1 (i.e. a single
     monitor spectrum used for normalization).
-
-    For example for input events (Y data), without normalization and summing all pixels,:
-    event: [0, 10, 20, 10, 0]
-    event: [0, 1, 2, 3, 4]
-
-    The output events (Y data) will be:
-    event: 40
-    event: 10
     """
 
     def __init__(self, *, mon_name: str, det_name: str, out_name: str) -> None:
@@ -92,17 +84,6 @@ class DetMapAngleScanLiveDispatcher(LiveDispatcher):
 
     For an array with dimension N, N events will be emitted at the end, corresponding
     to all input arrays summed together.
-
-    For example for input events (Y data):
-    event: [0, 10, 20, 10, 0]
-    event: [0, 1, 2, 3, 4]
-
-    The output events (Y data) will be:
-    event: 0
-    event: 11
-    event: 22
-    event: 13
-    event: 4
     """
 
     def __init__(
