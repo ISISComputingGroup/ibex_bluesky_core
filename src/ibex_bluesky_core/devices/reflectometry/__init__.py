@@ -97,7 +97,7 @@ def refl_parameter(name: str, changing_timeout: float = 60.0) -> ReflParameter:
 
     Args:
         name: the reflectometry parameter name.
-        changing_timeout: time to wait for the CHANGED signal to go to False after a set.
+        changing_timeout: time to wait, in seconds, for the CHANGED signal to go to False after a set.
 
     Returns a device pointing to a reflectometry parameter.
 
