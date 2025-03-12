@@ -4,7 +4,7 @@
 
 These take "devices" so you can pass your own DAE object and a movable/readable: 
 
-[`scan`](ibex_bluesky_core.plans.scan) - this is for a normal/relative scan.
+[`scan`](ibex_bluesky_core.plans.scan) - this is for a absolute/relative scan.
 
 [`adaptive_scan`](ibex_bluesky_core.plans.adaptive_scan) - this is for an adaptive/relative-adaptive scan.
 
