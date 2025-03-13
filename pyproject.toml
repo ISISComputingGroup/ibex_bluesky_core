@@ -41,17 +41,17 @@ classifiers = [
 ]
 
 dependencies = [
-  "bluesky",
-  "ophyd-async[ca] >= 0.8.0",
-  "matplotlib",
-  "lmfit",
-  "scipy",
-  "numpy",
-  "orjson",
-  "scipp",
-  "typing-extensions",
-  "tzdata",
-  "scippneutron",
+  "bluesky",  # Bluesky framework
+  "ophyd-async[ca] >= 0.8.0",  # Device abstraction
+  "matplotlib",  # Plotting
+  "lmfit",  # Fitting
+  "scipy",  # Definitions of erf/erfc functions
+  "numpy",  # General array support
+  "orjson", # json module which handles numpy arrays transparently
+  "scipp",  # support for arrays with variances/units
+  "scippneutron",  # neutron-specific utilities for scipp
+  "typing-extensions",  # TypeVar with default-arg support
+  "tzdata",  # Windows timezone support
 ]
 
 [project.optional-dependencies]
