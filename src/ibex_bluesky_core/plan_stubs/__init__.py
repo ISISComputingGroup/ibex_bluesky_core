@@ -6,8 +6,6 @@ from typing import Callable, ParamSpec, TypeVar, cast
 import bluesky.plan_stubs as bps
 from bluesky.utils import Msg
 
-from ibex_bluesky_core.devices.simpledae import SimpleDae
-
 P = ParamSpec("P")
 T = TypeVar("T")
 
@@ -16,7 +14,7 @@ CALL_SYNC_MSG_KEY = "ibex_bluesky_core_call_sync"
 CALL_QT_AWARE_MSG_KEY = "ibex_bluesky_core_call_qt_aware"
 
 
-__all__ = ["SimpleDae", "call_qt_aware", "call_sync"]
+__all__ = ["call_qt_aware", "call_sync"]
 
 
 def call_sync(func: Callable[P, T], *args: P.args, **kwargs: P.kwargs) -> Generator[Msg, None, T]:
