@@ -1,3 +1,5 @@
+"""A general tool for reflectometers to use to save time aligning their beamlines."""
+
 from collections.abc import Generator
 from dataclasses import dataclass, field
 from datetime import datetime
@@ -58,14 +60,14 @@ class AlignmentParam:
     _movable: ReflParameter | None = None
 
     def get_movable(self) -> ReflParameter:
-        """Returns the encapsulated signal for this alignment parameter.
+        """Return the encapsulated signal for this alignment parameter.
 
         If there is no signal attached then one is created as a reflectometry parameter.
 
         Returns:
             signal (ReflParameter)
-        """
 
+        """
         if not self._movable:
             self._movable = ReflParameter(
                 prefix=self._prefix, name=self.name, changing_timeout_s=60
@@ -77,13 +79,12 @@ class AlignmentParam:
         self,
         alignment_params: list["AlignmentParam"],
     ) -> Generator[Msg, None, None]:
-        """Moves the provided alignment parameters to their respective values in
-        self.pre_align_param_positions.
+        """Move the alignment parameters to respective values in pre_align_param_positions.
 
         Args:
             alignment_params (list[AlignmentParam]): The alignment parameters to be moved.
-        """
 
+        """
         yield from bps.mv(
             *chain(
                 *[
@@ -113,8 +114,8 @@ def _add_fields(
 
     Returns:
         fields (list[str])
-    """
 
+    """
     if fields == []:
         fields.extend(
             [
@@ -146,7 +147,7 @@ def _check_parameter(
     Returns True means the found result was not sensible.
 
     Args:
-        fit_param (float): The name of the optimised value.
+        alignment_param_value (float): The name of the optimised value.
         result (ModelResult): The fitting resuls returned from lmfit.
         init_mot_pos (float): The initial motor position before scanning.
         rel_scan_range (float): The current relative scan range.
@@ -155,8 +156,8 @@ def _check_parameter(
 
     Returns:
         True if value is not sensible. False otherwise.
-    """
 
+    """
     if init_mot_pos + rel_scan_range < alignment_param_value:
         return True
 
@@ -184,7 +185,7 @@ def _inner_loop(
     """Functionality to perform on a per scan basis.
 
     Args:
-        ISISCallbacks (ISISCallbacks): ISIS Callback Collection object.
+        icc (ISISCallbacks): ISIS Callback Collection object.
         dae (SimpleDae): A readable DAE object.
         alignment_param (AlignmentParam): The alignment parameter to be scanned over and optimised.
         rel_scan_range (float): The current relative scan range.
@@ -194,11 +195,11 @@ def _inner_loop(
 
     Returns:
         Whether there was a problem during runtime. Returns True if there was. (bool).
-    """
 
+    """
     print(f"Scanning over {alignment_param.name} with a relative scan range of {rel_scan_range}.")
 
-    init_mot_pos: float = yield from bps.rd(alignment_param.get_movable())  #  type: ignore
+    init_mot_pos: float = yield from bps.rd(alignment_param.get_movable())  # type: ignore
 
     @icc
     def _inner() -> Generator[Msg, None, None]:
@@ -233,10 +234,10 @@ def _inner_loop(
         def inp() -> str:
             choice = input(
                 """Type '1' if you would like to re-scan or type '2' to re-zero"""
-                """ at {alignment_param_value} and keep going."""
+                f""" at {alignment_param_value} and keep going."""
             )
 
-            if choice not in ["1", "2"]:
+            if choice not in {"1", "2"}:
                 return inp()
 
             return choice
@@ -254,6 +255,8 @@ def _inner_loop(
 
 
 class OptimiseAxisParams(TypedDict):
+    """Type hints for optimise_axis_against_intensity."""
+
     num_points: NotRequired[int]
     fields: NotRequired[list[str]]
     periods: NotRequired[bool]
@@ -279,35 +282,34 @@ def optimise_axis_against_intensity(
     Args:
         dae (SimpleDae | BlockR[float]): A readable signal that represents beam intensity.
         alignment_param (AlignmentParam): The alignment parameter to be scanned over and optimised.
-
-    **kwargs:
-        num_points (int): The number of points across the scan. Defaults to 10.
-        fields (list[str]): Fields to measure and document in outputted files.
-        periods (bool): Are periods being used. Defaults to True.
-        save_run (bool): Should runs be saved. Defaults to True.
-        files_output_dir (Path): Where to save any outputted files. Defaults to
-            C:/instrument/var/logs/bluesky/output_files.
-        problem_found_plan (Callable[[], Generator[Msg, None, None]] | None):
-            Either a plan or standard function, called if optimised value is not found to be
-            sensible.
-        pre_align_plan (Callable[[], Generator[Msg, None, None]] | None):
-            Either a plan or standard function, called before all scans.
-        post_align_plan (Callable[[], Generator[Msg, None, None]] | None):
-            Either a plan or standard function, called after all scans.
-        ax (matplotlib.axes.Axes): The Axes to plot points and fits to.
+        **kwargs:
+            num_points (int): The number of points across the scan. Defaults to 10.
+            fields (list[str]): Fields to measure and document in outputted files.
+            periods (bool): Are periods being used. Defaults to True.
+            save_run (bool): Should runs be saved. Defaults to True.
+            files_output_dir (Path): Where to save any outputted files. Defaults to
+                C:/instrument/var/logs/bluesky/output_files.
+            problem_found_plan (Callable[[], Generator[Msg, None, None]] | None):
+                Either a plan or standard function, called if optimised value is not found to be
+                sensible.
+            pre_align_plan (Callable[[], Generator[Msg, None, None]] | None):
+                Either a plan or standard function, called before all scans.
+            post_align_plan (Callable[[], Generator[Msg, None, None]] | None):
+                Either a plan or standard function, called after all scans.
+            ax (matplotlib.axes.Axes): The Axes to plot points and fits to.
 
     Returns:
-        an :obj:`ibex_bluesky_core.callbacks.ISISCallbacks` instance.
-    """
+        an :obj:`ibex_bluesky_core.callbacks.ISISCallbacks` instance.'
 
+    """
     num_points = kwargs.get("num_points", 10)
     fields = kwargs.get("fields", [])
     periods = kwargs.get("periods", True)
     save_run = kwargs.get("save_run", True)
     files_output_dir = kwargs.get("files_output_dir", FILE_OUTPUT_DIR)
-    problem_found_plan = kwargs.get("problem_found_plan", lambda: bps.null())
-    pre_align_plan = kwargs.get("pre_align_plan", lambda: bps.null())
-    post_align_plan = kwargs.get("post_align_plan", lambda: bps.null())
+    problem_found_plan = kwargs.get("problem_found_plan", lambda: bps.null())  # noqa: PLW0108
+    pre_align_plan = kwargs.get("pre_align_plan", lambda: bps.null())  # noqa: PLW0108
+    post_align_plan = kwargs.get("post_align_plan", lambda: bps.null())  # noqa: PLW0108
     ax = kwargs.get("ax", None)
 
     fields = _add_fields(

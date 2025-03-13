@@ -1,6 +1,6 @@
 # pyright: reportMissingParameterType=false
 
-from typing import Generator
+from collections.abc import Generator
 from unittest.mock import MagicMock, call, patch
 
 import bluesky.plan_stubs as bps
@@ -116,7 +116,8 @@ def test_get_movable_on_alignment_param_returns_reflparam(prefix):
 
 
 def test_alignment_param_pre_alignment_plan(RE, prefix):
-    """Test that given a set of motor positions, calling pre_align_params will move the specified ReflParameters to respective positions."""
+    """Test that given a set of motor positions, calling pre_align_params
+    will move the specified ReflParameters to respective positions."""
 
     with (
         patch("ibex_bluesky_core.devices.reflectometry.get_pv_prefix", return_value=prefix),
@@ -155,7 +156,8 @@ def test_alignment_param_pre_alignment_plan(RE, prefix):
 
 
 def test_that_if_fields_supplied_they_are_unchanged(RE, prefix, dae):
-    """Test that if you pass some fields, then they are left unchanged as they are passed to the ICC"""
+    """Test that if you pass some fields, then they are
+    left unchanged as they are passed to the ICC"""
 
     param_name = "S1VG"
     fit_method = SlitScan().fit()
@@ -183,7 +185,8 @@ def test_that_if_fields_supplied_they_are_unchanged(RE, prefix, dae):
 
 
 def test_when_no_fields_provided_then_fields_added(RE, prefix, dae):
-    """Test that if you do not pass any fields then some essential ones are added before passing off to the ICC"""
+    """Test that if you do not pass any fields then some
+    essential ones are added before passing off to the ICC"""
 
     param_name = "S1VG"
     fit_method = SlitScan().fit()
@@ -215,7 +218,8 @@ def test_when_no_fields_provided_then_fields_added(RE, prefix, dae):
 
 
 def test_when_no_periods_no_save_run_then_not_added_to_fields(RE, prefix, dae):
-    """Test that if save_run and periods are set to False then they are not included in the fields"""
+    """Test that if save_run and periods are set
+    to False then they are not included in the fields"""
 
     param_name = "S1VG"
     fit_method = SlitScan().fit()
@@ -327,7 +331,7 @@ def test_found_problem_callback_is_called_if_problem(RE, prefix, dae, monkeypatc
         mock.assert_called_once()
 
 
-@pytest.mark.parametrize("param_value, problem", [(-5, True), (5, True), (0.0, False)])
+@pytest.mark.parametrize(("param_value", "problem"), [(-5, True), (5, True), (0.0, False)])
 def test_alignment_param_value_outside_of_scan_range_returns_problem(param_value, problem):
     """Test that if the optimised value is outside of the scan range then it is reported"""
 
@@ -368,7 +372,8 @@ def test_that_user_checks_are_called_when_provided(problem):
 
 
 def test_that_if_no_problem_found_then_motor_is_moved_and_rezeroed(RE, prefix, dae):
-    """Test that if no problems are found with the optimised value then move the motor to it and redefine this as 0"""
+    """Test that if no problems are found with the optimised
+    value then move the motor to it and redefine this as 0"""
 
     sp = 5.0
 
@@ -403,7 +408,8 @@ def test_that_if_no_problem_found_then_motor_is_moved_and_rezeroed(RE, prefix, d
 
 
 def test_that_if_problem_found_and_type_1_then_re_scan(RE, prefix, dae, monkeypatch):
-    """Test that if a problem is found, and the user types 1, then rescan. Then if they type 2, moves to value and redefines as 0."""
+    """Test that if a problem is found, and the user types 1, then rescan.
+    Then if they type 2, moves to value and redefines as 0."""
 
     def counter(str: str):
         counter.call_count += 1  # type: ignore
@@ -443,7 +449,8 @@ def test_that_if_problem_found_and_type_1_then_re_scan(RE, prefix, dae, monkeypa
 
 
 def test_that_if_problem_found_and_type_random_then_re_ask(RE, prefix, dae, monkeypatch):
-    """Test that if a problem is found, and the user types gibberish, then ask again. Then if they type 1, it rescans. If they type 2, it moves to value and redefines as 0."""
+    """Test that if a problem is found, and the user types gibberish, then ask again.
+    Then if they type 1, it rescans. If they type 2, it moves to value and redefines as 0."""
 
     def counter(str: str):
         counter.call_count += 1  # type: ignore
@@ -485,7 +492,8 @@ def test_that_if_problem_found_and_type_random_then_re_ask(RE, prefix, dae, monk
 
 
 def test_get_alignment_param_value(prefix):
-    """Test that the _get_alignment_param_value is able to retrieve alignment_param_value from the icc"""
+    """Test that the _get_alignment_param_value is able to retrieve
+    alignment_param_value from the icc"""
 
     param_value = 0.0
 
