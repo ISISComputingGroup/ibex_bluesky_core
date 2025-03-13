@@ -14,7 +14,7 @@ from ibex_bluesky_core.devices.simpledae.reducers import MonitorNormalizer
 from ibex_bluesky_core.devices.simpledae.strategies import Waiter
 from ibex_bluesky_core.plans.reflectometry import refl_adaptive_scan, refl_scan
 from ibex_bluesky_core.plans.reflectometry import autoalign_utils
-from ibex_bluesky_core.plans.reflectometry.autoalign_utils import AlignmentParam, _add_fields, _check_parameter, optimise_axis_against_intensity
+from ibex_bluesky_core.plans.reflectometry.autoalign_utils import AlignmentParam, _add_fields, _check_parameter, _get_alignment_param_value, optimise_axis_against_intensity
 from ibex_bluesky_core.callbacks.fitting.fitting_utils import Fit, SlitScan
 import bluesky.plan_stubs as bps 
 from bluesky.utils import Msg
@@ -73,7 +73,8 @@ def test_refl_adaptive_scan_creates_refl_param_device_and_dae(RE):
         assert isinstance(scan.call_args[1]["block"], ReflParameter)
         assert scan.call_args[1]["block"].name == param_name
 
-##################### autoalign_utils
+
+# Auto-Alignment Utils
 
 
 @pytest.fixture
@@ -279,3 +280,84 @@ def test_that_if_no_problem_found_then_motor_is_moved_and_rezeroed(RE, dae):
         RE(optimise_axis_against_intensity(dae, alignment_param=param))
         check.assert_called_once()
         mv.assert_has_calls([call(param.get_movable(), sp), call(param.get_movable().redefine, 0.0)])
+
+
+def test_that_if_problem_found_and_type_1_then_re_scan(RE, dae, monkeypatch):
+
+    param = AlignmentParam(name="S1VG", rel_scan_ranges=[0.0], fit_method=SlitScan().fit(), fit_param="")    
+    def counter(str: str):
+
+        counter.call_count += 1 # type: ignore
+
+        if counter.call_count == 1: # type: ignore
+            return '1'
+        else:
+            return '2'
+
+    def gen() -> Generator[Msg, None, float]:
+        yield from bps.null()
+        return 0.0
+
+    with(
+        patch("ibex_bluesky_core.plans.reflectometry.autoalign_utils._check_parameter", return_value=True),
+        patch("bluesky.plans.rel_scan", return_value=bps.null()) as scan,
+        patch("bluesky.plan_stubs.mv", return_value=bps.null()),
+        patch("bluesky.plan_stubs.rd", return_value=gen()),
+        patch("ibex_bluesky_core.plans.reflectometry.autoalign_utils._get_alignment_param_value", return_value=0.0)
+    ):
+
+        counter.call_count = 0 # type: ignore
+        monkeypatch.setattr('builtins.input', counter)
+        RE(optimise_axis_against_intensity(dae, alignment_param=param))
+
+        assert scan.call_count == 2
+
+
+def test_that_if_problem_found_and_type_random_then_re_ask(RE, dae, monkeypatch):
+
+    param = AlignmentParam(name="S1VG", rel_scan_ranges=[0.0], fit_method=SlitScan().fit(), fit_param="")    
+    def counter(str: str):
+
+        counter.call_count += 1 # type: ignore
+
+        if counter.call_count == 1: # type: ignore
+            return 'platypus'
+        elif counter.call_count == 2: # type: ignore
+            return '1'
+        else:
+            return '2'
+
+    def gen() -> Generator[Msg, None, float]:
+        yield from bps.null()
+        return 0.0
+
+    with(
+        patch("ibex_bluesky_core.plans.reflectometry.autoalign_utils._check_parameter", return_value=True),
+        patch("bluesky.plans.rel_scan", return_value=bps.null()) as scan,
+        patch("bluesky.plan_stubs.mv", return_value=bps.null()),
+        patch("bluesky.plan_stubs.rd", return_value=gen()),
+        patch("ibex_bluesky_core.plans.reflectometry.autoalign_utils._get_alignment_param_value", return_value=0.0)
+    ):
+
+        counter.call_count = 0 # type: ignore
+        monkeypatch.setattr('builtins.input', counter)
+        RE(optimise_axis_against_intensity(dae, alignment_param=param))
+
+        assert scan.call_count == 2
+
+
+def test_get_alignment_param_value():
+
+    param = AlignmentParam(name="S1VG", rel_scan_ranges=[], fit_method=Fit.fit(), fit_param="x0")
+    param_value = 0.0 
+
+    with(
+        patch("ibex_bluesky_core.plans.ISISCallbacks") as icc,
+        patch("ibex_bluesky_core.callbacks.fitting.LiveFit") as lf,
+        patch("lmfit.model.ModelResult") as mr
+    ):
+        mr.values = {"x0": param_value}
+        lf.result = mr
+        icc.live_fit = lf
+
+        assert _get_alignment_param_value(icc, param) == param_value

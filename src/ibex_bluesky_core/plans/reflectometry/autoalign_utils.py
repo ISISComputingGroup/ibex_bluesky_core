@@ -265,7 +265,7 @@ def optimise_axis_against_intensity(
     dae: SimpleDae,
     alignment_param: AlignmentParam,
     **kwargs: Unpack[OptimiseAxisParams],
-) -> Generator[Msg, None, ModelResult | None]:
+) -> Generator[Msg, None, ISISCallbacks]:
     """Optimise a motor/device to the intensity of the beam.
 
     Scan between two symmetrical points relative to alignment_param's current motor position,
@@ -293,7 +293,7 @@ def optimise_axis_against_intensity(
         ax (matplotlib.axes.Axes): The Axes to plot points and fits to.
 
     Returns:
-        An lmfit fitting result or nothing (ModelResult | None)
+        an :obj:`ibex_bluesky_core.callbacks.ISISCallbacks` instance.
     """
 
     num_points = kwargs.get("num_points", 10)
@@ -347,4 +347,4 @@ def optimise_axis_against_intensity(
 
     yield from post_align_plan()
 
-    return icc.live_fit.result
+    return icc
