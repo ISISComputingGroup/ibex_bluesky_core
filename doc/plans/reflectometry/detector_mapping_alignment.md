@@ -1,8 +1,8 @@
 # Detector-mapping alignment
 
-Plans in this module provide support for detector-mapping alignment on reflectometers.
+Plans described in this section provide support for detector-mapping alignment on reflectometers.
 
-Plans in this module expect:
+The plans in this module expect:
 - A DAE collecting in period-per-point mode. A suitable controller is 
 {py:obj}`ibex_bluesky_core.devices.simpledae.controllers.PeriodPerPointController`.
 - A DAE configured to reduce data by exposing all spectrum integrals. A suitable reducer is 
@@ -17,9 +17,67 @@ API reference: {py:obj}`ibex_bluesky_core.plans.reflectometry.angle_scan_plan`
 This plan takes a single DAE measurement, without moving anything.
 
 The resulting plots & data files describe the relationship between angular position of each detector pixel,
-and the counts observed on that detector pixel.
+and the counts observed on that detector pixel - with the aim of finding the angle at which peak intensity
+occurs.
 
-This plan returns the result of the angle fit, or `None` if the fit failed.
+This plan returns the result of the angle fit, or `None` if the fit failed. The model used is a 
+{py:obj}`Gaussian<ibex_bluesky_core.callbacks.fitting.fitting_utils.Gaussian>`.
+
+The following is a full example of how {py:obj}`angle_scan_plan<ibex_bluesky_core.plans.reflectometry.angle_scan_plan>`
+may be called, configuring an appropriate {py:obj}`SimpleDae<ibex_bluesky_core.devices.simpledae.SimpleDae>`.
+
+<details>
+<summary>Click to show example code</summary>
+
+```python
+from collections.abc import Generator
+
+import numpy as np
+from bluesky.utils import Msg
+from lmfit.model import ModelResult
+
+from ibex_bluesky_core.utils import get_pv_prefix
+from ibex_bluesky_core.devices.simpledae import SimpleDae
+from ibex_bluesky_core.devices.simpledae.controllers import PeriodPerPointController
+from ibex_bluesky_core.devices.simpledae.reducers import (
+    PeriodSpecIntegralsReducer,
+)
+from ibex_bluesky_core.devices.simpledae.waiters import PeriodGoodFramesWaiter
+from ibex_bluesky_core.plans.reflectometry import angle_scan_plan
+
+
+def map_align_plan() -> Generator[Msg, None, ModelResult | None]:
+    controller = PeriodPerPointController(save_run=True)
+    waiter = PeriodGoodFramesWaiter(50)
+    reducer = PeriodSpecIntegralsReducer(
+        # Select spectrum 1 as the monitor
+        monitors=np.array([1], dtype=np.int64),
+        # and 2-128 inclusive as the detectors
+        detectors=np.arange(2, 129),
+    )
+
+    prefix = get_pv_prefix()
+    dae = SimpleDae(
+        prefix=prefix,
+        controller=controller,
+        waiter=waiter,
+        reducer=reducer,
+    )
+
+    angle_scan_result = yield from angle_scan_plan(
+        dae,
+        angle_map=np.linspace(-5, 5, num=127, dtype=np.float64),
+    )
+
+    if angle_fit := angle_scan_result:
+        print(angle_fit.fit_report(show_correl=False))
+
+    return angle_scan_result
+```
+
+</details>
+
+---
 
 ## Height & angle scan
 
@@ -44,10 +102,85 @@ across all height points, versus angular pixel position. The only difference bet
 plan above is that this accumulates data across multiple height points, and therefore benefits from the
 counting statistics of all measured height points.
 
-This plan returns a typed dictionary ({py:obj}`DetMapAlignResult<ibex_bluesky_core.plans.reflectometry.DetMapAlignResult>`), with the following keys:
+This plan returns a typed dictionary, {py:obj}`DetMapAlignResult<ibex_bluesky_core.plans.reflectometry.DetMapAlignResult>`, with the following keys:
 - `"angle_fit"`: the result of the angle fit, or `None` if the fit failed.
 - `"height_fit"`: the result of the height fit, or `None` if the fit failed.
 
+Both the height & angle data are fitted using two independent
+{py:obj}`Gaussian<ibex_bluesky_core.callbacks.fitting.fitting_utils.Gaussian>` models.
+
+The following is a full example of how {py:obj}`angle_scan_plan<ibex_bluesky_core.plans.reflectometry.height_and_angle_scan_plan>`
+may be called, configuring an appropriate {py:obj}`SimpleDae<ibex_bluesky_core.devices.simpledae.SimpleDae>` and a
+{py:obj}`BlockRw<ibex_bluesky_core.devices.block.BlockRw>`.
+
+<details>
+<summary>Click to show example code</summary>
+
+```python
+from collections.abc import Generator
+
+import numpy as np
+from bluesky.utils import Msg
+
+from ibex_bluesky_core.utils import get_pv_prefix
+from ibex_bluesky_core.devices.block import block_rw
+from ibex_bluesky_core.devices.simpledae import SimpleDae
+from ibex_bluesky_core.devices.simpledae.controllers import PeriodPerPointController
+from ibex_bluesky_core.devices.simpledae.reducers import (
+    PeriodSpecIntegralsReducer,
+)
+from ibex_bluesky_core.devices.simpledae.waiters import PeriodGoodFramesWaiter
+from ibex_bluesky_core.plans.reflectometry import (
+    DetMapAlignResult,
+    height_and_angle_scan_plan
+)
+
+
+def map_align() -> Generator[Msg, None, DetMapAlignResult]:
+    # Could also be a reflectometry parameter, or any other movable
+    block = block_rw(float, "some_block")
+
+    controller = PeriodPerPointController(save_run=True)
+    waiter = PeriodGoodFramesWaiter(50)
+    reducer = PeriodSpecIntegralsReducer(
+        # Select spectrum 1 as the monitor
+        monitors=np.array([1], dtype=np.int64),
+        # and 2-128 inclusive as the detectors
+        detectors=np.arange(2, 129),
+    )
+
+    prefix = get_pv_prefix()
+    dae = SimpleDae(
+        prefix=prefix,
+        controller=controller,
+        waiter=waiter,
+        reducer=reducer,
+    )
+
+    result = yield from height_and_angle_scan_plan(
+        dae,
+        block,
+        5,
+        15,
+        num=21,
+        angle_map=np.linspace(-5, 5, num=127, dtype=np.float64),
+    )
+
+    print("Height fit:")
+    if height_fit := result["height_fit"]:
+        print(height_fit.fit_report(show_correl=False))
+    print("\n\n")
+    print("Angle fit:")
+    if angle_fit := result["angle_fit"]:
+        print(angle_fit.fit_report(show_correl=False))
+    print("\n\n")
+
+    return result
+```
+
+</details>
+
+---
 
 ## Implementation
 

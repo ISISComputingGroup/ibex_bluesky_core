@@ -7,8 +7,7 @@ All of these plans can be used directly by the RunEngine (`RE()`) or within a wr
 So you can do this: 
 
 ```python
-
-    >>> result = RE(refl_scan("S1VG", 1, 10, 21, model=Gaussian().fit() frames=500, det=100, mon=3, pixel_range=6, periods=True, save_run=False))
+result = RE(refl_scan("S1VG", 1, 10, 21, model=Gaussian().fit() frames=500, det=100, mon=3, pixel_range=6, periods=True, save_run=False))
 ```
 
 or this: 
