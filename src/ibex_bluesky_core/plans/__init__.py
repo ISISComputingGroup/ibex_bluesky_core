@@ -42,8 +42,8 @@ def scan(  # noqa: PLR0913
     Args:
         dae: the simple DAE object to use.
         block: a movable to move during the scan.
-        start: the starting position of the block.
-        stop: the final position of the block.
+        start: the starting position.
+        stop: the final position.
         count: the number of points to make.
         model: the fit method to use.
         periods: whether or not to use hardware periods.
