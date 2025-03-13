@@ -1,10 +1,10 @@
 """Auto-alignment scripts for POLREF reflectometer."""
 
-from winsound import Beep
 from collections.abc import Generator
 from datetime import datetime
 from math import isclose
 from pathlib import Path
+from winsound import Beep
 
 import matplotlib.pyplot as plt
 from bluesky import plan_stubs as bps
