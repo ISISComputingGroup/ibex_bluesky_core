@@ -1,6 +1,6 @@
 """Auto-alignment scripts for POLREF reflectometer."""
 
-import winsound
+from winsound import Beep
 from collections.abc import Generator
 from datetime import datetime
 from math import isclose
@@ -98,7 +98,7 @@ def full_autoalign_plan() -> Generator[Msg, None, None]:
 
     for i in range(len(parameters)):
         print(f"Next alignment parameter is {parameters[i].name}")
-        winsound.Beep(2500, 200)
+        Beep(2500, 200)
 
         yield from autoalign_utils.optimise_axis_against_intensity(
             dae=dae,
@@ -108,7 +108,7 @@ def full_autoalign_plan() -> Generator[Msg, None, None]:
             save_run=SAVE_RUN,
             num_points=NUM_POINTS,
             files_output_dir=READABLE_FILE_OUTPUT_DIR,
-            problem_found_plan=lambda: call_sync(winsound.Beep, 1000, 500),
+            problem_found_plan=lambda: call_sync(Beep, 1000, 500),
             pre_align_plan=lambda i=i: parameters[i].pre_align_params(parameters),
             post_align_plan=lambda i=i: call_sync(
                 plt.savefig,
