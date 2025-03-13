@@ -53,7 +53,7 @@ class ISISCallbacks:
         add_peak_stats: bool = True,
         add_live_fit_logger: bool = True,
         live_fit_logger_output_dir: str | PathLike[str] | None = None,
-        live_fit_logger_postfix: str = "isc",
+        live_fit_logger_postfix: str = "",
         human_readable_file_postfix: str = "",
     ) -> None:
         """A collection of ISIS standard callbacks for use within plans.
