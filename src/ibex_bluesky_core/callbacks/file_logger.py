@@ -44,6 +44,12 @@ class HumanReadableFileCallback(CallbackBase):
         """Output human-readable output files of bluesky runs.
 
         If fields are given, just output those, otherwise output all hinted signals.
+
+        Args:
+            fields: a list of field names to include in output files
+            output_dir: filepath into which to write output files
+            postfix: optional postfix to append to output file names
+
         """
         super().__init__()
         self.fields: list[str] = fields
