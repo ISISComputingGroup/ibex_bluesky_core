@@ -41,10 +41,6 @@ class ReflParameter(StandardReadable):
         self.readback.set_name(name)
 
     @AsyncStatus.wrap
-    async def trigger(self) -> None:  # noqa: D102
-        pass  # pragma: no cover
-
-    @AsyncStatus.wrap
     async def set(self, value: float) -> None:
         """Set the setpoint."""
         await self.setpoint.set(value, wait=True, timeout=None)
@@ -70,15 +66,10 @@ class ReflParameterRedefine(StandardReadable):
             changed_timeout_s: seconds to wait for the CHANGED signal to go True after a set.
 
         """
-        with self.add_children_as_readables(StandardReadableFormat.HINTED_SIGNAL):
-            self.changed: SignalR[bool] = epics_signal_r(bool, f"{prefix}DEFINE_POS_CHANGED")
+        self.changed: SignalR[bool] = epics_signal_r(bool, f"{prefix}DEFINE_POS_CHANGED")
         self.define_pos_sp = epics_signal_w(float, f"{prefix}DEFINE_POS:SP")
         self.changed_timeout = changed_timeout_s
         super().__init__(name)
-
-    @AsyncStatus.wrap
-    async def trigger(self) -> None:  # noqa: D102
-        pass  # pragma: no cover
 
     @AsyncStatus.wrap
     async def set(self, value: float) -> None:

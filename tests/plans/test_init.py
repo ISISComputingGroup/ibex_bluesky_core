@@ -254,7 +254,7 @@ def test_periods_adds_period_number_to_fields_in_adaptive_scan(RE, dae, block):
 async def test_polling_plan_drops_readable_updates_if_no_new_motor_position(RE):
     motor = SimMotor(name="motor1", instant=False)
     motor.user_readback.set_name("motor1")
-    await motor.velocity.set(1)
+    await motor.velocity.set(2)
     block_readable = BlockR(prefix="UNITTEST:", block_name="READABLE", datatype=int)
     initial_pos = 0
     destination = 2
