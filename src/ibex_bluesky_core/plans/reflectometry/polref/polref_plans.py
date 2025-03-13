@@ -5,15 +5,16 @@ from math import isclose
 from pathlib import Path
 
 import matplotlib.pyplot as plt
+from bluesky import plan_stubs as bps
 from bluesky.utils import Msg
-from ibex_bluesky_core.callbacks.fitting.fitting_utils import Gaussian, SlitScan
-from ibex_bluesky_core.plan_stubs import call_sync
-from ibex_bluesky_core.utils import get_pv_prefix
-from ibex_bluesky_core.devices.simpledae import monitor_normalising_dae
-from ibex_bluesky_core.plans.reflectometry import autoalign_utils, centred_pixel
 from lmfit.model import ModelResult
 from ophyd_async.plan_stubs import ensure_connected
-from bluesky import plan_stubs as bps
+
+from ibex_bluesky_core.callbacks.fitting.fitting_utils import SlitScan
+from ibex_bluesky_core.devices.simpledae import monitor_normalising_dae
+from ibex_bluesky_core.plan_stubs import call_sync
+from ibex_bluesky_core.plans.reflectometry import autoalign_utils, centred_pixel
+from ibex_bluesky_core.utils import get_pv_prefix
 
 PREFIX = get_pv_prefix()
 COUNT = 20
@@ -30,7 +31,6 @@ NUM_POINTS = 21
 
 
 def s1vg_checks(result: ModelResult, alignment_param_value: float) -> bool:
-
     rsquared_confidence = 0.9
     expected_param_value = 1.0
     expected_param_value_tol = 0.1
@@ -62,7 +62,7 @@ parameters = [
         pre_align_param_positions={
             "THETA": 0,
             "PHI": 0,
-            "S1VG": -0.1, # 0.2?
+            "S1VG": -0.1,  # 0.2?
             "S2VG": 10,
             "S3N": 5,
             "S3S": -5,
@@ -88,7 +88,7 @@ def full_autoalign_plan() -> Generator[Msg, None, None]:
     yield from bps.mv(dae.number_of_periods, COUNT if PERIODS else 1)  # type: ignore
 
     axes_sig = [parameters[i].get_movable() for i in range(len(parameters))]
-    yield from ensure_connected(*axes_sig, dae) #  type: ignore
+    yield from ensure_connected(*axes_sig, dae)  #  type: ignore
 
     print("Starting auto-alignment...")
 
@@ -106,8 +106,9 @@ def full_autoalign_plan() -> Generator[Msg, None, None]:
             files_output_dir=READABLE_FILE_OUTPUT_DIR,
             problem_found_plan=lambda: call_sync(winsound.Beep, 1000, 500),
             pre_align_plan=lambda: parameters[i].pre_align_params(parameters),
-            post_align_plan=lambda: call_sync(plt.savefig, 
-                fname=f"{READABLE_FILE_OUTPUT_DIR}{parameters[i].name}_{datetime.now().strftime('%H%M%S')}"
+            post_align_plan=lambda: call_sync(
+                plt.savefig,
+                fname=f"{READABLE_FILE_OUTPUT_DIR}{parameters[i].name}_{datetime.now().strftime('%H%M%S')}",
             ),
         )
 
