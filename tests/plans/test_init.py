@@ -251,6 +251,21 @@ def test_periods_adds_period_number_to_fields_in_adaptive_scan(RE, dae, block):
         assert dae.period_num.name in icc.call_args[1]["measured_fields"]
 
 
+def test_no_periods_and_no_save_run_does_not_add_fields(RE, dae, block):
+    with (
+        patch("ibex_bluesky_core.plans.ensure_connected"),
+        patch("ibex_bluesky_core.plans.ISISCallbacks") as icc,
+    ):
+        dae.controller = RunPerPointController(save_run=False)
+        _ = RE(
+            adaptive_scan(
+                dae, block, 1, 2, 3, 4, 5, save_run=False, periods=False, model=Gaussian().fit()
+            )
+        )
+        assert dae.period_num.name not in icc.call_args[1]["measured_fields"]
+        assert dae.controller.run_number.name not in icc.call_args[1]["measured_fields"]
+
+
 async def test_polling_plan_drops_readable_updates_if_no_new_motor_position(RE):
     motor = SimMotor(name="motor1", instant=False)
     motor.user_readback.set_name("motor1")

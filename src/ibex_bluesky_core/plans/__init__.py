@@ -19,7 +19,7 @@ from ibex_bluesky_core.utils import centred_pixel, get_pv_prefix
 if TYPE_CHECKING:
     from ibex_bluesky_core.devices.simpledae import SimpleDae
 
-__all__ = ["adaptive_scan", "motor_adaptive_scan", "motor_scan", "scan"]
+__all__ = ["adaptive_scan", "motor_adaptive_scan", "motor_scan", "polling_plan", "scan"]
 
 
 def scan(  # noqa: PLR0913
@@ -73,7 +73,7 @@ def _set_up_fields_and_icc(
     fields = [block.name]
     if periods:
         fields.append(dae.period_num.name)  # type: ignore
-    elif save_run:  # pragma: no cover
+    elif save_run:
         fields.append(dae.controller.run_number.name)  # type: ignore
     fields.extend(
         [
