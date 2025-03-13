@@ -18,7 +18,7 @@ from ophyd_async.plan_stubs import ensure_connected
 
 from ibex_bluesky_core.callbacks import ISISCallbacks, LiveFit
 from ibex_bluesky_core.callbacks.fitting.fitting_utils import Gaussian
-from ibex_bluesky_core.callbacks.reflectometry.det_map import (
+from ibex_bluesky_core.callbacks.reflectometry import (
     DetMapAngleScanLiveDispatcher,
     DetMapHeightScanLiveDispatcher,
     LivePColorMesh,

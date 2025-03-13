@@ -9,7 +9,7 @@ from ophyd_async.testing import callback_on_mock_put, set_mock_value
 from ibex_bluesky_core.devices.simpledae import SimpleDae
 from ibex_bluesky_core.devices.simpledae.reducers import PeriodSpecIntegralsReducer
 from ibex_bluesky_core.devices.simpledae.strategies import Controller, Waiter
-from ibex_bluesky_core.plans.reflectometry.det_map_align import (
+from ibex_bluesky_core.plans.reflectometry import (
     angle_scan_plan,
     height_and_angle_scan_plan,
 )
@@ -67,7 +67,7 @@ def test_det_map_align(RE, dae, height):
 
     callback_on_mock_put(height, _increment_period_num)
 
-    with patch("ibex_bluesky_core.plans.reflectometry.det_map_align.ensure_connected"):
+    with patch("ibex_bluesky_core.plans.reflectometry._det_map_align.ensure_connected"):
         result = RE(
             height_and_angle_scan_plan(
                 dae=dae,  # type: ignore
@@ -95,7 +95,7 @@ def test_angle_align(RE, dae):
     set_mock_value(dae.raw_spec_data, specdata)
     set_mock_value(dae.raw_spec_data_nord, len(specdata))
 
-    with patch("ibex_bluesky_core.plans.reflectometry.det_map_align.ensure_connected"):
+    with patch("ibex_bluesky_core.plans.reflectometry._det_map_align.ensure_connected"):
         result = RE(
             angle_scan_plan(
                 dae=dae,  # type: ignore
@@ -107,7 +107,7 @@ def test_angle_align(RE, dae):
 
 
 def test_det_map_align_bad_angle_map_shape(RE, dae, height):
-    with patch("ibex_bluesky_core.plans.reflectometry.det_map_align.ensure_connected"):
+    with patch("ibex_bluesky_core.plans.reflectometry._det_map_align.ensure_connected"):
         with pytest.raises(ValueError, match=r".* must have same shape"):
             RE(
                 height_and_angle_scan_plan(

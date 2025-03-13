@@ -5,7 +5,7 @@ import pytest
 from event_model import EventDescriptor, RunStart, RunStop
 from matplotlib import pyplot as plt
 
-from ibex_bluesky_core.callbacks.reflectometry.det_map import (
+from ibex_bluesky_core.callbacks.reflectometry import (
     DetMapAngleScanLiveDispatcher,
     DetMapHeightScanLiveDispatcher,
     LivePColorMesh,

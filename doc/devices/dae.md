@@ -211,7 +211,7 @@ Published signals:
 
 This reducer exposes the raw integrals of the configured detector and monitor spectra, as
 numpy arrays. By itself, this reducer is not useful in a scan, but is useful for downstream
-processing as performed by {py:obj}`ibex_bluesky_core.plans.reflectometry.det_map_align` for
+processing as performed by reflectometry detector-mapping alignment for
 example.
 
 Published signals:
