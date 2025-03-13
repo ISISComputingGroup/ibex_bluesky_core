@@ -10,14 +10,28 @@ from ophyd_async.core import (
 )
 
 from ibex_bluesky_core.devices.dae.dae import Dae
+from ibex_bluesky_core.devices.simpledae.controllers import (
+    PeriodPerPointController,
+    RunPerPointController,
+)
+from ibex_bluesky_core.devices.simpledae.reducers import MonitorNormalizer, Reducer
+from ibex_bluesky_core.devices.simpledae.waiters import (
+    GoodFramesWaiter,
+    PeriodGoodFramesWaiter,
+)
+from ibex_bluesky_core.utils import get_pv_prefix
 
 if typing.TYPE_CHECKING:
-    from ibex_bluesky_core.devices.simpledae.controllers import Controller
-    from ibex_bluesky_core.devices.simpledae.reducers import Reducer
-    from ibex_bluesky_core.devices.simpledae.waiters import Waiter
-
+    from ibex_bluesky_core.devices.simpledae.controllers import (
+        Controller,
+    )
+    from ibex_bluesky_core.devices.simpledae.waiters import (
+        Waiter,
+    )
 
 logger = logging.getLogger(__name__)
+
+__all__ = ["SimpleDae", "monitor_normalising_dae"]
 
 
 class SimpleDae(Dae, Triggerable, AsyncStageable):
@@ -97,3 +111,51 @@ class SimpleDae(Dae, Triggerable, AsyncStageable):
     async def unstage(self) -> None:
         """Post-scan teardown, delegate to the controller."""
         await self.controller.teardown(self)
+
+
+def monitor_normalising_dae(
+    *,
+    det_pixels: list[int],
+    frames: int,
+    periods: bool = True,
+    monitor: int = 1,
+    save_run: bool = False,
+) -> SimpleDae:
+    """Create a simple DAE which normalises using a monitor and waits for frames.
+
+    This is really a shortcut to reduce code in plans used on the majority of instruments that
+    normalise using a monitor, wait for a number of frames and optionally use software periods.
+
+    Args:
+        det_pixels: list of detector pixel to use for scanning.
+        frames: number of frames to wait for.
+        periods: whether or not to use software periods.
+        monitor: the monitor spectra number.
+        save_run: whether or not to save the run of the DAE.
+
+    """
+    prefix = get_pv_prefix()
+
+    if periods:
+        controller = PeriodPerPointController(save_run=save_run)
+        waiter = PeriodGoodFramesWaiter(frames)
+    else:
+        controller = RunPerPointController(save_run=save_run)
+        waiter = GoodFramesWaiter(frames)
+
+    reducer = MonitorNormalizer(
+        prefix=prefix,
+        detector_spectra=det_pixels,
+        monitor_spectra=[monitor],
+    )
+
+    dae = SimpleDae(
+        prefix=prefix,
+        controller=controller,
+        waiter=waiter,
+        reducer=reducer,
+    )
+
+    dae.reducer.intensity.set_name("intensity")  # type: ignore
+    dae.reducer.intensity_stddev.set_name("intensity_stddev")  # type: ignore
+    return dae

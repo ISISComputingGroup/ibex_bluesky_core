@@ -16,16 +16,11 @@ from bluesky.utils import Msg, make_decorator
 from event_model import RunStart
 from matplotlib.axes import Axes
 
-from ibex_bluesky_core.callbacks.file_logger import (
-    DEFAULT_PATH as DEFAULT_PATH_HRF,
-)
+from ibex_bluesky_core.callbacks._utils import DEFAULT_PATH
 from ibex_bluesky_core.callbacks.file_logger import (
     HumanReadableFileCallback,
 )
 from ibex_bluesky_core.callbacks.fitting import FitMethod, LiveFit
-from ibex_bluesky_core.callbacks.fitting.livefit_logger import (
-    DEFAULT_PATH as DEFAULT_PATH_LFL,
-)
 from ibex_bluesky_core.callbacks.fitting.livefit_logger import (
     LiveFitLogger,
 )
@@ -139,7 +134,7 @@ class ISISCallbacks:
                     fields=combined_hr_fields,
                     output_dir=Path(human_readable_file_output_dir)
                     if human_readable_file_output_dir
-                    else DEFAULT_PATH_HRF,
+                    else DEFAULT_PATH,
                 ),
             )
 
@@ -184,7 +179,7 @@ class ISISCallbacks:
                         x=x,
                         y=y,
                         yerr=yerr,
-                        output_dir=DEFAULT_PATH_LFL
+                        output_dir=DEFAULT_PATH
                         if live_fit_logger_output_dir is None
                         else live_fit_logger_output_dir,
                         postfix=live_fit_logger_postfix,
