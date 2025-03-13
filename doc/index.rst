@@ -58,6 +58,13 @@ Reference documentation
 
 .. toctree::
    :maxdepth: 2
+   :caption: Plan stubs
+   :glob:
+
+   plan_stubs/*
+
+.. toctree::
+   :maxdepth: 2
    :caption: Plans
    :glob:
 
@@ -69,13 +76,6 @@ Reference documentation
    :glob:
 
    plans/reflectometry/*
-
-.. toctree::
-   :maxdepth: 2
-   :caption: Plan stubs
-   :glob:
-
-   plan_stubs/*
 
 .. toctree::
    :maxdepth: 2
