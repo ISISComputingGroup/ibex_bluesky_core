@@ -1,0 +1,24 @@
+
+
+``ibex_bluesky_core.callbacks.document_logger``
+===============================================
+        
+
+.. automodule:: ibex_bluesky_core.callbacks.document_logger
+    :members:
+    :show-inheritance:
+
+    
+    
+    
+
+    
+    
+    .. rubric:: Members
+
+    .. autosummary::
+        :nosignatures:
+    
+        DocLoggingCallback
+    
+    

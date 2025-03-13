@@ -1,0 +1,26 @@
+
+
+``ibex_bluesky_core.devices.simpledae.controllers``
+===================================================
+        
+        
+
+.. automodule:: ibex_bluesky_core.devices.simpledae.controllers
+    :members:
+    :show-inheritance:
+
+    
+    
+    
+
+    
+    
+    .. rubric:: Members
+
+    .. autosummary::
+        :nosignatures:
+    
+        PeriodPerPointController
+        RunPerPointController
+    
+    

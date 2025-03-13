@@ -1,0 +1,16 @@
+
+
+``ibex_bluesky_core.devices.muons``
+===================================
+
+.. automodule:: ibex_bluesky_core.devices.muons
+    :members:
+    :show-inheritance:
+
+    
+    
+    
+
+    
+    
+    
