@@ -19,6 +19,8 @@ from ibex_bluesky_core.utils import centred_pixel, get_pv_prefix
 if TYPE_CHECKING:
     from ibex_bluesky_core.devices.simpledae import SimpleDae
 
+__all__ = ["adaptive_scan", "motor_adaptive_scan", "motor_scan", "scan"]
+
 
 def scan(  # noqa: PLR0913
     dae: "SimpleDae",
@@ -116,7 +118,7 @@ def adaptive_scan(  # noqa: PLR0913, PLR0917
         max_step: largest step for coarse regions.
         target_delta: desired fractional change in detector signal between steps
         model: the fit method to use.
-        periods: whether or not to use hardware periods.
+        periods: whether or not to use software periods.
         save_run: whether or not to save run.
         rel: whether or not to scan around the current position or use absolute positions.
 
@@ -180,7 +182,7 @@ def motor_scan(  # noqa: PLR0913
         mon: the monitor number.
         pixel_range: the range of pixels to scan over, using `det` as a centred pixel.
         model: the fit method to use.
-        periods: whether or not to use hardware periods.
+        periods: whether or not to use software periods.
         save_run: whether or not to save run.
         rel: whether or not to scan around the current position or use absolute positions.
 
@@ -240,7 +242,7 @@ def motor_adaptive_scan(  # noqa: PLR0913
         mon: the monitor number.
         pixel_range: the range of pixels to scan over, using `det` as a centred pixel.
         model: the fit method to use.
-        periods: whether or not to use hardware periods.
+        periods: whether or not to use software periods.
         save_run: whether or not to save run.
         rel: whether or not to scan around the current position or use absolute positions.
 

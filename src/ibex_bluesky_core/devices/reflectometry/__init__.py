@@ -1,6 +1,7 @@
 """Devices specific to Reflectometry beamlines."""
 
 import asyncio
+import logging
 
 from ophyd_async.core import (
     AsyncStatus,
@@ -13,6 +14,8 @@ from ophyd_async.core import (
 from ophyd_async.epics.core import epics_signal_r, epics_signal_w
 
 from ibex_bluesky_core.utils import get_pv_prefix
+
+logger = logging.getLogger(__name__)
 
 
 class ReflParameter(StandardReadable):
@@ -33,19 +36,24 @@ class ReflParameter(StandardReadable):
         self.changing: SignalR[bool] = epics_signal_r(
             bool, f"{prefix}REFL_01:PARAM:{name}:CHANGING"
         )
-        self.redefine = ReflParameterRedefine(
-            prefix=f"{prefix}REFL_01:PARAM:{name}:", name=name + "redefine"
-        )
+        self.redefine = ReflParameterRedefine(prefix=f"{prefix}REFL_01:PARAM:{name}:", name="")
         self.changing_timeout = changing_timeout_s
         super().__init__(name=name)
         self.readback.set_name(name)
 
     @AsyncStatus.wrap
     async def set(self, value: float) -> None:
-        """Set the setpoint."""
+        """Set the setpoint.
+
+        This waits for the reflectometry parameter's 'CHANGING' PV to go True to
+         indicate it has finished.
+        """
+        logger.info("setting %s to %s", self.setpoint.source, value)
         await self.setpoint.set(value, wait=True, timeout=None)
         await asyncio.sleep(0.1)
+        logger.info("waiting for %s", self.changing.source)
         async for chg in observe_value(self.changing, done_timeout=self.changing_timeout):
+            logger.debug("%s: %s", self.changing.source, chg)
             if not chg:
                 break
 
@@ -73,10 +81,17 @@ class ReflParameterRedefine(StandardReadable):
 
     @AsyncStatus.wrap
     async def set(self, value: float) -> None:
-        """Set the setpoint."""
+        """Set the setpoint.
+
+        This waits for the reflectometry parameter redefinition's 'CHANGED' PV
+        to go True to indicate it has finished redefining the position.
+        """
+        logger.info("setting %s to %s", self.define_pos_sp.source, value)
         await self.define_pos_sp.set(value, wait=True, timeout=None)
+        logger.info("waiting for %s", self.changed.source)
         await asyncio.sleep(0.1)
         async for chg in observe_value(self.changed, done_timeout=self.changed_timeout):
+            logger.debug("%s: %s", self.changed.source, chg)
             if chg:
                 break
 
