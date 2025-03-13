@@ -38,7 +38,7 @@ def test_scan_motor_creates_block_device_and_dae(RE):
                 block_name=block_name,
                 start=0,
                 stop=2,
-                count=3,
+                num=3,
                 frames=200,
                 det=1,
                 mon=3,

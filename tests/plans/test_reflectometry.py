@@ -21,7 +21,7 @@ def test_refl_scan_creates_refl_param_device_and_dae(RE):
                 param=param_name,
                 start=0,
                 stop=2,
-                count=3,
+                num=3,
                 frames=200,
                 det=1,
                 mon=3,

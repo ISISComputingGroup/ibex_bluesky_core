@@ -26,7 +26,7 @@ def scan(  # noqa: PLR0913
     block: NamedMovable[float],
     start: float,
     stop: float,
-    count: int,
+    num: int,
     *,
     model: FitMethod,
     periods: bool = True,
@@ -40,7 +40,7 @@ def scan(  # noqa: PLR0913
         block: a movable to move during the scan.
         start: the starting position.
         stop: the final position.
-        count: the number of points to make.
+        num: the number of points to make.
         model: the fit method to use.
         periods: whether or not to use software periods.
         save_run: whether or not to save run.
@@ -49,7 +49,7 @@ def scan(  # noqa: PLR0913
     """
     yield from ensure_connected(dae, block)  # type: ignore
 
-    yield from bps.mv(dae.number_of_periods, count if periods else 1)
+    yield from bps.mv(dae.number_of_periods, num if periods else 1)
 
     icc = _set_up_fields_and_icc(block, dae, model, periods, save_run)
 
@@ -59,7 +59,7 @@ def scan(  # noqa: PLR0913
             plan = bp.rel_scan
         else:
             plan = bp.scan
-        yield from plan([dae], block, start, stop, num=count)
+        yield from plan([dae], block, start, stop, num=num)
 
     yield from _inner()
 
@@ -155,7 +155,7 @@ def motor_scan(  # noqa: PLR0913
     block_name: str,
     start: float,
     stop: float,
-    count: int,
+    num: int,
     *,
     frames: int,
     det: int,
@@ -175,7 +175,7 @@ def motor_scan(  # noqa: PLR0913
         block_name: the name of the block to scan.
         start: the starting position of the block.
         stop: the final position of the block.
-        count: the number of points to make.
+        num: the number of points to make.
         frames: the number of frames to wait for when scanning.
         det: the detector number.
         mon: the monitor number.
@@ -198,7 +198,7 @@ def motor_scan(  # noqa: PLR0913
             block=block,
             start=start,
             stop=stop,
-            count=count,
+            num=num,
             model=model,
             save_run=save_run,
             periods=periods,
