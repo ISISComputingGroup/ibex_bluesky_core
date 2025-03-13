@@ -2,7 +2,7 @@
 
 import logging
 from collections.abc import Generator
-from typing import TypedDict, cast
+from typing import TypedDict
 
 import bluesky.plan_stubs as bps
 import bluesky.plans as bp
@@ -146,7 +146,7 @@ def angle_scan_plan(
 
     logger.info("Finished angle scan, result = %s", angle_fit.result)
 
-    return cast(ModelResult | None, angle_fit.result)
+    return angle_fit.result
 
 
 class DetMapAlignResult(TypedDict):
@@ -238,6 +238,6 @@ def height_and_angle_scan_plan(  # noqa PLR0913
     )
 
     return {
-        "height_fit": cast(ModelResult | None, height_fit.result),
-        "angle_fit": cast(ModelResult | None, angle_fit.result),
+        "height_fit": height_fit.result,
+        "angle_fit": angle_fit.result,
     }
