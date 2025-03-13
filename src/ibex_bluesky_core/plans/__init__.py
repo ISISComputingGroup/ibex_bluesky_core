@@ -1,7 +1,7 @@
 """Generic plans."""
 
 from collections.abc import Generator
-from typing import TYPE_CHECKING, Any, Protocol
+from typing import TYPE_CHECKING, Any
 
 import bluesky.plans as bp
 from bluesky import plan_stubs as bps
@@ -14,7 +14,7 @@ from ophyd_async.plan_stubs import ensure_connected
 from ibex_bluesky_core.callbacks import FitMethod, ISISCallbacks
 from ibex_bluesky_core.devices.block import BlockMot
 from ibex_bluesky_core.devices.simpledae import monitor_normalising_dae
-from ibex_bluesky_core.utils import centred_pixel, get_pv_prefix
+from ibex_bluesky_core.utils import NamedReadableAndMovable, centred_pixel, get_pv_prefix
 
 if TYPE_CHECKING:
     from ibex_bluesky_core.devices.simpledae import SimpleDae
@@ -122,6 +122,9 @@ def adaptive_scan(  # noqa: PLR0913, PLR0917
         save_run: whether or not to save run.
         rel: whether or not to scan around the current position or use absolute positions.
 
+    Returns:
+        an :obj:`ibex_bluesky_core.callbacks.ISISCallbacks` instance.
+
     """
     yield from ensure_connected(dae, block)  # type: ignore
 
@@ -186,6 +189,9 @@ def motor_scan(  # noqa: PLR0913
         save_run: whether or not to save run.
         rel: whether or not to scan around the current position or use absolute positions.
 
+    Returns:
+        an :obj:`ibex_bluesky_core.callbacks.ISISCallbacks` instance.
+
     """
     block = BlockMot(prefix=get_pv_prefix(), block_name=block_name)
     det_pixels = centred_pixel(det, pixel_range)
@@ -246,6 +252,9 @@ def motor_adaptive_scan(  # noqa: PLR0913
         save_run: whether or not to save run.
         rel: whether or not to scan around the current position or use absolute positions.
 
+    Returns:
+        an :obj:`ibex_bluesky_core.callbacks.ISISCallbacks` instance.
+
     """
     block = BlockMot(prefix=get_pv_prefix(), block_name=block_name)
     det_pixels = centred_pixel(det, pixel_range)
@@ -269,10 +278,6 @@ def motor_adaptive_scan(  # noqa: PLR0913
     )
 
 
-class NamedReadableAndMovable(Readable[Any], NamedMovable[Any], Protocol):
-    """Abstract class for type checking that an object is readable, named and movable."""
-
-
 @run_decorator(md={})
 def polling_plan(
     motor: NamedReadableAndMovable, readable: Readable[Any], destination: float
@@ -283,6 +288,9 @@ def polling_plan(
         motor: the motor to move.
         readable: the readable to read updates from, but drop if motor has not moved.
         destination: the destination position.
+
+    Returns:
+        None
 
     If we just used bp.scan() with a readable that updates more frequently than a motor can
     register that it has moved, we would have lots of updates with the same motor position,

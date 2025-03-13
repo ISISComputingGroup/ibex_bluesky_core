@@ -47,6 +47,9 @@ def refl_scan(  # noqa: PLR0913
         save_run: whether to save the run of the scan.
         rel: whether to use a relative scan around the current position.
 
+    Returns:
+        an :obj:`ibex_bluesky_core.callbacks.ISISCallbacks` instance.
+
     """
     block = refl_parameter(param)
     det_pixels = centred_pixel(det, pixel_range)
@@ -105,6 +108,9 @@ def refl_adaptive_scan(  # noqa: PLR0913
         periods: whether to use periods.
         save_run: whether to save the run of the scan.
         rel: whether to use a relative scan around the current position.
+
+    Returns:
+        an :obj:`ibex_bluesky_core.callbacks.ISISCallbacks` instance.
 
     """
     block = refl_parameter(param)
