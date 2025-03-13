@@ -46,7 +46,7 @@ def scan(  # noqa: PLR0913
         stop: the final position.
         count: the number of points to make.
         model: the fit method to use.
-        periods: whether or not to use hardware periods.
+        periods: whether or not to use software periods.
         save_run: whether or not to save run.
         rel: whether or not to scan around the current position or use absolute positions.
 
