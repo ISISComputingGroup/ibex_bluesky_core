@@ -1,5 +1,6 @@
 """Reflectometry detector-mapping alignment plans."""
 
+import logging
 from collections.abc import Generator
 from typing import TypedDict, cast
 
@@ -31,6 +32,9 @@ from ibex_bluesky_core.devices.simpledae.reducers import (
 from ibex_bluesky_core.plan_stubs import call_qt_aware, set_num_periods
 
 __all__ = ["DetMapAlignResult", "angle_scan_plan", "height_and_angle_scan_plan"]
+
+
+logger = logging.getLogger(__name__)
 
 
 def _height_scan_callback_and_fit(
@@ -117,6 +121,7 @@ def angle_scan_plan(
             describing the detector angle of each detector pixel
 
     """
+    logger.info("Starting angle scan")
     reducer = dae.reducer
     _check_angle_map_shape(reducer, angle_map)
 
@@ -136,6 +141,8 @@ def angle_scan_plan(
         yield from bp.count([dae])
 
     yield from _inner()
+
+    logger.info("Finished angle scan, result = %s", angle_fit.result)
 
     return cast(ModelResult | None, angle_fit.result)
 
@@ -185,6 +192,8 @@ def height_and_angle_scan_plan(  # noqa PLR0913
         A dictionary containing the fit results from gaussian height and angle fits.
 
     """
+    logger.info("Starting combined height and angle scan")
+
     reducer = dae.reducer
     _check_angle_map_shape(reducer, angle_map)
 
@@ -219,6 +228,12 @@ def height_and_angle_scan_plan(  # noqa PLR0913
         yield from plan([dae], height, start, stop, num=num)
 
     yield from _inner()
+
+    logger.info(
+        "Finished height and angle scan, height result = %s, angle result = %s",
+        height_fit.result,
+        angle_fit.result,
+    )
 
     return {
         "height_fit": cast(ModelResult | None, height_fit.result),

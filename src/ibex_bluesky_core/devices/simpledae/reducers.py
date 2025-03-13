@@ -390,6 +390,7 @@ class PeriodSpecIntegralsReducer(Reducer, StandardReadable):
             to new events that come in.
 
         """
+        logger.info("starting reduction")
         (
             raw_data,
             num_periods,
@@ -417,6 +418,8 @@ class PeriodSpecIntegralsReducer(Reducer, StandardReadable):
 
         self._det_integrals_setter(det_integrals)
         self._mon_integrals_setter(mon_integrals)
+
+        logger.info("reduction complete")
 
     def additional_readable_signals(self, dae: "SimpleDae") -> list[Device]:
         """Publish interesting signals derived or used by this reducer."""

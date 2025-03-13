@@ -18,6 +18,7 @@ at once.
 
 """
 
+import logging
 import math
 import threading
 import time
@@ -32,6 +33,8 @@ from event_model import Event, EventDescriptor, RunStart, RunStop
 from matplotlib.axes import Axes
 
 from ibex_bluesky_core.callbacks.plotting import show_plot
+
+logger = logging.getLogger(__name__)
 
 
 class DetMapHeightScanLiveDispatcher(LiveDispatcher):
@@ -53,6 +56,7 @@ class DetMapHeightScanLiveDispatcher(LiveDispatcher):
 
     def event(self, doc: Event, **kwargs: dict[str, Any]) -> Event:
         """Process an event."""
+        logger.debug("DetMapHeightScanLiveDispatcher processing event uid %s", doc.get("uid"))
         det_data = doc["data"][self._det_name]
         mon_data = doc["data"][self._mon_name]
 
@@ -107,6 +111,8 @@ class DetMapAngleScanLiveDispatcher(LiveDispatcher):
 
     def event(self, doc: Event, **kwargs: dict[str, Any]) -> None:  # pyright: ignore
         """Process an event."""
+        logger.debug("DetMapAngleScanLiveDispatcher processing event uid %s", doc.get("uid"))
+
         data = doc["data"][self.y_in_name]
         if data.shape != self.x_data.shape:
             raise ValueError(
@@ -123,6 +129,7 @@ class DetMapAngleScanLiveDispatcher(LiveDispatcher):
 
         current_time = time.time()
         for x, y in zip(self.x_data, self.y_data, strict=True):
+            logger.debug("DetMapAngleScanLiveDispatcher emitting event with x=%f, y=%f", x, y)
             event = {
                 "data": {
                     self.x_name: x,

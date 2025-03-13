@@ -10,9 +10,7 @@ Plans in this module expect:
 - An angle map, as a `numpy` array of type `float64`, which has the same dimensionality as the set of selected detectors. This
 maps each configured detector pixel to its angular position.
 
-## Plans
-
-### Angle scan
+## Angle scan
 
 API reference: {py:obj}`ibex_bluesky_core.plans.reflectometry.det_map_align.angle_scan_plan`
 
@@ -23,7 +21,7 @@ and the counts observed on that detector pixel.
 
 This plan returns the result of the angle fit, or `None` if the fit failed.
 
-### Simultaneous height & angle scan
+## Height & angle scan
 
 API reference: {py:obj}`ibex_bluesky_core.plans.reflectometry.det_map_align.height_and_angle_scan_plan`
 
