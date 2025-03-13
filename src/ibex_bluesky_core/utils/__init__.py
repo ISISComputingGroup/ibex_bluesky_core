@@ -3,6 +3,9 @@
 from __future__ import annotations
 
 import os
+from typing import Any, Protocol
+
+from bluesky.protocols import NamedMovable, Readable
 
 
 def centred_pixel(centre: int, pixel_range: int) -> list[int]:
@@ -28,3 +31,7 @@ def get_pv_prefix() -> str:
         raise OSError("MYPVPREFIX environment variable not available - please define")
 
     return prefix
+
+
+class NamedReadableAndMovable(Readable[Any], NamedMovable[Any], Protocol):
+    """Abstract class for type checking that an object is readable, named and movable."""

@@ -1,6 +1,5 @@
 """Generic plans."""
 
-from abc import ABC
 from collections.abc import Generator
 from typing import TYPE_CHECKING, Any
 
@@ -13,26 +12,24 @@ from bluesky.utils import Msg
 from ophyd_async.plan_stubs import ensure_connected
 
 from ibex_bluesky_core.callbacks import FitMethod, ISISCallbacks
-from ibex_bluesky_core.callbacks.fitting.fitting_utils import Linear
 from ibex_bluesky_core.devices.block import BlockMot
 from ibex_bluesky_core.devices.simpledae import monitor_normalising_dae
-from ibex_bluesky_core.utils import centred_pixel, get_pv_prefix
+from ibex_bluesky_core.utils import NamedReadableAndMovable, centred_pixel, get_pv_prefix
 
 if TYPE_CHECKING:
     from ibex_bluesky_core.devices.simpledae import SimpleDae
 
-DEFAULT_DET = 3
-DEFAULT_FIT_METHOD = Linear().fit()
+__all__ = ["adaptive_scan", "motor_adaptive_scan", "motor_scan", "polling_plan", "scan"]
 
 
 def scan(  # noqa: PLR0913
     dae: "SimpleDae",
-    block: NamedMovable[Any],
+    block: NamedMovable[float],
     start: float,
     stop: float,
-    count: int,
+    num: int,
     *,
-    model: FitMethod = DEFAULT_FIT_METHOD,
+    model: FitMethod,
     periods: bool = True,
     save_run: bool = False,
     rel: bool = False,
@@ -42,39 +39,20 @@ def scan(  # noqa: PLR0913
     Args:
         dae: the simple DAE object to use.
         block: a movable to move during the scan.
-        start: the starting position of the block.
-        stop: the final position of the block.
-        count: the number of points to make.
+        start: the starting position.
+        stop: the final position.
+        num: the number of points to make.
         model: the fit method to use.
-        periods: whether or not to use hardware periods.
+        periods: whether or not to use software periods.
         save_run: whether or not to save run.
         rel: whether or not to scan around the current position or use absolute positions.
 
     """
     yield from ensure_connected(dae, block)  # type: ignore
 
-    yield from bps.mv(dae.number_of_periods, count if periods else 1)
+    yield from bps.mv(dae.number_of_periods, num if periods else 1)
 
-    fields = [block.name]
-    if periods:
-        fields.append(dae.period_num.name)  # type: ignore
-    elif save_run:  # pragma: no cover
-        fields.append(dae.controller.run_number.name)  # type: ignore
-
-    fields.extend(
-        [
-            dae.reducer.intensity.name,  # type: ignore
-            dae.reducer.intensity_stddev.name,  # type: ignore
-        ]
-    )
-
-    icc = ISISCallbacks(
-        y=dae.reducer.intensity.name,  # type: ignore
-        yerr=dae.reducer.intensity_stddev.name,  # type: ignore
-        x=block.name,
-        measured_fields=fields,
-        fit=model,
-    )
+    icc = _set_up_fields_and_icc(block, dae, model, periods, save_run)
 
     @icc
     def _inner() -> Generator[Msg, None, None]:
@@ -82,23 +60,47 @@ def scan(  # noqa: PLR0913
             plan = bp.rel_scan
         else:
             plan = bp.scan
-        yield from plan([dae], block, start, stop, num=count)
+        yield from plan([dae], block, start, stop, num=num)
 
     yield from _inner()
 
     return icc
 
 
+def _set_up_fields_and_icc(
+    block: NamedMovable[Any], dae: "SimpleDae", model: FitMethod, periods: bool, save_run: bool
+) -> ISISCallbacks:
+    fields = [block.name]
+    if periods:
+        fields.append(dae.period_num.name)  # type: ignore
+    elif save_run:
+        fields.append(dae.controller.run_number.name)  # type: ignore
+    fields.extend(
+        [
+            dae.reducer.intensity.name,  # type: ignore
+            dae.reducer.intensity_stddev.name,  # type: ignore
+        ]
+    )
+    icc = ISISCallbacks(
+        y=dae.reducer.intensity.name,  # type: ignore
+        yerr=dae.reducer.intensity_stddev.name,  # type: ignore
+        x=block.name,
+        measured_fields=fields,
+        fit=model,
+    )
+    return icc
+
+
 def adaptive_scan(  # noqa: PLR0913, PLR0917
     dae: "SimpleDae",
-    block: NamedMovable[Any],
+    block: NamedMovable[float],
     start: float,
     stop: float,
     min_step: float,
     max_step: float,
     target_delta: float,
     *,
-    model: FitMethod = DEFAULT_FIT_METHOD,
+    model: FitMethod,
     periods: bool = True,
     save_run: bool = False,
     rel: bool = False,
@@ -116,35 +118,19 @@ def adaptive_scan(  # noqa: PLR0913, PLR0917
         max_step: largest step for coarse regions.
         target_delta: desired fractional change in detector signal between steps
         model: the fit method to use.
-        periods: whether or not to use hardware periods.
+        periods: whether or not to use software periods.
         save_run: whether or not to save run.
         rel: whether or not to scan around the current position or use absolute positions.
+
+    Returns:
+        an :obj:`ibex_bluesky_core.callbacks.ISISCallbacks` instance.
 
     """
     yield from ensure_connected(dae, block)  # type: ignore
 
     yield from bps.mv(dae.number_of_periods, 100)
 
-    fields = [block.name]
-    if periods:
-        fields.append(dae.period_num.name)  # type: ignore
-    elif save_run:  # pragma: no cover
-        fields.append(dae.controller.run_number.name)  # type: ignore
-
-    fields.extend(
-        [
-            dae.reducer.intensity.name,  # type: ignore
-            dae.reducer.intensity_stddev.name,  # type: ignore
-        ]
-    )
-
-    icc = ISISCallbacks(
-        y=dae.reducer.intensity.name,  # type: ignore
-        yerr=dae.reducer.intensity_stddev.name,  # type: ignore
-        x=block.name,
-        measured_fields=fields,
-        fit=model,
-    )
+    icc = _set_up_fields_and_icc(block, dae, model, periods, save_run)
 
     @icc
     def _inner() -> Generator[Msg, None, None]:
@@ -169,20 +155,17 @@ def adaptive_scan(  # noqa: PLR0913, PLR0917
     return icc
 
 
-DEFAULT_MON = 1
-
-
 def motor_scan(  # noqa: PLR0913
     block_name: str,
     start: float,
     stop: float,
-    count: int,
+    num: int,
     *,
     frames: int,
-    det: int = DEFAULT_DET,
-    mon: int = DEFAULT_MON,
+    det: int,
+    mon: int,
+    model: FitMethod,
     pixel_range: int = 0,
-    model: FitMethod = DEFAULT_FIT_METHOD,
     periods: bool = True,
     save_run: bool = False,
     rel: bool = False,
@@ -196,15 +179,18 @@ def motor_scan(  # noqa: PLR0913
         block_name: the name of the block to scan.
         start: the starting position of the block.
         stop: the final position of the block.
-        count: the number of points to make.
+        num: the number of points to make.
         frames: the number of frames to wait for when scanning.
         det: the detector number.
         mon: the monitor number.
         pixel_range: the range of pixels to scan over, using `det` as a centred pixel.
         model: the fit method to use.
-        periods: whether or not to use hardware periods.
+        periods: whether or not to use software periods.
         save_run: whether or not to save run.
         rel: whether or not to scan around the current position or use absolute positions.
+
+    Returns:
+        an :obj:`ibex_bluesky_core.callbacks.ISISCallbacks` instance.
 
     """
     block = BlockMot(prefix=get_pv_prefix(), block_name=block_name)
@@ -219,7 +205,7 @@ def motor_scan(  # noqa: PLR0913
             block=block,
             start=start,
             stop=stop,
-            count=count,
+            num=num,
             model=model,
             save_run=save_run,
             periods=periods,
@@ -237,10 +223,10 @@ def motor_adaptive_scan(  # noqa: PLR0913
     target_delta: float,
     *,
     frames: int,
-    det: int = DEFAULT_DET,
-    mon: int = DEFAULT_MON,
+    det: int,
+    mon: int,
+    model: FitMethod,
     pixel_range: int = 0,
-    model: FitMethod = DEFAULT_FIT_METHOD,
     periods: bool = True,
     save_run: bool = False,
     rel: bool = False,
@@ -262,9 +248,12 @@ def motor_adaptive_scan(  # noqa: PLR0913
         mon: the monitor number.
         pixel_range: the range of pixels to scan over, using `det` as a centred pixel.
         model: the fit method to use.
-        periods: whether or not to use hardware periods.
+        periods: whether or not to use software periods.
         save_run: whether or not to save run.
         rel: whether or not to scan around the current position or use absolute positions.
+
+    Returns:
+        an :obj:`ibex_bluesky_core.callbacks.ISISCallbacks` instance.
 
     """
     block = BlockMot(prefix=get_pv_prefix(), block_name=block_name)
@@ -289,10 +278,6 @@ def motor_adaptive_scan(  # noqa: PLR0913
     )
 
 
-class NamedReadableAndMovable(Readable[Any], NamedMovable[Any], ABC):
-    """Abstract class for type checking that an object is readable, named and movable."""
-
-
 @run_decorator(md={})
 def polling_plan(
     motor: NamedReadableAndMovable, readable: Readable[Any], destination: float
@@ -303,6 +288,9 @@ def polling_plan(
         motor: the motor to move.
         readable: the readable to read updates from, but drop if motor has not moved.
         destination: the destination position.
+
+    Returns:
+        None
 
     If we just used bp.scan() with a readable that updates more frequently than a motor can
     register that it has moved, we would have lots of updates with the same motor position,

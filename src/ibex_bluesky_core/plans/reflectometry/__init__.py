@@ -8,9 +8,6 @@ from ibex_bluesky_core.callbacks import FitMethod, ISISCallbacks
 from ibex_bluesky_core.devices.reflectometry import refl_parameter
 from ibex_bluesky_core.devices.simpledae import monitor_normalising_dae
 from ibex_bluesky_core.plans import (
-    DEFAULT_DET,
-    DEFAULT_FIT_METHOD,
-    DEFAULT_MON,
     adaptive_scan,
     scan,
 )
@@ -21,13 +18,13 @@ def refl_scan(  # noqa: PLR0913
     param: str,
     start: float,
     stop: float,
-    count: int,
+    num: int,
     *,
     frames: int,
-    det: int = DEFAULT_DET,
-    mon: int = DEFAULT_MON,
+    det: int,
+    mon: int,
+    model: FitMethod,
     pixel_range: int = 0,
-    model: FitMethod = DEFAULT_FIT_METHOD,
     periods: bool = True,
     save_run: bool = False,
     rel: bool = False,
@@ -40,7 +37,7 @@ def refl_scan(  # noqa: PLR0913
         param: the reflectometry parameter.
         start: the starting setpoint of the parameter.
         stop: the final setpoint of the parameter.
-        count: the number of points to scan.
+        num: the number of points to scan.
         frames: the number of frames to wait for.
         det: the detector spectra to use.
         mon: the monitor spectra to use.
@@ -49,6 +46,9 @@ def refl_scan(  # noqa: PLR0913
         periods: whether to use periods.
         save_run: whether to save the run of the scan.
         rel: whether to use a relative scan around the current position.
+
+    Returns:
+        an :obj:`ibex_bluesky_core.callbacks.ISISCallbacks` instance.
 
     """
     block = refl_parameter(param)
@@ -63,7 +63,7 @@ def refl_scan(  # noqa: PLR0913
             block=block,
             start=start,
             stop=stop,
-            count=count,
+            num=num,
             model=model,
             save_run=save_run,
             periods=periods,
@@ -81,10 +81,10 @@ def refl_adaptive_scan(  # noqa: PLR0913
     target_delta: float,
     *,
     frames: int,
-    det: int = DEFAULT_DET,
-    mon: int = DEFAULT_MON,
+    det: int,
+    mon: int,
+    model: FitMethod,
     pixel_range: int = 0,
-    model: FitMethod = DEFAULT_FIT_METHOD,
     periods: bool = True,
     save_run: bool = False,
     rel: bool = False,
@@ -108,6 +108,9 @@ def refl_adaptive_scan(  # noqa: PLR0913
         periods: whether to use periods.
         save_run: whether to save the run of the scan.
         rel: whether to use a relative scan around the current position.
+
+    Returns:
+        an :obj:`ibex_bluesky_core.callbacks.ISISCallbacks` instance.
 
     """
     block = refl_parameter(param)

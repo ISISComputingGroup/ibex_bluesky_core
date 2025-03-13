@@ -2,11 +2,10 @@
 
 from typing import Generator, Iterator
 from unittest.mock import MagicMock, Mock, patch
-
 import pytest
-
 from ibex_bluesky_core.callbacks.fitting import LiveFit
 from ibex_bluesky_core.devices.block import BlockMot, BlockRw
+from ibex_bluesky_core.callbacks.fitting.fitting_utils import Gaussian
 from ibex_bluesky_core.devices.reflectometry import ReflParameter
 from ibex_bluesky_core.devices.simpledae import SimpleDae
 from ibex_bluesky_core.devices.simpledae.controllers import RunPerPointController
@@ -28,7 +27,18 @@ def test_refl_scan_creates_refl_param_device_and_dae(RE):
         patch("ibex_bluesky_core.devices.simpledae.get_pv_prefix", return_value=prefix),
         patch("ibex_bluesky_core.plans.reflectometry.scan") as scan,
     ):
-        RE(refl_scan(param=param_name, start=0, stop=2, count=3, frames=200))
+        RE(
+            refl_scan(
+                param=param_name,
+                start=0,
+                stop=2,
+                num=3,
+                frames=200,
+                det=1,
+                mon=3,
+                model=Gaussian().fit(),
+            )
+        )
         scan.assert_called_once()
         assert isinstance(scan.call_args[1]["dae"], SimpleDae)
         assert isinstance(scan.call_args[1]["block"], ReflParameter)
@@ -52,6 +62,9 @@ def test_refl_adaptive_scan_creates_refl_param_device_and_dae(RE):
                 max_step=0.1,
                 target_delta=0.5,
                 frames=200,
+                det=1,
+                mon=3,
+                model=Gaussian().fit(),
             )
         )
         scan.assert_called_once()
