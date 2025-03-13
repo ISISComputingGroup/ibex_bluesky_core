@@ -25,7 +25,7 @@ def test_refl_parameter_wrapper_returns_refl_parameter():
 
 
 def test_set_waits_for_changed_on_reflectometry_parameter(RE):
-    param = ReflParameter(prefix="UNITTEST:", name="S1VG", changing_timeout=1)
+    param = ReflParameter(prefix="UNITTEST:", name="S1VG", changing_timeout_s=1)
     RE(ensure_connected(param, mock=True))
     initial = 123.0
     set_mock_value(param.setpoint, initial)
@@ -37,7 +37,7 @@ def test_set_waits_for_changed_on_reflectometry_parameter(RE):
 
 
 async def test_times_out_if_changing_never_finishes_on_reflectometry_parameter(RE):
-    param = ReflParameter(prefix="UNITTEST:", name="S1VG", changing_timeout=0.01)
+    param = ReflParameter(prefix="UNITTEST:", name="S1VG", changing_timeout_s=0.01)
     RE(ensure_connected(param, mock=True))
     initial = 123.0
     set_mock_value(param.setpoint, initial)
@@ -48,7 +48,7 @@ async def test_times_out_if_changing_never_finishes_on_reflectometry_parameter(R
 
 
 def test_set_waits_for_changed_on_reflectometry_parameter_redefine(RE):
-    param = ReflParameterRedefine(prefix="UNITTEST:S1VG", name="redefine", changed_timeout=1)
+    param = ReflParameterRedefine(prefix="UNITTEST:S1VG", name="redefine", changed_timeout_s=1)
     RE(ensure_connected(param, mock=True))
     initial = 123.0
     set_mock_value(param.define_pos_sp, initial)
@@ -60,7 +60,7 @@ def test_set_waits_for_changed_on_reflectometry_parameter_redefine(RE):
 
 
 async def test_times_out_if_changed_never_finishes_on_reflectometery_parameter_redefine(RE):
-    param = ReflParameterRedefine(prefix="UNITTEST:S1VG", name="redefine", changed_timeout=0.01)
+    param = ReflParameterRedefine(prefix="UNITTEST:S1VG", name="redefine", changed_timeout_s=0.01)
     RE(ensure_connected(param, mock=True))
     initial = 123.0
     set_mock_value(param.define_pos_sp, initial)

@@ -13,7 +13,6 @@ from bluesky.utils import Msg
 from ophyd_async.plan_stubs import ensure_connected
 
 from ibex_bluesky_core.callbacks import FitMethod, ISISCallbacks
-from ibex_bluesky_core.callbacks.fitting.fitting_utils import Linear
 from ibex_bluesky_core.devices.block import BlockMot
 from ibex_bluesky_core.devices.simpledae import monitor_normalising_dae
 from ibex_bluesky_core.utils import centred_pixel, get_pv_prefix
@@ -21,18 +20,15 @@ from ibex_bluesky_core.utils import centred_pixel, get_pv_prefix
 if TYPE_CHECKING:
     from ibex_bluesky_core.devices.simpledae import SimpleDae
 
-DEFAULT_DET = 3
-DEFAULT_FIT_METHOD = Linear().fit()
-
 
 def scan(  # noqa: PLR0913
     dae: "SimpleDae",
-    block: NamedMovable[Any],
+    block: NamedMovable[float],
     start: float,
     stop: float,
     count: int,
     *,
-    model: FitMethod = DEFAULT_FIT_METHOD,
+    model: FitMethod,
     periods: bool = True,
     save_run: bool = False,
     rel: bool = False,
@@ -55,26 +51,7 @@ def scan(  # noqa: PLR0913
 
     yield from bps.mv(dae.number_of_periods, count if periods else 1)
 
-    fields = [block.name]
-    if periods:
-        fields.append(dae.period_num.name)  # type: ignore
-    elif save_run:  # pragma: no cover
-        fields.append(dae.controller.run_number.name)  # type: ignore
-
-    fields.extend(
-        [
-            dae.reducer.intensity.name,  # type: ignore
-            dae.reducer.intensity_stddev.name,  # type: ignore
-        ]
-    )
-
-    icc = ISISCallbacks(
-        y=dae.reducer.intensity.name,  # type: ignore
-        yerr=dae.reducer.intensity_stddev.name,  # type: ignore
-        x=block.name,
-        measured_fields=fields,
-        fit=model,
-    )
+    icc = _set_up_fields_and_icc(block, dae, model, periods, save_run)
 
     @icc
     def _inner() -> Generator[Msg, None, None]:
@@ -89,16 +66,40 @@ def scan(  # noqa: PLR0913
     return icc
 
 
+def _set_up_fields_and_icc(
+    block: NamedMovable[Any], dae: "SimpleDae", model: FitMethod, periods: bool, save_run: bool
+) -> ISISCallbacks:
+    fields = [block.name]
+    if periods:
+        fields.append(dae.period_num.name)  # type: ignore
+    elif save_run:  # pragma: no cover
+        fields.append(dae.controller.run_number.name)  # type: ignore
+    fields.extend(
+        [
+            dae.reducer.intensity.name,  # type: ignore
+            dae.reducer.intensity_stddev.name,  # type: ignore
+        ]
+    )
+    icc = ISISCallbacks(
+        y=dae.reducer.intensity.name,  # type: ignore
+        yerr=dae.reducer.intensity_stddev.name,  # type: ignore
+        x=block.name,
+        measured_fields=fields,
+        fit=model,
+    )
+    return icc
+
+
 def adaptive_scan(  # noqa: PLR0913, PLR0917
     dae: "SimpleDae",
-    block: NamedMovable[Any],
+    block: NamedMovable[float],
     start: float,
     stop: float,
     min_step: float,
     max_step: float,
     target_delta: float,
     *,
-    model: FitMethod = DEFAULT_FIT_METHOD,
+    model: FitMethod,
     periods: bool = True,
     save_run: bool = False,
     rel: bool = False,
@@ -125,26 +126,7 @@ def adaptive_scan(  # noqa: PLR0913, PLR0917
 
     yield from bps.mv(dae.number_of_periods, 100)
 
-    fields = [block.name]
-    if periods:
-        fields.append(dae.period_num.name)  # type: ignore
-    elif save_run:  # pragma: no cover
-        fields.append(dae.controller.run_number.name)  # type: ignore
-
-    fields.extend(
-        [
-            dae.reducer.intensity.name,  # type: ignore
-            dae.reducer.intensity_stddev.name,  # type: ignore
-        ]
-    )
-
-    icc = ISISCallbacks(
-        y=dae.reducer.intensity.name,  # type: ignore
-        yerr=dae.reducer.intensity_stddev.name,  # type: ignore
-        x=block.name,
-        measured_fields=fields,
-        fit=model,
-    )
+    icc = _set_up_fields_and_icc(block, dae, model, periods, save_run)
 
     @icc
     def _inner() -> Generator[Msg, None, None]:
@@ -169,9 +151,6 @@ def adaptive_scan(  # noqa: PLR0913, PLR0917
     return icc
 
 
-DEFAULT_MON = 1
-
-
 def motor_scan(  # noqa: PLR0913
     block_name: str,
     start: float,
@@ -179,10 +158,10 @@ def motor_scan(  # noqa: PLR0913
     count: int,
     *,
     frames: int,
-    det: int = DEFAULT_DET,
-    mon: int = DEFAULT_MON,
+    det: int,
+    mon: int,
+    model: FitMethod,
     pixel_range: int = 0,
-    model: FitMethod = DEFAULT_FIT_METHOD,
     periods: bool = True,
     save_run: bool = False,
     rel: bool = False,
@@ -237,10 +216,10 @@ def motor_adaptive_scan(  # noqa: PLR0913
     target_delta: float,
     *,
     frames: int,
-    det: int = DEFAULT_DET,
-    mon: int = DEFAULT_MON,
+    det: int,
+    mon: int,
+    model: FitMethod,
     pixel_range: int = 0,
-    model: FitMethod = DEFAULT_FIT_METHOD,
     periods: bool = True,
     save_run: bool = False,
     rel: bool = False,

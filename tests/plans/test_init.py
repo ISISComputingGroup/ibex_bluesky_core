@@ -7,6 +7,7 @@ from ophyd_async.plan_stubs import ensure_connected
 from ophyd_async.sim import SimMotor
 from ophyd_async.testing import callback_on_mock_put, set_mock_value
 
+from ibex_bluesky_core.callbacks.fitting.fitting_utils import Gaussian
 from ibex_bluesky_core.devices.block import BlockMot, BlockR
 from ibex_bluesky_core.devices.simpledae import (
     PeriodPerPointController,
@@ -32,7 +33,18 @@ def test_scan_motor_creates_block_device_and_dae(RE):
         patch("ibex_bluesky_core.devices.simpledae.get_pv_prefix", return_value=prefix),
         patch("ibex_bluesky_core.plans.scan") as scan,
     ):
-        RE(motor_scan(block_name=block_name, start=0, stop=2, count=3, frames=200))
+        RE(
+            motor_scan(
+                block_name=block_name,
+                start=0,
+                stop=2,
+                count=3,
+                frames=200,
+                det=1,
+                mon=3,
+                model=Gaussian().fit(),
+            )
+        )
         scan.assert_called_once()
         assert isinstance(scan.call_args[1]["dae"], SimpleDae)
         assert isinstance(scan.call_args[1]["block"], BlockMot)
@@ -56,6 +68,9 @@ def test_adaptive_scan_motor_creates_block_device_and_dae(RE):
                 max_step=0.1,
                 target_delta=0.5,
                 frames=200,
+                det=1,
+                mon=3,
+                model=Gaussian().fit(),
             )
         )
         scan.assert_called_once()
@@ -96,7 +111,7 @@ def test_scan_does_normal_scan_when_relative_false(RE, dae, block):
         patch("ibex_bluesky_core.plans.bp.scan") as bp_scan,
         patch("ibex_bluesky_core.plans.ensure_connected"),
     ):
-        RE(scan(dae, block, start, stop, count, rel=False))
+        RE(scan(dae, block, start, stop, count, rel=False, model=Gaussian().fit()))
     bp_scan.assert_called_once()
     assert dae in bp_scan.call_args[0][0]
     assert block == bp_scan.call_args[0][1]
@@ -113,7 +128,7 @@ def test_scan_does_relative_scan_when_relative_true(RE, dae, block):
         patch("ibex_bluesky_core.plans.bp.rel_scan") as bp_scan,
         patch("ibex_bluesky_core.plans.ensure_connected"),
     ):
-        RE(scan(dae, block, start, stop, count, rel=True))
+        RE(scan(dae, block, start, stop, count, rel=True, model=Gaussian().fit()))
     bp_scan.assert_called_once()
     assert dae in bp_scan.call_args[0][0]
     assert block == bp_scan.call_args[0][1]
@@ -132,7 +147,19 @@ def test_adaptive_scan_does_normal_scan_when_relative_false(RE, dae, block):
         patch("ibex_bluesky_core.plans.bp.adaptive_scan") as bp_scan,
         patch("ibex_bluesky_core.plans.ensure_connected"),
     ):
-        RE(adaptive_scan(dae, block, start, stop, min_step, max_step, target_delta, rel=False))
+        RE(
+            adaptive_scan(
+                dae,
+                block,
+                start,
+                stop,
+                min_step,
+                max_step,
+                target_delta,
+                rel=False,
+                model=Gaussian().fit(),
+            )
+        )
     bp_scan.assert_called_once()
     assert dae in bp_scan.call_args[1]["detectors"]
     assert block == bp_scan.call_args[1]["motor"]
@@ -153,7 +180,19 @@ def test_adaptive_scan_does_relative_scan_when_relative_true(RE, dae, block):
         patch("ibex_bluesky_core.plans.bp.rel_adaptive_scan") as bp_scan,
         patch("ibex_bluesky_core.plans.ensure_connected"),
     ):
-        RE(adaptive_scan(dae, block, start, stop, min_step, max_step, target_delta, rel=True))
+        RE(
+            adaptive_scan(
+                dae,
+                block,
+                start,
+                stop,
+                min_step,
+                max_step,
+                target_delta,
+                rel=True,
+                model=Gaussian().fit(),
+            )
+        )
     bp_scan.assert_called_once()
     assert dae in bp_scan.call_args[1]["detectors"]
     assert block == bp_scan.call_args[1]["motor"]
@@ -170,7 +209,7 @@ def test_save_run_adds_run_number_to_fields_in_scan(RE, dae, block):
         patch("ibex_bluesky_core.plans.ISISCallbacks") as icc,
     ):
         dae.controller = RunPerPointController(save_run=True)
-        _ = RE(scan(dae, block, 1, 2, 3, save_run=True, periods=False))
+        _ = RE(scan(dae, block, 1, 2, 3, save_run=True, periods=False, model=Gaussian().fit()))
         assert dae.controller.run_number.name in icc.call_args[1]["measured_fields"]
 
 
@@ -180,7 +219,11 @@ def test_save_run_adds_run_number_to_fields_in_adaptive_scan(RE, dae, block):
         patch("ibex_bluesky_core.plans.ISISCallbacks") as icc,
     ):
         dae.controller = RunPerPointController(save_run=True)
-        _ = RE(adaptive_scan(dae, block, 1, 2, 3, 4, 5, save_run=True, periods=False))
+        _ = RE(
+            adaptive_scan(
+                dae, block, 1, 2, 3, 4, 5, save_run=True, periods=False, model=Gaussian().fit()
+            )
+        )
         assert dae.controller.run_number.name in icc.call_args[1]["measured_fields"]
 
 
@@ -190,7 +233,7 @@ def test_periods_adds_period_number_to_fields_in_scan(RE, dae, block):
         patch("ibex_bluesky_core.plans.ISISCallbacks") as icc,
     ):
         dae.controller = PeriodPerPointController(save_run=False)
-        _ = RE(scan(dae, block, 1, 2, 3, save_run=False, periods=True))
+        _ = RE(scan(dae, block, 1, 2, 3, save_run=False, periods=True, model=Gaussian().fit()))
         assert dae.period_num.name in icc.call_args[1]["measured_fields"]
 
 
@@ -200,7 +243,11 @@ def test_periods_adds_period_number_to_fields_in_adaptive_scan(RE, dae, block):
         patch("ibex_bluesky_core.plans.ISISCallbacks") as icc,
     ):
         dae.controller = PeriodPerPointController(save_run=False)
-        _ = RE(adaptive_scan(dae, block, 1, 2, 3, 4, 5, save_run=False, periods=True))
+        _ = RE(
+            adaptive_scan(
+                dae, block, 1, 2, 3, 4, 5, save_run=False, periods=True, model=Gaussian().fit()
+            )
+        )
         assert dae.period_num.name in icc.call_args[1]["measured_fields"]
 
 

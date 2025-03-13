@@ -8,9 +8,6 @@ from ibex_bluesky_core.callbacks import FitMethod, ISISCallbacks
 from ibex_bluesky_core.devices.reflectometry import refl_parameter
 from ibex_bluesky_core.devices.simpledae import monitor_normalising_dae
 from ibex_bluesky_core.plans import (
-    DEFAULT_DET,
-    DEFAULT_FIT_METHOD,
-    DEFAULT_MON,
     adaptive_scan,
     scan,
 )
@@ -24,10 +21,10 @@ def refl_scan(  # noqa: PLR0913
     count: int,
     *,
     frames: int,
-    det: int = DEFAULT_DET,
-    mon: int = DEFAULT_MON,
+    det: int,
+    mon: int,
+    model: FitMethod,
     pixel_range: int = 0,
-    model: FitMethod = DEFAULT_FIT_METHOD,
     periods: bool = True,
     save_run: bool = False,
     rel: bool = False,
@@ -81,10 +78,10 @@ def refl_adaptive_scan(  # noqa: PLR0913
     target_delta: float,
     *,
     frames: int,
-    det: int = DEFAULT_DET,
-    mon: int = DEFAULT_MON,
+    det: int,
+    mon: int,
+    model: FitMethod,
     pixel_range: int = 0,
-    model: FitMethod = DEFAULT_FIT_METHOD,
     periods: bool = True,
     save_run: bool = False,
     rel: bool = False,
