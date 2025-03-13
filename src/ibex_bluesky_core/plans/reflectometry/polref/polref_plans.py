@@ -1,3 +1,5 @@
+"""Auto-alignment scripts for POLREF reflectometer."""
+
 import winsound
 from collections.abc import Generator
 from datetime import datetime
@@ -31,6 +33,7 @@ NUM_POINTS = 21
 
 
 def s1vg_checks(result: ModelResult, alignment_param_value: float) -> bool:
+    """Check for optimised S1VG value."""
     rsquared_confidence = 0.9
     expected_param_value = 1.0
     expected_param_value_tol = 0.1
@@ -76,6 +79,7 @@ parameters = [
 
 
 def full_autoalign_plan() -> Generator[Msg, None, None]:
+    """Full autoalign plan for POLREF."""
     det_pixels = centred_pixel(DEFAULT_DET, PIXEL_RANGE)
     dae = monitor_normalising_dae(
         det_pixels=det_pixels,
@@ -88,7 +92,7 @@ def full_autoalign_plan() -> Generator[Msg, None, None]:
     yield from bps.mv(dae.number_of_periods, COUNT if PERIODS else 1)  # type: ignore
 
     axes_sig = [parameters[i].get_movable() for i in range(len(parameters))]
-    yield from ensure_connected(*axes_sig, dae)  #  type: ignore
+    yield from ensure_connected(*axes_sig, dae)  # type: ignore
 
     print("Starting auto-alignment...")
 
@@ -105,8 +109,8 @@ def full_autoalign_plan() -> Generator[Msg, None, None]:
             num_points=NUM_POINTS,
             files_output_dir=READABLE_FILE_OUTPUT_DIR,
             problem_found_plan=lambda: call_sync(winsound.Beep, 1000, 500),
-            pre_align_plan=lambda: parameters[i].pre_align_params(parameters),
-            post_align_plan=lambda: call_sync(
+            pre_align_plan=lambda i=i: parameters[i].pre_align_params(parameters),
+            post_align_plan=lambda i=i: call_sync(
                 plt.savefig,
                 fname=f"{READABLE_FILE_OUTPUT_DIR}{parameters[i].name}_{datetime.now().strftime('%H%M%S')}",
             ),
