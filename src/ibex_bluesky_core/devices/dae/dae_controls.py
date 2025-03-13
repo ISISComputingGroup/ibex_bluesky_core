@@ -37,7 +37,7 @@ class BeginRunExBits(IntFlag):
     BEGIN_DELAYED = 2
 
 
-class BeginRunEx(StandardReadable, Movable):
+class BeginRunEx(StandardReadable, Movable[BeginRunExBits]):
     """Subdevice for the BEGINRUNEX signal to begin a run."""
 
     def __init__(self, dae_prefix: str, name: str = "") -> None:
