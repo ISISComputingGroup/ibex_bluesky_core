@@ -1,5 +1,3 @@
-from ibex_bluesky_core.plans import motor_scan
-
 # Plans 
 
 `ibex_bluesky_core` provides a number of plans that can be run by the RunEngine directly. These are mostly thin wrappers around the generic [bluesky plans](https://blueskyproject.io/bluesky/main/plans.html)
@@ -10,7 +8,7 @@ So you can do this:
 
 ```python
 
-    >>> icc = RE(yield from refl_scan("S1VG", 1, 10, 21, model=Gaussian().fit() frames=500, det=100, mon=3, pixel_range=6, periods=True, save_run=False))
+    >>> result = RE(refl_scan("S1VG", 1, 10, 21, model=Gaussian().fit() frames=500, det=100, mon=3, pixel_range=6, periods=True, save_run=False))
 ```
 
 or this: 
@@ -77,7 +75,8 @@ for example if you just wanted to scan over a motor, wait for 400 frames, and pe
 ```python
 >>> from ibex_bluesky_core.plans import motor_scan
 >>> from ibex_bluesky_core.callbacks.fitting.fitting_utils import Linear
->>> RE(motor_scan("motor_block", 1, 10, 11, model=Linear().fit(), frames=400, det=1, mon=3))
+>>> result = RE(motor_scan("motor_block", 1, 10, 11, model=Linear().fit(), frames=400, det=1, mon=3))
+>>> result.plan_result.live_fit
 ```
 
 ## Technique-specific plans
@@ -88,5 +87,4 @@ for example if you just wanted to scan over a motor, wait for 400 frames, and pe
 
 [`refl_adaptive_scan`](ibex_bluesky_core.plans.reflectometry.refl_adaptive_scan)
 
-These are very similar to the above high-level plans but are designed to construct a DAE and a [`ReflParameter`](ibex_bluesky_core.devices.reflectometry.ReflParameter) given a reflectometry server parameter name (ie. "S1VG" or "THETA"). These parameters some logic in the reflectometry server which tell us if sets were successful, so we provide a device that uses this. 
-
+These are very similar to the above high-level plans but are designed to construct a DAE and a [`ReflParameter`](ibex_bluesky_core.devices.reflectometry.ReflParameter) given a reflectometry server parameter name (ie. "S1VG" or "THETA"). The reflectometry server has some logic which tell us if sets and redefines were successful, so we provide devices that utilise this. 
