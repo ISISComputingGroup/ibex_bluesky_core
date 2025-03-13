@@ -29,9 +29,7 @@ SAVE_RUN = True
 NUM_POINTS = 21
 
 
-def s1vg_checks(result: ModelResult, fit_param: str) -> bool:
-
-    alignment_param_value = result.values[fit_param]
+def s1vg_checks(result: ModelResult, alignment_param_value: float) -> bool:
 
     rsquared_confidence = 0.9
     expected_param_value = 1.0

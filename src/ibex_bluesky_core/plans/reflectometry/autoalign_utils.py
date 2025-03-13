@@ -39,7 +39,7 @@ class AlignmentParam:
         pre_align_param_positions (dict[str, float], optional): A dictionary of alignment
             parameter names to values. Before alignment, each supplied alignment parameter
             will be moved to their respective value.
-        do_checks (Callable[[ModelResult, float], bool], optional): Checks to ensure that the optimised
+        check_func (Callable[[ModelResult, float], bool], optional): Checks to ensure that the optimised
             value for this alignment parameter is sensible, must return True if NOT a sensible
             value.
         _prefix (str, optional): The PV prefix for the respective reflectometry parameter. Defaults to
@@ -54,7 +54,7 @@ class AlignmentParam:
     fit_method: FitMethod
     fit_param: str
     pre_align_param_positions: dict[str, float] = field(default_factory=dict)
-    check_func: Callable[[ModelResult, str], bool] | None = None
+    check_func: Callable[[ModelResult, float], bool] | None = None
     _prefix: str = get_pv_prefix()
     _movable: ReflParameter | None = None
 
@@ -68,7 +68,7 @@ class AlignmentParam:
         """
 
         if not self._movable:
-            self._movable = ReflParameter(prefix=self._prefix, name=self.name, changing_timeout=60)
+            self._movable = ReflParameter(prefix=self._prefix, name=self.name, changing_timeout_s=60)
 
         return self._movable
 
@@ -134,11 +134,11 @@ def _add_fields(
 
 
 def _check_parameter(
-    fit_param: str,
+    alignment_param_value: float,
     result: ModelResult,
     init_mot_pos: float,
     rel_scan_range: float,
-    user_checks: Callable[[ModelResult, str], bool] | None,
+    user_checks: Callable[[ModelResult, float], bool] | None = None,
 ) -> bool:
     """Check that the optimised value is within scan range and then runs user provided checks.
 
@@ -156,8 +156,6 @@ def _check_parameter(
         True if value is not sensible. False otherwise.
     """
 
-    alignment_param_value = result.values[fit_param]
-
     if init_mot_pos + rel_scan_range < alignment_param_value:
         return True
 
@@ -167,7 +165,12 @@ def _check_parameter(
     if user_checks is None:
         return False
 
-    return user_checks(result, fit_param)
+    return user_checks(result, alignment_param_value)
+
+
+def _get_alignment_param_value(icc: ISISCallbacks, alignment_param: AlignmentParam):
+
+    return icc.live_fit.result.values[alignment_param.fit_param]
 
 
 def _inner_loop(
@@ -196,8 +199,6 @@ def _inner_loop(
     print(f"Scanning over {alignment_param.name} with a relative scan range of {rel_scan_range}.")
 
     init_mot_pos: float = yield from bps.rd(alignment_param.get_movable()) #  type: ignore
-    found_problem = True
-    alignment_param_value = None
 
     @icc
     def _inner() -> Generator[Msg, None, None]:
@@ -211,19 +212,16 @@ def _inner_loop(
 
     yield from _inner()
 
-    if icc.live_fit.result is not None:
-        print(icc.live_fit.result.fit_report())
-        print(f"Files written to {FILE_OUTPUT_DIR}\n")
+    print(f"Files written to {FILE_OUTPUT_DIR}\n")
+    alignment_param_value = _get_alignment_param_value(icc, alignment_param)
 
-        found_problem = _check_parameter(
-            fit_param=alignment_param.fit_param,
-            result=icc.live_fit.result,
-            init_mot_pos=init_mot_pos,
-            rel_scan_range=rel_scan_range,
-            user_checks=alignment_param.check_func,
-        )
-
-    if found_problem:
+    if _check_parameter(
+        alignment_param_value=alignment_param_value,
+        result=icc.live_fit.result,
+        init_mot_pos=init_mot_pos,
+        rel_scan_range=rel_scan_range,
+        user_checks=alignment_param.check_func,
+    ):
 
         print(
             f"""This failed one or more of the checks on {alignment_param.name}"""

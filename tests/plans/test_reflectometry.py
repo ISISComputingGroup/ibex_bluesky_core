@@ -1,7 +1,8 @@
 # pyright: reportMissingParameterType=false
 
 from typing import Generator, Iterator
-from unittest.mock import MagicMock, Mock, patch
+from unittest.mock import MagicMock, Mock, call, patch
+from lmfit.model import ModelResult, Parameters, Model
 import pytest
 from ibex_bluesky_core.callbacks.fitting import LiveFit
 from ibex_bluesky_core.devices.block import BlockMot, BlockRw
@@ -13,7 +14,7 @@ from ibex_bluesky_core.devices.simpledae.reducers import MonitorNormalizer
 from ibex_bluesky_core.devices.simpledae.strategies import Waiter
 from ibex_bluesky_core.plans.reflectometry import refl_adaptive_scan, refl_scan
 from ibex_bluesky_core.plans.reflectometry import autoalign_utils
-from ibex_bluesky_core.plans.reflectometry.autoalign_utils import AlignmentParam, _add_fields, optimise_axis_against_intensity
+from ibex_bluesky_core.plans.reflectometry.autoalign_utils import AlignmentParam, _add_fields, _check_parameter, optimise_axis_against_intensity
 from ibex_bluesky_core.callbacks.fitting.fitting_utils import Fit, SlitScan
 import bluesky.plan_stubs as bps 
 from bluesky.utils import Msg
@@ -120,6 +121,26 @@ def test_alignment_param_pre_alignment_plan(RE):
         assert mv.call_args[0] == (params[0].get_movable(), 1.0, params[1].get_movable(), 2.0, params[2].get_movable(), 3.0)
 
 
+def test_that_if_fields_supplied_they_are_unchanged(RE, dae):
+
+    param = AlignmentParam(name="S1VG", rel_scan_ranges=[], fit_method=SlitScan().fit(), fit_param="")
+
+    def gen() -> Generator[Msg, None, float]:
+        yield from bps.null()
+        return 0.0
+
+    with (
+        patch("ibex_bluesky_core.plans.ISISCallbacks.__init__", return_value=None) as icc,
+        patch("ibex_bluesky_core.plans.ISISCallbacks.live_fit", return_value=LiveFit(param.fit_method, dae.name, param.name)),
+        patch("bluesky.plan_stubs.rd", return_value=gen())
+    ):
+        
+        RE(optimise_axis_against_intensity(dae, alignment_param=param, fields=["hello"]))
+        
+        icc.assert_called_once()
+        assert ["hello"] == icc.call_args[1]["measured_fields"] # type: ignore
+
+
 def test_when_no_fields_provided_then_fields_added(RE, dae):
 
     param = AlignmentParam(name="S1VG", rel_scan_ranges=[], fit_method=SlitScan().fit(), fit_param="")
@@ -138,6 +159,26 @@ def test_when_no_fields_provided_then_fields_added(RE, dae):
         
         icc.assert_called_once()
         assert [dae.reducer.intensity.name, dae.reducer.intensity_stddev.name, dae.period_num.name, dae.controller.run_number.name, "S1VG"] == icc.call_args[1]["measured_fields"] # type: ignore
+
+
+def test_when_no_periods_no_save_run_then_not_added_to_fields(RE, dae):
+
+    param = AlignmentParam(name="S1VG", rel_scan_ranges=[], fit_method=SlitScan().fit(), fit_param="")
+
+    def gen() -> Generator[Msg, None, float]:
+        yield from bps.null()
+        return 0.0
+
+    with (
+        patch("ibex_bluesky_core.plans.ISISCallbacks.__init__", return_value=None) as icc,
+        patch("ibex_bluesky_core.plans.ISISCallbacks.live_fit", return_value=LiveFit(param.fit_method, dae.name, param.name)),
+        patch("bluesky.plan_stubs.rd", return_value=gen())
+    ):
+        
+        RE(optimise_axis_against_intensity(dae, alignment_param=param, periods=False, save_run=False))
+        
+        icc.assert_called_once()
+        assert [dae.reducer.intensity.name, dae.reducer.intensity_stddev.name, "S1VG"] == icc.call_args[1]["measured_fields"] # type: ignore
 
 
 def test_pre_post_align_callbacks_are_called(RE, dae):
@@ -181,8 +222,60 @@ def test_found_problem_callback_is_called_if_problem(RE, dae, monkeypatch):
     with (
         patch("bluesky.plans.rel_scan", return_value=bps.null()),
         patch("bluesky.plan_stubs.mv", return_value=bps.null()),
-        patch("bluesky.plan_stubs.rd", return_value=gen())
+        patch("bluesky.plan_stubs.rd", return_value=gen()),
+        patch("ibex_bluesky_core.plans.reflectometry.autoalign_utils._check_parameter", return_value=True),
+        patch("ibex_bluesky_core.plans.reflectometry.autoalign_utils._get_alignment_param_value", return_value=0.0)
     ):
         monkeypatch.setattr('builtins.input', lambda _: '2')
         RE(optimise_axis_against_intensity(dae, alignment_param=param, problem_found_plan=lambda: plan(mock)))
         mock.assert_called_once()
+
+
+@pytest.mark.parametrize("param_value, problem", [(-5, True), (5, True), (0.0, False)])
+def test_alignment_param_value_outside_of_scan_range_returns_problem(param_value, problem):
+    
+    with (
+        patch("lmfit.model.ModelResult") as mr,
+    ):
+        
+        mr.values = {"x0": param_value}
+        assert _check_parameter(alignment_param_value=param_value, result=mr, init_mot_pos=0.0, rel_scan_range=1.0) == problem
+
+
+@pytest.mark.parametrize("problem", [True, False])
+def test_that_user_checks_are_called_when_provided(problem):
+
+    mock = MagicMock() 
+
+    def my_check(model: ModelResult, param_val: float):
+        mock()
+        return problem
+
+    with (
+        patch("lmfit.model.ModelResult") as mr
+    ):
+        
+        mr.values = {"x0": 0.0}
+        assert _check_parameter(alignment_param_value=0.0, result=mr, init_mot_pos=0.0, rel_scan_range=1.0, user_checks=my_check) == problem
+
+
+def test_that_if_no_problem_found_then_motor_is_moved_and_rezeroed(RE, dae):
+    
+    param = AlignmentParam(name="S1VG", rel_scan_ranges=[0.0], fit_method=SlitScan().fit(), fit_param="")
+    sp = 5.0
+
+    def gen() -> Generator[Msg, None, float]:
+        yield from bps.null()
+        return 0.0
+
+    with(
+        patch("ibex_bluesky_core.plans.reflectometry.autoalign_utils._check_parameter", return_value=False) as check,
+        patch("bluesky.plans.rel_scan", return_value=bps.null()),
+        patch("bluesky.plan_stubs.mv", return_value=bps.null()) as mv,
+        patch("bluesky.plan_stubs.rd", return_value=gen()),
+        patch("ibex_bluesky_core.plans.reflectometry.autoalign_utils._get_alignment_param_value", return_value=sp)
+    ):
+
+        RE(optimise_axis_against_intensity(dae, alignment_param=param))
+        check.assert_called_once()
+        mv.assert_has_calls([call(param.get_movable(), sp), call(param.get_movable().redefine, 0.0)])
