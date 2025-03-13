@@ -13,9 +13,9 @@ from matplotlib.axes import Axes
 
 from ibex_bluesky_core.callbacks import ISISCallbacks
 from ibex_bluesky_core.callbacks.fitting import FitMethod
-from ibex_bluesky_core.devices import get_pv_prefix
-from ibex_bluesky_core.devices.block import BlockR, BlockRw
-from ibex_bluesky_core.devices.reflectometry.refl_param import ReflParameter
+from ibex_bluesky_core.utils import get_pv_prefix
+from bluesky.protocols import NamedMovable
+from ibex_bluesky_core.devices.reflectometry import ReflParameter
 from ibex_bluesky_core.devices.simpledae import SimpleDae
 
 FILE_OUTPUT_DIR = Path("C:\\") / "instrument" / "var" / "logs" / "bluesky" / "output_files"
@@ -30,6 +30,7 @@ class AlignmentParam:
             Should be same as the respective relectometry parameter or read/write block.
         rel_scan_ranges (list[float]): Scan range relative to the current motor position.
             If the list has more than one element then it will rescan for each range.
+            Scans between mot_pos - rel_scan_range / 2 -> mot_pos + rel_scan_range / 2
         fit_method (FitMethod): The relationship to expect between the alignment parameter
             and the beam. e.g Gaussian.
         fit_param (str): Which property of fit_method you aim to optimise. e.g centre (x0)
@@ -43,7 +44,7 @@ class AlignmentParam:
             value.
         _prefix (str, optional): The PV prefix for the respective reflectometry parameter. Defaults to
             the current instrument PV prefix.
-        _alignment_param (ReflParameter, BlockRw[float], optional): A reflectometry parameter or block
+        _movable (ReflParameter, optional): A reflectometry parameter or block
             read/write signal. Use this if you want to create your own signal.
 
     """
@@ -53,23 +54,23 @@ class AlignmentParam:
     fit_method: FitMethod
     fit_param: str
     pre_align_param_positions: dict[str, float] = field(default_factory=dict)
-    do_checks: Callable[[ModelResult, float], bool] | None = None
+    check_func: Callable[[ModelResult, str], bool] | None = None
     _prefix: str = get_pv_prefix()
-    _alignment_param: ReflParameter | BlockRw[float] | None = None
+    _movable: ReflParameter | None = None
 
-    def get_signal(self) -> ReflParameter | BlockRw[float]:
+    def get_movable(self) -> ReflParameter:
         """Returns the encapsulated signal for this alignment parameter.
 
         If there is no signal attached then one is created as a reflectometry parameter.
 
         Returns:
-            signal (ReflParameter | BlockRw[float])
+            signal (ReflParameter)
         """
 
-        if not self._alignment_param:
-            self._alignment_param = ReflParameter(prefix=self._prefix, name=self.name)
+        if not self._movable:
+            self._movable = ReflParameter(prefix=self._prefix, name=self.name, changing_timeout=60)
 
-        return self._alignment_param
+        return self._movable
 
     def pre_align_params(
         self,
@@ -85,7 +86,7 @@ class AlignmentParam:
         yield from bps.mv(
             *chain(
                 *[
-                    (p.get_signal(), self.pre_align_param_positions[p.name])
+                    (p.get_movable(), self.pre_align_param_positions[p.name])
                     for p in alignment_params
                 ]
             )  # type: ignore
@@ -94,7 +95,7 @@ class AlignmentParam:
 
 def _add_fields(
     fields: list[str],
-    dae: SimpleDae | BlockR[float],
+    dae: SimpleDae,
     periods: bool,
     save_run: bool,
     alignment_param_name: str,
@@ -103,7 +104,7 @@ def _add_fields(
 
     Args:
         fields (list[str]): The fields to be added to.
-        dae (SimpleDae | BlockR[float]): A readable signal.
+        dae (SimpleDae): A readable DAE object.
         periods (bool): Are periods being used.
         save_run (bool): Should runs be saved.
         alignment_param_name (str): The name of the alignment parameter.
@@ -114,21 +115,18 @@ def _add_fields(
     """
 
     if fields == []:
-        if type(dae) is SimpleDae:
-            fields.append(
-                [
-                    dae.reducer.intensity.name,  # type: ignore
-                    dae.reducer.intensity_stddev.name,  # type: ignore
-                ]
-            )
+        fields.extend(
+            [
+                dae.reducer.intensity.name,  # type: ignore
+                dae.reducer.intensity_stddev.name,  # type: ignore
+            ]
+        )
 
-            if periods:
-                fields.append(dae.period_num.name)  # type: ignore
-            elif save_run:
-                fields.append(dae.controller.run_number.name)  # type: ignore
-
-        else:
-            fields.append(dae.name)
+        if periods:
+            fields.append(dae.period_num.name)  # type: ignore
+        
+        if save_run:
+            fields.append(dae.controller.run_number.name)  # type: ignore
 
         fields.append(alignment_param_name)
 
@@ -136,18 +134,18 @@ def _add_fields(
 
 
 def _check_parameter(
-    alignment_param_value: float,
+    fit_param: str,
     result: ModelResult,
     init_mot_pos: float,
     rel_scan_range: float,
-    user_checks: Callable[[ModelResult, float], bool] | None,
+    user_checks: Callable[[ModelResult, str], bool] | None,
 ) -> bool:
     """Check that the optimised value is within scan range and then runs user provided checks.
 
     Returns True means the found result was not sensible.
 
     Args:
-        alignment_param_value (float): The optimised value.
+        fit_param (float): The name of the optimised value.
         result (ModelResult): The fitting resuls returned from lmfit.
         init_mot_pos (float): The initial motor position before scanning.
         rel_scan_range (float): The current relative scan range.
@@ -158,6 +156,8 @@ def _check_parameter(
         True if value is not sensible. False otherwise.
     """
 
+    alignment_param_value = result.values[fit_param]
+
     if init_mot_pos + rel_scan_range < alignment_param_value:
         return True
 
@@ -167,35 +167,35 @@ def _check_parameter(
     if user_checks is None:
         return False
 
-    return user_checks(result, alignment_param_value)
+    return user_checks(result, fit_param)
 
 
 def _inner_loop(
     icc: ISISCallbacks,
-    dae: SimpleDae | BlockR[float],
+    dae: SimpleDae,
     alignment_param: AlignmentParam,
     rel_scan_range: float,
     num_points: int,
-    callback_if_problem: Callable[[], Generator[Msg, None, None]] | Callable[[], None],
+    problem_found_plan: Callable[[], Generator[Msg, None, None]],
 ) -> Generator[Msg, None, bool]:
     """Functionality to perform on a per scan basis.
 
     Args:
         ISISCallbacks (ISISCallbacks): ISIS Callback Collection object.
-        dae (SimpleDae | BlockR[float]): A readable signal.
+        dae (SimpleDae): A readable DAE object.
         alignment_param (AlignmentParam): The alignment parameter to be scanned over and optimised.
         rel_scan_range (float): The current relative scan range.
         num_points (int): The number of points across the scan.
-        callback_if_problem (Callable[[], Generator[Msg, None, None]] | Callable[[], None]):
+        problem_found_plan (Callable[[], Generator[Msg, None, None]] | Callable[[], None]):
             A callback for what to do if the optimised value is not found to be sensible.
 
     Returns:
-        Whether there was a problem during runtime (bool).
+        Whether there was a problem during runtime. Returns True if there was. (bool).
     """
 
     print(f"Scanning over {alignment_param.name} with a relative scan range of {rel_scan_range}.")
 
-    init_mot_pos: float = yield from bps.rd(alignment_param.get_signal())
+    init_mot_pos: float = yield from bps.rd(alignment_param.get_movable()) #  type: ignore
     found_problem = True
     alignment_param_value = None
 
@@ -203,9 +203,9 @@ def _inner_loop(
     def _inner() -> Generator[Msg, None, None]:
         yield from bp.rel_scan(
             [dae],
-            alignment_param.get_signal(),
-            -rel_scan_range,
-            rel_scan_range,
+            alignment_param.get_movable(),
+            -rel_scan_range / 2,
+            rel_scan_range / 2,
             num=num_points,
         )
 
@@ -214,42 +214,41 @@ def _inner_loop(
     if icc.live_fit.result is not None:
         print(icc.live_fit.result.fit_report())
         print(f"Files written to {FILE_OUTPUT_DIR}\n")
-        alignment_param_value = icc.live_fit.result.values[alignment_param.fit_param]
 
         found_problem = _check_parameter(
-            alignment_param_value=alignment_param_value,
+            fit_param=alignment_param.fit_param,
             result=icc.live_fit.result,
             init_mot_pos=init_mot_pos,
             rel_scan_range=rel_scan_range,
-            user_checks=alignment_param.do_checks,
+            user_checks=alignment_param.check_func,
         )
 
     if found_problem:
-        if type(callback_if_problem) is Callable[[], Generator[Msg, None, None]]:
-            yield from callback_if_problem()  # type: ignore
-        else:
-            callback_if_problem()
 
         print(
-            f"""This failed one or more of the checks on {alignment_param.name}
-             with a scan range of {rel_scan_range}."""
+            f"""This failed one or more of the checks on {alignment_param.name}"""
+            f""" with a scan range of {rel_scan_range}."""
         )
         print(f"Value found for {alignment_param.fit_param} was {alignment_param_value}.")
-        input("Check your setup and checking function then press enter to go again...")
 
-        return True
+        yield from problem_found_plan()
+        
+        def inp():
+            choice = input(f"Type '1' if you would like to re-scan or type '2' to re-zero at {alignment_param_value} and keep going.")
 
-    else:
-        print(f"Moving {alignment_param.name} to {alignment_param_value} and rezeroing...")
-        yield from bps.mv(alignment_param.get_signal(), alignment_param_value)  # type: ignore
+            if choice not in ['1','2']:
+                return inp()
+            
+            return choice
+        
+        if inp() == '1':
+            return True
 
+    print(f"Moving {alignment_param.name} to {alignment_param_value} and rezeroing...")
+    yield from bps.mv(alignment_param.get_movable(), alignment_param_value)  # type: ignore
+    yield from bps.mv(alignment_param.get_movable().redefine, 0.0)  # Redefine current motor position to be 0
 
-
-        # redefine motor pos to be 0 TODODDDDDDDDDDDDDDODODODOD!!!!!!!!!!!!!!!!!!!!!!!!!
-
-
-
-        return False
+    return False
 
 
 class OptimiseAxisParams(TypedDict):
@@ -258,14 +257,14 @@ class OptimiseAxisParams(TypedDict):
     periods: NotRequired[bool]
     save_run: NotRequired[bool]
     files_output_dir: NotRequired[Path]
-    callback_if_problem: NotRequired[Callable[[], Generator[Msg, None, None]] | Callable[[], None]]
-    callback_pre_align: NotRequired[Callable[[], Generator[Msg, None, None]] | Callable[[], None]]
-    callback_post_align: NotRequired[Callable[[], Generator[Msg, None, None]] | Callable[[], None]]
+    problem_found_plan: NotRequired[Callable[[], Generator[Msg, None, None]]]
+    pre_align_plan: NotRequired[Callable[[], Generator[Msg, None, None]]]
+    post_align_plan: NotRequired[Callable[[], Generator[Msg, None, None]]]
     ax: NotRequired[Axes | None]
 
 
 def optimise_axis_against_intensity(
-    dae: SimpleDae | BlockR[float],
+    dae: SimpleDae,
     alignment_param: AlignmentParam,
     **kwargs: Unpack[OptimiseAxisParams],
 ) -> Generator[Msg, None, ModelResult | None]:
@@ -286,12 +285,12 @@ def optimise_axis_against_intensity(
         save_run (bool): Should runs be saved. Defaults to True.
         files_output_dir (Path): Where to save any outputted files. Defaults to
             C:/instrument/var/logs/bluesky/output_files.
-        callback_if_problem (Callable[[], Generator[Msg, None, None]] | Callable[[], None]):
+        problem_found_plan (Callable[[], Generator[Msg, None, None]] | None):
             Either a plan or standard function, called if optimised value is not found to be
             sensible.
-        callback_pre_align (Callable[[], Generator[Msg, None, None]] | Callable[[], None]):
+        pre_align_plan (Callable[[], Generator[Msg, None, None]] | None):
             Either a plan or standard function, called before all scans.
-        callback_pre_align (Callable[[], Generator[Msg, None, None]] | Callable[[], None]):
+        post_align_plan (Callable[[], Generator[Msg, None, None]] | None):
             Either a plan or standard function, called after all scans.
         ax (matplotlib.axes.Axes): The Axes to plot points and fits to.
 
@@ -304,20 +303,20 @@ def optimise_axis_against_intensity(
     periods = kwargs.get("periods", True)
     save_run = kwargs.get("save_run", True)
     files_output_dir = kwargs.get("files_output_dir", FILE_OUTPUT_DIR)
-    callback_if_problem = kwargs.get("callback_if_problem", lambda: None)
-    callback_pre_align = kwargs.get("callback_pre_align", lambda: None)
-    callback_post_align = kwargs.get("callback_post_align", lambda: None)
+    problem_found_plan = kwargs.get("problem_found_plan", lambda: bps.null())
+    pre_align_plan = kwargs.get("pre_align_plan", lambda: bps.null())
+    post_align_plan = kwargs.get("post_align_plan", lambda: bps.null())
     ax = kwargs.get("ax", None)
 
     fields = _add_fields(
-        fields,
+        fields=fields,
         dae=dae,
         periods=periods,
         save_run=save_run,
         alignment_param_name=alignment_param.name,
     )
     postfix = f"{alignment_param.name}_{datetime.now().strftime('%H%M%S')}"
-    yerr = dae.reducer.intensity_stddev.name if type(dae) is SimpleDae else None  # type: ignore
+    yerr = dae.reducer.intensity_stddev.name  # type: ignore
 
     icc = ISISCallbacks(
         x=alignment_param.name,
@@ -332,11 +331,8 @@ def optimise_axis_against_intensity(
         ax=ax,
     )
 
-    if type(callback_pre_align) is Callable[[], Generator[Msg, None, None]]:
-        yield from callback_pre_align()  # type: ignore
-    else:
-        callback_pre_align()
-
+    yield from pre_align_plan()
+        
     problem_loop = True
     while problem_loop: # If a problem is found, then start the alignment again
         problem_loop = False
@@ -348,12 +344,9 @@ def optimise_axis_against_intensity(
                 alignment_param,
                 rel_scan_range,
                 num_points,
-                callback_if_problem,
+                problem_found_plan,
             )
 
-    if type(callback_post_align) is Callable[[], Generator[Msg, None, None]]:
-        yield from callback_post_align()  # type: ignore
-    else:
-        callback_post_align()
+    yield from post_align_plan()
 
     return icc.live_fit.result
