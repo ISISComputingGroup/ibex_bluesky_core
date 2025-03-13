@@ -399,7 +399,7 @@ class PeriodSpecIntegralsReducer(Reducer, StandardReadable):
             current_period,
         ) = await asyncio.gather(
             self._trigger_and_get_specdata(dae),
-            dae.number_of_periods.get_value(),
+            dae.number_of_periods.signal.get_value(),
             dae.num_spectra.get_value(),
             dae.num_time_channels.get_value(),
             dae.period_num.get_value(),

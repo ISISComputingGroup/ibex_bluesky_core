@@ -42,7 +42,7 @@ async def height():
 
 
 def test_det_map_align(RE, dae, height):
-    set_mock_value(dae.number_of_periods, 6)
+    set_mock_value(dae.number_of_periods.signal, 6)
     set_mock_value(dae.num_spectra, 6)
     set_mock_value(dae.num_time_channels, 1)
 
@@ -86,7 +86,7 @@ def test_det_map_align(RE, dae, height):
 def test_angle_align(RE, dae):
     set_mock_value(dae.num_spectra, 6)
     set_mock_value(dae.num_time_channels, 1)
-    set_mock_value(dae.number_of_periods, 1)
+    set_mock_value(dae.number_of_periods.signal, 1)
 
     specdata = np.array([
         0, 0, 0, 5000, 0, 1, 0, 2, 0, 3, 0, 2, 0, 1,

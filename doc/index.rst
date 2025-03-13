@@ -37,6 +37,13 @@ Reference documentation
 
 .. toctree::
    :maxdepth: 2
+   :caption: Plans
+   :glob:
+
+   plans/*
+
+.. toctree::
+   :maxdepth: 2
    :caption: Devices
    :glob:
    

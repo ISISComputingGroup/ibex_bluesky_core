@@ -955,7 +955,7 @@ async def test_period_spec_integrals_reducer(
     )
     await reducer.connect()
 
-    set_mock_value(simpledae.number_of_periods, 2)
+    set_mock_value(simpledae.number_of_periods.signal, 2)
     set_mock_value(simpledae.num_spectra, 4)
     set_mock_value(simpledae.num_time_channels, 3)
 

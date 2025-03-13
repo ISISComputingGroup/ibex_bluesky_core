@@ -4,6 +4,7 @@ import logging
 from collections.abc import Generator
 from typing import TypedDict, cast
 
+import bluesky.plan_stubs as bps
 import bluesky.plans as bp
 import matplotlib.pyplot as plt
 import numpy as np
@@ -22,14 +23,15 @@ from ibex_bluesky_core.callbacks.reflectometry.det_map import (
     DetMapHeightScanLiveDispatcher,
     LivePColorMesh,
 )
-from ibex_bluesky_core.devices.simpledae import SimpleDae, Waiter
+from ibex_bluesky_core.devices.simpledae import SimpleDae
 from ibex_bluesky_core.devices.simpledae.controllers import (
     PeriodPerPointController,
 )
 from ibex_bluesky_core.devices.simpledae.reducers import (
     PeriodSpecIntegralsReducer,
 )
-from ibex_bluesky_core.plan_stubs import call_qt_aware, set_num_periods
+from ibex_bluesky_core.devices.simpledae.strategies import Waiter
+from ibex_bluesky_core.plan_stubs import call_qt_aware
 
 __all__ = ["DetMapAlignResult", "angle_scan_plan", "height_and_angle_scan_plan"]
 
@@ -223,7 +225,7 @@ def height_and_angle_scan_plan(  # noqa PLR0913
     )
     def _inner() -> Generator[Msg, None, None]:
         nonlocal start, stop, num
-        yield from set_num_periods(dae, num)
+        yield from bps.mv(dae.number_of_periods, num)
         plan = bp.rel_scan if rel else bp.scan
         yield from plan([dae], height, start, stop, num=num)
 

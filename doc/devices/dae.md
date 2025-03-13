@@ -21,7 +21,8 @@ suitable; instead the `Dae` class should be subclassed directly to allow for fin
 ### Run-per-point
 
 ```python
-from ibex_bluesky_core.devices import get_pv_prefix
+
+from ibex_bluesky_core.utils import get_pv_prefix
 from ibex_bluesky_core.devices.simpledae import SimpleDae
 from ibex_bluesky_core.devices.simpledae.controllers import RunPerPointController
 from ibex_bluesky_core.devices.simpledae.waiters import GoodFramesWaiter
@@ -54,7 +55,8 @@ reducer.intensity.set_name("normalized counts")
 ### Period-per-point
 
 ```python
-from ibex_bluesky_core.devices import get_pv_prefix
+
+from ibex_bluesky_core.utils import get_pv_prefix
 from ibex_bluesky_core.devices.simpledae import SimpleDae
 from ibex_bluesky_core.devices.simpledae.controllers import PeriodPerPointController
 from ibex_bluesky_core.devices.simpledae.waiters import PeriodGoodFramesWaiter

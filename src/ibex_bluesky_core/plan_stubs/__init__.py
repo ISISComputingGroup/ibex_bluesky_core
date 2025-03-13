@@ -16,7 +16,7 @@ CALL_SYNC_MSG_KEY = "ibex_bluesky_core_call_sync"
 CALL_QT_AWARE_MSG_KEY = "ibex_bluesky_core_call_qt_aware"
 
 
-__all__ = ["call_qt_aware", "call_sync", "set_num_periods"]
+__all__ = ["SimpleDae", "call_qt_aware", "call_sync"]
 
 
 def call_sync(func: Callable[P, T], *args: P.args, **kwargs: P.kwargs) -> Generator[Msg, None, T]:
@@ -79,20 +79,3 @@ def call_qt_aware(
         raise ValueError("Only matplotlib functions should be passed to call_qt_aware")
 
     return cast(T, (yield Msg(CALL_QT_AWARE_MSG_KEY, func, *args, **kwargs)))
-
-
-def set_num_periods(dae: SimpleDae, nperiods: int) -> Generator[Msg, None, None]:
-    """Set the number of periods for a DAE.
-
-    Args:
-        dae (SimpleDae): DAE object.
-        nperiods (int): number of periods to set.
-
-    """
-    yield from bps.mv(dae.number_of_periods, nperiods)  # type: ignore
-    actual = yield from bps.rd(dae.number_of_periods)
-    if actual != nperiods:
-        raise ValueError(
-            f"Could not set {nperiods} periods on DAE (probably requesting too many points, "
-            f"or already running)"
-        )
