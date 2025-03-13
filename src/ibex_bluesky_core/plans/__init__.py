@@ -1,8 +1,7 @@
 """Generic plans."""
 
-from abc import ABC
 from collections.abc import Generator
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Protocol
 
 import bluesky.plans as bp
 from bluesky import plan_stubs as bps
@@ -268,7 +267,7 @@ def motor_adaptive_scan(  # noqa: PLR0913
     )
 
 
-class NamedReadableAndMovable(Readable[Any], NamedMovable[Any], ABC):
+class NamedReadableAndMovable(Readable[Any], NamedMovable[Any], Protocol):
     """Abstract class for type checking that an object is readable, named and movable."""
 
 
