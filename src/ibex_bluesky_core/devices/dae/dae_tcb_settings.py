@@ -120,7 +120,7 @@ def _convert_tcb_settings_to_xml(current_xml: str, settings: DaeTCBSettingsData)
     return tostring(root, encoding="unicode")
 
 
-class DaeTCBSettings(Device, Locatable, Movable):
+class DaeTCBSettings(Device, Locatable[DaeTCBSettingsData], Movable[DaeTCBSettingsData]):
     """Subdevice for the DAE time channel settings."""
 
     def __init__(self, dae_prefix: str, name: str = "") -> None:

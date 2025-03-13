@@ -83,7 +83,8 @@ class ReflParameterRedefine(StandardReadable):
     async def set(self, value: float) -> None:
         """Set the setpoint.
 
-        This waits for the reflectometry parameter redefinition's 'CHANGED' PV
+        This redefines the position of a reflectometry parameter as the given value, and
+        waits for the reflectometry parameter redefinition's 'CHANGED' PV
         to go True to indicate it has finished redefining the position.
         """
         logger.info("setting %s to %s", self.define_pos_sp.source, value)
