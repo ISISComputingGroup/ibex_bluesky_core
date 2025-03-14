@@ -268,7 +268,7 @@ class OptimiseAxisParams(TypedDict):
     ax: NotRequired[Axes | None]
 
 
-def optimise_axis_against_intensity(
+def optimise_axis_against_intensity(  # noqa # D417
     dae: SimpleDae,
     alignment_param: AlignmentParam,
     **kwargs: Unpack[OptimiseAxisParams],
@@ -282,24 +282,25 @@ def optimise_axis_against_intensity(
     Args:
         dae (SimpleDae | BlockR[float]): A readable signal that represents beam intensity.
         alignment_param (AlignmentParam): The alignment parameter to be scanned over and optimised.
-        **kwargs:
-            num_points (int): The number of points across the scan. Defaults to 10.
-            fields (list[str]): Fields to measure and document in outputted files.
-            periods (bool): Are periods being used. Defaults to True.
-            save_run (bool): Should runs be saved. Defaults to True.
-            files_output_dir (Path): Where to save any outputted files. Defaults to
-                C:/instrument/var/logs/bluesky/output_files.
-            problem_found_plan (Callable[[], Generator[Msg, None, None]] | None):
-                Either a plan or standard function, called if optimised value is not found to be
-                sensible.
-            pre_align_plan (Callable[[], Generator[Msg, None, None]] | None):
-                Either a plan or standard function, called before all scans.
-            post_align_plan (Callable[[], Generator[Msg, None, None]] | None):
-                Either a plan or standard function, called after all scans.
-            ax (matplotlib.axes.Axes): The Axes to plot points and fits to.
+
+    Keyword Args:
+        num_points (int): The number of points across the scan. Defaults to 10.
+        fields (list[str]): Fields to measure and document in outputted files.
+        periods (bool): Are periods being used. Defaults to True.
+        save_run (bool): Should runs be saved. Defaults to True.
+        files_output_dir (Path): Where to save any outputted files. Defaults to
+            C:/instrument/var/logs/bluesky/output_files.
+        problem_found_plan (Callable[[], Generator[Msg, None, None]] | None):
+            Either a plan or standard function, called if optimised value is not found to be
+            sensible.
+        pre_align_plan (Callable[[], Generator[Msg, None, None]] | None):
+            Either a plan or standard function, called before all scans.
+        post_align_plan (Callable[[], Generator[Msg, None, None]] | None):
+            Either a plan or standard function, called after all scans.
+        ax (matplotlib.axes.Axes): The Axes to plot points and fits to.
 
     Returns:
-        an :obj:`ibex_bluesky_core.callbacks.ISISCallbacks` instance.'
+        Instance of :obj:`ibex_bluesky_core.callbacks.ISISCallbacks`.
 
     """
     num_points = kwargs.get("num_points", 10)
