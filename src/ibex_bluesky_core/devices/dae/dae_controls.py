@@ -23,6 +23,8 @@ class DaeControls(StandardReadable):
         self.abort_run: SignalX = epics_signal_x(f"{dae_prefix}ABORTRUN")
         self.recover_run: SignalX = epics_signal_x(f"{dae_prefix}RECOVERRUN")
         self.save_run: SignalX = epics_signal_x(f"{dae_prefix}SAVERUN")
+        self.update_run: SignalX = epics_signal_x(f"{dae_prefix}UPDATERUN")
+        self.store_run: SignalX = epics_signal_x(f"{dae_prefix}STORERUN")
 
         super().__init__(name=name)
 

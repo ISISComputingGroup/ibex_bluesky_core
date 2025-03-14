@@ -14,6 +14,9 @@ CALL_SYNC_MSG_KEY = "ibex_bluesky_core_call_sync"
 CALL_QT_AWARE_MSG_KEY = "ibex_bluesky_core_call_qt_aware"
 
 
+__all__ = ["call_qt_aware", "call_sync"]
+
+
 def call_sync(func: Callable[P, T], *args: P.args, **kwargs: P.kwargs) -> Generator[Msg, None, T]:
     """Call a synchronous user function in a plan, and returns the result of that call.
 
@@ -73,5 +76,4 @@ def call_qt_aware(
     if not getattr(func, "__module__", "").startswith("matplotlib"):
         raise ValueError("Only matplotlib functions should be passed to call_qt_aware")
 
-    yield from bps.clear_checkpoint()
     return cast(T, (yield Msg(CALL_QT_AWARE_MSG_KEY, func, *args, **kwargs)))

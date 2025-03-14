@@ -16,12 +16,12 @@ from event_model.documents.run_stop import RunStop
 
 from ibex_bluesky_core.callbacks._utils import (
     DATA,
-    DEFAULT_PATH,
-    INSTRUMENT,
     RB,
     TIME,
     UID,
     UNKNOWN_RB,
+    get_default_output_path,
+    get_instrument,
 )
 from ibex_bluesky_core.callbacks.fitting import LiveFit
 
@@ -37,7 +37,7 @@ class LiveFitLogger(CallbackBase):
         y: str,
         x: str,
         postfix: str,
-        output_dir: str | os.PathLike[str] = DEFAULT_PATH,
+        output_dir: str | os.PathLike[str] | None,
         yerr: str | None = None,
     ) -> None:
         """Initialise LiveFitLogger callback.
@@ -53,9 +53,10 @@ class LiveFitLogger(CallbackBase):
 
         """
         super().__init__()
+
         self.livefit = livefit
         self.postfix = postfix
-        self.output_dir = Path(output_dir)
+        self.output_dir = Path(output_dir or get_default_output_path())
         self.current_start_document: Optional[str] = None
 
         self.x = x
@@ -79,7 +80,7 @@ class LiveFitLogger(CallbackBase):
         )
         self.output_dir.mkdir(parents=True, exist_ok=True)
         self.current_start_document = doc[UID]
-        file = f"{INSTRUMENT}_{self.x}_{self.y}_{title_format_datetime}Z{self.postfix}.txt"
+        file = f"{get_instrument()}_{self.x}_{self.y}_{title_format_datetime}Z{self.postfix}.txt"
         rb_num = doc.get(RB, UNKNOWN_RB)
         if rb_num == UNKNOWN_RB:
             logger.warning('No RB number found, will save to "%s"', UNKNOWN_RB)

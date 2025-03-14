@@ -28,6 +28,9 @@ If the plan uses plotting, it should plot using matplotlib embedded in the IBEX 
 set MYPVPREFIX=TE:NDWXXXX:
 set "EPICS_CA_ADDR_LIST=127.255.255.255 130.246.51.255"
 set "EPICS_CA_AUTO_ADDR_LIST=NO"
+
+set IBEX_BLUESKY_CORE_LOGS=c:\instrument\var\bluesky\tmp
+set IBEX_BLUESKY_CORE_OUTPUT=c:\instrument\var\bluesky\tmp
 ```
 - Run the test using:
 ```

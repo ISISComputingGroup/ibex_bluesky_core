@@ -14,12 +14,11 @@ from event_model.documents.event_descriptor import EventDescriptor
 from event_model.documents.run_start import RunStart
 from event_model.documents.run_stop import RunStop
 
+from ibex_bluesky_core.callbacks import get_default_output_path
 from ibex_bluesky_core.callbacks._utils import (
     DATA,
     DATA_KEYS,
-    DEFAULT_PATH,
     DESCRIPTOR,
-    INSTRUMENT,
     MOTORS,
     NAME,
     PRECISION,
@@ -30,6 +29,7 @@ from ibex_bluesky_core.callbacks._utils import (
     UID,
     UNITS,
     UNKNOWN_RB,
+    get_instrument,
 )
 
 logger = logging.getLogger(__name__)
@@ -38,17 +38,24 @@ logger = logging.getLogger(__name__)
 class HumanReadableFileCallback(CallbackBase):
     """Outputs bluesky runs to human-readable output files in the specified directory path."""
 
-    def __init__(self, fields: list[str], *, output_dir: Path = DEFAULT_PATH) -> None:
+    def __init__(self, fields: list[str], *, output_dir: Path | None, postfix: str = "") -> None:
         """Output human-readable output files of bluesky runs.
 
         If fields are given, just output those, otherwise output all hinted signals.
+
+        Args:
+            fields: a list of field names to include in output files
+            output_dir: filepath into which to write output files
+            postfix: optional postfix to append to output file names
+
         """
         super().__init__()
         self.fields: list[str] = fields
-        self.output_dir: Path = output_dir
+        self.output_dir: Path = output_dir or get_default_output_path()
         self.current_start_document: Optional[str] = None
         self.descriptors: dict[str, EventDescriptor] = {}
         self.filename: Optional[Path] = None
+        self.postfix: str = postfix
 
     def start(self, doc: RunStart) -> None:
         """Start writing an output file.
@@ -71,7 +78,8 @@ class HumanReadableFileCallback(CallbackBase):
         self.filename = (
             self.output_dir
             / f"{rb_num}"
-            / f"{INSTRUMENT}{'_' + '_'.join(motors) if motors else ''}_{title_format_datetime}Z.txt"
+            / f"{get_instrument()}{'_' + '_'.join(motors) if motors else ''}_"
+            f"{title_format_datetime}Z{self.postfix}.txt"
         )
         if rb_num == UNKNOWN_RB:
             logger.warning('No RB number found, saving to "%s"', UNKNOWN_RB)

@@ -11,7 +11,12 @@ from ibex_bluesky_core.devices.simpledae import (
     PeriodPerPointController,
     RunPerPointController,
     SimpleDae,
+    check_dae_strategies,
     monitor_normalising_dae,
+)
+from ibex_bluesky_core.devices.simpledae.reducers import (
+    GoodFramesNormalizer,
+    PeriodGoodFramesNormalizer,
 )
 from ibex_bluesky_core.devices.simpledae.strategies import Controller, Reducer, Waiter
 
@@ -159,3 +164,40 @@ async def test_dae_checking_signal_correctly_sets_value():
     set_mock_value(device.signal, initial_value)
     await device.set(1)
     assert await device.signal.get_value() == 1
+
+
+def test_check_dae():
+    dae = SimpleDae(
+        prefix="",
+        controller=PeriodPerPointController(save_run=False),
+        waiter=PeriodGoodFramesWaiter(50),
+        reducer=PeriodGoodFramesNormalizer(prefix="", detector_spectra=[1]),
+    )
+
+    with pytest.raises(
+        TypeError,
+        match=r"DAE controller must be of type RunPerPointController, got PeriodPerPointController",
+    ):
+        check_dae_strategies(dae, expected_controller=RunPerPointController)
+
+    with pytest.raises(
+        TypeError, match=r"DAE waiter must be of type GoodFramesWaiter, got PeriodGoodFramesWaiter"
+    ):
+        check_dae_strategies(dae, expected_waiter=GoodFramesWaiter)
+
+    with pytest.raises(
+        TypeError,
+        match=r"DAE reducer must be of type GoodFramesNormalizer, got PeriodGoodFramesNormalizer",
+    ):
+        check_dae_strategies(dae, expected_reducer=GoodFramesNormalizer)
+
+    # Should not raise
+    check_dae_strategies(
+        dae,
+        expected_controller=PeriodPerPointController,
+        expected_waiter=PeriodGoodFramesWaiter,
+        expected_reducer=PeriodGoodFramesNormalizer,
+    )
+
+    # Should not raise
+    check_dae_strategies(dae)

@@ -7,8 +7,11 @@ from abc import ABC, abstractmethod
 from collections.abc import Awaitable, Collection, Sequence
 from typing import TYPE_CHECKING, Callable
 
+import numpy as np
+import numpy.typing as npt
 import scipp as sc
 from ophyd_async.core import (
+    Array1D,
     Device,
     DeviceVector,
     SignalR,
@@ -311,4 +314,116 @@ class MonitorNormalizer(Reducer, StandardReadable):
             self.det_counts_stddev,
             self.mon_counts_stddev,
             self.intensity_stddev,
+        ]
+
+
+class PeriodSpecIntegralsReducer(Reducer, StandardReadable):
+    """A DAE Reducer which simultaneously exposes integrals of many spectra in the current period.
+
+    Two types of integrals are available: detectors and monitors. Other than defaults, their
+    behaviour is identical. No normalization is performed in this reducer - exactly how the
+    detector and monitor integrals are used is defined downstream.
+
+    By itself, the data from this reducer is not suitable for use in a scan - but it provides
+    raw data which may be useful for further processing as part of callbacks (e.g. LiveDispatchers).
+    """
+
+    def __init__(
+        self,
+        *,
+        monitors: npt.NDArray[np.int64],
+        detectors: npt.NDArray[np.int64],
+    ) -> None:
+        """Init.
+
+        Args:
+            monitors: an array representing the mapping of monitors to acquire integrals from.
+                For example, passing np.array([1]) selects spectrum 1.
+            detectors: an array representing the mapping of detectors to acquire integrals from.
+                For example, passing np.array([5, 6, 7, 8]) would select detector spectra 5-8
+                inclusive, and so the output of this reducer would be an array of dimension 4.
+
+        """
+        self._detectors = detectors
+        self._monitors = monitors
+
+        self.det_integrals, self._det_integrals_setter = soft_signal_r_and_setter(
+            Array1D[np.int32], np.ndarray([], dtype=np.int32)
+        )
+        self.mon_integrals, self._mon_integrals_setter = soft_signal_r_and_setter(
+            Array1D[np.int32], np.ndarray([], dtype=np.int32)
+        )
+
+        super().__init__(name="")
+
+    @property
+    def detectors(self) -> npt.NDArray[np.int64]:
+        """Get the detectors used by this reducer."""
+        return self._detectors
+
+    @property
+    def monitors(self) -> npt.NDArray[np.int64]:
+        """Get the monitors used by this reducer."""
+        return self._monitors
+
+    async def _trigger_and_get_specdata(self, dae: "SimpleDae") -> npt.NDArray[np.int32]:
+        await dae.controls.update_run.trigger()
+        await dae.raw_spec_data_proc.set(1, wait=True)
+        (raw_data, nord) = await asyncio.gather(
+            dae.raw_spec_data.get_value(),
+            dae.raw_spec_data_nord.get_value(),
+        )
+        return raw_data[:nord]
+
+    async def reduce_data(self, dae: "SimpleDae") -> None:
+        """Expose detector & monitor integrals.
+
+        After this method returns, it is valid to read from det_integrals and
+        mon_integrals.
+
+        Note:
+            Could use SPECINTEGRALS PV here, which seems more efficient initially,
+            but it gets bounded by some areadetector settings under-the-hood which
+            may be a bit surprising on some instruments.
+
+            We can't just change these settings in this reducer, as they only apply
+            to new events that come in.
+
+        """
+        logger.info("starting reduction")
+        (
+            raw_data,
+            num_periods,
+            num_spectra,
+            num_time_channels,
+            current_period,
+        ) = await asyncio.gather(
+            self._trigger_and_get_specdata(dae),
+            dae.number_of_periods.signal.get_value(),
+            dae.num_spectra.get_value(),
+            dae.num_time_channels.get_value(),
+            dae.period_num.get_value(),
+        )
+
+        # Raw data includes time channel 0, which contains "junk" data
+        # This could potentially be useful for diagnostics, but is not useful as part of a scan.
+        # So it gets unconditionally chopped out.
+        # Spectrum 0 is also present. This is left so that passing detectors=[1] selects spectrum 1.
+        raw_data = raw_data.reshape((num_periods, num_spectra + 1, num_time_channels + 1))
+        all_current_period_data = raw_data[current_period - 1, :, 1:]
+
+        # After this sum, we are left with a 1D array of size nspectra
+        det_integrals = np.sum(all_current_period_data[self._detectors], axis=1)
+        mon_integrals = np.sum(all_current_period_data[self._monitors], axis=1)
+
+        self._det_integrals_setter(det_integrals)
+        self._mon_integrals_setter(mon_integrals)
+
+        logger.info("reduction complete")
+
+    def additional_readable_signals(self, dae: "SimpleDae") -> list[Device]:
+        """Publish interesting signals derived or used by this reducer."""
+        return [
+            self.mon_integrals,
+            self.det_integrals,
         ]
