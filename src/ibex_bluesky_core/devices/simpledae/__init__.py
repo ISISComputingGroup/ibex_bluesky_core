@@ -25,7 +25,7 @@ from ibex_bluesky_core.utils import get_pv_prefix
 
 logger = logging.getLogger(__name__)
 
-__all__ = ["SimpleDae", "monitor_normalising_dae"]
+__all__ = ["SimpleDae", "check_dae_strategies", "monitor_normalising_dae"]
 
 TController_co = TypeVar("TController_co", bound="Controller", default="Controller", covariant=True)
 TWaiter_co = TypeVar("TWaiter_co", bound="Waiter", default="Waiter", covariant=True)
