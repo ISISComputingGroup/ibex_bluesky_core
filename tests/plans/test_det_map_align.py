@@ -1,14 +1,14 @@
 # pyright: reportMissingParameterType=false
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 import numpy as np
 import pytest
 from ophyd_async.core import soft_signal_rw
 from ophyd_async.testing import callback_on_mock_put, set_mock_value
 
-from ibex_bluesky_core.devices.simpledae import SimpleDae
+from ibex_bluesky_core.devices.simpledae import PeriodPerPointController, SimpleDae
 from ibex_bluesky_core.devices.simpledae.reducers import PeriodSpecIntegralsReducer
-from ibex_bluesky_core.devices.simpledae.strategies import Controller, Waiter
+from ibex_bluesky_core.devices.simpledae.strategies import Waiter
 from ibex_bluesky_core.plans.reflectometry import (
     angle_scan_plan,
     height_and_angle_scan_plan,
@@ -17,7 +17,7 @@ from ibex_bluesky_core.plans.reflectometry import (
 
 @pytest.fixture
 async def dae():
-    noop_controller = Controller()
+    noop_controller = MagicMock(spec=PeriodPerPointController)
     noop_waiter = Waiter()
     reducer = PeriodSpecIntegralsReducer(
         monitors=np.array([1]), detectors=np.array([2, 3, 4, 5, 6])

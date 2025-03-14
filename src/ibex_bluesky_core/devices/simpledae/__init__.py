@@ -157,3 +157,41 @@ def monitor_normalising_dae(
     dae.reducer.intensity.set_name("intensity")  # type: ignore
     dae.reducer.intensity_stddev.set_name("intensity_stddev")  # type: ignore
     return dae
+
+
+def check_dae_strategies(
+    dae: SimpleDae,
+    *,
+    expected_controller: type[Controller] | None = None,
+    expected_waiter: type[Waiter] | None = None,
+    expected_reducer: type[Reducer] | None = None,
+) -> None:
+    """Check that the provided dae instance has appropriate controller/reducer/waiter configured.
+
+    Args:
+        dae: The simpledae instance to check.
+        expected_controller: The expected controller type, on None to not check.
+        expected_waiter: The expected controller type, on None to not check.
+        expected_reducer: The expected controller type, on None to not check.
+
+    """
+    if expected_controller is not None:
+        if not isinstance(dae.controller, expected_controller):
+            raise TypeError(
+                f"DAE controller must be of type {expected_controller.__name__}, "
+                f"got {dae.controller.__class__.__name__}"
+            )
+
+    if expected_waiter is not None:
+        if not isinstance(dae.waiter, expected_waiter):
+            raise TypeError(
+                f"DAE waiter must be of type {expected_waiter.__name__}, "
+                f"got {dae.waiter.__class__.__name__}"
+            )
+
+    if expected_reducer is not None:
+        if not isinstance(dae.reducer, expected_reducer):
+            raise TypeError(
+                f"DAE reducer must be of type {expected_reducer.__name__}, "
+                f"got {dae.reducer.__class__.__name__}"
+            )

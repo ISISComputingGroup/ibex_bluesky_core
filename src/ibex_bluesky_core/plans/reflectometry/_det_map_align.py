@@ -23,7 +23,7 @@ from ibex_bluesky_core.callbacks.reflectometry import (
     DetMapHeightScanLiveDispatcher,
     LivePColorMesh,
 )
-from ibex_bluesky_core.devices.simpledae import SimpleDae
+from ibex_bluesky_core.devices.simpledae import SimpleDae, check_dae_strategies
 from ibex_bluesky_core.devices.simpledae.controllers import (
     PeriodPerPointController,
 )
@@ -124,6 +124,11 @@ def angle_scan_plan(
 
     """
     logger.info("Starting angle scan")
+    check_dae_strategies(
+        dae,
+        expected_controller=PeriodPerPointController,
+        expected_reducer=PeriodSpecIntegralsReducer,
+    )
     reducer = dae.reducer
     _check_angle_map_shape(reducer, angle_map)
 
@@ -195,6 +200,11 @@ def height_and_angle_scan_plan(  # noqa PLR0913
 
     """
     logger.info("Starting combined height and angle scan")
+    check_dae_strategies(
+        dae,
+        expected_controller=PeriodPerPointController,
+        expected_reducer=PeriodSpecIntegralsReducer,
+    )
 
     reducer = dae.reducer
     _check_angle_map_shape(reducer, angle_map)
