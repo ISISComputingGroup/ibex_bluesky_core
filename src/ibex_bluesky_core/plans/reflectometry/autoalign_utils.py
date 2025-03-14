@@ -68,7 +68,6 @@ class AlignmentParam:
             signal (ReflParameter)
 
         """
-
         if not self._movable:
             self._movable = ReflParameter(
                 prefix=self._prefix or get_pv_prefix(), name=self.name, changing_timeout_s=60
