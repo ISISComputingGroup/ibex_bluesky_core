@@ -106,7 +106,9 @@ def test_get_movable_on_alignment_param_returns_reflparam(prefix):
 
     param_name = "S1VG"
 
-    with patch("ibex_bluesky_core.plans.reflectometry.autoalign_utils.get_pv_prefix", return_value=prefix):
+    with patch(
+        "ibex_bluesky_core.plans.reflectometry.autoalign_utils.get_pv_prefix", return_value=prefix
+    ):
         param = AlignmentParam(
             name=param_name, rel_scan_ranges=[0.0], fit_method=SlitScan().fit(), fit_param=""
         )
@@ -120,7 +122,10 @@ def test_alignment_param_pre_alignment_plan(RE, prefix):
     will move the specified ReflParameters to respective positions."""
 
     with (
-        patch("ibex_bluesky_core.plans.reflectometry.autoalign_utils.get_pv_prefix", return_value=prefix),
+        patch(
+            "ibex_bluesky_core.plans.reflectometry.autoalign_utils.get_pv_prefix",
+            return_value=prefix,
+        ),
         patch("bluesky.plan_stubs.mv") as mv,
     ):
         params = [
@@ -167,7 +172,10 @@ def test_that_if_fields_supplied_they_are_unchanged(RE, prefix, dae):
         return 0.0
 
     with (
-        patch("ibex_bluesky_core.plans.reflectometry.autoalign_utils.get_pv_prefix", return_value=prefix),
+        patch(
+            "ibex_bluesky_core.plans.reflectometry.autoalign_utils.get_pv_prefix",
+            return_value=prefix,
+        ),
         patch("ibex_bluesky_core.plans.ISISCallbacks.__init__", return_value=None) as icc,
         patch(
             "ibex_bluesky_core.plans.ISISCallbacks.live_fit",
@@ -196,7 +204,10 @@ def test_when_no_fields_provided_then_fields_added(RE, prefix, dae):
         return 0.0
 
     with (
-        patch("ibex_bluesky_core.plans.reflectometry.autoalign_utils.get_pv_prefix", return_value=prefix),
+        patch(
+            "ibex_bluesky_core.plans.reflectometry.autoalign_utils.get_pv_prefix",
+            return_value=prefix,
+        ),
         patch("ibex_bluesky_core.plans.ISISCallbacks.__init__", return_value=None) as icc,
         patch(
             "ibex_bluesky_core.plans.ISISCallbacks.live_fit",
@@ -229,7 +240,10 @@ def test_when_no_periods_no_save_run_then_not_added_to_fields(RE, prefix, dae):
         return 0.0
 
     with (
-        patch("ibex_bluesky_core.plans.reflectometry.autoalign_utils.get_pv_prefix", return_value=prefix),
+        patch(
+            "ibex_bluesky_core.plans.reflectometry.autoalign_utils.get_pv_prefix",
+            return_value=prefix,
+        ),
         patch("ibex_bluesky_core.plans.ISISCallbacks.__init__", return_value=None) as icc,
         patch(
             "ibex_bluesky_core.plans.ISISCallbacks.live_fit",
@@ -269,7 +283,10 @@ def test_pre_post_align_callbacks_are_called(RE, prefix, dae):
     mock_b = MagicMock()
 
     with (
-        patch("ibex_bluesky_core.plans.reflectometry.autoalign_utils.get_pv_prefix", return_value=prefix),
+        patch(
+            "ibex_bluesky_core.plans.reflectometry.autoalign_utils.get_pv_prefix",
+            return_value=prefix,
+        ),
         patch(
             "ibex_bluesky_core.plans.reflectometry.autoalign_utils._inner_loop", return_value=gen()
         ),
@@ -304,7 +321,10 @@ def test_found_problem_callback_is_called_if_problem(RE, prefix, dae, monkeypatc
     mock = MagicMock()
 
     with (
-        patch("ibex_bluesky_core.plans.reflectometry.autoalign_utils.get_pv_prefix", return_value=prefix),
+        patch(
+            "ibex_bluesky_core.plans.reflectometry.autoalign_utils.get_pv_prefix",
+            return_value=prefix,
+        ),
         patch("bluesky.plans.rel_scan", return_value=bps.null()),
         patch("bluesky.plan_stubs.mv", return_value=bps.null()),
         patch("bluesky.plan_stubs.rd", return_value=gen()),
@@ -382,7 +402,10 @@ def test_that_if_no_problem_found_then_motor_is_moved_and_rezeroed(RE, prefix, d
         return 0.0
 
     with (
-        patch("ibex_bluesky_core.plans.reflectometry.autoalign_utils.get_pv_prefix", return_value=prefix),
+        patch(
+            "ibex_bluesky_core.plans.reflectometry.autoalign_utils.get_pv_prefix",
+            return_value=prefix,
+        ),
         patch(
             "ibex_bluesky_core.plans.reflectometry.autoalign_utils._check_parameter",
             return_value=False,
@@ -424,7 +447,10 @@ def test_that_if_problem_found_and_type_1_then_re_scan(RE, prefix, dae, monkeypa
         return 0.0
 
     with (
-        patch("ibex_bluesky_core.plans.reflectometry.autoalign_utils.get_pv_prefix", return_value=prefix),
+        patch(
+            "ibex_bluesky_core.plans.reflectometry.autoalign_utils.get_pv_prefix",
+            return_value=prefix,
+        ),
         patch(
             "ibex_bluesky_core.plans.reflectometry.autoalign_utils._check_parameter",
             return_value=True,
@@ -467,7 +493,10 @@ def test_that_if_problem_found_and_type_random_then_re_ask(RE, prefix, dae, monk
         return 0.0
 
     with (
-        patch("ibex_bluesky_core.plans.reflectometry.autoalign_utils.get_pv_prefix", return_value=prefix),
+        patch(
+            "ibex_bluesky_core.plans.reflectometry.autoalign_utils.get_pv_prefix",
+            return_value=prefix,
+        ),
         patch(
             "ibex_bluesky_core.plans.reflectometry.autoalign_utils._check_parameter",
             return_value=True,
@@ -498,7 +527,10 @@ def test_get_alignment_param_value(prefix):
     param_value = 0.0
 
     with (
-        patch("ibex_bluesky_core.plans.reflectometry.autoalign_utils.get_pv_prefix", return_value=prefix),
+        patch(
+            "ibex_bluesky_core.plans.reflectometry.autoalign_utils.get_pv_prefix",
+            return_value=prefix,
+        ),
         patch("ibex_bluesky_core.plans.ISISCallbacks") as icc,
         patch("ibex_bluesky_core.callbacks.fitting.LiveFit") as lf,
         patch("lmfit.model.ModelResult") as mr,
