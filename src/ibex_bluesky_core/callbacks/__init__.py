@@ -16,7 +16,7 @@ from bluesky.utils import Msg, make_decorator
 from event_model import RunStart
 from matplotlib.axes import Axes
 
-from ibex_bluesky_core.callbacks._utils import DEFAULT_PATH
+from ibex_bluesky_core.callbacks._utils import get_default_output_path
 from ibex_bluesky_core.callbacks.file_logger import (
     HumanReadableFileCallback,
 )
@@ -136,7 +136,7 @@ class ISISCallbacks:
                     fields=combined_hr_fields,
                     output_dir=Path(human_readable_file_output_dir)
                     if human_readable_file_output_dir
-                    else DEFAULT_PATH,
+                    else get_default_output_path(),
                     postfix=human_readable_file_postfix,
                 ),
             )
@@ -186,9 +186,7 @@ class ISISCallbacks:
                         x=x,
                         y=y,
                         yerr=yerr,
-                        output_dir=DEFAULT_PATH
-                        if live_fit_logger_output_dir is None
-                        else live_fit_logger_output_dir,
+                        output_dir=live_fit_logger_output_dir,
                         postfix=live_fit_logger_postfix,
                     )
                 )
