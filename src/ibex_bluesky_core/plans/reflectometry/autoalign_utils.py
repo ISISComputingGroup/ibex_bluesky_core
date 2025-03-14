@@ -6,13 +6,13 @@ from datetime import datetime
 from itertools import chain
 from pathlib import Path
 from typing import Callable, TypedDict, Unpack
-from typing_extensions import NotRequired
 
 import bluesky.plan_stubs as bps
 import bluesky.plans as bp
 from bluesky.utils import Msg
 from lmfit.model import ModelResult
 from matplotlib.axes import Axes
+from typing_extensions import NotRequired
 
 from ibex_bluesky_core.callbacks import ISISCallbacks
 from ibex_bluesky_core.callbacks.fitting import FitMethod
