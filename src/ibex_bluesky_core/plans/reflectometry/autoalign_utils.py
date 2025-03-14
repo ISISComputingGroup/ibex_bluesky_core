@@ -56,7 +56,7 @@ class AlignmentParam:
     fit_param: str
     pre_align_param_positions: dict[str, float] = field(default_factory=dict)
     check_func: Callable[[ModelResult, float], bool] | None = None
-    _prefix: str = get_pv_prefix()
+    _prefix: str | None = None
     _movable: ReflParameter | None = None
 
     def get_movable(self) -> ReflParameter:
@@ -68,9 +68,10 @@ class AlignmentParam:
             signal (ReflParameter)
 
         """
+
         if not self._movable:
             self._movable = ReflParameter(
-                prefix=self._prefix, name=self.name, changing_timeout_s=60
+                prefix=self._prefix or get_pv_prefix(), name=self.name, changing_timeout_s=60
             )
 
         return self._movable
