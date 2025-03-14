@@ -5,7 +5,8 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from itertools import chain
 from pathlib import Path
-from typing import Callable, NotRequired, TypedDict, Unpack
+from typing import Callable, TypedDict, Unpack
+from typing_extensions import NotRequired
 
 import bluesky.plan_stubs as bps
 import bluesky.plans as bp
@@ -15,9 +16,8 @@ from matplotlib.axes import Axes
 
 from ibex_bluesky_core.callbacks import ISISCallbacks
 from ibex_bluesky_core.callbacks.fitting import FitMethod
-from ibex_bluesky_core.devices.reflectometry import ReflParameter
+from ibex_bluesky_core.devices.reflectometry import ReflParameter, get_pv_prefix
 from ibex_bluesky_core.devices.simpledae import SimpleDae
-from ibex_bluesky_core.utils import get_pv_prefix
 
 FILE_OUTPUT_DIR = Path("C:\\") / "instrument" / "var" / "logs" / "bluesky" / "output_files"
 
