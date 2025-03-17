@@ -136,7 +136,7 @@ def polarization(a: sc.Variable, b: sc.Variable) -> sc.Variable:
     On SANS instruments e.g. LARMOR, A and B correspond to intensity in different DAE
     periods (before/after switching a flipper) and the output is interpreted as a neutron polarization ratio
     Or reflectometry instruments e.g. POLREF, the situation is the same as on LARMOR
-    On muon instruments, A and B correspond to measuring from different detector banks
+    On muon instruments, A and B correspond to measuring from forward/backward detector banks, and the output is interpreted as a muon asymmetry
 
     """
     if a.unit != b.unit:
