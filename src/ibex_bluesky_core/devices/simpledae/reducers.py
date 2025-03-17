@@ -134,7 +134,7 @@ def polarization(a: sc.Variable, b: sc.Variable) -> sc.Variable:
         polarization_value: This quantity is calculated as (a-b)/(a+b)
 
     On SANS instruments e.g. LARMOR, A and B correspond to intensity in different DAE
-    periods (before/after switching a flipper)
+    periods (before/after switching a flipper) and the output is interpreted as a neutron polarization ratio
     Or reflectometry instruments e.g. POLREF, the situation is the same as on LARMOR
     On muon instruments, A and B correspond to measuring from different detector banks
 
