@@ -99,7 +99,7 @@ yield from autoalign_utils.optimise_axis_against_intensity(
 
 ```
 
-It is expected that after each `AlignmentParam` is optimised, it would make sense for all motors to be moved to a preset position. This can be done using the `pre_align_params` method of `AlignmentParam`; this is called using the list of all `AlignmentParam`s so that they are all moved to some preset position. `pre_align_params` is passed as a parameter to `optimise_axis_against_intensity` as the `pre_align_plan` callback. Also note that there are callbacks for `post_align_plan` and `problem_found_plan`. The following is how this can be done-
+It is expected that before each `AlignmentParam` is optimised, it would make sense for all motors to be moved to a preset position. This can be done using the `pre_align_params` method of `AlignmentParam`; this is called using the list of all `AlignmentParam`s so that they are all moved to some preset position. `pre_align_params` is passed as a parameter to `optimise_axis_against_intensity` as the `pre_align_plan` callback. Also note that there are callbacks for `post_align_plan` and `problem_found_plan`. The following is how this can be done-
 
 ```python
 
@@ -136,7 +136,7 @@ yield from autoalign_utils.optimise_axis_against_intensity(
     alignment_param=my_device
     pre_align_plan=lambda: parameters[0].pre_align_params(parameters),
     
-    # After optimising my_device, moved my_device to 1.0 and my_device2 to 2.0 simultaneously.
+    # Before optimising my_device, moved my_device to 1.0 and my_device2 to 2.0 simultaneously.
 )
 
 ```
