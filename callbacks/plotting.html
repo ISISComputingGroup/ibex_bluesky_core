@@ -1,0 +1,227 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Plotting &mdash; ibex_bluesky_core 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+
+  
+    <link rel="shortcut icon" href="../_static/favicon.png"/>
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Fitting Callback" href="../fitting/fitting.html" />
+    <link rel="prev" title="File writing callbacks" href="file_writing.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #343131" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            ibex_bluesky_core
+              <img src="../_static/logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Tutorial</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/overview.html">Getting started</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Devices</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../devices/blocks.html">Blocks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devices/dae.html">DAE (Data Acquisition Electronics)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Callbacks</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="docs_logging_callback.html">Document Logging Callback</a></li>
+<li class="toctree-l1"><a class="reference internal" href="file_writing.html">File writing callbacks</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Plotting</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#configuration">Configuration</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Fitting</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../fitting/fitting.html">Fitting Callback</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../fitting/livefit_logger.html">Fitting Files Callback</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../fitting/standard_fits.html">Standard Fitting Models</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Plan stubs</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/external_code.html"><code class="docutils literal notranslate"><span class="pre">call_sync</span></code> (calling external code)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/matplotlib_helpers.html"><code class="docutils literal notranslate"><span class="pre">call_qt_aware</span></code> (matplotlib helpers)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Plans</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../plans/plans.html">General Plans</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Plans (Reflectometry)</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../plans/reflectometry/detector_mapping_alignment.html">Detector-mapping alignment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plans/reflectometry/refl_param_scan.html">Reflectometry parameter scans</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Preprocessors</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../preprocessors/rbnumberpp.html">RB Number injection preprocessor</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Developer information</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../dev/create_a_release.html">Release Process</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dev/logging.html">Logging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dev/manual_system_testing.html">Manual system testing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dev/set_up_dev_environment.html">Local development</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../dev/sphinx_notes.html">Notes on Sphinx and addons</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Architectural decisions</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../architectural_decisions/001-repo-structure.html">Repository structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../architectural_decisions/002-use-ophyd-async.html">Use <code class="docutils literal notranslate"><span class="pre">ophyd-async</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../architectural_decisions/003-run-in-process.html">Run in-process</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../architectural_decisions/004-use-scipp.html">Use <code class="docutils literal notranslate"><span class="pre">scipp</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../architectural_decisions/005-variance-addition.html">Variance addition to counts data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../architectural_decisions/006-where-to-put-code.html">Where to put code</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../_api.html">API</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #343131" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">ibex_bluesky_core</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Plotting</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/ISISComputingGroup/ibex_bluesky_core/blob/main/doc/callbacks/plotting.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="plotting">
+<h1>Plotting<a class="headerlink" href="#plotting" title="Link to this heading"></a></h1>
+<p>Bluesky has good integration with <code class="docutils literal notranslate"><span class="pre">matplotlib</span></code> for data visualization, and data from scans
+may be easily plotted using the <code class="docutils literal notranslate"><span class="pre">LivePlot</span></code> callback.</p>
+<p><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core</span></code> provides a thin wrapper over bluesky’s default <code class="docutils literal notranslate"><span class="pre">LivePlot</span></code> callback,
+which ensures that plots are promptly displayed in IBEX.</p>
+<p>In order to use the wrapper, import <code class="docutils literal notranslate"><span class="pre">LivePlot</span></code> from <code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core</span></code> rather than
+<code class="docutils literal notranslate"><span class="pre">bluesky</span></code> directly:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">ibex_bluesky_core.callbacks.plotting</span><span class="w"> </span><span class="kn">import</span> <span class="n">LivePlot</span>
+</pre></div>
+</div>
+<section id="configuration">
+<h2>Configuration<a class="headerlink" href="#configuration" title="Link to this heading"></a></h2>
+<p>A range of configuration options for <code class="docutils literal notranslate"><span class="pre">LivePlot</span></code> are available - see the
+<a class="reference external" href="https://blueskyproject.io/bluesky/main/callbacks.html#bluesky.callbacks.mpl_plotting.LivePlot">bluesky <code class="docutils literal notranslate"><span class="pre">LivePlot</span></code> documentation</a>
+for more details about available options.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">LivePlot</span></code> object allows an arbitrary set of matplotlib <code class="docutils literal notranslate"><span class="pre">Axes</span></code> to be passed in, onto
+which it will plot. This can be used to configure properties which are not directly exposed
+on the <code class="docutils literal notranslate"><span class="pre">LivePlot</span></code> object, for example log-scaled axes.</p>
+<p>See the <a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html">matplotlib <code class="docutils literal notranslate"><span class="pre">Axes</span></code> documentation</a>
+for a full range of options on how to configure an <code class="docutils literal notranslate"><span class="pre">Axes</span></code> object.</p>
+<p>Below is a full example showing how to use standard <code class="docutils literal notranslate"><span class="pre">matplotlib</span></code> &amp; <code class="docutils literal notranslate"><span class="pre">bluesky</span></code> functionality
+to plot a scan with a logarithmically-scaled y-axis:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibex_bluesky_core.callbacks.plotting</span><span class="w"> </span><span class="kn">import</span> <span class="n">LivePlot</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibex_bluesky_core.plan_stubs</span><span class="w"> </span><span class="kn">import</span> <span class="n">call_qt_aware</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">plan</span><span class="p">():</span>
+    <span class="c1"># Create a new figure to plot onto.</span>
+    <span class="k">yield from</span> <span class="n">call_qt_aware</span><span class="p">(</span><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">)</span>
+    <span class="c1"># Make a new set of axes on that figure</span>
+    <span class="n">ax</span> <span class="o">=</span> <span class="k">yield from</span> <span class="n">call_qt_aware</span><span class="p">(</span><span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">)</span>
+    <span class="c1"># Set the y-scale to logarithmic</span>
+    <span class="k">yield from</span> <span class="n">call_qt_aware</span><span class="p">(</span><span class="n">ax</span><span class="o">.</span><span class="n">set_yscale</span><span class="p">,</span> <span class="s2">&quot;log&quot;</span><span class="p">)</span>
+    <span class="c1"># Use the above axes in a LivePlot callback</span>
+    <span class="n">plot_callback</span> <span class="o">=</span> <span class="n">LivePlot</span><span class="p">(</span><span class="n">y</span><span class="o">=</span><span class="s2">&quot;y_variable&quot;</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s2">&quot;x_variable&quot;</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="n">yerr</span><span class="o">=</span><span class="s2">&quot;yerr_variable&quot;</span><span class="p">)</span>
+    <span class="c1"># yerr is the uncertanties of each y value, producing error bars</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>See <a class="reference internal" href="../plan_stubs/matplotlib_helpers.html"><span class="std std-doc">docs for <code class="docutils literal notranslate"><span class="pre">call_qt_aware</span></code></span></a> for a description of why we need to use
+<code class="docutils literal notranslate"><span class="pre">yield</span> <span class="pre">from</span> <span class="pre">call_qt_aware</span></code> rather than calling <code class="docutils literal notranslate"><span class="pre">matplotlib</span></code> functions directly.</p>
+</div>
+<p>By providing a signal name to the <code class="docutils literal notranslate"><span class="pre">yerr</span></code> argument you can pass uncertainties to LivePlot, by not providing anything for this argument means that no errorbars will be drawn. Errorbars are drawn after each point collected, displaying their standard deviation- uncertainty data is collected from Bluesky event documents and errorbars are updated after every new point added.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">plot_callback</span></code> object can then be subscribed to the run engine, using either:</p>
+<ul class="simple">
+<li><p>An explicit callback when calling the run engine: <code class="docutils literal notranslate"><span class="pre">RE(some_plan(),</span> <span class="pre">plot_callback)</span></code></p></li>
+<li><p>Be subscribed in a plan using <code class="docutils literal notranslate"><span class="pre">&#64;subs_decorator</span></code> from bluesky <strong>(recommended)</strong></p></li>
+<li><p>Globally attached to the run engine using <code class="docutils literal notranslate"><span class="pre">RE.subscribe(plot_callback)</span></code></p>
+<ul>
+<li><p>Not recommended, not all scans will use the same variables and a plot setup that works
+for one scan is unlikely to be optimal for a different type of scan.</p></li>
+</ul>
+</li>
+</ul>
+<p>By subsequently re-using the same <code class="docutils literal notranslate"><span class="pre">ax</span></code> object in later scans, rather than creating a new
+<code class="docutils literal notranslate"><span class="pre">ax</span></code> object for each scan, two scans can be “overplotted” with each other for comparison.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="file_writing.html" class="btn btn-neutral float-left" title="File writing callbacks" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../fitting/fitting.html" class="btn btn-neutral float-right" title="Fitting Callback" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

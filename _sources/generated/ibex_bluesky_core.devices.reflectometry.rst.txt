@@ -1,0 +1,28 @@
+
+
+``ibex_bluesky_core.devices.reflectometry``
+===========================================
+        
+        
+        
+
+.. automodule:: ibex_bluesky_core.devices.reflectometry
+    :members:
+    :show-inheritance:
+
+    
+    
+    
+
+    
+    
+    .. rubric:: Members
+
+    .. autosummary::
+        :nosignatures:
+    
+        ReflParameter
+        ReflParameterRedefine
+        refl_parameter
+    
+    

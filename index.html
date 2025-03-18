@@ -1,0 +1,400 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Welcome to ibex_bluesky_core’s documentation! &mdash; ibex_bluesky_core 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+    <link rel="shortcut icon" href="_static/favicon.png"/>
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=2709fde1"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Getting started" href="tutorial/overview.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #343131" >
+
+          
+          
+          <a href="#" class="icon icon-home">
+            ibex_bluesky_core
+              <img src="_static/logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Tutorial</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="tutorial/overview.html">Getting started</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Devices</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="devices/blocks.html">Blocks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devices/dae.html">DAE (Data Acquisition Electronics)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Callbacks</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="callbacks/docs_logging_callback.html">Document Logging Callback</a></li>
+<li class="toctree-l1"><a class="reference internal" href="callbacks/file_writing.html">File writing callbacks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="callbacks/plotting.html">Plotting</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Fitting</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="fitting/fitting.html">Fitting Callback</a></li>
+<li class="toctree-l1"><a class="reference internal" href="fitting/livefit_logger.html">Fitting Files Callback</a></li>
+<li class="toctree-l1"><a class="reference internal" href="fitting/standard_fits.html">Standard Fitting Models</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Plan stubs</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="plan_stubs/external_code.html"><code class="docutils literal notranslate"><span class="pre">call_sync</span></code> (calling external code)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plan_stubs/matplotlib_helpers.html"><code class="docutils literal notranslate"><span class="pre">call_qt_aware</span></code> (matplotlib helpers)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Plans</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="plans/plans.html">General Plans</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Plans (Reflectometry)</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="plans/reflectometry/detector_mapping_alignment.html">Detector-mapping alignment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plans/reflectometry/refl_param_scan.html">Reflectometry parameter scans</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Preprocessors</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="preprocessors/rbnumberpp.html">RB Number injection preprocessor</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Developer information</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="dev/create_a_release.html">Release Process</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dev/logging.html">Logging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dev/manual_system_testing.html">Manual system testing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dev/set_up_dev_environment.html">Local development</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dev/sphinx_notes.html">Notes on Sphinx and addons</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Architectural decisions</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="architectural_decisions/001-repo-structure.html">Repository structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="architectural_decisions/002-use-ophyd-async.html">Use <code class="docutils literal notranslate"><span class="pre">ophyd-async</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="architectural_decisions/003-run-in-process.html">Run in-process</a></li>
+<li class="toctree-l1"><a class="reference internal" href="architectural_decisions/004-use-scipp.html">Use <code class="docutils literal notranslate"><span class="pre">scipp</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="architectural_decisions/005-variance-addition.html">Variance addition to counts data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="architectural_decisions/006-where-to-put-code.html">Where to put code</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="_api.html">API</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #343131" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="#">ibex_bluesky_core</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="#" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Welcome to ibex_bluesky_core’s documentation!</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/ISISComputingGroup/ibex_bluesky_core/blob/main/doc/index.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="welcome-to-ibex-bluesky-core-s-documentation">
+<h1>Welcome to ibex_bluesky_core’s documentation!<a class="headerlink" href="#welcome-to-ibex-bluesky-core-s-documentation" title="Link to this heading"></a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core</span></code> is a library of common <code class="docutils literal notranslate"><span class="pre">bluesky</span></code> functionality and <code class="docutils literal notranslate"><span class="pre">ophyd-async</span></code>
+devices for use on the ISIS neutron &amp; muon source’s beamlines.</p>
+<p><a class="reference external" href="https://blueskyproject.io/bluesky/main/index.html">Bluesky</a> is a generic data acquisition
+framework, which started at NSLS-ii but is developed as a multi-facility collaboration. Bluesky
+provides concepts such as “scanning” in a generic way.</p>
+<p><a class="reference external" href="https://blueskyproject.io/ophyd-async/main/index.html">ophyd-async</a> is a python device
+abstraction library, which allows bluesky to communicate with an underlying control system
+(EPICS/IBEX, in our case).</p>
+<p><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core</span></code> provides:</p>
+<ul class="simple">
+<li><p>Central configuration for core bluesky classes, such as the <code class="docutils literal notranslate"><span class="pre">RunEngine</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">RunEngine</span></code> Callbacks customized for use at ISIS: file writing, plotting, fitting, …</p></li>
+<li><p>Central implementations of ISIS device classes using <code class="docutils literal notranslate"><span class="pre">ophyd-async</span></code>: Blocks, DAE, …</p></li>
+<li><p>Bluesky or scanning-related utilities which are useful across multiple beamlines.</p></li>
+</ul>
+</section>
+<section id="getting-started">
+<h1>Getting started<a class="headerlink" href="#getting-started" title="Link to this heading"></a></h1>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">Tutorial</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="tutorial/overview.html">Getting started</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tutorial/overview.html#plans">Plans</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial/overview.html#devices">Devices</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial/overview.html#setting-and-reading-values">Setting and reading values</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial/overview.html#scanning">Scanning</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial/overview.html#the-runengine">The <code class="docutils literal notranslate"><span class="pre">RunEngine</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial/overview.html#callbacks">Callbacks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorial/overview.html#see-also">See also</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+<section id="reference-documentation">
+<h1>Reference documentation<a class="headerlink" href="#reference-documentation" title="Link to this heading"></a></h1>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">Devices</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="devices/blocks.html">Blocks</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="devices/blocks.html#block-types">Block types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="devices/blocks.html#configuring-block-write-behaviour">Configuring block write behaviour</a></li>
+<li class="toctree-l2"><a class="reference internal" href="devices/blocks.html#run-control">Run control</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="devices/dae.html">DAE (Data Acquisition Electronics)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="devices/dae.html#example-configurations">Example configurations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="devices/dae.html#mapping-to-bluesky-device-model">Mapping to bluesky device model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="devices/dae.html#controllers">Controllers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="devices/dae.html#reducers">Reducers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="devices/dae.html#waiters">Waiters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="devices/dae.html#dae-base-class-advanced"><code class="docutils literal notranslate"><span class="pre">Dae</span></code> (base class, advanced)</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">Callbacks</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="callbacks/docs_logging_callback.html">Document Logging Callback</a></li>
+<li class="toctree-l1"><a class="reference internal" href="callbacks/file_writing.html">File writing callbacks</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="callbacks/file_writing.html#human-readable-files">Human readable files</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="callbacks/plotting.html">Plotting</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="callbacks/plotting.html#configuration">Configuration</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">Fitting</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="fitting/fitting.html">Fitting Callback</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="fitting/fitting.html#configuration">Configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="fitting/fitting.html#models">Models</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="fitting/livefit_logger.html">Fitting Files Callback</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="fitting/livefit_logger.html#fitting-files">Fitting Files</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="fitting/standard_fits.html">Standard Fitting Models</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="fitting/standard_fits.html#linear">Linear</a></li>
+<li class="toctree-l2"><a class="reference internal" href="fitting/standard_fits.html#polynomial">Polynomial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="fitting/standard_fits.html#gaussian">Gaussian</a></li>
+<li class="toctree-l2"><a class="reference internal" href="fitting/standard_fits.html#lorentzian">Lorentzian</a></li>
+<li class="toctree-l2"><a class="reference internal" href="fitting/standard_fits.html#damped-oscillator-dampedosc">Damped Oscillator (DampedOsc)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="fitting/standard_fits.html#slit-scan-slitscan">Slit Scan (SlitScan)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="fitting/standard_fits.html#error-function-erf">Error Function (ERF)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="fitting/standard_fits.html#complementary-error-function-erfc">Complementary Error Function (ERFC)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="fitting/standard_fits.html#top-hat-tophat">Top Hat (TopHat)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="fitting/standard_fits.html#trapezoid">Trapezoid</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">Plan stubs</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="plan_stubs/external_code.html"><code class="docutils literal notranslate"><span class="pre">call_sync</span></code> (calling external code)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plan_stubs/matplotlib_helpers.html"><code class="docutils literal notranslate"><span class="pre">call_qt_aware</span></code> (matplotlib helpers)</a></li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">Plans</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="plans/plans.html">General Plans</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="plans/plans.html#return-values">Return values</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plans/plans.html#lower-level-plans">Lower-level plans</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plans/plans.html#higher-level-wrapper-plans">Higher-level wrapper plans</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">Plans (Reflectometry)</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="plans/reflectometry/detector_mapping_alignment.html">Detector-mapping alignment</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="plans/reflectometry/detector_mapping_alignment.html#angle-scan">Angle scan</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plans/reflectometry/detector_mapping_alignment.html#height-angle-scan">Height &amp; angle scan</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plans/reflectometry/detector_mapping_alignment.html#implementation">Implementation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="plans/reflectometry/refl_param_scan.html">Reflectometry parameter scans</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="plans/reflectometry/refl_param_scan.html#refl-scan"><code class="docutils literal notranslate"><span class="pre">refl_scan</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="plans/reflectometry/refl_param_scan.html#refl-adaptive-scan"><code class="docutils literal notranslate"><span class="pre">refl_adaptive_scan</span></code></a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">Preprocessors</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="preprocessors/rbnumberpp.html">RB Number injection preprocessor</a></li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">Developer information</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="dev/create_a_release.html">Release Process</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dev/logging.html">Logging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dev/manual_system_testing.html">Manual system testing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="dev/manual_system_testing.html#running-the-tests-from-pydev-in-the-gui">Running the tests from PyDEV in the GUI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dev/manual_system_testing.html#running-from-a-standalone-python-session">Running from a standalone python session</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="dev/set_up_dev_environment.html">Local development</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="dev/set_up_dev_environment.html#resources-for-bluesky-and-ophyd-async-development">Resources for bluesky and ophyd-async development</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dev/set_up_dev_environment.html#checkout-the-repository-locally">Checkout the repository locally</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dev/set_up_dev_environment.html#create-activate-a-virtual-environment-windows">Create &amp; activate a virtual environment (windows)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dev/set_up_dev_environment.html#install-the-library-dev-dependencies-in-editable-mode">Install the library &amp; dev dependencies in editable mode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dev/set_up_dev_environment.html#unit-tests">Unit tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dev/set_up_dev_environment.html#run-lints">Run lints</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dev/set_up_dev_environment.html#build-docs-locally">Build docs locally</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="dev/sphinx_notes.html">Notes on Sphinx and addons</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="dev/sphinx_notes.html#using-myst-admonitions">Using MyST admonitions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dev/sphinx_notes.html#code-blocks-in-docstrings">Code blocks in docstrings</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">Architectural decisions</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="architectural_decisions/001-repo-structure.html">Repository structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="architectural_decisions/002-use-ophyd-async.html">Use <code class="docutils literal notranslate"><span class="pre">ophyd-async</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="architectural_decisions/003-run-in-process.html">Run in-process</a></li>
+<li class="toctree-l1"><a class="reference internal" href="architectural_decisions/004-use-scipp.html">Use <code class="docutils literal notranslate"><span class="pre">scipp</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="architectural_decisions/005-variance-addition.html">Variance addition to counts data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="architectural_decisions/006-where-to-put-code.html">Where to put code</a></li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">API reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="_api.html">API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="generated/ibex_bluesky_core.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="generated/ibex_bluesky_core.callbacks.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.callbacks</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="generated/ibex_bluesky_core.callbacks.document_logger.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.callbacks.document_logger</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/ibex_bluesky_core.callbacks.file_logger.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.callbacks.file_logger</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/ibex_bluesky_core.callbacks.fitting.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.callbacks.fitting</span></code></a><ul>
+<li class="toctree-l5"><a class="reference internal" href="generated/ibex_bluesky_core.callbacks.fitting.fitting_utils.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.callbacks.fitting.fitting_utils</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="generated/ibex_bluesky_core.callbacks.fitting.livefit_logger.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.callbacks.fitting.livefit_logger</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="generated/ibex_bluesky_core.callbacks.plotting.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.callbacks.plotting</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/ibex_bluesky_core.callbacks.reflectometry.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.callbacks.reflectometry</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="generated/ibex_bluesky_core.devices.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.devices</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="generated/ibex_bluesky_core.devices.block.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.devices.block</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/ibex_bluesky_core.devices.dae.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.devices.dae</span></code></a><ul>
+<li class="toctree-l5"><a class="reference internal" href="generated/ibex_bluesky_core.devices.dae.dae.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.devices.dae.dae</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="generated/ibex_bluesky_core.devices.dae.dae_controls.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.devices.dae.dae_controls</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="generated/ibex_bluesky_core.devices.dae.dae_event_mode.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.devices.dae.dae_event_mode</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="generated/ibex_bluesky_core.devices.dae.dae_monitor.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.devices.dae.dae_monitor</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="generated/ibex_bluesky_core.devices.dae.dae_period.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.devices.dae.dae_period</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="generated/ibex_bluesky_core.devices.dae.dae_period_settings.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.devices.dae.dae_period_settings</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="generated/ibex_bluesky_core.devices.dae.dae_settings.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.devices.dae.dae_settings</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="generated/ibex_bluesky_core.devices.dae.dae_spectra.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.devices.dae.dae_spectra</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="generated/ibex_bluesky_core.devices.dae.dae_tcb_settings.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.devices.dae.dae_tcb_settings</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="generated/ibex_bluesky_core.devices.muons.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.devices.muons</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/ibex_bluesky_core.devices.reflectometry.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.devices.reflectometry</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/ibex_bluesky_core.devices.sans.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.devices.sans</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/ibex_bluesky_core.devices.simpledae.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.devices.simpledae</span></code></a><ul>
+<li class="toctree-l5"><a class="reference internal" href="generated/ibex_bluesky_core.devices.simpledae.controllers.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.devices.simpledae.controllers</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="generated/ibex_bluesky_core.devices.simpledae.reducers.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.devices.simpledae.reducers</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="generated/ibex_bluesky_core.devices.simpledae.strategies.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.devices.simpledae.strategies</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="generated/ibex_bluesky_core.devices.simpledae.waiters.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.devices.simpledae.waiters</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="generated/ibex_bluesky_core.log.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.log</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/ibex_bluesky_core.plan_stubs.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.plan_stubs</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/ibex_bluesky_core.plans.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.plans</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="generated/ibex_bluesky_core.plans.muons.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.plans.muons</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/ibex_bluesky_core.plans.reflectometry.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.plans.reflectometry</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/ibex_bluesky_core.plans.sans.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.plans.sans</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="generated/ibex_bluesky_core.preprocessors.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.preprocessors</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/ibex_bluesky_core.run_engine.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.run_engine</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/ibex_bluesky_core.utils.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.utils</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="tutorial/overview.html" class="btn btn-neutral float-right" title="Getting started" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
