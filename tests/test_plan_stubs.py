@@ -7,7 +7,11 @@ import matplotlib.pyplot as plt
 import pytest
 from bluesky.utils import Msg
 
-from ibex_bluesky_core.plan_stubs import CALL_QT_AWARE_MSG_KEY, call_qt_aware, call_sync
+from ibex_bluesky_core.plan_stubs import (
+    CALL_QT_AWARE_MSG_KEY,
+    call_qt_aware,
+    call_sync,
+)
 from ibex_bluesky_core.run_engine._msg_handlers import call_sync_handler
 
 
