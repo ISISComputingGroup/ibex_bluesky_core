@@ -109,7 +109,7 @@ class DetMapAngleScanLiveDispatcher(LiveDispatcher):
         self._descriptor_uid = doc["uid"]
         return super().descriptor(doc)
 
-    def event(self, doc: Event, **kwargs: dict[str, Any]) -> None:  # pyright: ignore
+    def event(self, doc: Event, **kwargs: dict[str, Any]) -> Event:
         """Process an event."""
         logger.debug("DetMapAngleScanLiveDispatcher processing event uid %s", doc.get("uid"))
 
@@ -120,6 +120,7 @@ class DetMapAngleScanLiveDispatcher(LiveDispatcher):
             )
 
         self.y_data += data
+        return doc
 
     def stop(self, doc: RunStop, _md: dict[str, Any] | None = None) -> None:
         """Process a stop event."""
