@@ -77,3 +77,14 @@ def call_qt_aware(
         raise ValueError("Only matplotlib functions should be passed to call_qt_aware")
 
     return cast(T, (yield Msg(CALL_QT_AWARE_MSG_KEY, func, *args, **kwargs)))
+
+
+def set_motor_position(motor: Motor, position: float):
+    def make_motor_usable():
+        yield from abs_set(motor.set_use, MotorSetUse.SET)
+
+    def inner():
+        yield from abs_set(motor.set_use, MotorSetUse.USE)
+        yield from abs_set(motor.position, position)
+
+    return (yield from finalize_wrapper(inner(), make_motor_usable()))
