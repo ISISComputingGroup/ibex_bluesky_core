@@ -1,7 +1,7 @@
 """A general tool for reflectometers to use to save time aligning their beamlines."""
 
 from collections.abc import Generator
-from typing import Callable, Tuple
+from typing import Callable
 
 import bluesky.plan_stubs as bps
 from bluesky.protocols import NamedMovable
@@ -32,11 +32,11 @@ def _check_parameter(
         result (ModelResult): The fitting resuls returned from lmfit.
         init_mot_pos (float): The initial motor position before scanning.
         rel_scan_range (float): The current relative scan range.
-        user_checks (Callable[[ModelResult, float], bool] | None): User provided checks on the
+        is_good_fit (Callable[[ModelResult, float], bool] | None): User provided checks on the
             optimised value, must return True if result is sensible.
 
     Returns:
-        True if value is not sensible. False otherwise.
+        True if value is sensible. False otherwise.
 
     """
     if init_mot_pos + rel_scan_range < alignment_param_value:
@@ -55,10 +55,10 @@ def _get_alignment_param_value(icc: ISISCallbacks, fit_param: str) -> float:
     return icc.live_fit.result.values[fit_param]
 
 
-def _inner_loop(
+def _inner_loop(  # noqa: PLR0913 PLR0917
     dae: SimpleDae,
-    fit_param: str,
     alignment_param: NamedMovable[float],
+    fit_param: str,
     rel_scan_range: float,
     num_points: int,
     fit_method: FitMethod,
@@ -66,15 +66,23 @@ def _inner_loop(
     save_run: bool,
     is_good_fit: Callable[[ModelResult, float], bool] | None,
     problem_found_plan: Callable[[], Generator[Msg, None, None]],
-) -> Generator[Msg, None, Tuple[ISISCallbacks, bool]]:
+) -> Generator[Msg, None, tuple[ISISCallbacks, bool]]:
     """Functionality to perform on a per scan basis.
 
     Args:
-        icc (ISISCallbacks): ISIS Callback Collection object.
         dae (SimpleDae): A readable DAE object.
         alignment_param (AlignmentParam): The alignment parameter to be scanned over and optimised.
+        fit_param (str): Which property of fit_method you aim to optimise. e.g centre (x0)
+            of a Gaussian. See fitting/fitting_utils for the possible options for each fitting
+            method.
         rel_scan_range (float): The current relative scan range.
         num_points (int): The number of points across the scan.
+        fit_method (FitMethod): The relationship to expect between the alignment parameter
+            and the beam. e.g Gaussian.
+        periods (bool): Are DAE periods being used. Defaults to True.
+        save_run (bool): Should runs be saved. Defaults to True.
+        is_good_fit (Callable[[ModelResult, float], bool] | None): User provided checks on the
+            optimised value, must return True if result is sensible.
         problem_found_plan (Callable[[], Generator[Msg, None, None]] | None]):
             A callback for what to do if the optimised value is not found to be sensible.
 
@@ -152,7 +160,7 @@ class OptimiseAxisParams(TypedDict):
     is_good_fit: NotRequired[Callable[[ModelResult, float], bool] | None]
 
 
-def optimise_axis_against_intensity(  # noqa # D417
+def optimise_axis_against_intensity(  # noqa: D417
     dae: SimpleDae,
     alignment_param: NamedMovable[float],
     fit_method: FitMethod,
@@ -170,6 +178,14 @@ def optimise_axis_against_intensity(  # noqa # D417
     Args:
         dae (SimpleDae): A readable signal that represents beam intensity.
         alignment_param (AlignmentParam): The alignment parameter to be scanned over and optimised.
+        fit_method (FitMethod): The relationship to expect between the alignment parameter
+            and the beam. e.g Gaussian.
+        fit_param (str): Which property of fit_method you aim to optimise. e.g centre (x0)
+            of a Gaussian. See fitting/fitting_utils for the possible options for each fitting
+            method.
+        rel_scan_ranges (list[float]): Scan range relative to the current motor position.
+            If the list has more than one element then it will rescan for each range.
+            Scans between mot_pos - rel_scan_range / 2 -> mot_pos + rel_scan_range / 2
 
     Keyword Args:
         num_points (int): The number of points across the scan. Defaults to 10.
@@ -178,6 +194,8 @@ def optimise_axis_against_intensity(  # noqa # D417
         problem_found_plan (Callable[[], Generator[Msg, None, None]] | None):
             A plan, called if optimised value is not found to be
             sensible.
+        is_good_fit (Callable[[ModelResult, float], bool] | None): User provided checks on the
+            optimised value, must return True if result is sensible.
 
     Returns:
         Instance of :obj:`ibex_bluesky_core.callbacks.ISISCallbacks`.
