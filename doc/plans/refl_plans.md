@@ -4,15 +4,16 @@ For reflectometers- we provide a few generic plans which can be used to align be
 
 ## Full-Auto Alignment Plan
 
-The {py:obj}`ibex_bluesky_core.plans.reflectometry.autoalign_utils.optimise_axis_against_intensity` plan is designed to scan over a movable against beam intensity, and given which fitting parameter chosen to be optimised and the fitting method, it will find aim to find an optimum value. At this stage it will check if the value is 'sensible'- there are some default checks but the user is encouraged to provide their own checks. If found to be sensible, the motor will be moved to this value.
+The {py:obj}`ibex_bluesky_core.plans.reflectometry.autoalign_utils.optimise_axis_against_intensity` plan is designed to scan over a movable against beam intensity, and given which fitting parameter is chosen to be optimised and the fitting method, it will aim to find an optimum value. See [`standard fits`](../fitting/standard_fits.md) for the fitting parameters for each fitting model you can use. At this stage it will check if the value is 'sensible'- there are some default checks but the user is encouraged to provide their own checks. If found to be sensible, the motor will be moved to this value, otherwise it will optionally run a callback that can be provided, and then ask the user if they want to rescan or conttinue to move the movable.
 
-The idea for how we expect the main auto-alignment plan to be used is that at the top / instrument level, you will move all other movables to some position, ready to align, yield from this plan and then re-zero the motor.
-The following is how you would do this:
+The idea for how we expect the main auto-alignment plan to be used is that at the top / instrument level, you will move all other movables to some position ready to align, yield from this plan and then re-zero the motor.
+The following is how you would do this for a reflectometry parameter as your movable:
 
 ```python
 
 def full_autoalign_plan() -> Generator[Msg, None, None]:
  
+    count = 10
     det_pixels = centred_pixel(DEFAULT_DET, PIXEL_RANGE)
     dae = monitor_normalising_dae(
         det_pixels=det_pixels,
@@ -25,7 +26,7 @@ def full_autoalign_plan() -> Generator[Msg, None, None]:
     s1vg = ReflParameter(prefix=PREFIX, name="S1VG", changing_timeout_s=60)
     # Interfaces with the reflectometry server
 
-    yield from bps.mv(dae.number_of_periods, COUNT if PERIODS else 1)
+    yield from bps.mv(dae.number_of_periods, count)
 
     yield from ensure_connected(s1vg, dae)
 
