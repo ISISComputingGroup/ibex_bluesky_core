@@ -99,6 +99,9 @@ def test_found_problem_callback_is_called_if_problem(RE, simpledae, prefix, monk
         mock()
         yield from bps.null()
 
+    def raise_func() -> None:
+        raise ValueError("Test!")
+
     mock = MagicMock()
 
     with (
@@ -115,7 +118,7 @@ def test_found_problem_callback_is_called_if_problem(RE, simpledae, prefix, monk
         ),
         patch(
             "ibex_bluesky_core.plans.reflectometry.autoalign_utils._check_parameter",
-            return_value=False,
+            side_effect=ValueError("Test!"),
         ),
         patch(
             "ibex_bluesky_core.plans.reflectometry.autoalign_utils._get_alignment_param_value",
@@ -139,19 +142,33 @@ def test_found_problem_callback_is_called_if_problem(RE, simpledae, prefix, monk
         mock.assert_called_once()
 
 
-@pytest.mark.parametrize(("param_value", "problem"), [(-5, False), (5, False), (0.0, True)])
+@pytest.mark.parametrize(("param_value, problem"), [(-5, True), (5, True), (0, False)])
 def test_alignment_param_value_outside_of_scan_range_returns_problem(param_value, problem):
     """Test that if the optimised value is outside of the scan range then it is reported"""
     with (
         patch("lmfit.model.ModelResult") as mr,
     ):
+        
         mr.values = {"x0": param_value}
-        assert (
+
+        if problem:
+
+            with pytest.raises(ValueError):
+                _check_parameter(
+                    alignment_param_value=0.0,
+                    result=mr,
+                    init_mot_pos=0.0,
+                    rel_scan_range=1.0,
+                )
+
+        else: # Check that does not raise
+
             _check_parameter(
-                alignment_param_value=param_value, result=mr, init_mot_pos=0.0, rel_scan_range=1.0
+                alignment_param_value=0.0,
+                result=mr,
+                init_mot_pos=0.0,
+                rel_scan_range=1.0,
             )
-            == problem
-        )
 
 
 @pytest.mark.parametrize("problem", [False, True])
@@ -159,22 +176,35 @@ def test_that_user_checks_are_called_when_provided(problem):
     """Test that a user provided check function on the optimised value is always ran"""
     mock = MagicMock()
 
-    def my_check(model: ModelResult, param_val: float):
+    def my_check(model: ModelResult, param_val: float) -> str | None:
         mock()
-        return problem
+
+        if problem:
+            return "problem"
 
     with patch("lmfit.model.ModelResult") as mr:
         mr.values = {"x0": 0.0}
-        assert (
+        
+        if problem:
+
+            with pytest.raises(ValueError):
+                _check_parameter(
+                    alignment_param_value=0.0,
+                    result=mr,
+                    init_mot_pos=0.0,
+                    rel_scan_range=1.0,
+                    is_good_fit=my_check,
+                )
+
+        else: # Check that does not raise
+
             _check_parameter(
-                alignment_param_value=0.0,
-                result=mr,
-                init_mot_pos=0.0,
-                rel_scan_range=1.0,
-                is_good_fit=my_check,
-            )
-            == problem
-        )
+                    alignment_param_value=0.0,
+                    result=mr,
+                    init_mot_pos=0.0,
+                    rel_scan_range=1.0,
+                    is_good_fit=my_check,
+                )
 
 
 def test_that_if_no_problem_found_then_motor_is_moved_and_rezeroed(RE, prefix, simpledae):
@@ -187,7 +217,7 @@ def test_that_if_no_problem_found_then_motor_is_moved_and_rezeroed(RE, prefix, s
         patch("ibex_bluesky_core.devices.reflectometry.get_pv_prefix", return_value=prefix),
         patch(
             "ibex_bluesky_core.plans.reflectometry.autoalign_utils._check_parameter",
-            return_value=True,
+            return_value=None,
         ) as check,
         patch(
             "ibex_bluesky_core.plans.reflectometry.autoalign_utils.scan", return_value=_fake_scan()
@@ -237,7 +267,7 @@ def test_that_if_problem_found_and_type_1_then_re_scan(RE, prefix, simpledae, mo
         patch("ibex_bluesky_core.devices.reflectometry.get_pv_prefix", return_value=prefix),
         patch(
             "ibex_bluesky_core.plans.reflectometry.autoalign_utils._check_parameter",
-            return_value=False,
+            side_effect=ValueError("Test!"),
         ),
         patch(
             "ibex_bluesky_core.plans.reflectometry.autoalign_utils.scan",
@@ -291,7 +321,7 @@ def test_that_if_problem_found_and_type_random_then_re_ask(RE, prefix, simpledae
         patch("ibex_bluesky_core.devices.reflectometry.get_pv_prefix", return_value=prefix),
         patch(
             "ibex_bluesky_core.plans.reflectometry.autoalign_utils._check_parameter",
-            return_value=False,
+            side_effect=ValueError("Test!"),
         ),
         patch(
             "ibex_bluesky_core.plans.reflectometry.autoalign_utils.scan",

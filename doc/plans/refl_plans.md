@@ -56,7 +56,7 @@ As mentioned prior, it is recommended that for each movable you want to align, y
 
 ```python
 
-def s1vg_checks(result: ModelResult, alignment_param_value: float) -> bool: # Must take a ModelResult and a float
+def s1vg_checks(result: ModelResult, alignment_param_value: float) -> str | None: # Must take a ModelResult and a float
     """Check for optimised S1VG value. Returns True if sensible."""
     rsquared_confidence = 0.9
     expected_param_value = 1.0
@@ -65,19 +65,17 @@ def s1vg_checks(result: ModelResult, alignment_param_value: float) -> bool: # Mu
 
     # Check that r-squared is above a tolerance
     if result.rsquared < rsquared_confidence:
-        return False
+        return "R-squared below confidence level."
 
     # For S1VG, provide a value you would expect for it,
     # assert if its not close by a provided factor
     if not isclose(expected_param_value, alignment_param_value, abs_tol=expected_param_value_tol):
-        return False
+        return "Optimised value is not close to expected value."
 
     # Is the peak above the background by some factor (optional because param may not be for
     # a peak, or background may not be a parameter in the model).
     if result.values["background"] / result.model.func(alignment_param_value) <= max_peak_factor:
-        return False
-
-    return True
+        return "Peak was not above the background by factor."
 
 # ...
 

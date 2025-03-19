@@ -21,8 +21,8 @@ def _check_parameter(
     result: ModelResult,
     init_mot_pos: float,
     rel_scan_range: float,
-    is_good_fit: Callable[[ModelResult, float], bool] | None = None,
-) -> bool:
+    is_good_fit: Callable[[ModelResult, float], str | None] | None = None,
+) -> None:
     """Check that the optimised value is within scan range and then runs user provided checks.
 
     Returns True means the found result was sensible.
@@ -32,23 +32,26 @@ def _check_parameter(
         result (ModelResult): The fitting resuls returned from lmfit.
         init_mot_pos (float): The initial motor position before scanning.
         rel_scan_range (float): The current relative scan range.
-        is_good_fit (Callable[[ModelResult, float], bool] | None): User provided checks on the
-            optimised value, must return True if result is sensible.
+        is_good_fit (Callable[[ModelResult, float], str] | None): User provided checks on the
+            optimised value, must return a message if result is not sensible.
 
     Returns:
         True if value is sensible. False otherwise.
 
     """
-    if init_mot_pos + rel_scan_range < alignment_param_value:
-        return False
+    if init_mot_pos + rel_scan_range / 2 < alignment_param_value:
+        raise ValueError("Optimised value found to be to be outside, to the right, of scan range")
 
-    elif init_mot_pos - rel_scan_range > alignment_param_value:
-        return False
+    elif init_mot_pos - rel_scan_range / 2 > alignment_param_value:
+        raise ValueError("Optimised value found to be to be outside, to the left, of scan range")
 
     if is_good_fit is None:
-        return True
+        return
 
-    return is_good_fit(result, alignment_param_value)
+    err_msg = is_good_fit(result, alignment_param_value)
+
+    if err_msg:
+        raise ValueError(err_msg)
 
 
 def _get_alignment_param_value(icc: ISISCallbacks, fit_param: str) -> float:
@@ -64,7 +67,7 @@ def _inner_loop(  # noqa: PLR0913 PLR0917
     fit_method: FitMethod,
     periods: bool,
     save_run: bool,
-    is_good_fit: Callable[[ModelResult, float], bool] | None,
+    is_good_fit: Callable[[ModelResult, float], str | None] | None,
     problem_found_plan: Callable[[], Generator[Msg, None, None]],
 ) -> Generator[Msg, None, tuple[ISISCallbacks, bool]]:
     """Functionality to perform on a per scan basis.
@@ -81,7 +84,7 @@ def _inner_loop(  # noqa: PLR0913 PLR0917
             and the beam. e.g Gaussian.
         periods (bool): Are DAE periods being used. Defaults to True.
         save_run (bool): Should runs be saved. Defaults to True.
-        is_good_fit (Callable[[ModelResult, float], bool] | None): User provided checks on the
+        is_good_fit (Callable[[ModelResult, float], str | None] | None): User provided checks on the
             optimised value, must return True if result is sensible.
         problem_found_plan (Callable[[], Generator[Msg, None, None]] | None]):
             A callback for what to do if the optimised value is not found to be sensible.
@@ -113,13 +116,18 @@ def _inner_loop(  # noqa: PLR0913 PLR0917
 
     alignment_param_value = _get_alignment_param_value(icc, fit_param)
 
-    if not _check_parameter(
-        alignment_param_value=alignment_param_value,
-        result=icc.live_fit.result,
-        init_mot_pos=init_mot_pos,
-        rel_scan_range=rel_scan_range,
-        is_good_fit=is_good_fit,
-    ):
+    try:
+        _check_parameter(
+            alignment_param_value=alignment_param_value,
+            result=icc.live_fit.result,
+            init_mot_pos=init_mot_pos,
+            rel_scan_range=rel_scan_range,
+            is_good_fit=is_good_fit
+        )
+
+    except Exception as e:
+    
+        print(e)
         print(
             f"""This failed one or more of the checks on {alignment_param.name}"""
             f""" with a scan range of {rel_scan_range}."""
@@ -157,7 +165,7 @@ class OptimiseAxisParams(TypedDict):
     periods: NotRequired[bool]
     save_run: NotRequired[bool]
     problem_found_plan: NotRequired[Callable[[], Generator[Msg, None, None]]]
-    is_good_fit: NotRequired[Callable[[ModelResult, float], bool] | None]
+    is_good_fit: NotRequired[Callable[[ModelResult, float], str | None] | None]
 
 
 def optimise_axis_against_intensity(  # noqa: D417
