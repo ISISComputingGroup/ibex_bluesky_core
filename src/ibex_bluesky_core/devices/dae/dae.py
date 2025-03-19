@@ -1,8 +1,8 @@
 """ophyd-async devices for communicating with the ISIS data acquisition electronics."""
 
 from numpy import int32
-from ophyd_async.core import Array1D, SignalR, SignalRW, StandardReadable, StrictEnum
-from ophyd_async.epics.core import epics_signal_r, epics_signal_rw
+from ophyd_async.core import Array1D, SignalR, SignalRW, SignalW, StandardReadable, StrictEnum
+from ophyd_async.epics.core import epics_signal_r, epics_signal_rw, epics_signal_w
 
 from ibex_bluesky_core.devices import isis_epics_signal_rw
 from ibex_bluesky_core.devices.dae import DaeCheckingSignal
@@ -84,9 +84,15 @@ class Dae(StandardReadable):
         self.raw_spectra_integrals: SignalR[Array1D[int32]] = epics_signal_r(
             Array1D[int32], f"{dae_prefix}SPECINTEGRALS"
         )
-        self.raw_spectra_data: SignalR[Array1D[int32]] = epics_signal_r(
+        self.raw_spectra_integrals_nord: SignalR[int] = epics_signal_r(
+            int, f"{dae_prefix}SPECINTEGRALS.NORD"
+        )
+
+        self.raw_spec_data: SignalR[Array1D[int32]] = epics_signal_r(
             Array1D[int32], f"{dae_prefix}SPECDATA"
         )
+        self.raw_spec_data_proc: SignalW[int] = epics_signal_w(int, f"{dae_prefix}SPECDATA.PROC")
+        self.raw_spec_data_nord: SignalR[int] = epics_signal_r(int, f"{dae_prefix}SPECDATA.NORD")
 
         self.monitor = DaeMonitor(dae_prefix)
         self.event_mode = DaeEventMode(dae_prefix)

@@ -16,7 +16,7 @@ from bluesky.utils import Msg, make_decorator
 from event_model import RunStart
 from matplotlib.axes import Axes
 
-from ibex_bluesky_core.callbacks._utils import DEFAULT_PATH
+from ibex_bluesky_core.callbacks._utils import get_default_output_path
 from ibex_bluesky_core.callbacks.file_logger import (
     HumanReadableFileCallback,
 )
@@ -53,7 +53,8 @@ class ISISCallbacks:
         add_peak_stats: bool = True,
         add_live_fit_logger: bool = True,
         live_fit_logger_output_dir: str | PathLike[str] | None = None,
-        live_fit_logger_postfix: str = "isc",
+        live_fit_logger_postfix: str = "",
+        human_readable_file_postfix: str = "",
     ) -> None:
         """A collection of ISIS standard callbacks for use within plans.
 
@@ -111,6 +112,7 @@ class ISISCallbacks:
             add_live_fit_logger: whether to add a live fit logger.
             live_fit_logger_output_dir: the output directory for live fit logger.
             live_fit_logger_postfix: the postfix to add to live fit logger.
+            human_readable_file_postfix: optional postfix to add to human-readable file logger.
         """  # noqa
         self._subs = []
         self._peak_stats = None
@@ -134,7 +136,8 @@ class ISISCallbacks:
                     fields=combined_hr_fields,
                     output_dir=Path(human_readable_file_output_dir)
                     if human_readable_file_output_dir
-                    else DEFAULT_PATH,
+                    else get_default_output_path(),
+                    postfix=human_readable_file_postfix,
                 ),
             )
 
@@ -168,10 +171,14 @@ class ISISCallbacks:
 
         if fit is not None:
             self._live_fit = LiveFit(fit, y=y, x=x, yerr=yerr)
+
+            # Ideally this would append either livefitplot or livefit, not both, but there's a
+            # race condition if using the Qt backend where a fit result can be returned before
+            # the QtAwareCallback has had a chance to process it.
+            self._subs.append(self._live_fit)
             if show_fit_on_plot:
                 self._subs.append(LiveFitPlot(livefit=self._live_fit, ax=ax))
-            else:
-                self._subs.append(self._live_fit)
+
             if add_live_fit_logger:
                 self._subs.append(
                     LiveFitLogger(
@@ -179,9 +186,7 @@ class ISISCallbacks:
                         x=x,
                         y=y,
                         yerr=yerr,
-                        output_dir=DEFAULT_PATH
-                        if live_fit_logger_output_dir is None
-                        else live_fit_logger_output_dir,
+                        output_dir=live_fit_logger_output_dir,
                         postfix=live_fit_logger_postfix,
                     )
                 )

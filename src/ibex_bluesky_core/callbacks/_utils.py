@@ -2,17 +2,7 @@ import os
 from pathlib import Path
 from platform import node
 
-INSTRUMENT = node()
-
-OUTPUT_DIR_ENV_VAR = "IBEX_BLUESKY_OUTPUT_DIR"
-
-_OUTPUT_DIR_ENV_VALUE = os.environ.get(OUTPUT_DIR_ENV_VAR)
-
-DEFAULT_PATH = (
-    Path("//isis.cclrc.ac.uk/inst$") / INSTRUMENT / "user" / "TEST" / "scans"
-    if _OUTPUT_DIR_ENV_VALUE is None
-    else Path(_OUTPUT_DIR_ENV_VALUE)
-)
+OUTPUT_DIR_ENV_VAR = "IBEX_BLUESKY_CORE_OUTPUT"
 
 # Common document metadata
 UID = "uid"
@@ -28,3 +18,16 @@ UNITS = "units"
 PRECISION = "precision"
 MOTORS = "motors"
 UNKNOWN_RB = "Unknown RB"
+
+
+def get_instrument() -> str:
+    return node()
+
+
+def get_default_output_path() -> Path:
+    output_dir_env = os.environ.get(OUTPUT_DIR_ENV_VAR)
+    return (
+        Path("//isis.cclrc.ac.uk/inst$") / node() / "user" / "TEST" / "scans"
+        if output_dir_env is None
+        else Path(output_dir_env)
+    )

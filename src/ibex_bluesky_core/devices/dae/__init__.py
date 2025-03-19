@@ -6,7 +6,8 @@ from xml.etree.ElementTree import Element
 
 from bluesky.protocols import Movable
 from ophyd_async.core import AsyncStatus, SignalDatatype, StandardReadable, StandardReadableFormat
-from ophyd_async.epics.core import epics_signal_rw
+
+from ibex_bluesky_core.devices import isis_epics_signal_rw
 
 
 def convert_xml_to_names_and_values(xml: Element) -> dict[str, str]:
@@ -69,7 +70,7 @@ class DaeCheckingSignal(StandardReadable, Movable[T], Generic[T]):
         """
         self.prefix = prefix
         with self.add_children_as_readables(StandardReadableFormat.HINTED_SIGNAL):
-            self.signal = epics_signal_rw(datatype, self.prefix)
+            self.signal = isis_epics_signal_rw(datatype, self.prefix)
         super().__init__(name="")
 
     @AsyncStatus.wrap
