@@ -1,21 +1,18 @@
 """A general tool for reflectometers to use to save time aligning their beamlines."""
 
 from collections.abc import Generator
-from pathlib import Path
 from typing import Callable, Tuple
 
 import bluesky.plan_stubs as bps
+from bluesky.protocols import NamedMovable
 from bluesky.utils import Msg
 from lmfit.model import ModelResult
-from matplotlib.axes import Axes
 from typing_extensions import NotRequired, TypedDict, Unpack
 
 from ibex_bluesky_core.callbacks import ISISCallbacks
 from ibex_bluesky_core.callbacks.fitting import FitMethod
 from ibex_bluesky_core.devices.simpledae import SimpleDae
 from ibex_bluesky_core.plan_stubs import call_sync
-from bluesky.protocols import NamedMovable
-
 from ibex_bluesky_core.plans import scan
 
 
@@ -99,7 +96,7 @@ def _inner_loop(
             model=fit_method,
             periods=periods,
             save_run=save_run,
-            rel=True
+            rel=True,
         )
 
         return icc
@@ -124,24 +121,25 @@ def _inner_loop(
         yield from problem_found_plan()
 
         def inp() -> Generator[Msg, None, str]:
-            choice = yield from call_sync(input, 
+            choice = yield from call_sync(
+                input,
                 """Type '1' if you would like to re-scan or type '2' to re-zero"""
-                f""" at {alignment_param_value} and keep going."""
+                f""" at {alignment_param_value} and keep going.""",
             )
 
             if choice not in {"1", "2"}:
-                choice = (yield from inp())
+                choice = yield from inp()
 
             return choice
 
-        choice = (yield from inp())
+        choice = yield from inp()
         if choice == "1":
-            return (icc,True)
+            return (icc, True)
 
     print(f"Moving {alignment_param.name} to {alignment_param_value}.")
     yield from bps.mv(alignment_param, alignment_param_value)  # type: ignore
-    
-    return (icc,False)
+
+    return (icc, False)
 
 
 class OptimiseAxisParams(TypedDict):
@@ -192,12 +190,11 @@ def optimise_axis_against_intensity(  # noqa # D417
     is_good_fit = kwargs.get("is_good_fit", None)
 
     while True:  # If a problem is found, then start the alignment again
-
         problem_found = False
         icc = None
 
         for rel_scan_range in rel_scan_ranges:
-            (icc, problem_found) = (yield from _inner_loop(
+            (icc, problem_found) = yield from _inner_loop(
                 dae=dae,
                 alignment_param=alignment_param,
                 rel_scan_range=rel_scan_range,
@@ -207,9 +204,9 @@ def optimise_axis_against_intensity(  # noqa # D417
                 problem_found_plan=problem_found_plan,
                 fit_method=fit_method,
                 periods=periods,
-                save_run=save_run
-            ))
-                
+                save_run=save_run,
+            )
+
             if problem_found:
                 break
 

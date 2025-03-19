@@ -1,7 +1,7 @@
 # pyright: reportMissingParameterType=false
 
 from collections.abc import Generator
-from unittest.mock import MagicMock, call, patch
+from unittest.mock import MagicMock, patch
 
 import bluesky.plan_stubs as bps
 import pytest
@@ -9,7 +9,6 @@ from bluesky.utils import Msg
 from lmfit.model import ModelResult
 
 from ibex_bluesky_core.callbacks import ISISCallbacks
-from ibex_bluesky_core.callbacks.fitting import LiveFit
 from ibex_bluesky_core.callbacks.fitting.fitting_utils import Gaussian, SlitScan
 from ibex_bluesky_core.devices.reflectometry import ReflParameter
 from ibex_bluesky_core.devices.simpledae import SimpleDae
@@ -92,6 +91,7 @@ def test_refl_adaptive_scan_creates_refl_param_device_and_simpledae(RE, prefix):
 
 # Auto-Alignment Utils
 
+
 def test_found_problem_callback_is_called_if_problem(RE, simpledae, prefix, monkeypatch):
     """Test that if a problem is found then the problem callback plan is run"""
 
@@ -103,9 +103,16 @@ def test_found_problem_callback_is_called_if_problem(RE, simpledae, prefix, monk
 
     with (
         patch("ibex_bluesky_core.devices.reflectometry.get_pv_prefix", return_value=prefix),
-        patch("ibex_bluesky_core.plans.reflectometry.autoalign_utils.scan", return_value=_fake_scan()),
-        patch("ibex_bluesky_core.plans.reflectometry.autoalign_utils.bps.mv", return_value=bps.null()),
-        patch("ibex_bluesky_core.plans.reflectometry.autoalign_utils.bps.rd", return_value=_plan_return_0()),
+        patch(
+            "ibex_bluesky_core.plans.reflectometry.autoalign_utils.scan", return_value=_fake_scan()
+        ),
+        patch(
+            "ibex_bluesky_core.plans.reflectometry.autoalign_utils.bps.mv", return_value=bps.null()
+        ),
+        patch(
+            "ibex_bluesky_core.plans.reflectometry.autoalign_utils.bps.rd",
+            return_value=_plan_return_0(),
+        ),
         patch(
             "ibex_bluesky_core.plans.reflectometry.autoalign_utils._check_parameter",
             return_value=False,
@@ -115,9 +122,7 @@ def test_found_problem_callback_is_called_if_problem(RE, simpledae, prefix, monk
             return_value=0.0,
         ),
     ):
-        param = ReflParameter(
-            prefix=prefix, name="S1VG", changing_timeout_s=60
-        )
+        param = ReflParameter(prefix=prefix, name="S1VG", changing_timeout_s=60)
 
         monkeypatch.setattr("builtins.input", lambda _: "2")
         RE(
@@ -127,7 +132,7 @@ def test_found_problem_callback_is_called_if_problem(RE, simpledae, prefix, monk
                 problem_found_plan=lambda: plan(mock),
                 rel_scan_ranges=[0.0],
                 fit_method=SlitScan().fit(),
-                fit_param=""
+                fit_param="",
             )
         )
 
@@ -137,7 +142,6 @@ def test_found_problem_callback_is_called_if_problem(RE, simpledae, prefix, monk
 @pytest.mark.parametrize(("param_value", "problem"), [(-5, False), (5, False), (0.0, True)])
 def test_alignment_param_value_outside_of_scan_range_returns_problem(param_value, problem):
     """Test that if the optimised value is outside of the scan range then it is reported"""
-
     with (
         patch("lmfit.model.ModelResult") as mr,
     ):
@@ -153,7 +157,6 @@ def test_alignment_param_value_outside_of_scan_range_returns_problem(param_value
 @pytest.mark.parametrize("problem", [False, True])
 def test_that_user_checks_are_called_when_provided(problem):
     """Test that a user provided check function on the optimised value is always ran"""
-
     mock = MagicMock()
 
     def my_check(model: ModelResult, param_val: float):
@@ -176,8 +179,8 @@ def test_that_user_checks_are_called_when_provided(problem):
 
 def test_that_if_no_problem_found_then_motor_is_moved_and_rezeroed(RE, prefix, simpledae):
     """Test that if no problems are found with the optimised
-    value then move the motor to it and redefine this as 0"""
-
+    value then move the motor to it and redefine this as 0
+    """
     sp = 5.0
 
     with (
@@ -186,21 +189,32 @@ def test_that_if_no_problem_found_then_motor_is_moved_and_rezeroed(RE, prefix, s
             "ibex_bluesky_core.plans.reflectometry.autoalign_utils._check_parameter",
             return_value=True,
         ) as check,
-        patch("ibex_bluesky_core.plans.reflectometry.autoalign_utils.scan", return_value=_fake_scan()),
-        patch("ibex_bluesky_core.plans.reflectometry.autoalign_utils.bps.mv", return_value=bps.null()) as mv,
-        patch("ibex_bluesky_core.plans.reflectometry.autoalign_utils.bps.rd", return_value=_plan_return_0()),
+        patch(
+            "ibex_bluesky_core.plans.reflectometry.autoalign_utils.scan", return_value=_fake_scan()
+        ),
+        patch(
+            "ibex_bluesky_core.plans.reflectometry.autoalign_utils.bps.mv", return_value=bps.null()
+        ) as mv,
+        patch(
+            "ibex_bluesky_core.plans.reflectometry.autoalign_utils.bps.rd",
+            return_value=_plan_return_0(),
+        ),
         patch(
             "ibex_bluesky_core.plans.reflectometry.autoalign_utils._get_alignment_param_value",
             return_value=sp,
         ),
     ):
-        param = ReflParameter(
-            prefix=prefix,
-            name="S1VG",
-            changing_timeout_s=60
-        )
+        param = ReflParameter(prefix=prefix, name="S1VG", changing_timeout_s=60)
 
-        RE(optimise_axis_against_intensity(simpledae, alignment_param=param, rel_scan_ranges=[0.0], fit_method=SlitScan().fit(), fit_param=""))
+        RE(
+            optimise_axis_against_intensity(
+                simpledae,
+                alignment_param=param,
+                rel_scan_ranges=[0.0],
+                fit_method=SlitScan().fit(),
+                fit_param="",
+            )
+        )
 
         check.assert_called_once()
         mv.assert_called_once()
@@ -208,7 +222,8 @@ def test_that_if_no_problem_found_then_motor_is_moved_and_rezeroed(RE, prefix, s
 
 def test_that_if_problem_found_and_type_1_then_re_scan(RE, prefix, simpledae, monkeypatch):
     """Test that if a problem is found, and the user types 1, then rescan.
-    Then if they type 2, moves to value."""
+    Then if they type 2, moves to value.
+    """
 
     def counter(str: str):
         counter.call_count += 1  # type: ignore
@@ -224,30 +239,43 @@ def test_that_if_problem_found_and_type_1_then_re_scan(RE, prefix, simpledae, mo
             "ibex_bluesky_core.plans.reflectometry.autoalign_utils._check_parameter",
             return_value=False,
         ),
-        patch("ibex_bluesky_core.plans.reflectometry.autoalign_utils.scan", side_effect=[_fake_scan(), _fake_scan()]) as scan,
-        patch("ibex_bluesky_core.plans.reflectometry.autoalign_utils.bps.mv", return_value=bps.null()),
-        patch("ibex_bluesky_core.plans.reflectometry.autoalign_utils.bps.rd", return_value=_plan_return_0()),
+        patch(
+            "ibex_bluesky_core.plans.reflectometry.autoalign_utils.scan",
+            side_effect=[_fake_scan(), _fake_scan()],
+        ) as scan,
+        patch(
+            "ibex_bluesky_core.plans.reflectometry.autoalign_utils.bps.mv", return_value=bps.null()
+        ),
+        patch(
+            "ibex_bluesky_core.plans.reflectometry.autoalign_utils.bps.rd",
+            return_value=_plan_return_0(),
+        ),
         patch(
             "ibex_bluesky_core.plans.reflectometry.autoalign_utils._get_alignment_param_value",
             return_value=0,
         ),
     ):
-        param = ReflParameter(
-            prefix=prefix,
-            name="S1VG",
-            changing_timeout_s=60
-        )
+        param = ReflParameter(prefix=prefix, name="S1VG", changing_timeout_s=60)
         counter.call_count = 0  # type: ignore
 
         monkeypatch.setattr("builtins.input", counter)
-        RE(optimise_axis_against_intensity(simpledae, alignment_param=param, rel_scan_ranges=[0.0], fit_method=SlitScan().fit(), fit_param=""))
+        RE(
+            optimise_axis_against_intensity(
+                simpledae,
+                alignment_param=param,
+                rel_scan_ranges=[0.0],
+                fit_method=SlitScan().fit(),
+                fit_param="",
+            )
+        )
 
         assert scan.call_count == 2
 
 
 def test_that_if_problem_found_and_type_random_then_re_ask(RE, prefix, simpledae, monkeypatch):
     """Test that if a problem is found, and the user types gibberish, then ask again.
-    Then if they type 1, it rescans. If they type 2, it moves to value."""
+    Then if they type 1, it rescans. If they type 2, it moves to value.
+    """
 
     def counter(str: str):
         counter.call_count += 1  # type: ignore
@@ -265,32 +293,43 @@ def test_that_if_problem_found_and_type_random_then_re_ask(RE, prefix, simpledae
             "ibex_bluesky_core.plans.reflectometry.autoalign_utils._check_parameter",
             return_value=False,
         ),
-        patch("ibex_bluesky_core.plans.reflectometry.autoalign_utils.scan", side_effect=[_fake_scan(), _fake_scan()]) as scan,
-        patch("ibex_bluesky_core.plans.reflectometry.autoalign_utils.bps.mv", return_value=bps.null()),
-        patch("ibex_bluesky_core.plans.reflectometry.autoalign_utils.bps.rd", return_value=_plan_return_0()),
+        patch(
+            "ibex_bluesky_core.plans.reflectometry.autoalign_utils.scan",
+            side_effect=[_fake_scan(), _fake_scan()],
+        ) as scan,
+        patch(
+            "ibex_bluesky_core.plans.reflectometry.autoalign_utils.bps.mv", return_value=bps.null()
+        ),
+        patch(
+            "ibex_bluesky_core.plans.reflectometry.autoalign_utils.bps.rd",
+            return_value=_plan_return_0(),
+        ),
         patch(
             "ibex_bluesky_core.plans.reflectometry.autoalign_utils._get_alignment_param_value",
             return_value=0,
         ),
     ):
-      
-        param = ReflParameter(
-            prefix=prefix,
-            name="S1VG",
-            changing_timeout_s=60
-        )
+        param = ReflParameter(prefix=prefix, name="S1VG", changing_timeout_s=60)
         counter.call_count = 0  # type: ignore
 
         monkeypatch.setattr("builtins.input", counter)
-        RE(optimise_axis_against_intensity(simpledae, alignment_param=param, rel_scan_ranges=[0.0], fit_method=SlitScan().fit(), fit_param=""))
+        RE(
+            optimise_axis_against_intensity(
+                simpledae,
+                alignment_param=param,
+                rel_scan_ranges=[0.0],
+                fit_method=SlitScan().fit(),
+                fit_param="",
+            )
+        )
 
         assert scan.call_count == 2
 
 
 def test_get_alignment_param_value(prefix):
     """Test that the _get_alignment_param_value is able to retrieve
-    alignment_param_value from the icc"""
-
+    alignment_param_value from the icc
+    """
     param_value = 0.0
     fit_param = "x0"
 
@@ -298,6 +337,5 @@ def test_get_alignment_param_value(prefix):
         patch("ibex_bluesky_core.devices.reflectometry.get_pv_prefix", return_value=prefix),
         patch("ibex_bluesky_core.plans.ISISCallbacks") as icc,
     ):
-
         icc.live_fit.result.values = {fit_param: param_value}
         assert _get_alignment_param_value(icc, fit_param) == param_value
