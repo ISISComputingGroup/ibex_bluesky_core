@@ -34,7 +34,6 @@ def full_autoalign_plan() -> Generator[Msg, None, None]:
 
     # S1VG
 
-    next_param(s1vg.name)
     yield from bps.mv(s1vg, -0.1)
     yield from autoalign_utils.optimise_axis_against_intensity(
         dae=dae,
