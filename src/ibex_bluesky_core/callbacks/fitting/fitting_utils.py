@@ -1,7 +1,7 @@
 """Defines the standard fits. The model and guess functions for each fit."""
 
 from abc import ABC, abstractmethod
-from typing import Callable
+from collections.abc import Callable
 
 import lmfit
 import numpy as np

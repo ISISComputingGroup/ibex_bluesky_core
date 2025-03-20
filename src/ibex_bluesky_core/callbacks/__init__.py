@@ -2,10 +2,10 @@
 
 import logging
 import threading
-from collections.abc import Generator
+from collections.abc import Callable, Generator
 from os import PathLike
 from pathlib import Path
-from typing import Any, Callable
+from typing import Any
 
 import bluesky.preprocessors as bpp
 import matplotlib.pyplot as plt
@@ -24,7 +24,7 @@ from ibex_bluesky_core.callbacks.fitting import FitMethod, LiveFit
 from ibex_bluesky_core.callbacks.fitting.livefit_logger import (
     LiveFitLogger,
 )
-from ibex_bluesky_core.callbacks.plotting import LivePlot
+from ibex_bluesky_core.callbacks.plotting import LivePlot, PlotPNGSaver
 
 logger = logging.getLogger(__name__)
 
@@ -55,6 +55,9 @@ class ISISCallbacks:
         live_fit_logger_output_dir: str | PathLike[str] | None = None,
         live_fit_logger_postfix: str = "",
         human_readable_file_postfix: str = "",
+        save_plot_to_png: bool = True,
+        plot_png_output_dir: str | PathLike[str] | None = None,
+        plot_png_postfix: str = "",
     ) -> None:
         """A collection of ISIS standard callbacks for use within plans.
 
@@ -113,7 +116,11 @@ class ISISCallbacks:
             live_fit_logger_output_dir: the output directory for live fit logger.
             live_fit_logger_postfix: the postfix to add to live fit logger.
             human_readable_file_postfix: optional postfix to add to human-readable file logger.
+            save_plot_to_png: whether to save the plot to a PNG file.
+            plot_png_output_dir: the output directory for plotting PNG files.
+            plot_png_postfix: the postfix to add to PNG plot files.
         """  # noqa
+        fig = None
         self._subs = []
         self._peak_stats = None
         self._live_fit = None
@@ -202,6 +209,16 @@ class ISISCallbacks:
                     yerr=yerr,
                 )
             )
+            if save_plot_to_png:
+                self._subs.append(
+                    PlotPNGSaver(
+                        x=x,
+                        y=y,
+                        ax=ax,
+                        output_dir=plot_png_output_dir,
+                        postfix=plot_png_postfix,
+                    )
+                )
 
     @property
     def live_fit(self) -> LiveFit:
