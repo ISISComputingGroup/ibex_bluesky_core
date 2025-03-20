@@ -8,11 +8,16 @@ from typing import Any
 import matplotlib
 import matplotlib.pyplot as plt
 from bluesky.callbacks import LivePlot as _DefaultLivePlot
-from bluesky.callbacks.core import get_obj_fields, make_class_safe, CallbackBase
+from bluesky.callbacks.core import get_obj_fields, make_class_safe
+from bluesky.callbacks.mpl_plotting import QtAwareCallback
 from event_model import RunStop
 from event_model.documents import Event, RunStart
-
-from ibex_bluesky_core.callbacks._utils import get_instrument, get_default_output_path, format_time
+from ibex_bluesky_core.callbacks._utils import (
+    get_instrument,
+    get_default_output_path,
+    format_time,
+    _get_rb_num,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -81,22 +86,29 @@ class LivePlot(_DefaultLivePlot):
         show_plot()
 
 
-class PlotPNGSaver(CallbackBase):
+class PlotPNGSaver(QtAwareCallback):
     """Save plots to PNG files on a run end."""
 
     def __init__(
         self,
-        plot: plt.Figure | None,
+        x: str,
+        y: str,
+        plot: plt.Figure,
         postfix: str,
         output_dir: str | os.PathLike[str] | None,
     ):
-        if plot is None:
-            raise ValueError("Plot does not exist - cannot save a PNG of it.")
+        super().__init__()
+        self.x = x
+        self.y = y
         self.plot = plot
         self.postfix = postfix
         self.output_dir = Path(output_dir or get_default_output_path())
-        super().__init__()
 
     def stop(self, doc: RunStop):
-        filename = f"{get_instrument()}_{self.x}_{self.y}_{format_time(doc)}Z{self.postfix}.png"
-        self.plot.savefig(fname=self.output_dir / filename)
+        rb_num = _get_rb_num(doc)
+        filename = (
+            self.output_dir
+            / f"{rb_num}"
+            / f"{get_instrument()}_{self.x}_{self.y}_{format_time(doc)}Z{self.postfix}.png"
+        )
+        self.plot.savefig(filename, dpi=self.plot.dpi, format="png")

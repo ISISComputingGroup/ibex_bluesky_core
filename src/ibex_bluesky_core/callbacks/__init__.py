@@ -56,8 +56,8 @@ class ISISCallbacks:
         live_fit_logger_postfix: str = "",
         human_readable_file_postfix: str = "",
         save_plot_to_png: bool = True,
-        plot_png_output_dir : str | PathLike[str] | None = None,
-        plot_png_postfix: str = ""
+        plot_png_output_dir: str | PathLike[str] | None = None,
+        plot_png_postfix: str = "",
     ) -> None:
         """A collection of ISIS standard callbacks for use within plans.
 
@@ -207,8 +207,15 @@ class ISISCallbacks:
                 )
             )
             if save_plot_to_png:
-                self._subs.append(PlotPNGSaver(plot=fig, output_dir=plot_png_output_dir, postfix=plot_png_postfix
-                ))
+                self._subs.append(
+                    PlotPNGSaver(
+                        x=x,
+                        y=y,
+                        plot=ax.figure,
+                        output_dir=plot_png_output_dir,
+                        postfix=plot_png_postfix,
+                    )
+                )
 
     @property
     def live_fit(self) -> LiveFit:

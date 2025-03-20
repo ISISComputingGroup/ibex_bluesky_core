@@ -31,6 +31,7 @@ from ibex_bluesky_core.callbacks._utils import (
     UNKNOWN_RB,
     get_instrument,
     format_time,
+    _get_rb_num,
 )
 
 logger = logging.getLogger(__name__)
@@ -67,8 +68,7 @@ class HumanReadableFileCallback(CallbackBase):
         self.output_dir.mkdir(parents=True, exist_ok=True)
         self.current_start_document = doc[UID]
 
-        datetime_obj = datetime.fromtimestamp(doc[TIME])
-        rb_num = doc.get(RB, UNKNOWN_RB)
+        rb_num = _get_rb_num(doc)
 
         # motors is a tuple, we need to convert to a list to join the two below
         motors = list(doc.get(MOTORS, []))
@@ -81,8 +81,6 @@ class HumanReadableFileCallback(CallbackBase):
             / f"{get_instrument()}{'_' + '_'.join(motors) if motors else ''}_"
             f"{formatted_time}Z{self.postfix}.txt"
         )
-        if rb_num == UNKNOWN_RB:
-            logger.warning('No RB number found, saving to "%s"', UNKNOWN_RB)
         assert self.filename is not None
         logger.info("starting new file %s", self.filename)
 
