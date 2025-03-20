@@ -11,6 +11,7 @@ from ibex_bluesky_core.plan_stubs import (
     CALL_QT_AWARE_MSG_KEY,
     call_qt_aware,
     call_sync,
+    prompt_user_for_choice,
 )
 from ibex_bluesky_core.run_engine._msg_handlers import call_sync_handler
 
@@ -123,3 +124,12 @@ def test_call_qt_aware_non_matplotlib_function(RE):
         RE(plan())
 
     mock.assert_not_called()
+
+
+def test_get_user_input(RE):
+    with patch("ibex_bluesky_core.plan_stubs.input") as mock_input:
+        mock_input.__name__ = "mock"
+        mock_input.side_effect = ["foo", "bar", "baz"]
+
+        result = RE(prompt_user_for_choice(prompt="choice?", choices=["bar", "baz"]))
+        assert result.plan_result == "bar"

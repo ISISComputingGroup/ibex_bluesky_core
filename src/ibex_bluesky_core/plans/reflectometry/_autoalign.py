@@ -17,7 +17,7 @@ from ibex_bluesky_core.plans import scan
 logger = logging.getLogger(__name__)
 
 
-def _print_and_log(msg):
+def _print_and_log(msg: str) -> None:
     logger.info(msg)
     print(msg)
 
@@ -96,8 +96,9 @@ def _optimise_axis_over_range(  # noqa: PLR0913 PLR0917
             A callback for what to do if the optimised value is not found to be sensible.
 
     Returns:
-        Tuple of [ISISCallbacks, success (bool)]. The ISISCallbacks are a reference to a set of standard callbacks,
-        including the fit. The success flag indicates whether the optimization was successful.
+        Tuple of [ISISCallbacks, success (bool)]. The ISISCallbacks are a reference to a set of
+        standard callbacks, including the fit.
+        The success flag indicates whether the optimization was successful.
 
     """
     _print_and_log(
@@ -158,7 +159,7 @@ def _optimise_axis_over_range(  # noqa: PLR0913 PLR0917
     return icc, True
 
 
-def optimise_axis_against_intensity(
+def optimise_axis_against_intensity(  # noqa: PLR0913
     dae: SimpleDae,
     alignment_param: NamedMovable[float],
     fit_method: FitMethod,
@@ -205,9 +206,9 @@ def optimise_axis_against_intensity(
         Instance of :obj:`ibex_bluesky_core.callbacks.ISISCallbacks`.
 
     """
-    problem_found_plan = problem_found_plan or (lambda: bps.null())
+    problem_found_plan = problem_found_plan or bps.null
 
-    logging.info(
+    logger.info(
         "Starting optimise_axis_against_intensity with param=%s, ranges=%s",
         alignment_param.name,
         rel_scan_ranges,
@@ -232,11 +233,11 @@ def optimise_axis_against_intensity(
             )
 
             if not all_ok:
-                logging.info("Problem found during _optimise_axis_over_range, restarting scan loop")
+                logger.info("Problem found during _optimise_axis_over_range, restarting scan loop")
                 break
 
         if all_ok:
-            logging.info(
+            logger.info(
                 "Finished optimise_axis_against_intensity with param=%s, ranges=%s",
                 alignment_param.name,
                 rel_scan_ranges,
