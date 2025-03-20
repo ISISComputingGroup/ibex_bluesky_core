@@ -4,7 +4,9 @@ from collections.abc import Generator
 from typing import Callable, ParamSpec, TypeVar, cast
 
 import bluesky.plan_stubs as bps
+from bluesky.preprocessors import finalize_wrapper
 from bluesky.utils import Msg
+from ophyd_async.epics.motor import Motor, UseSetMode
 
 P = ParamSpec("P")
 T = TypeVar("T")
@@ -79,12 +81,21 @@ def call_qt_aware(
     return cast(T, (yield Msg(CALL_QT_AWARE_MSG_KEY, func, *args, **kwargs)))
 
 
-def set_motor_position(motor: Motor, position: float):
+def set_motor_position(motor: Motor, position: float) -> Generator[Msg, None, None]:
+    """Using the use/set motor record functionality, set a motors current position.
+
+    Note this does not move the motor, it just redefines its position to be the given value.
+
+    Args:
+        motor: The motor to set a position on.
+        position: The position to set.
+    """
+
     def make_motor_usable():
-        yield from abs_set(motor.set_use, MotorSetUse.SET)
+        yield from bps.abs_set(motor.set_use_switch, UseSetMode.SET)
 
     def inner():
-        yield from abs_set(motor.set_use, MotorSetUse.USE)
-        yield from abs_set(motor.position, position)
+        yield from bps.abs_set(motor.set_use_switch, UseSetMode.USE)
+        yield from bps.abs_set(motor.user_setpoint, position)
 
     return (yield from finalize_wrapper(inner(), make_motor_usable()))
