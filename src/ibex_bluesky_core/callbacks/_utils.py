@@ -1,6 +1,11 @@
 import os
+from datetime import datetime
 from pathlib import Path
 from platform import node
+from typing import Union
+from zoneinfo import ZoneInfo
+
+from event_model import Event, RunStart, RunStop
 
 OUTPUT_DIR_ENV_VAR = "IBEX_BLUESKY_CORE_OUTPUT"
 
@@ -31,3 +36,9 @@ def get_default_output_path() -> Path:
         if output_dir_env is None
         else Path(output_dir_env)
     )
+
+
+def format_time(doc: Union[Event, RunStart, RunStop]):
+    datetime_obj = datetime.fromtimestamp(doc[TIME])
+    title_format_datetime = datetime_obj.astimezone(ZoneInfo("UTC")).strftime("%Y-%m-%d_%H-%M-%S")
+    return title_format_datetime

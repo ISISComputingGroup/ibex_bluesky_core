@@ -3,10 +3,8 @@
 import csv
 import logging
 import os
-from datetime import datetime
 from pathlib import Path
 from typing import Optional
-from zoneinfo import ZoneInfo
 
 import numpy as np
 from bluesky.callbacks import CallbackBase
@@ -17,11 +15,11 @@ from event_model.documents.run_stop import RunStop
 from ibex_bluesky_core.callbacks._utils import (
     DATA,
     RB,
-    TIME,
     UID,
     UNKNOWN_RB,
     get_default_output_path,
     get_instrument,
+    format_time,
 )
 from ibex_bluesky_core.callbacks.fitting import LiveFit
 
@@ -74,10 +72,7 @@ class LiveFitLogger(CallbackBase):
             doc (RunStart): The start bluesky document.
 
         """
-        datetime_obj = datetime.fromtimestamp(doc[TIME])
-        title_format_datetime = datetime_obj.astimezone(ZoneInfo("UTC")).strftime(
-            "%Y-%m-%d_%H-%M-%S"
-        )
+        title_format_datetime = format_time(doc)
         self.output_dir.mkdir(parents=True, exist_ok=True)
         self.current_start_document = doc[UID]
         file = f"{get_instrument()}_{self.x}_{self.y}_{title_format_datetime}Z{self.postfix}.txt"

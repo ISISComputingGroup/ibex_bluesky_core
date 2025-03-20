@@ -1,13 +1,18 @@
 """IBEX plotting callbacks."""
 
 import logging
+import os
+from pathlib import Path
 from typing import Any
 
 import matplotlib
 import matplotlib.pyplot as plt
 from bluesky.callbacks import LivePlot as _DefaultLivePlot
-from bluesky.callbacks.core import get_obj_fields, make_class_safe
+from bluesky.callbacks.core import get_obj_fields, make_class_safe, CallbackBase
+from event_model import RunStop
 from event_model.documents import Event, RunStart
+
+from ibex_bluesky_core.callbacks._utils import get_instrument, get_default_output_path, format_time
 
 logger = logging.getLogger(__name__)
 
@@ -74,3 +79,24 @@ class LivePlot(_DefaultLivePlot):
         """Process an start document (delegate to superclass, then show the plot)."""
         super().start(doc)
         show_plot()
+
+
+class PlotPNGSaver(CallbackBase):
+    """Save plots to PNG files on a run end."""
+
+    def __init__(
+        self,
+        plot: plt.Figure | None,
+        postfix: str,
+        output_dir: str | os.PathLike[str] | None,
+    ):
+        if plot is None:
+            raise ValueError("Plot does not exist - cannot save a PNG of it.")
+        self.plot = plot
+        self.postfix = postfix
+        self.output_dir = Path(output_dir or get_default_output_path())
+        super().__init__()
+
+    def stop(self, doc: RunStop):
+        filename = f"{get_instrument()}_{self.x}_{self.y}_{format_time(doc)}Z{self.postfix}.png"
+        self.plot.savefig(fname=self.output_dir / filename)
