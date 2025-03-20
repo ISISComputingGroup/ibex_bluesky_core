@@ -11,6 +11,7 @@ from ibex_bluesky_core.plans import (
     adaptive_scan,
     scan,
 )
+from ibex_bluesky_core.plans.reflectometry._autoalign import optimise_axis_against_intensity
 from ibex_bluesky_core.plans.reflectometry._det_map_align import (
     DetMapAlignResult,
     angle_scan_plan,
@@ -22,6 +23,7 @@ __all__ = [
     "DetMapAlignResult",
     "angle_scan_plan",
     "height_and_angle_scan_plan",
+    "optimise_axis_against_intensity",
     "refl_adaptive_scan",
     "refl_scan",
 ]

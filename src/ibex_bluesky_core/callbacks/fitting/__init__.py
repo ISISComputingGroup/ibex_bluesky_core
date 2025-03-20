@@ -2,7 +2,7 @@
 
 import logging
 import warnings
-from typing import Callable
+from collections.abc import Callable
 
 import lmfit
 import numpy as np

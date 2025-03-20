@@ -1,7 +1,7 @@
 """Core plan stubs."""
 
-from collections.abc import Generator
-from typing import Callable, ParamSpec, TypeVar, cast
+from collections.abc import Callable, Generator
+from typing import ParamSpec, TypeVar, cast
 
 import bluesky.plan_stubs as bps
 from bluesky.utils import Msg
@@ -14,7 +14,7 @@ CALL_SYNC_MSG_KEY = "ibex_bluesky_core_call_sync"
 CALL_QT_AWARE_MSG_KEY = "ibex_bluesky_core_call_qt_aware"
 
 
-__all__ = ["call_qt_aware", "call_sync"]
+__all__ = ["call_qt_aware", "call_sync", "prompt_user_for_choice"]
 
 
 def call_sync(func: Callable[P, T], *args: P.args, **kwargs: P.kwargs) -> Generator[Msg, None, T]:
@@ -77,3 +77,21 @@ def call_qt_aware(
         raise ValueError("Only matplotlib functions should be passed to call_qt_aware")
 
     return cast(T, (yield Msg(CALL_QT_AWARE_MSG_KEY, func, *args, **kwargs)))
+
+
+def prompt_user_for_choice(*, prompt: str, choices: list[str]) -> Generator[Msg, None, str]:
+    """Prompt the user to choose between a limited set of options.
+
+    Args:
+        prompt: The user prompt string.
+        choices: A list of allowable choices.
+
+    Returns:
+        One of the entries in the choices list.
+
+    """
+    choice = yield from call_sync(input, prompt)
+    while choice not in choices:
+        choice = yield from call_sync(input, prompt)
+
+    return choice

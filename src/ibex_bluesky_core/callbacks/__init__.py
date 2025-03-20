@@ -2,10 +2,10 @@
 
 import logging
 import threading
-from collections.abc import Generator
+from collections.abc import Callable, Generator
 from os import PathLike
 from pathlib import Path
-from typing import Any, Callable
+from typing import Any
 
 import bluesky.preprocessors as bpp
 import matplotlib.pyplot as plt

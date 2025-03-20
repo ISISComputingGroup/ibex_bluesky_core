@@ -4,8 +4,8 @@ import asyncio
 import logging
 import math
 from abc import ABC, abstractmethod
-from collections.abc import Awaitable, Collection, Sequence
-from typing import TYPE_CHECKING, Callable
+from collections.abc import Awaitable, Callable, Collection, Sequence
+from typing import TYPE_CHECKING
 
 import numpy as np
 import numpy.typing as npt

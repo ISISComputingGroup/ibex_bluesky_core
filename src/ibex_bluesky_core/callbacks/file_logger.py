@@ -5,7 +5,6 @@ import logging
 import os
 from datetime import datetime
 from pathlib import Path
-from typing import Optional
 from zoneinfo import ZoneInfo
 
 from bluesky.callbacks import CallbackBase
@@ -52,9 +51,9 @@ class HumanReadableFileCallback(CallbackBase):
         super().__init__()
         self.fields: list[str] = fields
         self.output_dir: Path = output_dir or get_default_output_path()
-        self.current_start_document: Optional[str] = None
+        self.current_start_document: str | None = None
         self.descriptors: dict[str, EventDescriptor] = {}
-        self.filename: Optional[Path] = None
+        self.filename: Path | None = None
         self.postfix: str = postfix
 
     def start(self, doc: RunStart) -> None:
