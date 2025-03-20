@@ -3,10 +3,7 @@
 import csv
 import logging
 import os
-from datetime import datetime
 from pathlib import Path
-from typing import Optional
-from zoneinfo import ZoneInfo
 
 from bluesky.callbacks import CallbackBase
 from event_model.documents.event import Event
@@ -22,16 +19,14 @@ from ibex_bluesky_core.callbacks._utils import (
     MOTORS,
     NAME,
     PRECISION,
-    RB,
     SEQ_NUM,
     START_TIME,
     TIME,
     UID,
     UNITS,
-    UNKNOWN_RB,
-    get_instrument,
-    format_time,
     _get_rb_num,
+    format_time,
+    get_instrument,
 )
 
 logger = logging.getLogger(__name__)
@@ -54,9 +49,9 @@ class HumanReadableFileCallback(CallbackBase):
         super().__init__()
         self.fields: list[str] = fields
         self.output_dir: Path = output_dir or get_default_output_path()
-        self.current_start_document: Optional[str] = None
+        self.current_start_document: str | None = None
         self.descriptors: dict[str, EventDescriptor] = {}
-        self.filename: Optional[Path] = None
+        self.filename: Path | None = None
         self.postfix: str = postfix
 
     def start(self, doc: RunStart) -> None:

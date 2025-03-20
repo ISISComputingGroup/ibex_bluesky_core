@@ -12,11 +12,13 @@ from bluesky.callbacks.core import get_obj_fields, make_class_safe
 from bluesky.callbacks.mpl_plotting import QtAwareCallback
 from event_model import RunStop
 from event_model.documents import Event, RunStart
+from matplotlib.axes import Axes
+
 from ibex_bluesky_core.callbacks._utils import (
-    get_instrument,
-    get_default_output_path,
-    format_time,
     _get_rb_num,
+    format_time,
+    get_default_output_path,
+    get_instrument,
 )
 
 logger = logging.getLogger(__name__)
@@ -93,22 +95,38 @@ class PlotPNGSaver(QtAwareCallback):
         self,
         x: str,
         y: str,
-        plot: plt.Figure,
+        ax: Axes,
         postfix: str,
         output_dir: str | os.PathLike[str] | None,
-    ):
+    ) -> None:
+        """Initialise the PlotPNGSaver callback.
+
+        Args:
+            x: The name of the signal for x.
+            y: The name of the signal for y.
+            ax: The subplot to save to a file.
+            postfix: The file postfix.
+            output_dir: The output directory for PNGs.
+
+        """
         super().__init__()
         self.x = x
         self.y = y
-        self.plot = plot
+        self.ax = ax
         self.postfix = postfix
         self.output_dir = Path(output_dir or get_default_output_path())
 
-    def stop(self, doc: RunStop):
+    def stop(self, doc: RunStop) -> None:
+        """Write the current plot to a PNG file.
+
+        Args:
+            doc: The stop document.
+
+        """
         rb_num = _get_rb_num(doc)
         filename = (
             self.output_dir
             / f"{rb_num}"
             / f"{get_instrument()}_{self.x}_{self.y}_{format_time(doc)}Z{self.postfix}.png"
         )
-        self.plot.savefig(filename, dpi=self.plot.dpi, format="png")
+        self.ax.figure.savefig(filename, format="png")

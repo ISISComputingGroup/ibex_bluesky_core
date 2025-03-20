@@ -1,7 +1,7 @@
 """Core plan stubs."""
 
-from collections.abc import Generator
-from typing import Callable, ParamSpec, TypeVar, cast
+from collections.abc import Callable, Generator
+from typing import ParamSpec, TypeVar, cast
 
 import bluesky.plan_stubs as bps
 from bluesky.utils import Msg

@@ -2,10 +2,10 @@
 
 import logging
 import threading
-from collections.abc import Generator
+from collections.abc import Callable, Generator
 from os import PathLike
 from pathlib import Path
-from typing import Any, Callable
+from typing import Any
 
 import bluesky.preprocessors as bpp
 import matplotlib.pyplot as plt
@@ -116,6 +116,9 @@ class ISISCallbacks:
             live_fit_logger_output_dir: the output directory for live fit logger.
             live_fit_logger_postfix: the postfix to add to live fit logger.
             human_readable_file_postfix: optional postfix to add to human-readable file logger.
+            save_plot_to_png: whether to save the plot to a PNG file.
+            plot_png_output_dir: the output directory for plotting PNG files.
+            plot_png_postfix: the postfix to add to PNG plot files.
         """  # noqa
         fig = None
         self._subs = []
@@ -211,7 +214,7 @@ class ISISCallbacks:
                     PlotPNGSaver(
                         x=x,
                         y=y,
-                        plot=ax.figure,
+                        ax=ax,
                         output_dir=plot_png_output_dir,
                         postfix=plot_png_postfix,
                     )

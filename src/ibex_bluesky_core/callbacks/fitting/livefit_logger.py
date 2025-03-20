@@ -4,7 +4,6 @@ import csv
 import logging
 import os
 from pathlib import Path
-from typing import Optional
 
 import numpy as np
 from bluesky.callbacks import CallbackBase
@@ -15,10 +14,10 @@ from event_model.documents.run_stop import RunStop
 from ibex_bluesky_core.callbacks._utils import (
     DATA,
     UID,
+    _get_rb_num,
+    format_time,
     get_default_output_path,
     get_instrument,
-    format_time,
-    _get_rb_num,
 )
 from ibex_bluesky_core.callbacks.fitting import LiveFit
 
@@ -54,7 +53,7 @@ class LiveFitLogger(CallbackBase):
         self.livefit = livefit
         self.postfix = postfix
         self.output_dir = Path(output_dir or get_default_output_path())
-        self.current_start_document: Optional[str] = None
+        self.current_start_document: str | None = None
 
         self.x = x
         self.y = y
