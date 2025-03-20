@@ -95,7 +95,7 @@ class PlotPNGSaver(QtAwareCallback):
         self,
         x: str,
         y: str,
-        ax: Axes,
+        ax: Axes | None,
         postfix: str,
         output_dir: str | os.PathLike[str] | None,
     ) -> None:
@@ -110,6 +110,8 @@ class PlotPNGSaver(QtAwareCallback):
 
         """
         super().__init__()
+        if ax is None:
+            raise ValueError("ax is None")
         self.x = x
         self.y = y
         self.ax = ax
@@ -129,4 +131,4 @@ class PlotPNGSaver(QtAwareCallback):
             / f"{rb_num}"
             / f"{get_instrument()}_{self.x}_{self.y}_{format_time(doc)}Z{self.postfix}.png"
         )
-        self.ax.figure.savefig(filename, format="png")
+        self.ax.figure.savefig(filename, format="png")  # pyright: ignore [reportAttributeAccessIssue, reportOptionalMemberAccess]

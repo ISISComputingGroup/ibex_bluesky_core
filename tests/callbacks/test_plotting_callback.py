@@ -1,8 +1,12 @@
 from typing import Any
 from unittest.mock import MagicMock, patch
 
+import pytest
 from matplotlib import pyplot as plt
+from matplotlib.axes import Axes
+from matplotlib.figure import Figure
 
+from ibex_bluesky_core.callbacks import PlotPNGSaver
 from ibex_bluesky_core.callbacks.plotting import LivePlot, show_plot
 
 
@@ -75,6 +79,35 @@ def test_errorbars_created_if_yerr_is_given():
     )
 
     ax.errorbar.assert_called_with(y=[y], x=[x], yerr=[yerr], fmt="none")
+
+
+def test_png_saved_on_run_stop():
+    ax = MagicMock(spec=Axes)
+    ax.figure = MagicMock(spec=Figure)
+    s = PlotPNGSaver(x="x", y="y", ax=ax, postfix="123", output_dir="")
+
+    s.stop(
+        {
+            "data": {
+                "x": 1,
+                "y": 2,
+            },  # pyright: ignore [reportArgumentType]
+            "rb_number": 1234,  # pyright: ignore [reportArgumentType]
+            "time": 123456789,
+            "uid": "1",
+            "exit_status": "success",
+            "run_start": "",
+        }
+    )
+
+    assert ax.figure.savefig.call_count == 1
+    assert ax.figure.savefig.call_args.kwargs["format"] == "png"
+    assert "x_y_1973-11-29_21-33-09Z123.png" in ax.figure.savefig.call_args.args[0].name
+
+
+def test_png_saver_raises_if_no_axes():
+    with pytest.raises(ValueError, match="ax is None"):
+        PlotPNGSaver(x="x", y="y", ax=None, postfix="", output_dir=None)
 
 
 def test_errorbars_not_created_if_no_yerr():
