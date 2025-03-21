@@ -22,19 +22,19 @@ class DaeSpectra(StandardReadable):
         # x-axis; time-of-flight.
         # These are bin-centre coordinates.
         self.tof: SignalR[Array1D[float32]] = epics_signal_r(
-            Array1D[float32], f"{dae_prefix}SPEC:{period}:{spectra}:X"
+            Array1D[float32], f"{dae_prefix}SPEC:{period}:{spectra}:X", timeout=60
         )
         self.tof_size: SignalR[int] = epics_signal_r(
-            int, f"{dae_prefix}SPEC:{period}:{spectra}:X.NORD"
+            int, f"{dae_prefix}SPEC:{period}:{spectra}:X.NORD", timeout=60
         )
 
         # x-axis; time-of-flight.
         # These are bin-edge coordinates, with a size one more than the corresponding data.
         self.tof_edges: SignalR[Array1D[float32]] = epics_signal_r(
-            Array1D[float32], f"{dae_prefix}SPEC:{period}:{spectra}:XE"
+            Array1D[float32], f"{dae_prefix}SPEC:{period}:{spectra}:XE", timeout=60
         )
         self.tof_edges_size: SignalR[int] = epics_signal_r(
-            int, f"{dae_prefix}SPEC:{period}:{spectra}:XE.NORD"
+            int, f"{dae_prefix}SPEC:{period}:{spectra}:XE.NORD", timeout=60
         )
 
         # y-axis; counts / tof
@@ -43,10 +43,10 @@ class DaeSpectra(StandardReadable):
         # - Unsuitable for summing counts directly.
         # - Will give a continuous plot for non-uniform bin sizes.
         self.counts_per_time: SignalR[Array1D[float32]] = epics_signal_r(
-            Array1D[float32], f"{dae_prefix}SPEC:{period}:{spectra}:Y"
+            Array1D[float32], f"{dae_prefix}SPEC:{period}:{spectra}:Y", timeout=60
         )
         self.counts_per_time_size: SignalR[int] = epics_signal_r(
-            int, f"{dae_prefix}SPEC:{period}:{spectra}:Y.NORD"
+            int, f"{dae_prefix}SPEC:{period}:{spectra}:Y.NORD", timeout=60
         )
 
         # y-axis; counts
@@ -54,10 +54,10 @@ class DaeSpectra(StandardReadable):
         # - Suitable for summing counts
         # - This will give a discontinuous plot for non-uniform bin sizes.
         self.counts: SignalR[Array1D[float32]] = epics_signal_r(
-            Array1D[float32], f"{dae_prefix}SPEC:{period}:{spectra}:YC"
+            Array1D[float32], f"{dae_prefix}SPEC:{period}:{spectra}:YC", timeout=60
         )
         self.counts_size: SignalR[int] = epics_signal_r(
-            int, f"{dae_prefix}SPEC:{period}:{spectra}:YC.NORD"
+            int, f"{dae_prefix}SPEC:{period}:{spectra}:YC.NORD", timeout=60
         )
 
         super().__init__(name=name)
