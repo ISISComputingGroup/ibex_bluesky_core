@@ -10,8 +10,8 @@ from ophyd_async.epics.motor import UseSetMode
 from ophyd_async.plan_stubs import ensure_connected
 from ophyd_async.testing import callback_on_mock_put, get_mock_put, set_mock_value
 
-from ibex_bluesky_core.devices.block import block_mot
-from ibex_bluesky_core.devices.reflectometry import refl_parameter
+from ibex_bluesky_core.devices.block import BlockMot
+from ibex_bluesky_core.devices.reflectometry import ReflParameter
 from ibex_bluesky_core.plan_stubs import (
     CALL_QT_AWARE_MSG_KEY,
     call_qt_aware,
@@ -133,7 +133,7 @@ def test_call_qt_aware_non_matplotlib_function(RE):
 
 
 def test_redefine_motor(RE):
-    motor = block_mot("some_motor")
+    motor = BlockMot(prefix="", block_name="some_motor")
 
     def plan():
         yield from ensure_connected(motor, mock=True)
@@ -149,7 +149,7 @@ def test_redefine_motor(RE):
 
 
 async def test_redefine_refl_parameter(RE):
-    param = refl_parameter("some_refl_parameter")
+    param = ReflParameter(prefix="", name="some_refl_parameter", changing_timeout_s=60)
     await param.connect(mock=True)
 
     callback_on_mock_put(
