@@ -271,7 +271,7 @@ async def test_polling_plan_drops_readable_updates_if_no_new_motor_position(RE):
     motor.user_readback.set_name("motor1")
     await motor.velocity.set(2)
     block_readable = BlockR(prefix="UNITTEST:", block_name="READABLE", datatype=int)
-    initial_pos = 0
+    initial_pos = 0.1
     destination = 2
     initial_reading = 10
     RE(ensure_connected(motor, block_readable, mock=True))
