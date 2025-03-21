@@ -1,12 +1,17 @@
 """Core plan stubs."""
 
-from collections.abc import Generator
-from typing import Callable, ParamSpec, TypeVar, cast
+import logging
+from collections.abc import Callable, Generator
+from typing import ParamSpec, TypeVar, cast
 
 import bluesky.plan_stubs as bps
 from bluesky.preprocessors import finalize_wrapper
 from bluesky.utils import Msg
 from ophyd_async.epics.motor import Motor, UseSetMode
+
+from ibex_bluesky_core.devices.reflectometry import ReflParameter
+
+logger = logging.getLogger(__name__)
 
 P = ParamSpec("P")
 T = TypeVar("T")
@@ -16,7 +21,7 @@ CALL_SYNC_MSG_KEY = "ibex_bluesky_core_call_sync"
 CALL_QT_AWARE_MSG_KEY = "ibex_bluesky_core_call_qt_aware"
 
 
-__all__ = ["call_qt_aware", "call_sync"]
+__all__ = ["call_qt_aware", "call_sync", "redefine_motor", "redefine_refl_parameter"]
 
 
 def call_sync(func: Callable[P, T], *args: P.args, **kwargs: P.kwargs) -> Generator[Msg, None, T]:
@@ -81,21 +86,41 @@ def call_qt_aware(
     return cast(T, (yield Msg(CALL_QT_AWARE_MSG_KEY, func, *args, **kwargs)))
 
 
-def set_motor_position(motor: Motor, position: float) -> Generator[Msg, None, None]:
-    """Using the use/set motor record functionality, set a motors current position.
+def redefine_motor(motor: Motor, position: float) -> Generator[Msg, None, None]:
+    """Redefines the current positions of a motor.
 
-    Note this does not move the motor, it just redefines its position to be the given value.
+    Note:
+        This does not move the motor, it just redefines its position to be the given value.
 
     Args:
         motor: The motor to set a position on.
         position: The position to set.
+
     """
+    logger.info("Redefining motor %s to %s", motor.name, position)
 
-    def make_motor_usable():
-        yield from bps.abs_set(motor.set_use_switch, UseSetMode.SET)
-
-    def inner():
+    def make_motor_usable() -> Generator[Msg, None, None]:
         yield from bps.abs_set(motor.set_use_switch, UseSetMode.USE)
+
+    def inner() -> Generator[Msg, None, None]:
+        yield from bps.abs_set(motor.set_use_switch, UseSetMode.SET)
         yield from bps.abs_set(motor.user_setpoint, position)
 
     return (yield from finalize_wrapper(inner(), make_motor_usable()))
+
+
+def redefine_refl_parameter(
+    parameter: ReflParameter, position: float
+) -> Generator[Msg, None, None]:
+    """Redefines the current positions of a reflectometry parameter.
+
+    Note:
+        This does not move the parameter, it just redefines its position to be the given value.
+
+    Args:
+        parameter: The reflectometry parameter to set a position on.
+        position: The position to set.
+
+    """
+    logger.info("Redefining refl parameter %s to %s", parameter.name, position)
+    yield from bps.mv(parameter.redefine, position)

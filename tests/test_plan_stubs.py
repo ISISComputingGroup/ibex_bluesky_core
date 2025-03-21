@@ -1,16 +1,23 @@
 # pyright: reportMissingParameterType=false
 import time
 from asyncio import CancelledError
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock, call, patch
 
 import matplotlib.pyplot as plt
 import pytest
 from bluesky.utils import Msg
+from ophyd_async.epics.motor import UseSetMode
+from ophyd_async.plan_stubs import ensure_connected
+from ophyd_async.testing import callback_on_mock_put, get_mock_put, set_mock_value
 
+from ibex_bluesky_core.devices.block import block_mot
+from ibex_bluesky_core.devices.reflectometry import refl_parameter
 from ibex_bluesky_core.plan_stubs import (
     CALL_QT_AWARE_MSG_KEY,
     call_qt_aware,
     call_sync,
+    redefine_motor,
+    redefine_refl_parameter,
 )
 from ibex_bluesky_core.run_engine._msg_handlers import call_sync_handler
 
@@ -123,3 +130,32 @@ def test_call_qt_aware_non_matplotlib_function(RE):
         RE(plan())
 
     mock.assert_not_called()
+
+
+def test_redefine_motor(RE):
+    motor = block_mot("some_motor")
+
+    def plan():
+        yield from ensure_connected(motor, mock=True)
+        yield from redefine_motor(motor, 42.0)
+
+    RE(plan())
+
+    get_mock_put(motor.set_use_switch).assert_has_calls(
+        [call(UseSetMode.SET, wait=True), call(UseSetMode.USE, wait=True)]
+    )
+
+    get_mock_put(motor.user_setpoint).assert_called_once_with(42.0, wait=True)
+
+
+async def test_redefine_refl_parameter(RE):
+    param = refl_parameter("some_refl_parameter")
+    await param.connect(mock=True)
+
+    callback_on_mock_put(
+        param.redefine.define_pos_sp, lambda *a, **k: set_mock_value(param.redefine.changed, True)
+    )
+
+    RE(redefine_refl_parameter(param, 42.0))
+
+    get_mock_put(param.redefine.define_pos_sp).assert_called_once_with(42.0, wait=True)
