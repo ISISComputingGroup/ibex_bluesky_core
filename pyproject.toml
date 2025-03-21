@@ -42,7 +42,7 @@ classifiers = [
 
 dependencies = [
   "bluesky",  # Bluesky framework
-  "ophyd-async[ca] @ git+https://github.com/bluesky/ophyd-async@bf6b71f045bf297e2bbbfd3ea4de7f368643a948",  # Device abstraction
+  "ophyd-async[ca,pva] @ git+https://github.com/bluesky/ophyd-async@bf6b71f045bf297e2bbbfd3ea4de7f368643a948",  # Device abstraction
   "matplotlib",  # Plotting
   "lmfit",  # Fitting
   "scipy",  # Definitions of erf/erfc functions
