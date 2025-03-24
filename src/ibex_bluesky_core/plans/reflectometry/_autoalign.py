@@ -56,8 +56,8 @@ def _check_parameter(
         return "Optimised value found to be to be outside, to the left, of scan range"
 
     if is_good_fit is None:
-        logger.info("No user-level is_good_fit function supplied")
-        return
+        logger.info("No user-level is_good_fit function supplied and value in scan range")
+        return None
 
     is_good = is_good_fit(result, alignment_param_value)
     logger.info("User-level is_good_fit function returned: %s", is_good)
