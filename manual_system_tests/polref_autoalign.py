@@ -1,5 +1,5 @@
 """Auto-alignment scripts for POLREF reflectometer."""
-from typing import TypeAlias
+from typing import TypeAlias, Callable
 
 from collections.abc import Generator
 from datetime import datetime
@@ -40,27 +40,25 @@ def save_plt(movable_name: str):
     plt.savefig(fname=f"{get_default_output_path()}{movable_name}_plot_{datetime.now().strftime('%H%M%S')}")
 
 
-def gauss_checks(result: ModelResult, alignment_param_value: float) -> bool:
-    """Check for optimised S1VG value."""
-    rsquared_confidence = 0.9
-    expected_param_value = 1.0
-    expected_param_value_tol = 0.1
-    max_peak_factor = 5.0
+def gaussian_checks(*, rsquared: float) -> Callable[[ModelResult, float], bool]:
+    def _checks(result: ModelResult, alignment_param_value: float) -> bool:
+        """Check for optimised S1VG value."""
+        rsquared_confidence = rsquared
+        expected_param_value = 1.0
+        expected_param_value_tol = 0.1
+        max_peak_factor = 5.0
 
-    if result.rsquared < rsquared_confidence:
-        return True
+        if result.rsquared < rsquared_confidence:
+            return True
 
-    # For S1VG, provide a value you would expect for it,
-    # assert if its not close by a provided factor
-    if not isclose(expected_param_value, alignment_param_value, abs_tol=expected_param_value_tol):
-        return True
+        # Is the peak above the background by some factor (optional because param may not be for
+        # a peak, or background may not be a parameter in the model).
+        if result.values["background"] / result.model.func(alignment_param_value) <= max_peak_factor:
+            return True
 
-    # Is the peak above the background by some factor (optional because param may not be for
-    # a peak, or background may not be a parameter in the model).
-    if result.values["background"] / result.model.func(alignment_param_value) <= max_peak_factor:
-        return True
+        return False
 
-    return False
+    return _checks
 
 
 S1VG = refl_parameter(name="S1VG")
@@ -78,14 +76,18 @@ FOFFSET = refl_parameter(name="FOFFSET")
 FTHETA = refl_parameter(name="FTHETA")
 SMOFFSET = refl_parameter(name="SMOFFSET")
 SMANGLE = refl_parameter(name="SMANGLE")
+HEIGHT = refl_parameter(name="SAMPOFFSET")
 
 MODE = block_rw(str, "MODE", write_config=BlockWriteConfig(use_global_moving_flag=True, settle_time_s=2))
 MOVE = block_rw(int, "MOVE", write_config=BlockWriteConfig(use_global_moving_flag=True, settle_time_s=2), sp_suffix="")
+
+SMINBEAM = block_rw(str, "SMINBEAM", write_config=BlockWriteConfig(use_global_moving_flag=True, settle_time_s=2))
 
 S3SOUTH = Motor(name="S3SOUTH", prefix=get_pv_prefix() + "MOT:MTR0601")
 S3NORTH = Motor(name="S3NORTH", prefix=get_pv_prefix() + "MOT:MTR0602")
 S3EAST = Motor(name="S3EAST", prefix=get_pv_prefix() + "MOT:MTR0603")
 S3WEST = Motor(name="S3WEST", prefix=get_pv_prefix() + "MOT:MTR0604")
+SLIT2Z_RAW = Motor(name="SLIT2Z_RAW", prefix = get_pv_prefix() + "MOT:MTR0402")
 
 PolrefDae: TypeAlias = SimpleDae[PeriodPerPointController | RunPerPointController, PeriodGoodFramesWaiter | GoodFramesWaiter, MonitorNormalizer]
 
@@ -95,6 +97,28 @@ def beep():
         yield from call_sync(Beep, i, 100)
     yield from call_sync(winsound.PlaySound, r"C:\Users\luj96656\Downloads\happy-goat-6463.wav", winsound.SND_FILENAME)
 
+
+def change_mode(mode: str):
+    yield from bps.mv(MODE, mode)
+
+    sm_out_options = ["NR", "ANR"]
+    sm_in_options = ["PNR", "PA"]
+    other_options = ["DISABLED"]
+
+    if mode in sm_out_options:
+        yield from bps.mv(SMINBEAM, "OUT")
+        yield from bps.mv(SMANGLE, 0.0)
+        yield from bps.mv(MOVE, 1)
+        yield from bps.mv(HEIGHT, 0.0)
+    elif mode in other_options:
+        pass
+    elif mode in sm_in_options:
+        yield from bps.mv(SMINBEAM, "IN")
+        yield from bps.mv(SMANGLE, 0.55)
+        yield from bps.mv(MOVE, 1)
+        yield from bps.mv(HEIGHT, 0.0)
+    else:
+        raise ValueError(f"Mode name '{mode}' not recognised")
 
 
 def next_param(name: str):
@@ -351,6 +375,37 @@ def ftheta_align(dae:PolrefDae) -> Generator[Msg, None, None]:
     yield from bps.mv(FTHETA, 5.8)
 
 
+def sm_align_setup() -> Generator[Msg, None, None]:
+    yield from initial_move(theta=0, phi=0, s1vg=0.2, s2vg=0.2, s3n=5, s3s=-5, s1hg=40, s2hg=30, s3e=15, s3w=15)
+    yield from bps.mv(SMINBEAM, "IN")
+    yield from bps.mv(SMANGLE, 0.0)
+    yield from change_mode("DISABLED")
+
+def smoffset_align(dae: PolrefDae) -> Generator[Msg, None, None]:
+    yield from initial_move(theta=0, phi=0, s1vg=0.2, s2vg=0.2, s3n=5, s3s=-5, s1hg=40, s2hg=30, s3e=15, s3w=15)
+    yield from _optimise_axis(
+        dae, frames=120, rel_scan_ranges=[1], param=SMOFFSET, fit=ERFC.fit(), fit_param="cen", num=21,
+    )
+    yield from redefine_refl_parameter(SMOFFSET, 0)
+
+def smangle_align(dae: PolrefDae) -> Generator[Msg, None, None]:
+    yield from initial_move(theta=0, phi=0, s1vg=0.2, s2vg=0.2, s3n=5, s3s=-5, s1hg=40, s2hg=30, s3e=15, s3w=15)
+    yield from _optimise_axis(dae, frames=120, param=SMANGLE, rel_scan_ranges=[0.2], fit=Gaussian.fit(), fit_param="x0", num=21)
+    yield from redefine_refl_parameter(SMANGLE, 0)
+
+def pnr_setup() -> Generator[Msg, None, None]:
+    yield from initial_move(theta=0, phi=0, s1vg=0.2, s2vg=0.2, s3n=5, s3s=-5, s1hg=40, s2hg=30, s3e=15, s3w=15)
+    yield from bps.mv(HEIGHT, 0.0)
+    yield from change_mode("PNR")
+
+def s2offset_pnr_align(dae: PolrefDae) -> Generator[Msg, None, None]:
+    yield from initial_move(theta=0, phi=0, s1vg=0.1, s2vg=0.1, s3n=15, s3s=-15, s1hg=40, s2hg=30, s3e=15, s3w=15)
+    yield from _optimise_axis(dae, frames=80, param=S2OFFSET, rel_scan_ranges=[10], fit=Gaussian.fit(), fit_param="x0", num=21)
+    yield from _optimise_axis(dae, frames=80, param=S2OFFSET, rel_scan_ranges=[6, 6],
+                              fit=Gaussian.fit(), fit_param="x0", num=31)
+    s2_pnr_offset = yield from bps.rd(SLIT2Z_RAW)
+    print("S2 PNR OFFSET = ", s2_pnr_offset - 56.614)
+
 
 def full_autoalign_plan() -> Generator[Msg, None, None]:
     """Full autoalign plan for POLREF."""
@@ -365,61 +420,36 @@ def full_autoalign_plan() -> Generator[Msg, None, None]:
 
     yield from bps.mv(dae.waiter.finish_wait_at, 500)
 
-    # Order of alignments-
-    # Slit1Gap()
-    # Slit2Gap()
-    # Slit3Gap()
-    # S2OFFSET_Center()
-    # Bench_Seesaw_Center()
-    # Bench_Offset_Center()
-    # Bench_Seesaw_Center()
-    # Bench_Offset_Center()
-    # Bench_Seesaw_Center()
-    # Bench_Offset_Center()
-    # Slit3Gap()
-    # S3_Center()
-    # FOM_Z()
-    # FOM_THETA()
-    # FOM_Z()
-
-    # SM_align_setup()
-    # SM_offset()
-    # SM_angle()
-    # SM_offset()
-    # SM_angle()
-
-    #PNR_offsets_setup()
-    #S2OFFSET_PNR_Center()
-    #Bench_Offset_PNR_Center()
-
     yield from ensure_connected(
         dae, S1VG, S1HG, S2VG, S2HG, S3VG, S2OFFSET,
         BENCHSEESAW, BENCHOFFSET, S3VC, FOFFSET,
         FTHETA, SMOFFSET, SMANGLE, S3NORTH, S3SOUTH, S3EAST, S3WEST, THETA,
-        PHI
+        PHI, SMINBEAM, MODE, MOVE, SLIT2Z_RAW
     )
 
     print("Starting auto-alignment...")
 
-    yield from s1vg_align(dae=dae)
-    yield from s2vg_align(dae=dae)
-    yield from s3vg_align(dae=dae)
-    yield from s2offset_align(dae=dae)
-
-    for _ in range(3):
-        yield from benchseesaw_align(dae=dae)
-        yield from benchoffset_align(dae=dae)
-
-    yield from s3vg_align(dae=dae)
-    yield from s3vc_align(dae=dae)
-
-    yield from foffset_align(dae=dae)
-    yield from ftheta_align(dae=dae)
-    yield from foffset_align(dae=dae)
-    yield from smalign_setup(dae=dae)
+    # yield from s1vg_align(dae=dae)
+    # yield from s2vg_align(dae=dae)
+    # yield from s3vg_align(dae=dae)
+    # yield from s2offset_align(dae=dae)
+    #
+    # for _ in range(3):
+    #     yield from benchseesaw_align(dae=dae)
+    #     yield from benchoffset_align(dae=dae)
+    #
+    # yield from s3vg_align(dae=dae)
+    # yield from s3vc_align(dae=dae)
+    #
+    # yield from foffset_align(dae=dae)
+    # yield from ftheta_align(dae=dae)
+    # yield from foffset_align(dae=dae)
+    yield from sm_align_setup()
     for _ in range(2):
         yield from smoffset_align(dae=dae)
         yield from smangle_align(dae=dae)
+    yield from pnr_setup()
+
 
     # Other params
     # ....
