@@ -57,14 +57,3 @@ def test_set_waits_for_changed_on_reflectometry_parameter_redefine(RE):
     new_value = 456.0
     RE(bps.mv(param, new_value))
     get_mock_put(param.define_pos_sp).assert_called_once_with(new_value, wait=True)
-
-
-async def test_times_out_if_changed_never_finishes_on_reflectometery_parameter_redefine(RE):
-    param = ReflParameterRedefine(prefix="UNITTEST:S1VG", name="redefine", changed_timeout_s=0.01)
-    RE(ensure_connected(param, mock=True))
-    initial = 123.0
-    set_mock_value(param.define_pos_sp, initial)
-    set_mock_value(param.changed, False)
-    new_value = 456.0
-    with pytest.raises(asyncio.TimeoutError):
-        await param.set(new_value)

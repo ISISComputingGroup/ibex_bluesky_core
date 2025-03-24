@@ -101,8 +101,6 @@ def _optimise_axis_over_range(  # noqa: PLR0913 PLR0917
         The success flag indicates whether the optimization was successful.
 
     """
-
-
     init_mot_pos: float = yield from bps.rd(alignment_param)  # type: ignore
     _print_and_log(
         f"Scanning over {alignment_param.name} with a relative scan range of {rel_scan_range} "

@@ -162,6 +162,18 @@ async def test_redefine_refl_parameter(RE):
     get_mock_put(param.redefine.define_pos_sp).assert_called_once_with(42.0, wait=True)
 
 
+async def test_redefine_unredefinable_refl_parameter(RE):
+    param = ReflParameter(
+        prefix="", name="some_refl_parameter", changing_timeout_s=60, has_redefine=False
+    )
+    await param.connect(mock=True)
+
+    with pytest.raises(
+        ValueError, match="Cannot redefine unredefinable parameter some_refl_parameter"
+    ):
+        RE(redefine_refl_parameter(param, 42.0))
+
+
 def test_get_user_input(RE):
     with patch("ibex_bluesky_core.plan_stubs.input") as mock_input:
         mock_input.__name__ = "mock"

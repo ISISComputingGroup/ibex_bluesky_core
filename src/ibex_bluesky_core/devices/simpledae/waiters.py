@@ -8,7 +8,9 @@ from typing import TYPE_CHECKING, Generic, TypeVar
 from ophyd_async.core import (
     Device,
     SignalR,
-    wait_for_value, soft_signal_rw, SignalRW,
+    SignalRW,
+    soft_signal_rw,
+    wait_for_value,
 )
 
 from ibex_bluesky_core.devices.simpledae.strategies import Waiter
@@ -29,6 +31,7 @@ class SimpleWaiter(Waiter, Generic[T], ABC):
         """Wait for a value to be at least equal to the specified value.
 
         Args:
+            datatype: the datatype of the waited-for signal.
             value: the value to wait for
 
         """
@@ -37,9 +40,11 @@ class SimpleWaiter(Waiter, Generic[T], ABC):
     async def wait(self, dae: "SimpleDae") -> None:
         """Wait for signal to reach the user-specified value."""
         signal = self.get_signal(dae)
-        _finish_wait_at = await self.finish_wait_at.get_value()
-        logger.info("starting wait for signal %s to get to value %s", signal.source, _finish_wait_at)
-        await wait_for_value(signal, lambda v: v >= _finish_wait_at, timeout=None)
+        finish_wait_value = await self.finish_wait_at.get_value()
+        logger.info(
+            "starting wait for signal %s to get to value %s", signal.source, finish_wait_value
+        )
+        await wait_for_value(signal, lambda v: v >= finish_wait_value, timeout=None)
         logger.info("completed wait for signal %s", signal.source)
 
     def additional_readable_signals(self, dae: "SimpleDae") -> list[Device]:
@@ -55,6 +60,12 @@ class PeriodGoodFramesWaiter(SimpleWaiter[int]):
     """Wait for period good frames to reach a user-specified value."""
 
     def __init__(self, frames: int) -> None:
+        """Wait for period good frames to reach a user-specified value.
+
+        Args:
+            frames: the number of frames to wait for
+
+        """
         super().__init__(int, frames)
 
     def get_signal(self, dae: "SimpleDae") -> SignalR[int]:
@@ -66,6 +77,12 @@ class GoodFramesWaiter(SimpleWaiter[int]):
     """Wait for good frames to reach a user-specified value."""
 
     def __init__(self, frames: int) -> None:
+        """Wait for good frames to reach a user-specified value.
+
+        Args:
+            frames: the number of frames to wait for
+
+        """
         super().__init__(int, frames)
 
     def get_signal(self, dae: "SimpleDae") -> SignalR[int]:
@@ -77,6 +94,12 @@ class GoodUahWaiter(SimpleWaiter[float]):
     """Wait for good microamp-hours to reach a user-specified value."""
 
     def __init__(self, uah: float) -> None:
+        """Wait for period good microamp-hours to reach a user-specified value.
+
+        Args:
+            uah: the number of microamp-hours to wait for
+
+        """
         super().__init__(float, uah)
 
     def get_signal(self, dae: "SimpleDae") -> SignalR[float]:
@@ -88,6 +111,12 @@ class MEventsWaiter(SimpleWaiter[float]):
     """Wait for a user-specified number of millions of events."""
 
     def __init__(self, mevents: float) -> None:
+        """Wait for a user-specified number of millions of events.
+
+        Args:
+            mevents: the number of millions of events to wait for
+
+        """
         super().__init__(float, mevents)
 
     def get_signal(self, dae: "SimpleDae") -> SignalR[float]:

@@ -14,7 +14,7 @@ from ophyd_async.core import (
 )
 from ophyd_async.epics.core import epics_signal_r, epics_signal_w
 
-from ibex_bluesky_core.utils import get_pv_prefix, NamedReadableAndMovable
+from ibex_bluesky_core.utils import get_pv_prefix
 
 logger = logging.getLogger(__name__)
 
@@ -22,13 +22,16 @@ logger = logging.getLogger(__name__)
 class ReflParameter(StandardReadable, NamedMovable[float]):
     """Utility device for a reflectometry server parameter."""
 
-    def __init__(self, prefix: str, name: str, changing_timeout_s: float, *, has_redefine:bool=True) -> None:
+    def __init__(
+        self, prefix: str, name: str, changing_timeout_s: float, *, has_redefine: bool = True
+    ) -> None:
         """Reflectometry server parameter.
 
         Args:
             prefix: the PV prefix.
             name: the name of the parameter.
             changing_timeout_s: seconds to wait for the CHANGING signal to go to False after a set.
+            has_redefine: whether this parameter can be redefined.
 
         """
         with self.add_children_as_readables(StandardReadableFormat.HINTED_SIGNAL):
@@ -95,14 +98,11 @@ class ReflParameterRedefine(StandardReadable):
         await self.define_pos_sp.set(value, wait=True, timeout=None)
         logger.info("waiting for %s", self.changed.source)
         await asyncio.sleep(1.0)
-        # async for chg in observe_value(self.changed, done_timeout=self.changed_timeout):
-        #     logger.debug("%s: %s", self.changed.source, chg)
-        #     print(f"refl redefine change {chg}")
-        #     if chg:
-        #         break
 
 
-def refl_parameter(name: str, *, changing_timeout_s: float = 60.0, has_redefine: bool = True) -> ReflParameter:
+def refl_parameter(
+    name: str, *, changing_timeout_s: float = 60.0, has_redefine: bool = True
+) -> ReflParameter:
     """Small wrapper around a reflectometry parameter device.
 
     This automatically applies the current instrument's PV prefix.
@@ -110,9 +110,12 @@ def refl_parameter(name: str, *, changing_timeout_s: float = 60.0, has_redefine:
     Args:
         name: the reflectometry parameter name.
         changing_timeout_s: time to wait (seconds) for the CHANGING signal to go False after a set.
+        has_redefine: whether this parameter can be redefined.
 
     Returns a device pointing to a reflectometry parameter.
 
     """
     prefix = get_pv_prefix()
-    return ReflParameter(prefix=prefix, name=name, changing_timeout_s=changing_timeout_s, has_redefine=has_redefine)
+    return ReflParameter(
+        prefix=prefix, name=name, changing_timeout_s=changing_timeout_s, has_redefine=has_redefine
+    )
