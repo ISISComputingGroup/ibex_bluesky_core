@@ -8,7 +8,7 @@ name = "ibex-bluesky-core"  # REQUIRED, is the only field that cannot be marked 
 dynamic = ["version"]
 description = "Core bluesky plan stubs & devices for use at ISIS"
 readme = "README.md"
-requires-python = ">=3.11"
+requires-python = ">=3.10"
 license = {file = "LICENSE"}
 
 authors = [
@@ -34,6 +34,7 @@ classifiers = [
   # that you indicate you support Python 3. These classifiers are *not*
   # checked by "pip install". See instead "requires-python" key in this file.
   "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: 3 :: Only",

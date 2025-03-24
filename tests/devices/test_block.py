@@ -1,4 +1,6 @@
 # pyright: reportMissingParameterType=false
+import asyncio
+import sys
 from unittest.mock import ANY, MagicMock, call, patch
 
 import bluesky.plan_stubs as bps
@@ -19,6 +21,11 @@ from ibex_bluesky_core.devices.block import (
     block_rw_rbv,
 )
 from tests.conftest import MOCK_PREFIX
+
+if sys.version_info < (3, 11):
+    aio_timeout_error = asyncio.exceptions.TimeoutError
+else:
+    aio_timeout_error = TimeoutError
 
 
 async def _make_block(clazz):
@@ -175,7 +182,7 @@ async def test_block_set_with_timeout():
 
     set_mock_value(block.readback, 10)
 
-    with pytest.raises(TimeoutError):
+    with pytest.raises(aio_timeout_error):
         await block.set(20)
 
     func.assert_called_once_with(20, 10)
@@ -217,7 +224,7 @@ async def test_block_set_waiting_for_global_moving_flag_timeout():
 
     set_mock_value(block.global_moving, True)
     with patch("ibex_bluesky_core.devices.block.asyncio.sleep") as mock_aio_sleep:
-        with pytest.raises(TimeoutError):
+        with pytest.raises(aio_timeout_error):
             await block.set(10)
         # Only check first call, as wait_for_value from ophyd_async gives us a few more...
         assert mock_aio_sleep.mock_calls[0] == call(GLOBAL_MOVING_FLAG_PRE_WAIT)
