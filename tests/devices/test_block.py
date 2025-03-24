@@ -1,5 +1,4 @@
 # pyright: reportMissingParameterType=false
-
 import asyncio
 import sys
 from unittest.mock import ANY, MagicMock, call, patch
