@@ -101,11 +101,13 @@ def _optimise_axis_over_range(  # noqa: PLR0913 PLR0917
         The success flag indicates whether the optimization was successful.
 
     """
-    _print_and_log(
-        f"Scanning over {alignment_param.name} with a relative scan range of {rel_scan_range}."
-    )
+
 
     init_mot_pos: float = yield from bps.rd(alignment_param)  # type: ignore
+    _print_and_log(
+        f"Scanning over {alignment_param.name} with a relative scan range of {rel_scan_range} "
+        f"around {init_mot_pos}"
+    )
     logger.info("initial position: %s", init_mot_pos)
 
     icc = yield from scan(
@@ -139,7 +141,7 @@ def _optimise_axis_over_range(  # noqa: PLR0913 PLR0917
         logger.info("Problem encountered during fit: %s", problem)
         _print_and_log(
             f"This failed one or more of the checks on {alignment_param.name}"
-            f" with a scan range of {rel_scan_range}. Problem was {problem}"
+            f" with a scan range of {rel_scan_range} around {init_mot_pos}. Problem was {problem}"
         )
         _print_and_log(f"Value found for {fit_param} was {alignment_param_value}.")
 

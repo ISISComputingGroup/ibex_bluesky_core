@@ -1,0 +1,365 @@
+"""Auto-alignment scripts for POLREF reflectometer."""
+from typing import TypeAlias
+
+from collections.abc import Generator
+from datetime import datetime
+from math import isclose
+
+from ophyd_async.epics.motor import Motor
+from winsound import Beep
+
+from bluesky import plan_stubs as bps
+from bluesky.utils import Msg
+from lmfit.model import ModelResult
+from matplotlib import pyplot as plt
+from ophyd_async.plan_stubs import ensure_connected
+
+from ibex_bluesky_core.callbacks.fitting.fitting_utils import SlitScan, Trapezoid, Gaussian
+from ibex_bluesky_core.devices.block import BlockMot
+from ibex_bluesky_core.devices.reflectometry import ReflParameter, refl_parameter
+from ibex_bluesky_core.devices.simpledae import SimpleDae, monitor_normalising_dae, \
+    PeriodGoodFramesWaiter, GoodFramesWaiter, MonitorNormalizer, Controller, \
+    PeriodPerPointController, RunPerPointController
+from ibex_bluesky_core.log import set_bluesky_log_levels
+from ibex_bluesky_core.plan_stubs import call_sync, redefine_refl_parameter, redefine_motor
+from ibex_bluesky_core.plans.reflectometry import centred_pixel, optimise_axis_against_intensity
+from ibex_bluesky_core.utils import get_pv_prefix
+from ibex_bluesky_core.callbacks._utils import get_default_output_path
+
+PREFIX = get_pv_prefix()
+DEFAULT_DET = 280
+DEFAULT_MON = 2
+PIXEL_RANGE = 5
+NUM_POINTS = 21
+
+set_bluesky_log_levels("DEBUG")
+
+
+def save_plt(movable_name: str):
+    plt.savefig(fname=f"{get_default_output_path()}{movable_name}_plot_{datetime.now().strftime('%H%M%S')}")
+
+
+def gauss_checks(result: ModelResult, alignment_param_value: float) -> bool:
+    """Check for optimised S1VG value."""
+    rsquared_confidence = 0.9
+    expected_param_value = 1.0
+    expected_param_value_tol = 0.1
+    max_peak_factor = 5.0
+
+    if result.rsquared < rsquared_confidence:
+        return True
+
+    # For S1VG, provide a value you would expect for it,
+    # assert if its not close by a provided factor
+    if not isclose(expected_param_value, alignment_param_value, abs_tol=expected_param_value_tol):
+        return True
+
+    # Is the peak above the background by some factor (optional because param may not be for
+    # a peak, or background may not be a parameter in the model).
+    if result.values["background"] / result.model.func(alignment_param_value) <= max_peak_factor:
+        return True
+
+    return False
+
+
+S1VG = refl_parameter(name="S1VG")
+S1HG = refl_parameter(name="S1HG")
+S2VG = refl_parameter(name="S2VG")
+S2HG = refl_parameter(name="S2HG")
+S3VG = refl_parameter(name="S3VG")
+S2OFFSET = refl_parameter(name="S2OFFSET")
+BENCHSEESAW = refl_parameter(name="BENCHSEESA")
+BENCHOFFSET = refl_parameter(name="BENCHOFFSE")
+S3VC = refl_parameter(name="S3HEIGHT")
+THETA = refl_parameter(name="THETA")
+PHI = refl_parameter(name="PHI")
+FOFFSET = refl_parameter(name="FOFFSET")
+FTHETA = refl_parameter(name="FTHETA")
+SMOFFSET = refl_parameter(name="SMOFFSET")
+SMANGLE = refl_parameter(name="SMANGLE")
+
+S3SOUTH = Motor(name="S3SOUTH", prefix=get_pv_prefix() + "MOT:MTR0601")
+S3NORTH = Motor(name="S3NORTH", prefix=get_pv_prefix() + "MOT:MTR0602")
+S3EAST = Motor(name="S3EAST", prefix=get_pv_prefix() + "MOT:MTR0603")
+S3WEST = Motor(name="S3WEST", prefix=get_pv_prefix() + "MOT:MTR0604")
+
+PolrefDae: TypeAlias = SimpleDae[PeriodPerPointController | RunPerPointController, PeriodGoodFramesWaiter | GoodFramesWaiter, MonitorNormalizer]
+
+
+def beep():
+    yield from call_sync(Beep, 1000, 500)
+
+
+def next_param(name: str):
+    print(f"Next alignment parameter is {name}")
+    yield from beep()
+
+
+def _optimise_axis(dae, frames, param, fit, fit_param: str, rel_scan_ranges: list[float], num):
+    yield from bps.mv(dae.waiter.finish_wait_at, frames)
+    yield from optimise_axis_against_intensity(
+        dae=dae,
+        alignment_param=param,
+        fit_method=fit,
+        fit_param=fit_param,
+        rel_scan_ranges=rel_scan_ranges,
+        # is_good_fit=,
+        periods=True,
+        save_run=True,
+        num_points=num,
+        problem_found_plan=beep
+    )
+    save_plt(param.name)
+
+def initial_move(theta=0.5, phi=0.5,
+                  s1vg=None, s2vg=None, s3n=None, s3s=None,
+                  s1hg=None, s2hg=None, s3e=None, s3w=None):
+    moves = []
+    if theta is not None:
+        moves.extend([THETA, theta])
+    if phi is not None:
+        moves.extend([PHI, phi])
+    if s1vg is not None:
+        moves.extend([S1VG, s1vg])
+    if s2vg is not None:
+        moves.extend([S2VG, s2vg])
+    if s3n is not None:
+        moves.extend([S3NORTH, s3n])
+    if s3s is not None:
+        moves.extend([S3SOUTH, s3s])
+    if s1hg is not None:
+        moves.extend([S1HG, s1hg])
+    if s2hg is not None:
+        moves.extend([S2HG, s2hg])
+    if s3e is not None:
+        moves.extend([S3EAST, s3e])
+    if s3w is not None:
+        moves.extend([S3WEST, s3w])
+
+    yield from bps.mv(*moves)
+
+
+def s1vg_align(dae: PolrefDae) -> Generator[Msg, None, None]:
+    yield from next_param(S1VG.name)
+    yield from initial_move(theta=0, phi=0, s1vg=-0.1, s2vg=10, s3n=5, s3s=-5, s1hg=40, s2hg=30, s3e=15, s3w=15)
+
+    yield from _optimise_axis(
+        dae=dae,
+        frames=10,
+        param=S1VG,
+        fit=SlitScan.fit(),
+        fit_param="inflection0",
+        rel_scan_ranges=[0.6, 0.1, 0.1],
+        num=21
+    )
+
+    yield from redefine_refl_parameter(S1VG, 0.0)
+
+
+def s2vg_align(dae: PolrefDae) -> Generator[Msg, None, None]:
+    yield from next_param(S2VG.name)
+    yield from initial_move(theta=0, phi=0, s1vg=1.0, s2vg=-0.1, s3n=5, s3s=-5, s1hg=40, s2hg=30, s3e=15, s3w=15)
+
+    yield from _optimise_axis(
+        dae=dae,
+        frames=10,
+        param=S2VG,
+        fit=SlitScan.fit(),
+        fit_param="inflection0",
+        rel_scan_ranges=[0.3],
+        num=21,
+    )
+
+    yield from _optimise_axis(
+        dae=dae,
+        frames=20,
+        param=S2VG,
+        fit=SlitScan.fit(),
+        fit_param="inflection0",
+        rel_scan_ranges=[0.2, 0.2],
+        num=21,
+    )
+
+    yield from redefine_refl_parameter(S2VG, 0.0)
+
+
+def s3vg_align(dae: PolrefDae) -> Generator[Msg, None, None]:
+    yield from next_param(S3VG.name)
+    yield from initial_move(theta=0, phi=0, s1vg=1.0, s2vg=1.0, s3n=-0.1, s3s=0.1, s1hg=40, s2hg=30, s3e=15, s3w=15)
+
+    yield from _optimise_axis(
+        dae=dae,
+        frames=10,
+        param=S3VG,
+        fit=SlitScan.fit(),
+        fit_param="inflection0",
+        rel_scan_ranges=[2],
+        num=21,
+    )
+    yield from _optimise_axis(
+        dae=dae,
+        frames=20,
+        param=S3VG,
+        fit=SlitScan.fit(),
+        fit_param="inflection0",
+        rel_scan_ranges=[0.2, 0.2],
+        num=21,
+    )
+
+    yield from redefine_refl_parameter(S3VG, 0.0)
+
+
+def s2offset_align(dae: PolrefDae) -> Generator[Msg, None, None]:
+    yield from next_param(S2OFFSET.name)
+    yield from initial_move(theta=0, phi=0, s1vg=0.1, s2vg=0.1, s3n=15, s3s=-15, s1hg=40, s2hg=30, s3e=15, s3w=15)
+
+    yield from _optimise_axis(
+        dae=dae,
+        frames=20,
+        param=S2OFFSET,
+        fit=Trapezoid.fit(),
+        fit_param="cen",
+        rel_scan_ranges=[10, 5, 5],
+        num=31,
+    )
+
+    yield from redefine_refl_parameter(S2OFFSET, 0.0)
+
+def benchseesaw_align(dae: PolrefDae) -> Generator[Msg, None, None]:
+    yield from next_param(BENCHSEESAW.name)
+    yield from initial_move(theta=0, phi=0, s1vg=0.1, s2vg=0.1, s3n=15, s3s=-15, s1hg=40, s2hg=30, s3e=15, s3w=15)
+
+    yield from _optimise_axis(
+        dae=dae,
+        frames=120,
+        param=BENCHSEESAW,
+        fit=Gaussian.fit(),
+        fit_param="x0",
+        rel_scan_ranges=[2],
+        num=21,
+    )
+
+    yield from redefine_refl_parameter(BENCHSEESAW, 0.0)
+
+def benchoffset_align(dae: PolrefDae) -> Generator[Msg, None, None]:
+    yield from next_param(BENCHOFFSET.name)
+    yield from initial_move(theta=0, phi=0, s1vg=0.1, s2vg=0.1, s3n=15, s3s=-15, s1hg=40, s2hg=30, s3e=15, s3w=15)
+
+    yield from _optimise_axis(
+        dae=dae,
+        frames=80,
+        param=BENCHOFFSET,
+        fit=Gaussian.fit(),
+        fit_param="x0",
+        rel_scan_ranges=[2],
+        num=21,
+    )
+
+    yield from redefine_refl_parameter(BENCHOFFSET, 0.0)
+
+def s3vc_align(dae: PolrefDae) -> Generator[Msg, None, None]:
+    yield from next_param(S3VC.name)
+    yield from initial_move(theta=0, phi=0, s1vg=0.1, s2vg=0.1, s3n=0.1, s3s=-0.1, s1hg=40, s2hg=30, s3e=15, s3w=15)
+
+    yield from _optimise_axis(
+        dae=dae,
+        frames=20,
+        param=S3VC,
+        fit=Gaussian.fit(),
+        fit_param="x0",
+        rel_scan_ranges=[4],
+        num=31,
+    )
+
+    for _ in range(2):
+        yield from _optimise_axis(
+            dae=dae,
+            frames=60,
+            param=S3VC,
+            fit=Gaussian.fit(),
+            fit_param="x0",
+            rel_scan_ranges=[0.8],
+            num=21,
+        )
+
+        yield from bps.mv(S3VG, 0)
+
+        yield from redefine_motor(S3NORTH, 0)
+        yield from redefine_motor(S3SOUTH, 0)
+
+        yield from bps.mv(S3VG, 0.2)
+
+def full_autoalign_plan() -> Generator[Msg, None, None]:
+    """Full autoalign plan for POLREF."""
+    det_pixels = centred_pixel(DEFAULT_DET, PIXEL_RANGE)
+    dae: PolrefDae = monitor_normalising_dae(
+        det_pixels=det_pixels,
+        frames=10,
+        periods=True,
+        save_run=True,
+        monitor=DEFAULT_MON,
+    )
+
+    yield from bps.mv(dae.waiter.finish_wait_at, 500)
+
+    # Order of alignments-
+    # Slit1Gap()
+    # Slit2Gap()
+    # Slit3Gap()
+    # S2OFFSET_Center()
+    # Bench_Seesaw_Center()
+    # Bench_Offset_Center()
+    # Bench_Seesaw_Center()
+    # Bench_Offset_Center()
+    # Bench_Seesaw_Center()
+    # Bench_Offset_Center()
+    # Slit3Gap()
+    # S3_Center()
+    # FOM_Z()
+    # FOM_THETA()
+    # FOM_Z()
+
+    # SM_align_setup()
+    # SM_offset()
+    # SM_angle()
+    # SM_offset()
+    # SM_angle()
+
+    #PNR_offsets_setup()
+    #S2OFFSET_PNR_Center()
+    #Bench_Offset_PNR_Center()
+
+    yield from ensure_connected(
+        dae, S1VG, S1HG, S2VG, S2HG, S3VG, S2OFFSET,
+        BENCHSEESAW, BENCHOFFSET, S3VC, FOFFSET,
+        FTHETA, SMOFFSET, SMANGLE, S3NORTH, S3SOUTH, S3EAST, S3WEST
+    )
+
+    print("Starting auto-alignment...")
+
+    yield from s1vg_align(dae=dae)
+    yield from s2vg_align(dae=dae)
+    yield from s3vg_align(dae=dae)
+    yield from s2offset_align(dae=dae)
+
+    for _ in range(3):
+        yield from benchseesaw_align(dae=dae)
+        yield from benchoffset_align(dae=dae)
+
+    yield from s3vg_align(dae=dae)
+    yield from s3vc_align(dae=dae)
+
+    # yield from foffset_align(dae=dae)
+    # yield from ftheta_align(dae=dae)
+    # yield from foffset_align(dae=dae)
+    #
+    # yield from smalign_setup(dae=dae)
+    # for _ in range(2):
+    #     yield from smoffset_align(dae=dae)
+    #     yield from smangle_align(dae=dae)
+
+    # Other params
+    # ....
+
+    print("Auto alignment complete.")
+

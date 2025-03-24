@@ -3,6 +3,7 @@
 import asyncio
 import logging
 
+from bluesky.protocols import NamedMovable
 from ophyd_async.core import (
     AsyncStatus,
     SignalR,
@@ -13,12 +14,12 @@ from ophyd_async.core import (
 )
 from ophyd_async.epics.core import epics_signal_r, epics_signal_w
 
-from ibex_bluesky_core.utils import get_pv_prefix
+from ibex_bluesky_core.utils import get_pv_prefix, NamedReadableAndMovable
 
 logger = logging.getLogger(__name__)
 
 
-class ReflParameter(StandardReadable):
+class ReflParameter(StandardReadable, NamedMovable[float]):
     """Utility device for a reflectometry server parameter."""
 
     def __init__(self, prefix: str, name: str, changing_timeout_s: float) -> None:
@@ -50,7 +51,7 @@ class ReflParameter(StandardReadable):
         """
         logger.info("setting %s to %s", self.setpoint.source, value)
         await self.setpoint.set(value, wait=True, timeout=None)
-        await asyncio.sleep(0.1)
+        await asyncio.sleep(1.0)
         logger.info("waiting for %s", self.changing.source)
         async for chg in observe_value(self.changing, done_timeout=self.changing_timeout):
             logger.debug("%s: %s", self.changing.source, chg)
@@ -75,7 +76,7 @@ class ReflParameterRedefine(StandardReadable):
 
         """
         self.changed: SignalR[bool] = epics_signal_r(bool, f"{prefix}DEFINE_POS_CHANGED")
-        self.define_pos_sp = epics_signal_w(float, f"{prefix}DEFINE_POS:SP")
+        self.define_pos_sp = epics_signal_w(float, f"{prefix}DEFINE_POS_SP")
         self.changed_timeout = changed_timeout_s
         super().__init__(name)
 
@@ -90,11 +91,12 @@ class ReflParameterRedefine(StandardReadable):
         logger.info("setting %s to %s", self.define_pos_sp.source, value)
         await self.define_pos_sp.set(value, wait=True, timeout=None)
         logger.info("waiting for %s", self.changed.source)
-        await asyncio.sleep(0.1)
-        async for chg in observe_value(self.changed, done_timeout=self.changed_timeout):
-            logger.debug("%s: %s", self.changed.source, chg)
-            if chg:
-                break
+        await asyncio.sleep(1.0)
+        # async for chg in observe_value(self.changed, done_timeout=self.changed_timeout):
+        #     logger.debug("%s: %s", self.changed.source, chg)
+        #     print(f"refl redefine change {chg}")
+        #     if chg:
+        #         break
 
 
 def refl_parameter(name: str, changing_timeout_s: float = 60.0) -> ReflParameter:

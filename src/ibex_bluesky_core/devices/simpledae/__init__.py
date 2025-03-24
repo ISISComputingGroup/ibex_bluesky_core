@@ -118,7 +118,7 @@ def monitor_normalising_dae(
     periods: bool = True,
     monitor: int = 1,
     save_run: bool = False,
-) -> SimpleDae:
+) -> SimpleDae[PeriodPerPointController | RunPerPointController, PeriodGoodFramesWaiter | GoodFramesWaiter, MonitorNormalizer]:
     """Create a simple DAE which normalises using a monitor and waits for frames.
 
     This is really a shortcut to reduce code in plans used on the majority of instruments that

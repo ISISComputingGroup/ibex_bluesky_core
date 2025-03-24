@@ -128,7 +128,7 @@ def test_monitor_normalising_dae_sets_up_periods_correctly():
         )
 
     assert isinstance(dae.waiter, PeriodGoodFramesWaiter)
-    assert dae.waiter._value == frames
+    assert dae.waiter.finish_wait_at == frames
     assert isinstance(dae.controller, PeriodPerPointController)
 
 
@@ -143,7 +143,7 @@ def test_monitor_normalising_dae_sets_up_single_period_correctly():
         )
 
     assert isinstance(dae.waiter, GoodFramesWaiter)
-    assert dae.waiter._value == frames
+    assert dae.waiter.finish_wait_at == frames
     assert isinstance(dae.controller, RunPerPointController)
 
 
