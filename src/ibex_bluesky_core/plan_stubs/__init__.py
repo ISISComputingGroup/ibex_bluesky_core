@@ -129,6 +129,8 @@ def redefine_refl_parameter(
 
     """
     logger.info("Redefining refl parameter %s to %s", parameter.name, position)
+    if parameter.redefine is None:
+        raise ValueError("Cannot redefine unredefinable parameter %s", parameter.name)
     yield from bps.mv(parameter.redefine, position)
 
 

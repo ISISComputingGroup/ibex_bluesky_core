@@ -22,7 +22,7 @@ logger = logging.getLogger(__name__)
 class ReflParameter(StandardReadable, NamedMovable[float]):
     """Utility device for a reflectometry server parameter."""
 
-    def __init__(self, prefix: str, name: str, changing_timeout_s: float) -> None:
+    def __init__(self, prefix: str, name: str, changing_timeout_s: float, *, has_redefine:bool=True) -> None:
         """Reflectometry server parameter.
 
         Args:
@@ -37,7 +37,10 @@ class ReflParameter(StandardReadable, NamedMovable[float]):
         self.changing: SignalR[bool] = epics_signal_r(
             bool, f"{prefix}REFL_01:PARAM:{name}:CHANGING"
         )
-        self.redefine = ReflParameterRedefine(prefix=f"{prefix}REFL_01:PARAM:{name}:", name="")
+        if has_redefine:
+            self.redefine = ReflParameterRedefine(prefix=f"{prefix}REFL_01:PARAM:{name}:", name="")
+        else:
+            self.redefine = None
         self.changing_timeout = changing_timeout_s
         super().__init__(name=name)
         self.readback.set_name(name)
@@ -99,7 +102,7 @@ class ReflParameterRedefine(StandardReadable):
         #         break
 
 
-def refl_parameter(name: str, changing_timeout_s: float = 60.0) -> ReflParameter:
+def refl_parameter(name: str, *, changing_timeout_s: float = 60.0, has_redefine: bool = True) -> ReflParameter:
     """Small wrapper around a reflectometry parameter device.
 
     This automatically applies the current instrument's PV prefix.
@@ -112,4 +115,4 @@ def refl_parameter(name: str, changing_timeout_s: float = 60.0) -> ReflParameter
 
     """
     prefix = get_pv_prefix()
-    return ReflParameter(prefix=prefix, name=name, changing_timeout_s=changing_timeout_s)
+    return ReflParameter(prefix=prefix, name=name, changing_timeout_s=changing_timeout_s, has_redefine=has_redefine)

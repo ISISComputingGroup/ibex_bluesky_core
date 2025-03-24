@@ -5,6 +5,7 @@ from collections.abc import Generator
 from datetime import datetime
 from math import isclose
 
+import winsound
 from ophyd_async.epics.motor import Motor
 from winsound import Beep
 
@@ -14,8 +15,8 @@ from lmfit.model import ModelResult
 from matplotlib import pyplot as plt
 from ophyd_async.plan_stubs import ensure_connected
 
-from ibex_bluesky_core.callbacks.fitting.fitting_utils import SlitScan, Trapezoid, Gaussian
-from ibex_bluesky_core.devices.block import BlockMot
+from ibex_bluesky_core.callbacks.fitting.fitting_utils import SlitScan, Trapezoid, Gaussian, ERFC
+from ibex_bluesky_core.devices.block import BlockMot, block_rw, BlockWriteConfig
 from ibex_bluesky_core.devices.reflectometry import ReflParameter, refl_parameter
 from ibex_bluesky_core.devices.simpledae import SimpleDae, monitor_normalising_dae, \
     PeriodGoodFramesWaiter, GoodFramesWaiter, MonitorNormalizer, Controller, \
@@ -71,12 +72,15 @@ S2OFFSET = refl_parameter(name="S2OFFSET")
 BENCHSEESAW = refl_parameter(name="BENCHSEESA")
 BENCHOFFSET = refl_parameter(name="BENCHOFFSE")
 S3VC = refl_parameter(name="S3HEIGHT")
-THETA = refl_parameter(name="THETA")
-PHI = refl_parameter(name="PHI")
+THETA = refl_parameter(name="THETA", has_redefine=False)
+PHI = refl_parameter(name="SAMPPHI")
 FOFFSET = refl_parameter(name="FOFFSET")
 FTHETA = refl_parameter(name="FTHETA")
 SMOFFSET = refl_parameter(name="SMOFFSET")
 SMANGLE = refl_parameter(name="SMANGLE")
+
+MODE = block_rw(str, "MODE", write_config=BlockWriteConfig(use_global_moving_flag=True, settle_time_s=2))
+MOVE = block_rw(int, "MOVE", write_config=BlockWriteConfig(use_global_moving_flag=True, settle_time_s=2), sp_suffix="")
 
 S3SOUTH = Motor(name="S3SOUTH", prefix=get_pv_prefix() + "MOT:MTR0601")
 S3NORTH = Motor(name="S3NORTH", prefix=get_pv_prefix() + "MOT:MTR0602")
@@ -87,7 +91,10 @@ PolrefDae: TypeAlias = SimpleDae[PeriodPerPointController | RunPerPointControlle
 
 
 def beep():
-    yield from call_sync(Beep, 1000, 500)
+    for i in range (1000, 8000, 1000):
+        yield from call_sync(Beep, i, 100)
+    yield from call_sync(winsound.PlaySound, r"C:\Users\luj96656\Downloads\happy-goat-6463.wav", winsound.SND_FILENAME)
+
 
 
 def next_param(name: str):
@@ -289,6 +296,62 @@ def s3vc_align(dae: PolrefDae) -> Generator[Msg, None, None]:
 
         yield from bps.mv(S3VG, 0.2)
 
+def foffset_align(dae: PolrefDae) -> Generator[Msg, None, None]:
+    yield from initial_move(theta=0, phi=0, s1vg=0.1, s2vg=0.1, s3n=0.1, s3s=-0.1, s1hg=40, s2hg=30, s3e=15, s3w=15)
+    yield from bps.mv(FTHETA, 0, FOFFSET, 29.875)
+
+    yield from _optimise_axis(
+        dae=dae,
+        frames=120,
+        param=FOFFSET,
+        rel_scan_ranges=[0.75],
+        fit=ERFC.fit(),
+        fit_param="cen",
+        num=15
+    )
+    yield from redefine_refl_parameter(FOFFSET, 30)
+    yield from bps.mv(FTHETA, 5.8)
+
+def ftheta_align(dae:PolrefDae) -> Generator[Msg, None, None]:
+    yield from initial_move(theta=0, phi=0, s1vg=0.1, s2vg=0.1, s3n=0.1, s3s=-0.1, s1hg=40, s2hg=30, s3e=15, s3w=15)
+    yield from bps.mv(FTHETA, 0, FOFFSET, 30)
+
+    yield from _optimise_axis(
+        dae=dae,
+        frames=120,
+        param=FTHETA,
+        rel_scan_ranges=[0.6],
+        fit=Gaussian.fit(),
+        fit_param="x0",
+        num=15
+    )
+    yield from redefine_refl_parameter(FTHETA, 0)
+
+    yield from _optimise_axis(
+        dae=dae,
+        frames=120,
+        param=FTHETA,
+        rel_scan_ranges=[0.3],
+        fit=Gaussian.fit(),
+        fit_param="x0",
+        num=15
+    )
+    yield from redefine_refl_parameter(FTHETA, 0)
+
+    yield from _optimise_axis(
+        dae=dae,
+        frames=200,
+        param=FTHETA,
+        rel_scan_ranges=[0.2],
+        fit=Gaussian.fit(),
+        fit_param="x0",
+        num=21
+    )
+    yield from redefine_refl_parameter(FTHETA, 0)
+    yield from bps.mv(FTHETA, 5.8)
+
+
+
 def full_autoalign_plan() -> Generator[Msg, None, None]:
     """Full autoalign plan for POLREF."""
     det_pixels = centred_pixel(DEFAULT_DET, PIXEL_RANGE)
@@ -332,7 +395,8 @@ def full_autoalign_plan() -> Generator[Msg, None, None]:
     yield from ensure_connected(
         dae, S1VG, S1HG, S2VG, S2HG, S3VG, S2OFFSET,
         BENCHSEESAW, BENCHOFFSET, S3VC, FOFFSET,
-        FTHETA, SMOFFSET, SMANGLE, S3NORTH, S3SOUTH, S3EAST, S3WEST
+        FTHETA, SMOFFSET, SMANGLE, S3NORTH, S3SOUTH, S3EAST, S3WEST, THETA,
+        PHI
     )
 
     print("Starting auto-alignment...")
@@ -349,14 +413,13 @@ def full_autoalign_plan() -> Generator[Msg, None, None]:
     yield from s3vg_align(dae=dae)
     yield from s3vc_align(dae=dae)
 
-    # yield from foffset_align(dae=dae)
-    # yield from ftheta_align(dae=dae)
-    # yield from foffset_align(dae=dae)
-    #
-    # yield from smalign_setup(dae=dae)
-    # for _ in range(2):
-    #     yield from smoffset_align(dae=dae)
-    #     yield from smangle_align(dae=dae)
+    yield from foffset_align(dae=dae)
+    yield from ftheta_align(dae=dae)
+    yield from foffset_align(dae=dae)
+    yield from smalign_setup(dae=dae)
+    for _ in range(2):
+        yield from smoffset_align(dae=dae)
+        yield from smangle_align(dae=dae)
 
     # Other params
     # ....
