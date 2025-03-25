@@ -20,6 +20,7 @@ from ibex_bluesky_core.devices.block import (
     block_r,
     block_rw,
     block_rw_rbv,
+    block_w,
 )
 from tests.conftest import MOCK_PREFIX
 
@@ -80,6 +81,13 @@ def test_block_signal_monitors_correct_pv(rw_rbv_block):
     assert rw_rbv_block.readback.source.endswith("UNITTEST:MOCK:CS:SB:float_block")
     assert rw_rbv_block.setpoint.source.endswith("UNITTEST:MOCK:CS:SB:float_block:SP")
     assert rw_rbv_block.setpoint_readback.source.endswith("UNITTEST:MOCK:CS:SB:float_block:SP:RBV")
+
+
+def test_block_rw_with_weird_sp_sets_sp_suffix_correctly():
+    weird_sp_suffix = ":SP123"
+    block = BlockRw(float, MOCK_PREFIX, "block", sp_suffix=weird_sp_suffix)
+    assert block.readback.source.endswith("UNITTEST:MOCK:CS:SB:block")
+    assert block.setpoint.source.endswith("UNITTEST:MOCK:CS:SB:block:SP123")
 
 
 def test_mot_block_monitors_correct_pv(mot_block):
@@ -244,6 +252,7 @@ async def test_block_without_use_global_moving_flag_does_not_refer_to_global_mov
     [
         (block_r, (float, "some_block")),
         (block_rw, (float, "some_block")),
+        (block_w, (float, "some_block")),
         (block_rw_rbv, (float, "some_block")),
         (block_mot, ("some_block",)),
     ],
