@@ -145,7 +145,7 @@ description of all the options which are available.
 
 ## Run Control
 
-[`RunControl`](ibex_bluesky_core.devices.block.RunControl) information is available via the [`block.run_control`](ibex_bluesky_core.devices.block.run_control) sub-device.
+[`RunControl`](ibex_bluesky_core.devices.block.RunControl) information is available via the [`block.RunControl`](ibex_bluesky_core.devices.block.RunControl) sub-device.
 
 Both configuring and reading the current status of run control are permitted.
 
