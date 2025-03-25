@@ -29,14 +29,14 @@ class ManagerMode(StandardReadable, NamedMovable[ManagerModeChoices]):
         super().__init__()
 
     @AsyncStatus.wrap
-    def set(self, value: ManagerModeChoices) -> None:
+    async def set(self, value: ManagerModeChoices) -> None:
         """Set the manager mode value.
 
         Args:
             value: The new manager mode value.
 
         """
-        self.mode.set(value)
+        await self.mode.set(value)
 
 
 def manager_mode() -> ManagerMode:
