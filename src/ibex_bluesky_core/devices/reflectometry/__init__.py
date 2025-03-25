@@ -13,6 +13,7 @@ from ophyd_async.core import (
 )
 from ophyd_async.epics.core import epics_signal_r, epics_signal_w
 
+from ibex_bluesky_core.devices.manager_mode import ManagerModeChoices, manager_mode
 from ibex_bluesky_core.utils import get_pv_prefix
 
 logger = logging.getLogger(__name__)
@@ -76,6 +77,7 @@ class ReflParameterRedefine(StandardReadable):
         """
         self.changed: SignalR[bool] = epics_signal_r(bool, f"{prefix}DEFINE_POS_CHANGED")
         self.define_pos_sp = epics_signal_w(float, f"{prefix}DEFINE_POS:SP")
+        self.manager_mode = manager_mode()
         self.changed_timeout = changed_timeout_s
         super().__init__(name)
 
@@ -87,6 +89,8 @@ class ReflParameterRedefine(StandardReadable):
         waits for the reflectometry parameter redefinition's 'CHANGED' PV
         to go True to indicate it has finished redefining the position.
         """
+        previous_manager_mode = await self.manager_mode.mode.get_value()
+        await self.manager_mode.set(ManagerModeChoices.YES)
         logger.info("setting %s to %s", self.define_pos_sp.source, value)
         await self.define_pos_sp.set(value, wait=True, timeout=None)
         logger.info("waiting for %s", self.changed.source)
@@ -95,6 +99,7 @@ class ReflParameterRedefine(StandardReadable):
             logger.debug("%s: %s", self.changed.source, chg)
             if chg:
                 break
+        await self.manager_mode.set(previous_manager_mode)
 
 
 def refl_parameter(name: str, changing_timeout_s: float = 60.0) -> ReflParameter:
