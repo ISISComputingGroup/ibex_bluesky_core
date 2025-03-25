@@ -172,6 +172,7 @@ class BlockRw(BlockR[T], NamedMovable[T]):
         block_name: str,
         *,
         write_config: BlockWriteConfig[T] | None = None,
+        sp_suffix: str = ":SP",
     ) -> None:
         """Create a new read-write block.
 
@@ -192,9 +193,13 @@ class BlockRw(BlockR[T], NamedMovable[T]):
             prefix: the current instrument's PV prefix
             block_name: the name of the block
             write_config: Settings which control how this device will set the underlying PVs
+            sp_suffix: Suffix to append to PV for the setpoint. Defaults to ":SP" but can
+                be set to empty string to read and write to exactly the same PV.
 
         """
-        self.setpoint: SignalRW[T] = epics_signal_rw(datatype, f"{prefix}CS:SB:{block_name}:SP")
+        self.setpoint: SignalRW[T] = epics_signal_rw(
+            datatype, f"{prefix}CS:SB:{block_name}{sp_suffix}"
+        )
 
         self._write_config: BlockWriteConfig[T] = write_config or BlockWriteConfig()
 
@@ -372,14 +377,38 @@ def block_r(datatype: type[T], block_name: str) -> BlockR[T]:
 
 
 def block_rw(
-    datatype: type[T], block_name: str, *, write_config: BlockWriteConfig[T] | None = None
+    datatype: type[T],
+    block_name: str,
+    *,
+    write_config: BlockWriteConfig[T] | None = None,
+    sp_suffix=":SP",
 ) -> BlockRw[T]:
     """Get a local read-write block for the current instrument.
 
     See documentation of BlockRw for more information.
     """
     return BlockRw(
-        datatype=datatype, prefix=get_pv_prefix(), block_name=block_name, write_config=write_config
+        datatype=datatype,
+        prefix=get_pv_prefix(),
+        block_name=block_name,
+        write_config=write_config,
+        sp_suffix=sp_suffix,
+    )
+
+
+def block_w(
+    datatype: type[T], block_name: str, *, write_config: BlockWriteConfig[T] | None = None
+) -> BlockRw[T]:
+    """Get a write-only block for the current instrument.
+
+    This is actually just :obj:`ibex_bluesky_core.devices.block.BlockRw` but with no SP suffix.
+    """
+    return BlockRw(
+        datatype=datatype,
+        prefix=get_pv_prefix(),
+        block_name=block_name,
+        write_config=write_config,
+        sp_suffix="",
     )
 
 
