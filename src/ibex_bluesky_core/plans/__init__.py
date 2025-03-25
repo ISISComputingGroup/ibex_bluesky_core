@@ -60,6 +60,7 @@ def scan(  # noqa: PLR0913
             plan = bp.rel_scan
         else:
             plan = bp.scan
+
         yield from plan([dae], block, start, stop, num=num)
 
     yield from _inner()

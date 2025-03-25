@@ -3,6 +3,7 @@
 import asyncio
 import logging
 
+from bluesky.protocols import NamedMovable
 from ophyd_async.core import (
     AsyncStatus,
     SignalR,
@@ -18,16 +19,19 @@ from ibex_bluesky_core.utils import get_pv_prefix
 logger = logging.getLogger(__name__)
 
 
-class ReflParameter(StandardReadable):
+class ReflParameter(StandardReadable, NamedMovable[float]):
     """Utility device for a reflectometry server parameter."""
 
-    def __init__(self, prefix: str, name: str, changing_timeout_s: float) -> None:
+    def __init__(
+        self, prefix: str, name: str, changing_timeout_s: float, *, has_redefine: bool = True
+    ) -> None:
         """Reflectometry server parameter.
 
         Args:
             prefix: the PV prefix.
             name: the name of the parameter.
             changing_timeout_s: seconds to wait for the CHANGING signal to go to False after a set.
+            has_redefine: whether this parameter can be redefined.
 
         """
         with self.add_children_as_readables(StandardReadableFormat.HINTED_SIGNAL):
@@ -36,7 +40,10 @@ class ReflParameter(StandardReadable):
         self.changing: SignalR[bool] = epics_signal_r(
             bool, f"{prefix}REFL_01:PARAM:{name}:CHANGING"
         )
-        self.redefine = ReflParameterRedefine(prefix=f"{prefix}REFL_01:PARAM:{name}:", name="")
+        if has_redefine:
+            self.redefine = ReflParameterRedefine(prefix=f"{prefix}REFL_01:PARAM:{name}:", name="")
+        else:
+            self.redefine = None
         self.changing_timeout = changing_timeout_s
         super().__init__(name=name)
         self.readback.set_name(name)
@@ -50,7 +57,7 @@ class ReflParameter(StandardReadable):
         """
         logger.info("setting %s to %s", self.setpoint.source, value)
         await self.setpoint.set(value, wait=True, timeout=None)
-        await asyncio.sleep(0.1)
+        await asyncio.sleep(1.0)
         logger.info("waiting for %s", self.changing.source)
         async for chg in observe_value(self.changing, done_timeout=self.changing_timeout):
             logger.debug("%s: %s", self.changing.source, chg)
@@ -90,14 +97,12 @@ class ReflParameterRedefine(StandardReadable):
         logger.info("setting %s to %s", self.define_pos_sp.source, value)
         await self.define_pos_sp.set(value, wait=True, timeout=None)
         logger.info("waiting for %s", self.changed.source)
-        await asyncio.sleep(0.1)
-        async for chg in observe_value(self.changed, done_timeout=self.changed_timeout):
-            logger.debug("%s: %s", self.changed.source, chg)
-            if chg:
-                break
+        await asyncio.sleep(1.0)
 
 
-def refl_parameter(name: str, changing_timeout_s: float = 60.0) -> ReflParameter:
+def refl_parameter(
+    name: str, *, changing_timeout_s: float = 60.0, has_redefine: bool = True
+) -> ReflParameter:
     """Small wrapper around a reflectometry parameter device.
 
     This automatically applies the current instrument's PV prefix.
@@ -105,9 +110,12 @@ def refl_parameter(name: str, changing_timeout_s: float = 60.0) -> ReflParameter
     Args:
         name: the reflectometry parameter name.
         changing_timeout_s: time to wait (seconds) for the CHANGING signal to go False after a set.
+        has_redefine: whether this parameter can be redefined.
 
     Returns a device pointing to a reflectometry parameter.
 
     """
     prefix = get_pv_prefix()
-    return ReflParameter(prefix=prefix, name=name, changing_timeout_s=changing_timeout_s)
+    return ReflParameter(
+        prefix=prefix, name=name, changing_timeout_s=changing_timeout_s, has_redefine=has_redefine
+    )
