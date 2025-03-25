@@ -55,7 +55,7 @@ det = block_r(float, "p5")  # A readback block with float datatype
 ```
 
 Block objects provide several mechanisms for configuring write behaviour - see 
-[`BlockWriteConfig`](`ibex_bluesky_core.devices.block.BlockWriteConfig`) for detailed options.
+[`BlockWriteConfig`](ibex_bluesky_core.devices.block.BlockWriteConfig) for detailed options.
 
 Likewise, the DAE is available as a bluesky device: see [the DAE Documentation](../devices/dae.md)
 for full examples including example configurations.
@@ -112,7 +112,7 @@ For details about plans which are available directly from `bluesky` - like `bp.s
 
 ## The `RunEngine`
 
-The [`RunEngine`](`ibex_bluesky_core.run_engine.get_run_engine`) is the central "conductor" in bluesky - it is responsible for reading a plan and
+The [`RunEngine`](ibex_bluesky_core.run_engine) is the central "conductor" in bluesky - it is responsible for reading a plan and
 performing the associated actions on the hardware. To get a run engine instance, use:
 
 ```python
@@ -124,7 +124,7 @@ RE = get_run_engine()
 In the IBEX GUI, manually getting a runengine is unnecessary - it is done automatically.
 ```
 
-Then execute a plan using the [`RunEngine`](`ibex_bluesky_core.run_engine.get_run_engine`):
+Then execute a plan using the [`RunEngine`](ibex_bluesky_core.run_engine):
 
 ```
 RE(my_plan("det", "mot", 0, 10, 5))
@@ -132,10 +132,10 @@ RE(my_plan("det", "mot", 0, 10, 5))
 
 Note that typing `my_plan("det", "mot", 0, 10, 5)` does not do anything by itself. 
 That is because `my_plan` is a python generator - which does nothing until iterated. 
-To actually execute the plan, it must be passed to the [`RunEngine`](`ibex_bluesky_core.run_engine.get_run_engine`), which is conventionally 
+To actually execute the plan, it must be passed to the [`RunEngine`](ibex_bluesky_core.run_engine), which is conventionally 
 called `RE`.
 
-For more detail about the [`RunEngine`](`ibex_bluesky_core.run_engine.get_run_engine`), see:
+For more detail about the [`RunEngine`](ibex_bluesky_core.run_engine), see:
 - [bluesky RunEngine docs](https://blueskyproject.io/bluesky/main/tutorial.html#the-runengine)
 - [bluesky RunEngine API docs](https://blueskyproject.io/bluesky/main/run_engine_api.html)
 
