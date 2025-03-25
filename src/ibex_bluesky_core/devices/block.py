@@ -39,6 +39,7 @@ __all__ = [
     "block_r",
     "block_rw",
     "block_rw_rbv",
+    "block_w",
 ]
 
 # When using the global moving flag, we want to give IOCs enough time to update the
