@@ -76,12 +76,6 @@ def _set_up_fields_and_icc(
         fields.append(dae.period_num.name)  # type: ignore
     elif save_run:
         fields.append(dae.controller.run_number.name)  # type: ignore
-    fields.extend(
-        [
-            dae.reducer.intensity.name,  # type: ignore
-            dae.reducer.intensity_stddev.name,  # type: ignore
-        ]
-    )
     icc = ISISCallbacks(
         y=dae.reducer.intensity.name,  # type: ignore
         yerr=dae.reducer.intensity_stddev.name,  # type: ignore
