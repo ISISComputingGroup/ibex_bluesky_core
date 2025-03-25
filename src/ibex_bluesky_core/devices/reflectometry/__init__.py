@@ -75,7 +75,7 @@ class ReflParameterRedefine(StandardReadable):
 
         """
         self.changed: SignalR[bool] = epics_signal_r(bool, f"{prefix}DEFINE_POS_CHANGED")
-        self.define_pos_sp = epics_signal_w(float, f"{prefix}DEFINE_POS:SP")
+        self.define_pos_sp = epics_signal_w(float, f"{prefix}DEFINE_POS_SP")
         self.changed_timeout = changed_timeout_s
         super().__init__(name)
 
