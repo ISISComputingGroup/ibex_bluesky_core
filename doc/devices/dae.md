@@ -402,7 +402,7 @@ The classes implemented in this way are:
   - Parameters which appear under the "time channels" tab in IBEX
 - `DaeSettings` ([`dae.dae_settings`](ibex_bluesky_core.devices.dae.dae_settings))
   - Parameters which appear under the "data acquisition" tab in IBEX
-- `DaePeriodSettings` ([`dae.period_settings`](ibex_bluesky_core.devices.dae.period_settings)): 
+- `DaePeriodSettings` ([`dae.period_settings`](ibex_bluesky_core.devices.dae.dae_period_settings)): 
   - Parameters which appear under the "periods" tab in IBEX
 
 To read or change these settings from plans, use the associated dataclasses, which are
