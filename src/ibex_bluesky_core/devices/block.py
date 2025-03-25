@@ -381,7 +381,7 @@ def block_rw(
     block_name: str,
     *,
     write_config: BlockWriteConfig[T] | None = None,
-    sp_suffix=":SP",
+    sp_suffix: str = ":SP",
 ) -> BlockRw[T]:
     """Get a local read-write block for the current instrument.
 
