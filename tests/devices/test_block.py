@@ -1,5 +1,4 @@
 # pyright: reportMissingParameterType=false
-
 import asyncio
 import sys
 from unittest.mock import ANY, MagicMock, call, patch
@@ -7,7 +6,7 @@ from unittest.mock import ANY, MagicMock, call, patch
 import bluesky.plan_stubs as bps
 import bluesky.plans as bp
 import pytest
-from ophyd_async.core import get_mock_put, set_mock_value
+from ophyd_async.testing import get_mock_put, set_mock_value
 
 from ibex_bluesky_core.devices.block import (
     GLOBAL_MOVING_FLAG_PRE_WAIT,

@@ -2,10 +2,11 @@
 
 import asyncio
 import logging
+from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Callable, Generic, TypeVar
+from typing import Generic, TypeVar
 
-from bluesky.protocols import Locatable, Location, Movable, Triggerable
+from bluesky.protocols import Locatable, Location, NamedMovable, Triggerable
 from ophyd_async.core import (
     AsyncStatus,
     SignalDatatype,
@@ -19,7 +20,7 @@ from ophyd_async.core import (
 from ophyd_async.epics.core import epics_signal_r, epics_signal_rw
 from ophyd_async.epics.motor import Motor
 
-from ibex_bluesky_core.devices import get_pv_prefix
+from ibex_bluesky_core.utils import get_pv_prefix
 
 logger = logging.getLogger(__name__)
 
@@ -162,7 +163,7 @@ class BlockR(StandardReadable, Triggerable, Generic[T]):
         return f"{self.__class__.__name__}(name={self.name})"
 
 
-class BlockRw(BlockR[T], Movable):
+class BlockRw(BlockR[T], NamedMovable[T]):
     """Device representing an IBEX read/write block of arbitrary data type."""
 
     def __init__(
@@ -259,7 +260,7 @@ class BlockRw(BlockR[T], Movable):
         logger.info("block set complete %s value=%s", self.name, value)
 
 
-class BlockRwRbv(BlockRw[T], Locatable):
+class BlockRwRbv(BlockRw[T], Locatable[T]):
     """Device representing an IBEX read/write/setpoint readback block of arbitrary data type."""
 
     def __init__(

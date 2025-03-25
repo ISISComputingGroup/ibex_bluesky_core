@@ -41,15 +41,19 @@ classifiers = [
 ]
 
 dependencies = [
-  "bluesky",
-  "ophyd-async[ca] >= 0.8.0",
-  "matplotlib",
-  "lmfit",
-  "scipy",
-  "numpy",
-  "scipp",
-  "tzdata",
-  "scippneutron",
+  "bluesky",  # Bluesky framework
+  # Pinned for extra motor fields
+  # Unpin when a version >= 0.9.1 is available
+  "ophyd-async[ca,pva] @ git+https://github.com/bluesky/ophyd-async@bf6b71f045bf297e2bbbfd3ea4de7f368643a948",  # Device abstraction
+  "matplotlib",  # Plotting
+  "lmfit",  # Fitting
+  "scipy",  # Definitions of erf/erfc functions
+  "numpy",  # General array support
+  "orjson", # json module which handles numpy arrays transparently
+  "scipp",  # support for arrays with variances/units
+  "scippneutron",  # neutron-specific utilities for scipp
+  "typing-extensions",  # TypeVar with default-arg support
+  "tzdata",  # Windows timezone support
 ]
 
 [project.optional-dependencies]
@@ -66,6 +70,7 @@ dev = [
   "pytest",
   "pytest-asyncio",
   "pytest-cov",
+  "pytest-env",
   "pyqt6",  # For dev testing with matplotlib's qt backend.
 ]
 
@@ -78,6 +83,13 @@ dev = [
 testpaths = "tests"
 asyncio_mode = "auto"
 addopts = "--cov --cov-report=html -vv"
+filterwarnings = [
+    'ignore:FigureCanvasAgg is non-interactive, and thus cannot be shown:UserWarning',
+]
+
+[tool.pytest_env]
+IBEX_BLUESKY_CORE_LOGS = {value = "./ibex-bluesky-core-pytest-logs", skip_if_set = true}
+IBEX_BLUESKY_CORE_OUTPUT = {value = "./ibex-bluesky-core-pytest-output", skip_if_set = true}
 
 [tool.coverage.run]
 branch = true

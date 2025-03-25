@@ -1,15 +1,18 @@
+# pyright: reportMissingParameterType=false
 import math
 from unittest.mock import AsyncMock
 
+import numpy as np
 import pytest
 import scipp as sc
-from ophyd_async.core import set_mock_value
+from ophyd_async.testing import get_mock_put, set_mock_value
 
 from ibex_bluesky_core.devices.simpledae import SimpleDae
 from ibex_bluesky_core.devices.simpledae.reducers import (
     GoodFramesNormalizer,
     MonitorNormalizer,
     PeriodGoodFramesNormalizer,
+    PeriodSpecIntegralsReducer,
     ScalarNormalizer,
     tof_bounded_spectra,
     wavelength_bounded_spectra,
@@ -934,3 +937,78 @@ def test_wavelength_bounded_spectra_bounds_missing_or_too_many(data: list[float]
             bounds=sc.array(dims=["tof"], values=data, unit=sc.units.us),
             total_flight_path_length=sc.scalar(value=100, unit=sc.units.m),
         )
+
+
+@pytest.mark.parametrize(
+    ("current_period", "mon_integrals", "det_integrals"),
+    [
+        (1, np.array([6], dtype=np.int32), np.array([15, 24, 0], dtype=np.int32)),
+        (2, np.array([66], dtype=np.int32), np.array([165, 264, 0], dtype=np.int32)),
+    ],
+)
+async def test_period_spec_integrals_reducer(
+    simpledae: SimpleDae, current_period, mon_integrals, det_integrals
+):
+    reducer = PeriodSpecIntegralsReducer(
+        monitors=np.array([1]),
+        detectors=np.array([2, 3, 4]),
+    )
+    await reducer.connect()
+
+    set_mock_value(simpledae.number_of_periods.signal, 2)
+    set_mock_value(simpledae.num_spectra, 4)
+    set_mock_value(simpledae.num_time_channels, 3)
+
+    set_mock_value(simpledae.period_num, current_period)
+
+    set_mock_value(simpledae.raw_spec_data_nord, 2 * (3 + 1) * (4 + 1))
+    set_mock_value(
+        simpledae.raw_spec_data,
+        np.array(
+            [
+                # Period 1
+                [
+                    # Note: every time channel starts with the "junk" time bin zero.
+                    # Spectrum 0 (junk data spectrum)
+                    [987654321, 9999999, 8888888, 7777777],
+                    # Spectrum 1
+                    [987654321, 1, 2, 3],
+                    # Spectrum 2
+                    [987654321, 4, 5, 6],
+                    # Spectrum 3
+                    [987654321, 7, 8, 9],
+                    # Spectrum 4
+                    [987654321, 0, 0, 0],
+                ],
+                # Period 2
+                [
+                    # Spectrum 0 (junk data spectrum)
+                    [987654321, 9999999, 8888888, 7777777],
+                    # Spectrum 1
+                    [987654321, 11, 22, 33],
+                    # Spectrum 2
+                    [987654321, 44, 55, 66],
+                    # Spectrum 3
+                    [987654321, 77, 88, 99],
+                    # Spectrum 4
+                    [987654321, 0, 0, 0],
+                ],
+            ]
+        ),
+    )
+
+    await reducer.reduce_data(simpledae)
+
+    get_mock_put(simpledae.raw_spec_data_proc).assert_called_with(1, wait=True)
+
+    np.testing.assert_equal(await reducer.mon_integrals.get_value(), mon_integrals)
+    np.testing.assert_equal(await reducer.det_integrals.get_value(), det_integrals)
+
+
+def test_period_spec_integrals_reducer_publishes_signals(simpledae: SimpleDae):
+    reducer = PeriodSpecIntegralsReducer(detectors=np.array([]), monitors=np.array([]))
+    assert reducer.mon_integrals in reducer.additional_readable_signals(simpledae)
+    assert reducer.det_integrals in reducer.additional_readable_signals(simpledae)
+
+    np.testing.assert_equal(reducer.detectors, np.array([]))
+    np.testing.assert_equal(reducer.monitors, np.array([]))

@@ -21,7 +21,8 @@ suitable; instead the [`Dae`](ibex_bluesky_core.devices.dae.dae.Dae) class shoul
 ### Run-per-point
 
 ```python
-from ibex_bluesky_core.devices import get_pv_prefix
+
+from ibex_bluesky_core.utils import get_pv_prefix
 from ibex_bluesky_core.devices.simpledae import SimpleDae
 from ibex_bluesky_core.devices.simpledae.controllers import RunPerPointController
 from ibex_bluesky_core.devices.simpledae.waiters import GoodFramesWaiter
@@ -54,7 +55,8 @@ reducer.intensity.set_name("normalized counts")
 ### Period-per-point
 
 ```python
-from ibex_bluesky_core.devices import get_pv_prefix
+
+from ibex_bluesky_core.utils import get_pv_prefix
 from ibex_bluesky_core.devices.simpledae import SimpleDae
 from ibex_bluesky_core.devices.simpledae.controllers import PeriodPerPointController
 from ibex_bluesky_core.devices.simpledae.waiters import PeriodGoodFramesWaiter
@@ -210,6 +212,17 @@ Published signals:
 - `reducer.det_counts_stddev` - uncertainty (standard deviation) of the summed detector counts
 - `reducer.mon_counts_stddev` - uncertainty (standard deviation) of the summed monitor counts
 - `reducer.intensity_stddev` - uncertainty (standard deviation) of the normalised intensity
+
+### PeriodSpecIntegralsReducer
+
+This reducer exposes the raw integrals of the configured detector and monitor spectra, as
+numpy arrays. By itself, this reducer is not useful in a scan, but is useful for downstream
+processing as performed by reflectometry detector-mapping alignment for
+example.
+
+Published signals:
+- `reducer.mon_integrals` - `numpy` array of integrated counts on each configured monitor pixel.
+- `reducer.det_integrals` - `numpy` array of integrated counts on each configured detector pixel.
 
 ### Time of Flight and Wavelength Bounding Spectra
 
