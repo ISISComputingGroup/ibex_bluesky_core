@@ -1,0 +1,47 @@
+
+
+``ibex_bluesky_core.devices.dae``
+=================================
+        
+        
+        
+        
+
+.. automodule:: ibex_bluesky_core.devices.dae
+    :members:
+    :show-inheritance:
+
+    
+    
+    .. rubric:: Submodules
+
+    .. autosummary::
+        :toctree:
+        :template: custom-module-template.rst
+        :recursive:
+    
+        dae
+        dae_controls
+        dae_event_mode
+        dae_monitor
+        dae_period
+        dae_period_settings
+        dae_settings
+        dae_spectra
+        dae_tcb_settings
+    
+    
+
+    
+    
+    .. rubric:: Members
+
+    .. autosummary::
+        :nosignatures:
+    
+        DaeCheckingSignal
+        convert_xml_to_names_and_values
+        get_all_elements_in_xml_with_child_called_name
+        set_value_in_dae_xml
+    
+    
