@@ -61,12 +61,12 @@ html_context = {
 }
 
 html_theme = "sphinx_rtd_theme"
-html_logo = "logo.png"
+html_logo = "logo.svg"
 html_theme_options = {
     "logo_only": False,
     "style_nav_header_background": "#343131",
 }
-html_favicon = "favicon.png"
+html_favicon = "favicon.svg"
 
 autoclass_content = "both"
 myst_heading_anchors = 3
