@@ -4,9 +4,9 @@ import asyncio
 import logging
 from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Generic, TypeVar
+from typing import Generic, TypeVar, Any, Coroutine
 
-from bluesky.protocols import Locatable, Location, NamedMovable, Triggerable
+from bluesky.protocols import Locatable, Location, NamedMovable, Triggerable, HasName
 from ophyd_async.core import (
     AsyncStatus,
     SignalDatatype,
@@ -311,7 +311,7 @@ class BlockRwRbv(BlockRw[T], Locatable[T]):
         }
 
 
-class BlockMot(Motor):
+class BlockMot(Motor, NamedMovable[float]):  # pyright: ignore
     """Device representing an IBEX block pointing at a motor."""
 
     def __init__(

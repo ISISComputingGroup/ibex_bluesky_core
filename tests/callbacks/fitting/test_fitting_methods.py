@@ -77,7 +77,7 @@ def test_fit_method_uses_respective_model_and_guess():
 class TestGaussian:
     class TestGaussianModel:
         def test_gaussian_model(self):
-            x = np.arange(-5.0, 5.0, 1.0)
+            x = np.arange(-5.0, 5.0, 1.0, dtype=np.float64)
 
             background = 1.0
             amp = 1.0
@@ -108,32 +108,32 @@ class TestGaussian:
 
     class TestGaussianGuess:
         def test_background(self):
-            x = np.array([-1.0, 0.0, 1.0])
-            y = np.array([1.0, 2.0, 1.0])
+            x = np.array([-1.0, 0.0, 1.0], dtype=np.float64)
+            y = np.array([1.0, 2.0, 1.0], dtype=np.float64)
             outp = Gaussian.guess()(x, y)
 
             assert pytest.approx(y[0], rel=1e-2) == outp["background"].value
 
         def test_amp_x0(self):
-            x = np.array([-1.0, 0.0, 1.0])
-            y = np.array([1.0, 2.0, 1.0])
+            x = np.array([-1.0, 0.0, 1.0], dtype=np.float64)
+            y = np.array([1.0, 2.0, 1.0], dtype=np.float64)
             outp = Gaussian.guess()(x, y)
 
             assert y[1] == pytest.approx(outp["amp"].value + outp["background"].value, rel=1e-2)  # type: ignore
 
         def test_neg_amp_x0(self):
             # upside down gaussian
-            x = np.array([-1.0, 0.0, 1.0])
-            y = np.array([-1.0, -2.0, -1.0])
+            x = np.array([-1.0, 0.0, 1.0], dtype=np.float64)
+            y = np.array([-1.0, -2.0, -1.0], dtype=np.float64)
             outp = Gaussian.guess()(x, y)
 
             assert outp["amp"] < 0
 
         def test_sigma(self):
-            x = np.array([-1.0, 0.0, 1.0])
-            y = np.array([1.0, 2.0, 1.0])
+            x = np.array([-1.0, 0.0, 1.0], dtype=np.float64)
+            y = np.array([1.0, 2.0, 1.0], dtype=np.float64)
             # y1 is "wider" so must have higher sigma
-            y1 = np.array([1.5, 1.75, 1.5])
+            y1 = np.array([1.5, 1.75, 1.5], dtype=np.float64)
 
             outp = Gaussian.guess()(x, y)
             outp1 = Gaussian.guess()(x, y1)
@@ -144,7 +144,7 @@ class TestGaussian:
 class TestLorentzian:
     class TestLorentzianModel:
         def test_lorentzian_model(self):
-            x = np.arange(-5.0, 5.0, 1.0)
+            x = np.arange(-5.0, 5.0, 1.0, dtype=np.float64)
 
             background = 1.0
             amp = 1.0
@@ -170,7 +170,7 @@ class TestLorentzian:
             assert np.max(np.diff(outp)) > np.max(np.diff(outp1))
 
         def test_invalid_lorentzian_model(self):
-            x = np.arange(-5.0, 5.0, 1.0)
+            x = np.arange(-5.0, 5.0, 1.0, dtype=np.float64)
 
             outp = Lorentzian.model().func(x, amp=1.0, sigma=0.0, center=0.0, background=1.0)
             outp1 = Lorentzian.model().func(x, amp=1.0, sigma=1.0, center=0.0, background=1.0)
@@ -179,32 +179,32 @@ class TestLorentzian:
 
     class TestLorentzianGuess:
         def test_background(self):
-            x = np.array([-1.0, 0.0, 1.0])
-            y = np.array([1.0, 2.0, 1.0])
+            x = np.array([-1.0, 0.0, 1.0], dtype=np.float64)
+            y = np.array([1.0, 2.0, 1.0], dtype=np.float64)
             outp = Lorentzian.guess()(x, y)
 
             assert pytest.approx(1.0, rel=1e-1) == outp["background"].value
 
         def test_amp_center(self):
-            x = np.array([-1.0, 0.0, 1.0])
-            y = np.array([1.0, 2.0, 1.0])
+            x = np.array([-1.0, 0.0, 1.0], dtype=np.float64)
+            y = np.array([1.0, 2.0, 1.0], dtype=np.float64)
             outp = Lorentzian.guess()(x, y)
 
             assert 2.0 == pytest.approx(outp["amp"].value + outp["background"].value, rel=1e-2)  # type: ignore
 
         def test_neg_amp_x0(self):
             # upside down lorentzian
-            x = np.array([-1.0, 0.0, 1.0])
-            y = np.array([-1.0, -2.0, -1.0])
+            x = np.array([-1.0, 0.0, 1.0], dtype=np.float64)
+            y = np.array([-1.0, -2.0, -1.0], dtype=np.float64)
             outp = Lorentzian.guess()(x, y)
 
             assert outp["amp"] < 0
 
         def test_sigma(self):
-            x = np.array([-1.0, 0.0, 1.0, 2.0])
-            y = np.array([0.0, 2.0, 0.0, 0.0])
+            x = np.array([-1.0, 0.0, 1.0, 2.0], dtype=np.float64)
+            y = np.array([0.0, 2.0, 0.0, 0.0], dtype=np.float64)
             # y1 is "wider" so must have higher sigma
-            y1 = np.array([1.9, 2.0, 1.9, 1.8])
+            y1 = np.array([1.9, 2.0, 1.9, 1.8], dtype=np.float64)
 
             outp = Lorentzian.guess()(x, y)
             outp1 = Lorentzian.guess()(x, y1)
@@ -215,7 +215,7 @@ class TestLorentzian:
 class TestLinear:
     class TestLinearModel:
         def test_linear_model(self):
-            x = np.arange(-5.0, 5.0, 1.0)
+            x = np.arange(-5.0, 5.0, 1.0, dtype=np.float64)
             grad = 3
             y_intercept = 2
 
@@ -230,27 +230,27 @@ class TestLinear:
 
     class TestLinearGuess:
         def test_gradient_guess(self):
-            x = np.array([-1.0, 0.0, 1.0])
-            y = np.array([-1.0, 0.0, 1.0])
+            x = np.array([-1.0, 0.0, 1.0], dtype=np.float64)
+            y = np.array([-1.0, 0.0, 1.0], dtype=np.float64)
             outp = Linear.guess()(x, y)
 
             assert pytest.approx(outp["c1"]) == 1.0
 
-            y = np.array([-2.0, 0.0, 2.0])
+            y = np.array([-2.0, 0.0, 2.0], dtype=np.float64)
             outp1 = Linear.guess()(x, y)
             # check with a graph with steeper gradient
             assert outp["c1"] < outp1["c1"]
 
         def test_y_intercept_guess(self):
-            x = np.array([-1.0, 0.0, 1.0])
-            y = np.array([-1.0, 0.0, 1.0])
+            x = np.array([-1.0, 0.0, 1.0], dtype=np.float64)
+            y = np.array([-1.0, 0.0, 1.0], dtype=np.float64)
             outp = Linear.guess()(x, y)
 
             assert pytest.approx(outp["c0"]) == 0.0
 
         def test_zero_gradient_guess(self):
-            x = np.array([-1.0, 0.0, 1.0])
-            y = np.array([0.0, 0.0, 0.0])
+            x = np.array([-1.0, 0.0, 1.0], dtype=np.float64)
+            y = np.array([0.0, 0.0, 0.0], dtype=np.float64)
             outp = Linear.guess()(x, y)
 
             assert pytest.approx(outp["c1"]) == 0.0
@@ -285,8 +285,8 @@ class TestPolynomial:
             warnings.filterwarnings("ignore")
             # Suppress a rank warning, but np.RankWarning is deprecated
 
-            x = np.array([-1.0, 0.0, 1.0])
-            y = np.array([1.0, 0.0, 1.0])
+            x = np.array([-1.0, 0.0, 1.0], dtype=np.float64)
+            y = np.array([1.0, 0.0, 1.0], dtype=np.float64)
 
             outp = Polynomial.guess(deg)(x, y)
 
@@ -299,8 +299,8 @@ class TestPolynomial:
 
         @pytest.mark.parametrize("deg", [-1, 8])
         def test_invalid_polynomial_guess(self, deg: int):
-            x = np.array([-1.0, 0.0, 1.0])
-            y = np.array([1.0, 0.0, 1.0])
+            x = np.array([-1.0, 0.0, 1.0], dtype=np.float64)
+            y = np.array([1.0, 0.0, 1.0], dtype=np.float64)
 
             # -1 and 8 are both invalid polynomial degrees
             with pytest.raises(
@@ -312,7 +312,7 @@ class TestPolynomial:
 class TestDampedOsc:
     class TestDampedOscModel:
         def test_damped_osc_model(self):
-            x = np.arange(-5.0, 5.0, 1.0)
+            x = np.arange(-5.0, 5.0, 1.0, dtype=np.float64)
 
             amp = 1
             freq = 1
@@ -344,23 +344,23 @@ class TestDampedOsc:
 
     class TestDampedOscGuess:
         def test_guess_amp_center(self):
-            x = np.array([-1.0, 0.0, 1.0])
-            y = np.array([1.0, 2.0, 1.0])
+            x = np.array([-1.0, 0.0, 1.0], dtype=np.float64)
+            y = np.array([1.0, 2.0, 1.0], dtype=np.float64)
             outp = DampedOsc.guess()(x, y)
 
             assert 2.0 == pytest.approx(outp["amp"].value, rel=1e-2)
 
         def test_guess_width(self):
-            x = np.array([-2.0, -1.0, 0.0, 1.0, 2.0])
-            y = np.array([0.0, 1.0, 1.0, 1.0, 0.0])
+            x = np.array([-2.0, -1.0, 0.0, 1.0, 2.0], dtype=np.float64)
+            y = np.array([0.0, 1.0, 1.0, 1.0, 0.0], dtype=np.float64)
             outp = DampedOsc.guess()(x, y)
 
             # Checks that the width guess is max x - min x
             assert pytest.approx(outp["width"].value, rel=1e-2) == 4.0
 
         def test_guess_freq(self):
-            x = np.array([-2.0, -1.0, 0.0, 1.0, 2.0])
-            y = np.array([0.0, 2.0, 0.0, -2.0, 0.0])
+            x = np.array([-2.0, -1.0, 0.0, 1.0, 2.0], dtype=np.float64)
+            y = np.array([0.0, 2.0, 0.0, -2.0, 0.0], dtype=np.float64)
             outp = DampedOsc.guess()(x, y)
 
             # freq = pi / (peak_x - valley_x) = pi / (1 - -1)
@@ -370,7 +370,7 @@ class TestDampedOsc:
 class TestSlitScan:
     class TestSlitScanModel:
         def test_slit_scan_model(self):
-            x = np.arange(-5.0, 5.0, 1.0)
+            x = np.arange(-5.0, 5.0, 1.0, dtype=np.float64)
             background = 1
             height_above_inflection1 = 5
             gradient = 1
@@ -397,7 +397,7 @@ class TestSlitScan:
             assert np.all(outp[np.where(x > inflection0)] > background)
 
         def test_slit_scan_model_no_exp(self):
-            x = np.arange(-5.0, 5.0, 1.0)
+            x = np.arange(-5.0, 5.0, 1.0, dtype=np.float64)
             background = 1
             height_above_inflection1 = 0
             gradient = 1
@@ -423,43 +423,43 @@ class TestSlitScan:
 
     class TestSlitScanGuess:
         def test_guess_background(self):
-            x = np.array([-1.0, 0.0, 1.0, 2.0])
-            y = np.array([1.0, 1.0, 2.0, 3.0])
+            x = np.array([-1.0, 0.0, 1.0, 2.0], dtype=np.float64)
+            y = np.array([1.0, 1.0, 2.0, 3.0], dtype=np.float64)
             outp = SlitScan.guess()(x, y)
 
             assert 1.0 == pytest.approx(outp["background"].value, rel=1e-2)
 
         def test_guess_gradient(self):
-            x = np.array([-1.0, 0.0, 1.0, 2.0, 3.0, 4.0])
-            y = np.array([1.0, 1.0, 2.0, 3.0, 4.0, 4.0])
+            x = np.array([-1.0, 0.0, 1.0, 2.0, 3.0, 4.0], dtype=np.float64)
+            y = np.array([1.0, 1.0, 2.0, 3.0, 4.0, 4.0], dtype=np.float64)
             outp = SlitScan.guess()(x, y)
 
             assert 1.2 == pytest.approx(outp["gradient"].value, rel=1e-2)
 
         def test_guess_inflections_diff(self):
-            x = np.array([-1.0, 0.0, 1.0, 2.0, 3.0, 4.0])
-            y = np.array([1.0, 1.0, 2.0, 3.0, 4.0, 4.0])
+            x = np.array([-1.0, 0.0, 1.0, 2.0, 3.0, 4.0], dtype=np.float64)
+            y = np.array([1.0, 1.0, 2.0, 3.0, 4.0, 4.0], dtype=np.float64)
             outp = SlitScan.guess()(x, y)
 
             assert 1.666666666 == pytest.approx(outp["inflections_diff"].value, rel=1e-2)
 
         def test_guess_inflections_diff_with_all_zero_data(self):
-            x = np.array([-1.0, 0.0, 1.0, 2.0, 3.0, 4.0])
-            y = np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
+            x = np.array([-1.0, 0.0, 1.0, 2.0, 3.0, 4.0], dtype=np.float64)
+            y = np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0], dtype=np.float64)
             outp = SlitScan.guess()(x, y)
 
             assert 1.666666666 == pytest.approx(outp["inflections_diff"].value, rel=1e-2)
 
         def test_guess_height_above_inflection1(self):
-            x = np.array([-1.0, 0.0, 1.0, 2.0, 3.0, 4.0])
-            y = np.array([1.0, 1.0, 2.0, 3.0, 4.0, 4.0])
+            x = np.array([-1.0, 0.0, 1.0, 2.0, 3.0, 4.0], dtype=np.float64)
+            y = np.array([1.0, 1.0, 2.0, 3.0, 4.0, 4.0], dtype=np.float64)
             outp = SlitScan.guess()(x, y)
 
             assert 0.6 == pytest.approx(outp["height_above_inflection1"].value, rel=1e-2)
 
         def test_guess_inflection0(self):
-            x = np.arange(-5.0, 5.0, 1.0)
-            y = np.array([0, 0, 0, 0, 0, 1, 2, 3, 4, 5])
+            x = np.arange(-5.0, 5.0, 1.0, dtype=np.float64)
+            y = np.array([0, 0, 0, 0, 0, 1, 2, 3, 4, 5], dtype=np.float64)
             outp = SlitScan.guess()(x, y)
 
             assert -2.0 == pytest.approx(outp["inflection0"].value, rel=1e-2)
@@ -470,7 +470,7 @@ class TestERF:
         # only need to test for background and scale
         # as using scipy sci model
         def test_erf_model(self):
-            x = np.arange(-5.0, 6.0, 1.0)
+            x = np.arange(-5.0, 6.0, 1.0, dtype=np.float64)
             cen = 0
             stretch = 1
             scale = 1
@@ -489,7 +489,7 @@ class TestERF:
 
     class TestERFGuess:
         def test_guess_background(self):
-            x = np.array([-1.0, 0.0, 1.0])
+            x = np.array([-1.0, 0.0, 1.0], dtype=np.float64)
             y = x
 
             outp = ERF.guess()(x, y)
@@ -497,8 +497,8 @@ class TestERF:
             assert pytest.approx(outp["background"], rel=1e-2) == 0.0
 
         def test_guess_scale(self):
-            x = np.array([-1.0, 0.0, 1.0])
-            y = np.array([-2.0, 0.0, 2.0])
+            x = np.array([-1.0, 0.0, 1.0], dtype=np.float64)
+            y = np.array([-2.0, 0.0, 2.0], dtype=np.float64)
 
             outp = ERF.guess()(x, y)
 
@@ -510,7 +510,7 @@ class TestERFC:
         # only need to test for background and scale
         # as using scipy sci model
         def test_erfc_model(self):
-            x = np.arange(-5.0, 6.0, 1.0)
+            x = np.arange(-5.0, 6.0, 1.0, dtype=np.float64)
             cen = 0
             stretch = 1
             scale = 1
@@ -531,16 +531,16 @@ class TestERFC:
 
     class TestERFCGuess:
         def test_guess_background(self):
-            x = np.array([-1.0, 0.0, 1.0])
-            y = np.array([2.0, 1.0, 0.0])
+            x = np.array([-1.0, 0.0, 1.0], dtype=np.float64)
+            y = np.array([2.0, 1.0, 0.0], dtype=np.float64)
 
             outp = ERFC.guess()(x, y)
 
             assert pytest.approx(outp["background"], rel=1e-2) == 0.0
 
         def test_guess_scale(self):
-            x = np.array([-1.0, 0.0, 1.0])
-            y = np.array([4.0, 2.0, 0.0])
+            x = np.array([-1.0, 0.0, 1.0], dtype=np.float64)
+            y = np.array([4.0, 2.0, 0.0], dtype=np.float64)
 
             outp = ERFC.guess()(x, y)
 
@@ -550,7 +550,7 @@ class TestERFC:
 class TestTopHat:
     class TestTopHatModel:
         def test_top_hat_model(self):
-            x = np.arange(-5.0, 6.0, 1.0)
+            x = np.arange(-5.0, 6.0, 1.0, dtype=np.float64)
             cen = 0
             width = 1
             height = 1
@@ -577,16 +577,16 @@ class TestTopHat:
 
     class TestTopHatGuess:
         def test_background_guess(self):
-            x = np.array([-1.0, 0.0, 1.0, 2.0, 3.0])
-            y = np.array([1.0, 2.0, 2.0, 2.0, 1.0])
+            x = np.array([-1.0, 0.0, 1.0, 2.0, 3.0], dtype=np.float64)
+            y = np.array([1.0, 2.0, 2.0, 2.0, 1.0], dtype=np.float64)
 
             outp = TopHat.guess()(x, y)
 
             assert outp["background"] == pytest.approx(1.0, rel=1e-2)
 
         def test_cen_height_guess(self):
-            x = np.array([-1.0, 0.0, 1.0, 2.0, 3.0])
-            y = np.array([1.0, 1.0, 2.0, 1.0, 1.0])
+            x = np.array([-1.0, 0.0, 1.0, 2.0, 3.0], dtype=np.float64)
+            y = np.array([1.0, 1.0, 2.0, 1.0, 1.0], dtype=np.float64)
 
             outp = TopHat.guess()(x, y)
 
@@ -594,16 +594,16 @@ class TestTopHat:
             assert outp["height"] == pytest.approx(1.0, rel=1e-2)
 
         def test_width_guess(self):
-            x = np.array([-2.0, -1.0, 0.0, 1.0, 2.0, 3.0])
-            y = np.array([1.0, 1.0, 2.0, 2.0, 1.0, 1.0])
+            x = np.array([-2.0, -1.0, 0.0, 1.0, 2.0, 3.0], dtype=np.float64)
+            y = np.array([1.0, 1.0, 2.0, 2.0, 1.0, 1.0], dtype=np.float64)
 
             outp = TopHat.guess()(x, y)
 
             assert outp["width"] == pytest.approx(1.0, rel=1e-2)
 
         def test_guess_given_flat_data(self):
-            x = np.arange(-5.0, 5.0, 1.0)
-            y = np.zeros_like(x) + 1
+            x = np.arange(-5.0, 5.0, 1.0, dtype=np.float64)
+            y = np.zeros_like(x, dtype=np.float64) + 1
 
             outp = TopHat.guess()(x, y)
             assert outp["width"] == pytest.approx((max(x) - min(x)) / 2, rel=1e-2)
@@ -612,7 +612,7 @@ class TestTopHat:
 class TestTrapezoid:
     class TestTrapezoidModel:
         def test_trapezoid_model(self):
-            x = np.arange(-5.0, 6.0, 1.0)
+            x = np.arange(-5.0, 6.0, 1.0, dtype=np.float64)
             cen = 0
             y_offset = 1
             height = 1
@@ -662,16 +662,16 @@ class TestTrapezoid:
 
     class TestTrapezoidGuess:
         def test_background_guess(self):
-            x = np.array([-1.0, 0.0, 1.0, 2.0, 3.0])
-            y = np.array([1.0, 2.0, 2.0, 2.0, 1.0])
+            x = np.array([-1.0, 0.0, 1.0, 2.0, 3.0], dtype=np.float64)
+            y = np.array([1.0, 2.0, 2.0, 2.0, 1.0], dtype=np.float64)
 
             outp = Trapezoid.guess()(x, y)
 
             assert outp["background"] == pytest.approx(1.0, rel=1e-2)
 
         def test_cen_height_guess(self):
-            x = np.array([-1.0, 0.0, 1.0, 2.0, 3.0])
-            y = np.array([1.0, 1.0, 2.0, 1.0, 1.0])
+            x = np.array([-1.0, 0.0, 1.0, 2.0, 3.0], dtype=np.float64)
+            y = np.array([1.0, 1.0, 2.0, 1.0, 1.0], dtype=np.float64)
 
             outp = Trapezoid.guess()(x, y)
 
@@ -679,8 +679,8 @@ class TestTrapezoid:
             assert outp["height"] == pytest.approx(1.0, rel=1e-2)
 
         def test_gradient_guess(self):
-            x = np.array([-4.0, -3.0, -2.0, -1.0, 0.0, 1.0, 2.0, 3.0, 4.0])
-            y = np.array([1.0, 2.0, 4.0, 8.0, 16.0, 8.0, 4.0, 2.0, 1.0])
+            x = np.array([-4.0, -3.0, -2.0, -1.0, 0.0, 1.0, 2.0, 3.0, 4.0], dtype=np.float64)
+            y = np.array([1.0, 2.0, 4.0, 8.0, 16.0, 8.0, 4.0, 2.0, 1.0], dtype=np.float64)
 
             # Should choose x = -1.0 as x1 and x = -2.5 as x0
             # height = 16 - 1 = 15
@@ -691,13 +691,13 @@ class TestTrapezoid:
             assert outp["gradient"] == pytest.approx(10.0, rel=1e-2)
 
         def test_y_offset_guess(self):
-            x = np.arange(-5.0, 5.0, 1.0)
-            y = np.array([1.0, 1.0, 1.0, 2.0, 3.0, 3.0, 3.0, 2.0, 1.0, 1.0, 1.0])
+            x = np.arange(-5.0, 5.0, 1.0, dtype=np.float64)
+            y = np.array([1.0, 1.0, 1.0, 2.0, 3.0, 3.0, 3.0, 2.0, 1.0, 1.0, 1.0], dtype=np.float64)
 
             outp = Trapezoid.guess()(x, y)
 
-            x1 = np.arange(-6.0, 6.0, 1.0)
-            y1 = np.array([1.0, 1.0, 1.0, 2.0, 3.0, 3.0, 3.0, 3.0, 3.0, 2.0, 1.0, 1.0, 1.0])
+            x1 = np.arange(-6.0, 6.0, 1.0, dtype=np.float64)
+            y1 = np.array([1.0, 1.0, 1.0, 2.0, 3.0, 3.0, 3.0, 3.0, 3.0, 2.0, 1.0, 1.0, 1.0], dtype=np.float64)
 
             outp1 = Trapezoid.guess()(x1, y1)
 
@@ -705,8 +705,8 @@ class TestTrapezoid:
             assert outp["y_offset"] < outp1["y_offset"]
 
         def test_guess_given_flat_data(self):
-            x = np.arange(-5.0, 5.0, 1.0)
-            y = np.zeros_like(x) + 1
+            x = np.arange(-5.0, 5.0, 1.0, dtype=np.float64)
+            y = np.zeros_like(x, dtype=np.float64) + 1
 
             outp = Trapezoid.guess()(x, y)
             # check that with flat data gradient guess is 0
