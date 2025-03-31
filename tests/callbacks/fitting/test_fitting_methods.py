@@ -697,7 +697,9 @@ class TestTrapezoid:
             outp = Trapezoid.guess()(x, y)
 
             x1 = np.arange(-6.0, 6.0, 1.0, dtype=np.float64)
-            y1 = np.array([1.0, 1.0, 1.0, 2.0, 3.0, 3.0, 3.0, 3.0, 3.0, 2.0, 1.0, 1.0, 1.0], dtype=np.float64)
+            y1 = np.array(
+                [1.0, 1.0, 1.0, 2.0, 3.0, 3.0, 3.0, 3.0, 3.0, 2.0, 1.0, 1.0, 1.0], dtype=np.float64
+            )
 
             outp1 = Trapezoid.guess()(x1, y1)
 

@@ -4,9 +4,9 @@ import asyncio
 import logging
 from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Generic, TypeVar, Any, Coroutine
+from typing import Generic, TypeVar
 
-from bluesky.protocols import Locatable, Location, NamedMovable, Triggerable, HasName
+from bluesky.protocols import Locatable, Location, NamedMovable, Triggerable
 from ophyd_async.core import (
     AsyncStatus,
     SignalDatatype,
