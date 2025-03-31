@@ -68,11 +68,7 @@ def scan(  # noqa: PLR0913
 
 
 def _set_up_fields_and_icc(
-    block: NamedMovable[Any],
-    dae: "SimpleDae",
-    model: FitMethod | None,
-    periods: bool,
-    save_run: bool,
+    block: NamedMovable[Any], dae: "SimpleDae", model: FitMethod | None, periods: bool, save_run: bool
 ) -> ISISCallbacks:
     fields = [block.name]
     if periods:
