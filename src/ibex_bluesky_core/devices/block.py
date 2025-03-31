@@ -6,18 +6,27 @@ from collections.abc import Callable
 from dataclasses import dataclass
 from typing import Generic, TypeVar
 
-from bluesky.protocols import HasName, Locatable, Location, Movable, NamedMovable, Triggerable, HasHints
+from bluesky.protocols import (
+    HasName,
+    Locatable,
+    Location,
+    Movable,
+    NamedMovable,
+    Triggerable,
+)
 from ophyd_async.core import (
+    CALCULATE_TIMEOUT,
     AsyncStatus,
+    CalculatableTimeout,
     SignalDatatype,
     SignalR,
     SignalRW,
     StandardReadable,
     StandardReadableFormat,
+    WatchableAsyncStatus,
     observe_value,
     wait_for_value,
 )
-from ophyd_async.core import CalculatableTimeout, CALCULATE_TIMEOUT, WatchableAsyncStatus
 from ophyd_async.epics.core import epics_signal_r, epics_signal_rw
 from ophyd_async.epics.motor import Motor
 
@@ -369,14 +378,13 @@ class BlockMot(Motor, Movable[float], HasName):
     def __repr__(self) -> str:
         """Debug representation of this block."""
         return f"{self.__class__.__name__}(name={self.name})"
-    
-    def set(  # pyright: ignore
-            self, value: float, timeout: CalculatableTimeout = CALCULATE_TIMEOUT
-            ) -> WatchableAsyncStatus[float]:
-        """
-        Pass through set() to superclass.
 
-        This is needed so that type-checker correctly understands the type of set().
+    def set(  # pyright: ignore
+        self, value: float, timeout: CalculatableTimeout = CALCULATE_TIMEOUT
+    ) -> WatchableAsyncStatus[float]:
+        """Pass through set to superclass.
+
+        This is needed so that type-checker correctly understands the type of set.
         """
         return super().set(value, timeout)
 
