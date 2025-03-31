@@ -86,10 +86,10 @@ class ReflParameterRedefine(StandardReadable):
         """
         logger.info("setting %s to %s", self.define_pos_sp.source, value)
         await self.define_pos_sp.set(value, wait=True, timeout=None)
-        logger.info("waiting for 100ms for redefine to finish")
+        logger.info("waiting for 1s for redefine to finish")
         # The Reflectometry server has a CHANGED PV for a redefine, but it doesn't actually
         # give a monitor update, so just wait an arbitrary length of time for it to be done.
-        await asyncio.sleep(0.1)
+        await asyncio.sleep(1.0)
 
 
 def refl_parameter(name: str, changing_timeout_s: float = 60.0) -> ReflParameter:
