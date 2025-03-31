@@ -1,8 +1,9 @@
 """Logs all documents that the BlueSky run engine creates via a callback."""
 
-import json
 from pathlib import Path
 from typing import Any
+
+import orjson
 
 log_location = Path("C:\\") / "instrument" / "var" / "logs" / "bluesky" / "raw_documents"
 
@@ -34,5 +35,9 @@ class DocLoggingCallback:
 
         to_write: dict[str, Any] = {"type": name, "document": document}
 
-        with open(self.filename, "a") as outfile:
-            outfile.write(f"{json.dumps(to_write)}\n")
+        with open(self.filename, "ab") as outfile:
+            outfile.write(
+                orjson.dumps(
+                    to_write, option=orjson.OPT_SERIALIZE_NUMPY | orjson.OPT_APPEND_NEWLINE
+                )
+            )

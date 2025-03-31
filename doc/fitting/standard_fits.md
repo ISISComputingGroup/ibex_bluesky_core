@@ -2,6 +2,8 @@
 
 ## Linear
 
+API Reference: [`Linear`](ibex_bluesky_core.callbacks.fitting.fitting_utils.Linear)
+
 - `c1` - Gradient
 - `c0` - (y) Intercept
 
@@ -10,6 +12,8 @@ y = c_1x + c_0
 ```
 
 ## Polynomial
+
+API Reference: [`Polynomial`](ibex_bluesky_core.callbacks.fitting.fitting_utils.Polynomial)
 
 - `cn` ... `c0` - Polynomial coefficients
 
@@ -20,6 +24,8 @@ y = c_{n}x^n + c_{n-1}x^n-1 + ... + c_1 * x^1 + c_0
 
 ## Gaussian
 
+API Reference: [`Gaussian`](ibex_bluesky_core.callbacks.fitting.fitting_utils.Gaussian)
+
 - `amp` - The maximum height of the Gaussian above `background`
 - `sigma` - A scalar for Gaussian width
 - `x0` - The centre (x) of the Gaussian
@@ -29,9 +35,11 @@ y = c_{n}x^n + c_{n-1}x^n-1 + ... + c_1 * x^1 + c_0
 y = \text{amp} * e^{-\frac{(x - x0) ^ 2}{2 * \text{sigma}^2}} + \text{background}
 ```
 
-![GaussianModel](./images_fits/gaussian.png)
+![GaussianModel](../_static/images_fits/gaussian.png)
 
 ## Lorentzian
+
+API Reference: [`Lorentzian`](ibex_bluesky_core.callbacks.fitting.fitting_utils.Lorentzian)
 
 - `amp` - The maximum height of the Lorentzian above `background`
 - `sigma` - A scalar for Lorentzian width
@@ -42,9 +50,11 @@ y = \text{amp} * e^{-\frac{(x - x0) ^ 2}{2 * \text{sigma}^2}} + \text{background
 y = \frac{\text{amp}}{1 + \frac{x - \text{center}}{\text{sigma}}^2} + \text{background}
 ```
 
-![LorentzianModel](./images_fits/lorentzian.png)
+![LorentzianModel](../_static/images_fits/lorentzian.png)
 
 ## Damped Oscillator (DampedOsc)
+
+API Reference: [`DampedOsc`](ibex_bluesky_core.callbacks.fitting.fitting_utils.DampedOsc)
 
 - `center` - The centre (x) of the oscillation
 - `amp` - The maximum height of the curve above 0
@@ -55,9 +65,11 @@ y = \frac{\text{amp}}{1 + \frac{x - \text{center}}{\text{sigma}}^2} + \text{back
 y = \text{amp} * \cos((x - \text{center}) * \text{freq}) * e^{-\frac{x - \text{center}}{\text{width}^ 2}}
 ```
 
-![DampedOscModel](./images_fits/dampedosc.png)
+![DampedOscModel](../_static/images_fits/damped_osc.png)
 
 ##  Slit Scan (SlitScan)
+
+API Reference: [`SlitScan`](ibex_bluesky_core.callbacks.fitting.fitting_utils.SlitScan)
 
 - `background` $b$ - The minimum value (y) of the model
 - `inflection0` $i_0$ - The x coord of the first inflection point
@@ -77,9 +89,11 @@ y = \text{amp} * \cos((x - \text{center}) * \text{freq}) * e^{-\frac{x - \text{c
 y = \min(\text{lin_seg}, \text{exp_seg})
 ```
 
-![SlitScanModel](./images_fits/slitscan.png)
+![SlitScanModel](../_static/images_fits/slit_scan.png)
 
 ## Error Function (ERF)
+
+API Reference: [`ERF`](ibex_bluesky_core.callbacks.fitting.fitting_utils.ERF)
 
 - `cen` - The centre (x) of the model
 - `stretch` - A horizontal stretch factor for the model
@@ -90,9 +104,11 @@ y = \min(\text{lin_seg}, \text{exp_seg})
 y = background + scale * erf(stretch * (x - cen))
 ```
 
-![ERFModel](./images_fits/erf.png)
+![ERFModel](../_static/images_fits/erf.png)
 
 ## Complementary Error Function (ERFC)
+
+API Reference: [`ERFC`](ibex_bluesky_core.callbacks.fitting.fitting_utils.ERFC)
 
 - `cen` - The centre (x) of the model
 - `stretch` - A horizontal stretch factor for the model
@@ -103,9 +119,11 @@ y = background + scale * erf(stretch * (x - cen))
 y = background + scale * erfc(stretch * (x - cen))
 ```
 
-![ERFCModel](./images_fits/erfc.png)
+![ERFCModel](../_static/images_fits/erfc.png)
 
 ## Top Hat (TopHat)
+
+API Reference: [`TopHat`](ibex_bluesky_core.callbacks.fitting.fitting_utils.TopHat)
 
 - `cen` - The centre (x) of the model
 - `width` - How wide the 'hat' is
@@ -120,9 +138,11 @@ y =
 \end{cases}
 ```
 
-![TopHatModel](./images_fits/tophat.png)
+![TopHatModel](../_static/images_fits/tophat.png)
 
 ## Trapezoid
+
+API Reference: [`Trapezoid`](ibex_bluesky_core.callbacks.fitting.fitting_utils.Trapezoid)
 
 - `cen` - The centre (x) of the model
 - `gradient` - How steep the edges of the trapezoid are
@@ -140,4 +160,4 @@ g(x) = \max(f(x), \text{background})
 y = \min(g(x), \text{background} + \text{height})
 ```
 
-![TrapezoidModel](./images_fits/trapezoid.png)
+![TrapezoidModel](../_static/images_fits/trapezoid.png)

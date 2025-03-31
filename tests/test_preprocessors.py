@@ -6,8 +6,8 @@ from unittest.mock import patch
 import pytest
 from bluesky import preprocessors as bpp
 from bluesky.utils import Msg
-from ophyd_async.core import set_mock_value
-from ophyd_async.epics.signal import epics_signal_r
+from ophyd_async.epics.core import epics_signal_r
+from ophyd_async.testing import set_mock_value
 
 from ibex_bluesky_core.preprocessors import _get_rb_number_signal, add_rb_number_processor
 from tests.conftest import MOCK_PREFIX
@@ -24,7 +24,7 @@ async def mock_rb_num() -> SignalWithExpectedRbv:
     return SignalWithExpectedRbv(mock_rbnum_signal, rb_num)
 
 
-async def test_rb_number_preprocessor_adds_rb_number(RE, mock_rb_num):
+def test_rb_number_preprocessor_adds_rb_number(RE, mock_rb_num):
     with (
         patch(
             "ibex_bluesky_core.preprocessors._get_rb_number_signal", return_value=mock_rb_num.signal
@@ -45,7 +45,7 @@ async def test_rb_number_preprocessor_adds_rb_number(RE, mock_rb_num):
         assert start_doc["rb_number"] == mock_rb_num.rb_num
 
 
-async def test_rb_number_preprocessor_adds_unknown_if_signal_not_connected(RE, mock_rb_num):
+def test_rb_number_preprocessor_adds_unknown_if_signal_not_connected(RE, mock_rb_num):
     with (
         patch(
             "ibex_bluesky_core.preprocessors._get_rb_number_signal", return_value=mock_rb_num.signal

@@ -1,7 +1,7 @@
 # File writing callbacks
 ## Human readable files
 
-A callback (`HumanReadableFileCallback`) exists to write all documents to a separate human-readable file which contains the specified fields. 
+A callback ([`HumanReadableFileCallback`](ibex_bluesky_core.callbacks.file_logger.HumanReadableFileCallback))  exists to write all documents to a separate human-readable file which contains the specified fields. 
 
 This callback will add units and honour precision for each field as well as add some metadata ie. the `uid` of each scan as well as the RB number, which is injected using the {doc}`/preprocessors/rbnumberpp`
 
@@ -25,7 +25,6 @@ def some_plan() -> Generator[Msg, None, None]:
     @subs_decorator(
         [
             HumanReadableFileCallback(
-                Path("C:\\") / "instrument" / "var" / "logs" / "bluesky" / "output_files",
                 [
                     block.name,
                     dae.good_frames.name,
@@ -45,6 +44,15 @@ RE = get_run_engine()
 RE(some_plan())
 ```
 
-This will put the `block` and `dae.good_frames` data collected over the run into a `.txt` file, named after the `uid` of the scan, in `C:\instrument\var\logs\bluesky\output_files\`. The data is prepended on the first event with the names and units of each logged field, and then subsequently the data for each scan separated by a newline. All of this is separated by commas, though the metadata is not.
+This will put the `block` and `dae.good_frames` data collected over the run into a `.txt` file, named after the `uid` 
+of the scan, in `C:\instrument\var\logs\bluesky\output_files\`. 
 
-The file also contains some other metadata such as the bluesky version, plan type etc. - these are mostly going to be used for debugging.
+Optional parameters, not shown above, include:
+- `output_dir` parameter is optional, if not input the file will by default be placed in 
+`\\isis\inst$\ndx<inst>\user\TEST\scans\<rbnumber>`. 
+- `postfix` an optional suffix to append to the end of the file name, to disambiguate scans. Default is no suffix.
+
+The data is prepended on the first event with the names and units of each logged field, and then subsequently the data 
+for each scan separated by a newline. All of this is separated by commas, though the metadata is not.
+
+The file also contains metadata such as the bluesky version, plan type, and rb number.

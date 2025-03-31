@@ -2,45 +2,59 @@
 
 import csv
 import logging
+import os
 from datetime import datetime
 from pathlib import Path
-from typing import Optional
+from zoneinfo import ZoneInfo
 
 from bluesky.callbacks import CallbackBase
 from event_model.documents.event import Event
 from event_model.documents.event_descriptor import EventDescriptor
 from event_model.documents.run_start import RunStart
 from event_model.documents.run_stop import RunStop
-from zoneinfo import ZoneInfo
+
+from ibex_bluesky_core.callbacks import get_default_output_path
+from ibex_bluesky_core.callbacks._utils import (
+    DATA,
+    DATA_KEYS,
+    DESCRIPTOR,
+    MOTORS,
+    NAME,
+    PRECISION,
+    RB,
+    SEQ_NUM,
+    START_TIME,
+    TIME,
+    UID,
+    UNITS,
+    UNKNOWN_RB,
+    get_instrument,
+)
 
 logger = logging.getLogger(__name__)
-
-TIME = "time"
-START_TIME = "start_time"
-NAME = "name"
-SEQ_NUM = "seq_num"
-DATA_KEYS = "data_keys"
-DATA = "data"
-DESCRIPTOR = "descriptor"
-UNITS = "units"
-UID = "uid"
-PRECISION = "precision"
 
 
 class HumanReadableFileCallback(CallbackBase):
     """Outputs bluesky runs to human-readable output files in the specified directory path."""
 
-    def __init__(self, output_dir: Path, fields: list[str]) -> None:
+    def __init__(self, fields: list[str], *, output_dir: Path | None, postfix: str = "") -> None:
         """Output human-readable output files of bluesky runs.
 
         If fields are given, just output those, otherwise output all hinted signals.
+
+        Args:
+            fields: a list of field names to include in output files
+            output_dir: filepath into which to write output files
+            postfix: optional postfix to append to output file names
+
         """
         super().__init__()
         self.fields: list[str] = fields
-        self.output_dir: Path = output_dir
-        self.current_start_document: Optional[str] = None
+        self.output_dir: Path = output_dir or get_default_output_path()
+        self.current_start_document: str | None = None
         self.descriptors: dict[str, EventDescriptor] = {}
-        self.filename: Optional[Path] = None
+        self.filename: Path | None = None
+        self.postfix: str = postfix
 
     def start(self, doc: RunStart) -> None:
         """Start writing an output file.
@@ -50,8 +64,25 @@ class HumanReadableFileCallback(CallbackBase):
         """
         self.output_dir.mkdir(parents=True, exist_ok=True)
         self.current_start_document = doc[UID]
-        self.filename = self.output_dir / f"{self.current_start_document}.txt"
 
+        datetime_obj = datetime.fromtimestamp(doc[TIME])
+        title_format_datetime = datetime_obj.astimezone(ZoneInfo("UTC")).strftime(
+            "%Y-%m-%d_%H-%M-%S"
+        )
+        rb_num = doc.get(RB, UNKNOWN_RB)
+
+        # motors is a tuple, we need to convert to a list to join the two below
+        motors = list(doc.get(MOTORS, []))
+
+        self.filename = (
+            self.output_dir
+            / f"{rb_num}"
+            / f"{get_instrument()}{'_' + '_'.join(motors) if motors else ''}_"
+            f"{title_format_datetime}Z{self.postfix}.txt"
+        )
+        if rb_num == UNKNOWN_RB:
+            logger.warning('No RB number found, saving to "%s"', UNKNOWN_RB)
+        assert self.filename is not None
         logger.info("starting new file %s", self.filename)
 
         exclude_list = [
@@ -59,15 +90,14 @@ class HumanReadableFileCallback(CallbackBase):
         ]
         header_data = {k: v for k, v in doc.items() if k not in exclude_list}
 
-        datetime_obj = datetime.fromtimestamp(doc[TIME])
-        formatted_time = datetime_obj.astimezone(ZoneInfo("Europe/London")).strftime(
-            "%Y-%m-%d %H:%M:%S"
-        )
+        formatted_time = datetime_obj.astimezone(ZoneInfo("UTC")).strftime("%Y-%m-%d %H:%M:%S")
         header_data[START_TIME] = formatted_time
 
-        with open(self.filename, "a", newline="") as outfile:
-            for key, value in header_data.items():
-                outfile.write(f"{key}: {value}\n")
+        # make sure the parent directory exists, create it if not
+        os.makedirs(self.filename.parent, exist_ok=True)
+
+        with open(self.filename, "a", newline="\n", encoding="utf-8") as outfile:
+            outfile.writelines([f"{key}: {value}\n" for key, value in header_data.items()])
 
         logger.debug("successfully wrote header in %s", self.filename)
 
@@ -102,7 +132,7 @@ class HumanReadableFileCallback(CallbackBase):
                 else value
             )
 
-        with open(self.filename, "a", newline="") as outfile:
+        with open(self.filename, "a", newline="", encoding="utf-8") as outfile:
             file_delimiter = ","
             if doc[SEQ_NUM] == 1:
                 # If this is the first event, write out the units before writing event data.

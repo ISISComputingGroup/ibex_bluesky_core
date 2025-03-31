@@ -1,9 +1,23 @@
-from unittest.mock import MagicMock
+from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 from ophyd_async.core import Device, StandardReadable, soft_signal_rw
+from ophyd_async.testing import set_mock_value
 
-from ibex_bluesky_core.devices.simpledae import SimpleDae
+from ibex_bluesky_core.devices.dae import DaeCheckingSignal
+from ibex_bluesky_core.devices.simpledae import (
+    GoodFramesWaiter,
+    PeriodGoodFramesWaiter,
+    PeriodPerPointController,
+    RunPerPointController,
+    SimpleDae,
+    check_dae_strategies,
+    monitor_normalising_dae,
+)
+from ibex_bluesky_core.devices.simpledae.reducers import (
+    GoodFramesNormalizer,
+    PeriodGoodFramesNormalizer,
+)
 from ibex_bluesky_core.devices.simpledae.strategies import Controller, Reducer, Waiter
 
 
@@ -101,3 +115,89 @@ async def test_simpledae_publishes_interesting_signals_in_read():
     # Check that non-interesting signals are *not* read by default
     assert dae.good_frames not in reading
     assert len(reading) == 2
+
+
+def test_monitor_normalising_dae_sets_up_periods_correctly():
+    det_pixels = [1, 2, 3]
+    frames = 200
+    monitor = 20
+    save_run = False
+    with patch("ibex_bluesky_core.devices.simpledae.get_pv_prefix"):
+        dae = monitor_normalising_dae(
+            det_pixels=det_pixels, frames=frames, periods=True, monitor=monitor, save_run=save_run
+        )
+
+    assert isinstance(dae.waiter, PeriodGoodFramesWaiter)
+    assert dae.waiter._value == frames
+    assert isinstance(dae.controller, PeriodPerPointController)
+
+
+def test_monitor_normalising_dae_sets_up_single_period_correctly():
+    det_pixels = [2, 3, 4]
+    frames = 400
+    monitor = 20
+    save_run = False
+    with patch("ibex_bluesky_core.devices.simpledae.get_pv_prefix"):
+        dae = monitor_normalising_dae(
+            det_pixels=det_pixels, frames=frames, periods=False, monitor=monitor, save_run=save_run
+        )
+
+    assert isinstance(dae.waiter, GoodFramesWaiter)
+    assert dae.waiter._value == frames
+    assert isinstance(dae.controller, RunPerPointController)
+
+
+async def test_dae_checking_signal_raises_if_readback_differs():
+    device = DaeCheckingSignal(int, "UNITTEST:")
+    await device.connect(mock=True)
+    initial_value = 0
+    set_mock_value(device.signal, initial_value)
+    device.signal.get_value = AsyncMock(return_value=initial_value)
+    with pytest.raises(IOError, match="Signal UNITTEST: could not be set to 1, actual value was 0"):
+        await device.set(1)
+
+
+async def test_dae_checking_signal_correctly_sets_value():
+    device = DaeCheckingSignal(int, "UNITTEST:")
+    await device.connect(mock=True)
+    initial_value = 0
+    set_mock_value(device.signal, initial_value)
+    await device.set(1)
+    assert await device.signal.get_value() == 1
+
+
+def test_check_dae():
+    dae = SimpleDae(
+        prefix="",
+        controller=PeriodPerPointController(save_run=False),
+        waiter=PeriodGoodFramesWaiter(50),
+        reducer=PeriodGoodFramesNormalizer(prefix="", detector_spectra=[1]),
+    )
+
+    with pytest.raises(
+        TypeError,
+        match=r"DAE controller must be of type RunPerPointController, got PeriodPerPointController",
+    ):
+        check_dae_strategies(dae, expected_controller=RunPerPointController)
+
+    with pytest.raises(
+        TypeError, match=r"DAE waiter must be of type GoodFramesWaiter, got PeriodGoodFramesWaiter"
+    ):
+        check_dae_strategies(dae, expected_waiter=GoodFramesWaiter)
+
+    with pytest.raises(
+        TypeError,
+        match=r"DAE reducer must be of type GoodFramesNormalizer, got PeriodGoodFramesNormalizer",
+    ):
+        check_dae_strategies(dae, expected_reducer=GoodFramesNormalizer)
+
+    # Should not raise
+    check_dae_strategies(
+        dae,
+        expected_controller=PeriodPerPointController,
+        expected_waiter=PeriodGoodFramesWaiter,
+        expected_reducer=PeriodGoodFramesNormalizer,
+    )
+
+    # Should not raise
+    check_dae_strategies(dae)

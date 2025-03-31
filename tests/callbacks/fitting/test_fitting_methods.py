@@ -1,5 +1,5 @@
 import warnings
-from typing import Callable
+from collections.abc import Callable
 from unittest import mock
 
 import lmfit
@@ -266,7 +266,9 @@ class TestPolynomial:
             # -1 and 8 are both invalid polynomial degrees
             x = np.zeros(3)
 
-            with pytest.raises(ValueError):
+            with pytest.raises(
+                ValueError, match=r"The polynomial degree should be at least 0 and smaller than 8."
+            ):
                 Polynomial.model(deg).func(x)
 
         def test_polynomial_model(self):
@@ -301,7 +303,9 @@ class TestPolynomial:
             y = np.array([1.0, 0.0, 1.0])
 
             # -1 and 8 are both invalid polynomial degrees
-            with pytest.raises(ValueError):
+            with pytest.raises(
+                ValueError, match=r"The polynomial degree should be at least 0 and smaller than 8."
+            ):
                 Polynomial.guess(deg)(x, y)
 
 
@@ -364,14 +368,6 @@ class TestDampedOsc:
 
 
 class TestSlitScan:
-    def test_max_slit_width(self):
-        x = np.arange(-5.0, 5.0, 1.0)
-        y = np.zeros(10)
-
-        # -1 is not a valid max slit gap
-        with pytest.raises(ValueError):
-            SlitScan.guess(-1)(x, y)
-
     class TestSlitScanModel:
         def test_slit_scan_model(self):
             x = np.arange(-5.0, 5.0, 1.0)
@@ -438,28 +434,28 @@ class TestSlitScan:
             y = np.array([1.0, 1.0, 2.0, 3.0, 4.0, 4.0])
             outp = SlitScan.guess()(x, y)
 
-            assert 1.0 == pytest.approx(outp["gradient"].value, rel=1e-2)
+            assert 1.2 == pytest.approx(outp["gradient"].value, rel=1e-2)
 
         def test_guess_inflections_diff(self):
             x = np.array([-1.0, 0.0, 1.0, 2.0, 3.0, 4.0])
             y = np.array([1.0, 1.0, 2.0, 3.0, 4.0, 4.0])
             outp = SlitScan.guess()(x, y)
 
-            assert 3.0 == pytest.approx(outp["inflections_diff"].value, rel=1e-2)
+            assert 1.666666666 == pytest.approx(outp["inflections_diff"].value, rel=1e-2)
 
         def test_guess_inflections_diff_with_all_zero_data(self):
             x = np.array([-1.0, 0.0, 1.0, 2.0, 3.0, 4.0])
             y = np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
             outp = SlitScan.guess()(x, y)
 
-            assert 1.0 == pytest.approx(outp["inflections_diff"].value, rel=1e-2)
+            assert 1.666666666 == pytest.approx(outp["inflections_diff"].value, rel=1e-2)
 
         def test_guess_height_above_inflection1(self):
             x = np.array([-1.0, 0.0, 1.0, 2.0, 3.0, 4.0])
             y = np.array([1.0, 1.0, 2.0, 3.0, 4.0, 4.0])
             outp = SlitScan.guess()(x, y)
 
-            assert 1.0 == pytest.approx(outp["height_above_inflection1"].value, rel=1e-2)
+            assert 0.6 == pytest.approx(outp["height_above_inflection1"].value, rel=1e-2)
 
         def test_guess_inflection0(self):
             x = np.arange(-5.0, 5.0, 1.0)

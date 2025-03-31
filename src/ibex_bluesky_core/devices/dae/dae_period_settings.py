@@ -4,7 +4,6 @@ import logging
 import xml.etree.ElementTree as ET
 from dataclasses import dataclass
 from enum import Enum
-from typing import List
 from xml.etree.ElementTree import tostring
 
 from bluesky.protocols import Locatable, Location, Movable
@@ -58,13 +57,13 @@ class SinglePeriodSettings:
 class DaePeriodSettingsData:
     """Dataclass for the hardware period settings."""
 
-    periods_settings: List[SinglePeriodSettings] | None = None
-    periods_soft_num: None | int = None
+    periods_settings: list[SinglePeriodSettings] | None = None
+    periods_soft_num: int | None = None
     periods_type: PeriodType | None = None
     periods_src: PeriodSource | None = None
-    periods_file: None | str = None
-    periods_seq: None | int = None
-    periods_delay: None | int = None
+    periods_file: str | None = None
+    periods_seq: int | None = None
+    periods_delay: int | None = None
 
 
 def _convert_xml_to_period_settings(value: str) -> DaePeriodSettingsData:
@@ -109,7 +108,7 @@ def _convert_period_settings_to_xml(current_xml: str, value: DaePeriodSettingsDa
     return tostring(root, encoding="unicode")
 
 
-class DaePeriodSettings(Device, Locatable, Movable):
+class DaePeriodSettings(Device, Locatable[DaePeriodSettingsData], Movable[DaePeriodSettingsData]):
     """Subdevice for the DAE hardware period settings."""
 
     def __init__(self, dae_prefix: str, name: str = "") -> None:

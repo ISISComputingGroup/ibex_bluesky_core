@@ -1,15 +1,15 @@
 # pyright: reportMissingParameterType=false
-
 import asyncio
 import sys
-from unittest.mock import ANY, MagicMock, patch
+from unittest.mock import ANY, MagicMock, call, patch
 
 import bluesky.plan_stubs as bps
 import bluesky.plans as bp
 import pytest
-from ophyd_async.core import get_mock_put, set_mock_value
+from ophyd_async.testing import get_mock_put, set_mock_value
 
 from ibex_bluesky_core.devices.block import (
+    GLOBAL_MOVING_FLAG_PRE_WAIT,
     BlockMot,
     BlockR,
     BlockRw,
@@ -19,6 +19,7 @@ from ibex_bluesky_core.devices.block import (
     block_r,
     block_rw,
     block_rw_rbv,
+    block_w,
 )
 from tests.conftest import MOCK_PREFIX
 
@@ -72,13 +73,20 @@ def test_block_naming(rw_rbv_block):
 def test_mot_block_naming(mot_block):
     assert mot_block.name == "mot_block"
     assert mot_block.user_readback.name == "mot_block"
-    assert mot_block.user_setpoint.name == ("mot_block-user_setpoint" "")
+    assert mot_block.user_setpoint.name == ("mot_block-user_setpoint")
 
 
 def test_block_signal_monitors_correct_pv(rw_rbv_block):
     assert rw_rbv_block.readback.source.endswith("UNITTEST:MOCK:CS:SB:float_block")
     assert rw_rbv_block.setpoint.source.endswith("UNITTEST:MOCK:CS:SB:float_block:SP")
     assert rw_rbv_block.setpoint_readback.source.endswith("UNITTEST:MOCK:CS:SB:float_block:SP:RBV")
+
+
+def test_block_rw_with_weird_sp_sets_sp_suffix_correctly():
+    weird_sp_suffix = ":SP123"
+    block = BlockRw(float, MOCK_PREFIX, "block", sp_suffix=weird_sp_suffix)
+    assert block.readback.source.endswith("UNITTEST:MOCK:CS:SB:block")
+    assert block.setpoint.source.endswith("UNITTEST:MOCK:CS:SB:block:SP123")
 
 
 def test_mot_block_monitors_correct_pv(mot_block):
@@ -100,12 +108,12 @@ async def test_locate(rw_rbv_block):
     }
 
 
-async def test_hints(readable_block):
+def test_hints(readable_block):
     # The primary readback should be the only "hinted" signal on a block
     assert readable_block.hints == {"fields": ["float_block"]}
 
 
-async def test_mot_hints(mot_block):
+def test_mot_hints(mot_block):
     assert mot_block.hints == {"fields": ["mot_block"]}
 
 
@@ -153,13 +161,13 @@ async def test_read_and_describe_configuration(readable_block):
 async def test_block_set(writable_block):
     set_mock_value(writable_block.setpoint, 10)
     await writable_block.set(20)
-    get_mock_put(writable_block.setpoint).assert_called_once_with(20, wait=True, timeout=None)
+    get_mock_put(writable_block.setpoint).assert_called_once_with(20, wait=True)
 
 
 async def test_block_set_without_epics_completion_callback():
     block = await _block_with_write_config(BlockWriteConfig(use_completion_callback=False))
     await block.set(20)
-    get_mock_put(block.setpoint).assert_called_once_with(20, wait=False, timeout=None)
+    get_mock_put(block.setpoint).assert_called_once_with(20, wait=False)
 
 
 async def test_block_set_with_arbitrary_completion_function():
@@ -205,11 +213,45 @@ async def test_block_set_with_settle_time_longer_than_timeout():
         mock_aio_sleep.assert_called_once_with(30)
 
 
+async def test_block_set_waiting_for_global_moving_flag():
+    block = await _block_with_write_config(
+        BlockWriteConfig(use_global_moving_flag=True, set_timeout_s=0.1)
+    )
+
+    set_mock_value(block.global_moving, False)
+    with patch("ibex_bluesky_core.devices.block.asyncio.sleep") as mock_aio_sleep:
+        await block.set(10)
+        # Only check first call, as wait_for_value from ophyd_async gives us a few more...
+        assert mock_aio_sleep.mock_calls[0] == call(GLOBAL_MOVING_FLAG_PRE_WAIT)
+
+
+async def test_block_set_waiting_for_global_moving_flag_timeout():
+    block = await _block_with_write_config(
+        BlockWriteConfig(use_global_moving_flag=True, set_timeout_s=0.1)
+    )
+
+    set_mock_value(block.global_moving, True)
+    with patch("ibex_bluesky_core.devices.block.asyncio.sleep") as mock_aio_sleep:
+        with pytest.raises(aio_timeout_error):
+            await block.set(10)
+        # Only check first call, as wait_for_value from ophyd_async gives us a few more...
+        assert mock_aio_sleep.mock_calls[0] == call(GLOBAL_MOVING_FLAG_PRE_WAIT)
+
+
+async def test_block_without_use_global_moving_flag_does_not_refer_to_global_moving_pv():
+    block_without = await _block_with_write_config(BlockWriteConfig(use_global_moving_flag=False))
+    block_with = await _block_with_write_config(BlockWriteConfig(use_global_moving_flag=True))
+
+    assert not hasattr(block_without, "global_moving")
+    assert hasattr(block_with, "global_moving")
+
+
 @pytest.mark.parametrize(
-    "func,args",
+    ("func", "args"),
     [
         (block_r, (float, "some_block")),
         (block_rw, (float, "some_block")),
+        (block_w, (float, "some_block")),
         (block_rw_rbv, (float, "some_block")),
         (block_mot, ("some_block",)),
     ],
@@ -219,6 +261,16 @@ def test_block_utility_function(func, args):
         mock_get_prefix.return_value = MOCK_PREFIX
         block = func(*args)
         assert block.name == "some_block"
+
+
+def test_block_w_has_same_source_for_setpoint_and_readback():
+    with patch("ibex_bluesky_core.devices.block.get_pv_prefix") as mock_get_prefix:
+        mock_get_prefix.return_value = MOCK_PREFIX
+        pv_addr = "TESTING123"
+        block = block_w(float, pv_addr)
+        assert (
+            block.setpoint.source == block.readback.source == f"ca://{MOCK_PREFIX}CS:SB:{pv_addr}"
+        )
 
 
 async def test_runcontrol_read_and_describe(readable_block):
@@ -239,18 +291,18 @@ async def test_runcontrol_read_and_describe(readable_block):
     assert descriptor["float_block-run_control-in_range"]["dtype"] == "boolean"
 
 
-async def test_runcontrol_hints(readable_block):
+def test_runcontrol_hints(readable_block):
     # Hinted field for explicitly reading run-control: is the reading in range?
     hints = readable_block.run_control.hints
     assert hints == {"fields": ["float_block-run_control-in_range"]}
 
 
-async def test_runcontrol_monitors_correct_pv(readable_block):
+def test_runcontrol_monitors_correct_pv(readable_block):
     source = readable_block.run_control.in_range.source
     assert source.endswith("UNITTEST:MOCK:CS:SB:float_block:RC:INRANGE")
 
 
-async def test_mot_block_runcontrol_monitors_correct_pv(mot_block):
+def test_mot_block_runcontrol_monitors_correct_pv(mot_block):
     source = mot_block.run_control.in_range.source
     # The main "motor" uses mot_block:SP:RBV, but run control should not.
     assert source.endswith("UNITTEST:MOCK:CS:SB:mot_block:RC:INRANGE")
@@ -286,7 +338,7 @@ def test_plan_trigger_block(RE, readable_block):
 def test_plan_mv_block(RE, writable_block):
     set_mock_value(writable_block.setpoint, 123.0)
     RE(bps.mv(writable_block, 456.0))
-    get_mock_put(writable_block.setpoint).assert_called_once_with(456.0, wait=True, timeout=None)
+    get_mock_put(writable_block.setpoint).assert_called_once_with(456.0, wait=True)
 
 
 def test_block_reprs():

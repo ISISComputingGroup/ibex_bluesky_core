@@ -9,7 +9,7 @@ import pytest
 import scipp as sc
 import scipp.testing
 from bluesky.run_engine import RunEngine
-from ophyd_async.core import get_mock_put, set_mock_value
+from ophyd_async.testing import get_mock_put, set_mock_value
 
 from ibex_bluesky_core.devices import compress_and_hex, dehex_and_decompress
 from ibex_bluesky_core.devices.dae.dae import Dae, RunstateEnum
@@ -989,7 +989,7 @@ async def test_read_spectrum_dataarray(spectrum: DaeSpectra):
             ),
             coords={
                 "tof": sc.Variable(
-                    dims=["tof"], values=[0, 1, 2, 3], dtype="float32", unit=sc.units.us
+                    dims=["tof"], values=[0, 1, 2, 3], dtype="float64", unit=sc.units.us
                 )
             },
         ),

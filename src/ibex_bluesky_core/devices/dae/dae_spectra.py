@@ -7,8 +7,8 @@ import scipp as sc
 from event_model.documents.event_descriptor import DataKey
 from numpy import float32
 from numpy.typing import NDArray
-from ophyd_async.core import SignalR, StandardReadable
-from ophyd_async.epics.signal import epics_signal_r
+from ophyd_async.core import Array1D, SignalR, StandardReadable
+from ophyd_async.epics.core import epics_signal_r
 
 VARIANCE_ADDITION = 0.5
 logger = logging.getLogger(__name__)
@@ -21,8 +21,8 @@ class DaeSpectra(StandardReadable):
         """Set up signals for a single DAE spectra."""
         # x-axis; time-of-flight.
         # These are bin-centre coordinates.
-        self.tof: SignalR[NDArray[float32]] = epics_signal_r(
-            NDArray[float32], f"{dae_prefix}SPEC:{period}:{spectra}:X"
+        self.tof: SignalR[Array1D[float32]] = epics_signal_r(
+            Array1D[float32], f"{dae_prefix}SPEC:{period}:{spectra}:X"
         )
         self.tof_size: SignalR[int] = epics_signal_r(
             int, f"{dae_prefix}SPEC:{period}:{spectra}:X.NORD"
@@ -30,8 +30,8 @@ class DaeSpectra(StandardReadable):
 
         # x-axis; time-of-flight.
         # These are bin-edge coordinates, with a size one more than the corresponding data.
-        self.tof_edges: SignalR[NDArray[float32]] = epics_signal_r(
-            NDArray[float32], f"{dae_prefix}SPEC:{period}:{spectra}:XE"
+        self.tof_edges: SignalR[Array1D[float32]] = epics_signal_r(
+            Array1D[float32], f"{dae_prefix}SPEC:{period}:{spectra}:XE"
         )
         self.tof_edges_size: SignalR[int] = epics_signal_r(
             int, f"{dae_prefix}SPEC:{period}:{spectra}:XE.NORD"
@@ -42,8 +42,8 @@ class DaeSpectra(StandardReadable):
         # that ToF bin.
         # - Unsuitable for summing counts directly.
         # - Will give a continuous plot for non-uniform bin sizes.
-        self.counts_per_time: SignalR[NDArray[float32]] = epics_signal_r(
-            NDArray[float32], f"{dae_prefix}SPEC:{period}:{spectra}:Y"
+        self.counts_per_time: SignalR[Array1D[float32]] = epics_signal_r(
+            Array1D[float32], f"{dae_prefix}SPEC:{period}:{spectra}:Y"
         )
         self.counts_per_time_size: SignalR[int] = epics_signal_r(
             int, f"{dae_prefix}SPEC:{period}:{spectra}:Y.NORD"
@@ -53,8 +53,8 @@ class DaeSpectra(StandardReadable):
         # This is unnormalized number of counts per ToF bin.
         # - Suitable for summing counts
         # - This will give a discontinuous plot for non-uniform bin sizes.
-        self.counts: SignalR[NDArray[float32]] = epics_signal_r(
-            NDArray[float32], f"{dae_prefix}SPEC:{period}:{spectra}:YC"
+        self.counts: SignalR[Array1D[float32]] = epics_signal_r(
+            Array1D[float32], f"{dae_prefix}SPEC:{period}:{spectra}:YC"
         )
         self.counts_size: SignalR[int] = epics_signal_r(
             int, f"{dae_prefix}SPEC:{period}:{spectra}:YC.NORD"
@@ -125,6 +125,9 @@ class DaeSpectra(StandardReadable):
                 values=counts,
                 variances=counts + VARIANCE_ADDITION,
                 unit=sc.units.counts,
+                dtype="float64",
             ),
-            coords={"tof": sc.array(dims=["tof"], values=tof_edges, unit=sc.Unit(unit))},
+            coords={
+                "tof": sc.array(dims=["tof"], values=tof_edges, unit=sc.Unit(unit), dtype="float64")
+            },
         )

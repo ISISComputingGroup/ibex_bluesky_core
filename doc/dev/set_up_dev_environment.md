@@ -1,5 +1,13 @@
 # Local development
 
+## Resources for bluesky and ophyd-async development
+
+[bluesky user documentation - plans, plan stubs, callbacks etc.](https://blueskyproject.io/bluesky/main/userindex.html)
+
+[ophyd-async documentation - devices](https://blueskyproject.io/ophyd-async/main/index.html)
+
+[ophyd-async - choosing base classes when writing a device](https://blueskyproject.io/ophyd-async/main/how-to/choose-right-baseclass.html)
+
 ## Checkout the repository locally
 
 ```
@@ -25,8 +33,10 @@ To run tests based on changes not yet in a release in the GUI PyDev console you 
 ```
 python -m pytest
 ```
-> [!TIP]  
-> To debug the tests in pycharm, use `--no-cov` as an additional option to your run configuration. There is a conflict [issue](https://youtrack.jetbrains.com/issue/PY-20186/debugging-of-py.test-does-not-stop-on-breakpoints-if-coverage-plugin-enabled) with the pytest-cov module which breaks the debugger.
+
+```{note}
+To debug the tests in pycharm, use `--no-cov` as an [additional option to your default/template run configuration.](https://stackoverflow.com/a/52295919) There is a conflict [issue](https://youtrack.jetbrains.com/issue/PY-20186/debugging-of-py.test-does-not-stop-on-breakpoints-if-coverage-plugin-enabled) with the pytest-cov module which breaks the debugger.
+```
 
 ## Run lints
 ```

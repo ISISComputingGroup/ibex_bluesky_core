@@ -2,7 +2,7 @@
 
 import logging
 import warnings
-from typing import Callable
+from collections.abc import Callable
 
 import lmfit
 import numpy as np
@@ -38,17 +38,17 @@ class FitMethod:
             guess (Callable): The guess function to use.
 
         """
+        self.guess = guess
+
         if callable(model):
             self.model = lmfit.Model(model)
         else:
             self.model = model
 
-        self.guess = guess
-
 
 @make_class_safe(logger=logger)  # pyright: ignore (pyright doesn't understand this decorator)
 class LiveFit(_DefaultLiveFit):
-    """Live fit, customized for IBEX."""
+    """LiveFit, customized for IBEX."""
 
     def __init__(
         self, method: FitMethod, y: str, x: str, *, update_every: int = 1, yerr: str | None = None

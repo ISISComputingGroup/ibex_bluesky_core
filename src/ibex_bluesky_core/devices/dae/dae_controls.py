@@ -5,7 +5,7 @@ from enum import IntFlag
 
 from bluesky.protocols import Movable
 from ophyd_async.core import AsyncStatus, SignalW, SignalX, StandardReadable
-from ophyd_async.epics.signal import epics_signal_w, epics_signal_x
+from ophyd_async.epics.core import epics_signal_w, epics_signal_x
 
 logger = logging.getLogger(__name__)
 
@@ -23,6 +23,8 @@ class DaeControls(StandardReadable):
         self.abort_run: SignalX = epics_signal_x(f"{dae_prefix}ABORTRUN")
         self.recover_run: SignalX = epics_signal_x(f"{dae_prefix}RECOVERRUN")
         self.save_run: SignalX = epics_signal_x(f"{dae_prefix}SAVERUN")
+        self.update_run: SignalX = epics_signal_x(f"{dae_prefix}UPDATERUN")
+        self.store_run: SignalX = epics_signal_x(f"{dae_prefix}STORERUN")
 
         super().__init__(name=name)
 
@@ -35,7 +37,7 @@ class BeginRunExBits(IntFlag):
     BEGIN_DELAYED = 2
 
 
-class BeginRunEx(StandardReadable, Movable):
+class BeginRunEx(StandardReadable, Movable[BeginRunExBits]):
     """Subdevice for the BEGINRUNEX signal to begin a run."""
 
     def __init__(self, dae_prefix: str, name: str = "") -> None:
