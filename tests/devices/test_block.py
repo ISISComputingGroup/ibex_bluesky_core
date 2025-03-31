@@ -263,6 +263,16 @@ def test_block_utility_function(func, args):
         assert block.name == "some_block"
 
 
+def test_block_w_has_same_source_for_setpoint_and_readback():
+    with patch("ibex_bluesky_core.devices.block.get_pv_prefix") as mock_get_prefix:
+        mock_get_prefix.return_value = MOCK_PREFIX
+        pv_addr = "TESTING123"
+        block = block_w(float, pv_addr)
+        assert (
+            block.setpoint.source == block.readback.source == f"ca://{MOCK_PREFIX}CS:SB:{pv_addr}"
+        )
+
+
 async def test_runcontrol_read_and_describe(readable_block):
     reading = await readable_block.run_control.read()
     descriptor = await readable_block.run_control.describe()
