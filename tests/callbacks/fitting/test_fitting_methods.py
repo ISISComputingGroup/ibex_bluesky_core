@@ -606,7 +606,7 @@ class TestTopHat:
             y = np.zeros_like(x, dtype=np.float64) + 1
 
             outp = TopHat.guess()(x, y)
-            assert outp["width"] == pytest.approx((max(x) - min(x)) / 2, rel=1e-2)
+            assert outp["width"] == pytest.approx((np.max(x) - np.min(x)) / 2, rel=1e-2)
 
 
 class TestTrapezoid:
