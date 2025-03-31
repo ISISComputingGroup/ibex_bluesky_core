@@ -68,7 +68,7 @@ class DetMapHeightScanLiveDispatcher(LiveDispatcher):
         mon_sum = mon.sum()
 
         # See doc\architectural_decisions\005-variance-addition.md
-        # for justfication of this addition to variances.
+        # for justification of this addition to variances.
         det_sum.variance += VARIANCE_ADDITION
 
         if mon_sum.value == 0.0:

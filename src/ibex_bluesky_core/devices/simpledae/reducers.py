@@ -181,7 +181,7 @@ class ScalarNormalizer(Reducer, StandardReadable, ABC):
             raise ValueError("Cannot normalize; denominator is zero. Check beamline configuration.")
 
         # See doc\architectural_decisions\005-variance-addition.md
-        # for justfication of this addition to variances.
+        # for justification of this addition to variances.
         summed_counts.variance += VARIANCE_ADDITION
 
         intensity = summed_counts / denominator
@@ -292,7 +292,7 @@ class MonitorNormalizer(Reducer, StandardReadable):
             )
 
         # See doc\architectural_decisions\005-variance-addition.md
-        # for justfication of this addition to variances.
+        # for justification of this addition to variances.
         detector_counts.variance += VARIANCE_ADDITION
 
         intensity = detector_counts / monitor_counts
