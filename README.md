@@ -4,7 +4,7 @@
 
 ![ibex_bluesky_core](https://github.com/IsisComputingGroup/ibex_bluesky_core/blob/main/doc/logo.svg?sanitize=true&raw=true)
 
-Core bluesky plan stubs &amp; devices for use at ISIS. Not instrument/technique specific.
+Core bluesky plan stubs &amp; devices for use at ISIS.
 
 Documentation: https://isiscomputinggroup.github.io/ibex_bluesky_core/
 
