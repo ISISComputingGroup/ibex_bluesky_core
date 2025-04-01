@@ -6,18 +6,65 @@ Current
 
 ## Context
 
-A decision needs to be made about whether to use scipp, numpy, uncertainties or develop our own library for the purpose of providing support for generating uncertanties on our counts data.
+We need to choose a library which helps us to transform "raw" neutron or muon data from the DAE, into processed
+quantities that we scan over.
+
+Desirable features include:
+- Uncertainty propagation, following standard uncertainty propagation rules. While this could apply to any data in
+principle, it will be especially relevant for neutron/muon counts data.
+- Unit handling & conversions
+  - Simple unit conversions, like microns to millimetres.
+  - Neutron-specific unit conversions, like time-of-flight to wavelength
+- Ability to handle the typical types of data we would acquire from the DAE and process as part of a scan:
+  - Histograms of neutron/muon counts
+  - N-dimensional arrays
+  - Event-mode data (in future)
+
+Candidate solutions include:
+
+- `mantid`
+- `scipp`
+- `uncertainties`
+- `numpy` + home-grown uncertainty-propagation
 
 ## Decision
 
-We will be using scipp.
+- Default to using `scipp` for most cases
+- Explore using `mantid` via autoreduction APIs, where we need to do more complex reductions
 
 ## Justification & Consequences
 
-- `scipp` is being developed at ESS with past input from STFC, so is well suited for neutron counts data.
-- `scipp` has a `numpy`-like interface but handles units and uncertainties by default under-the-hood.
-- Neither `numpy` or `uncertanties` have exactly the functionality we would need, so the solution using them would be a mix of the libraries and our own code, there would be more places to go wrong. Maintainability.
-- `uncertainties` package tracks correlations so may have bad scaling on "large" arrays like counts data from the DAE.
-- Developing our own uncertainties library will take time to understand and then implement. All of the functionality that we need has been done beforehand, so better to not waste time & effort.
-- Less expertise with this library on site (mitigation: don't do too much which is very complicated with it)
-- Potentially duplicates some of `mantid`'s functionality: (mitigation: use `scipp` for "simple" things, use `mantid` in future if people want to do "full" data reduction pipelines)
+### `numpy`
+
+Using `numpy` by itself is eliminated on the basis that we would need to write our own uncertainty-propagation code,
+which is error prone.
+
+`numpy` by itself may still be used in places where uncertainty propagation is not needed.
+
+### `uncertainties`
+
+The `uncertainties` package tracks correlations so may have bad scaling on "large" arrays, where correlation matrices
+can become large in some cases. Would need to be combined with another library, e.g. `pint`, in order to also support
+physical units. No neutron-specific functionality.
+
+### `mantid`
+
+Mantid is not easily installable (e.g. via `pip` at present).
+
+While we have a way to call out to mantid via a REST API, initial tests have shown that the latency of this approach
+is around 15 seconds. This means it is unsuitable for many types of scans, for example alignment scans, where count
+times are far lower than 15 seconds.
+
+However, for complex reductions, we should still consider the option of passing data out to mantid. This is especially
+true if reductions depend significantly on instrument geometry, on instrument-specific corrections, or on other details
+for which mantid is best-equipped to deal with.
+
+Calling out to mantid via an API should also be considered if a reduction step may use significant compute resource.
+
+### `scipp`
+
+`scipp` will be our default way of taking raw data from the DAE and processing it into a scanned-over quantity.
+
+However, in cases where the reduction is expensive (in terms of compute cost) or complex (either implementation, or
+in terms of required knowledge of geometry/instrument-specific corrections), then we should consider using mantid via
+the autoreduction API in those cases instead.

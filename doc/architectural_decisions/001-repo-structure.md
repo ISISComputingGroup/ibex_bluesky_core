@@ -2,7 +2,7 @@
 
 ## Status
 
-Current
+Current, partially superseded by [ADR 006](006-where-to-put-code.md)
 
 ## Context
 
@@ -15,14 +15,14 @@ Tom & Kathryn
 
 ## Decision
 
-We will create a `core` repository, and publish it on PyPI.
+We will create a `core` repository, called `ibex_bluesky_core`, and publish it on PyPI.
 
 This repository will provide core building blocks, including plan stubs,
 devices, and utilities which are generic and expected to be useful across
 different science groups.
 
-Beamline or technique specific repositories will then depend on the `core`
-repository via PyPI.
+~~Beamline or technique specific repositories will then depend on the `core` repository via PyPI.~~
+Superseded by [ADR 006](006-where-to-put-code.md).
 
 The core repository will not depend on `genie_python`, so that other groups
 at RAL can use this repository. The genie python *distribution* may in future
