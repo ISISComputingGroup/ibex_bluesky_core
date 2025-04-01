@@ -6,14 +6,24 @@ from collections.abc import Callable
 from dataclasses import dataclass
 from typing import Generic, TypeVar
 
-from bluesky.protocols import Locatable, Location, NamedMovable, Triggerable
+from bluesky.protocols import (
+    HasName,
+    Locatable,
+    Location,
+    Movable,
+    NamedMovable,
+    Triggerable,
+)
 from ophyd_async.core import (
+    CALCULATE_TIMEOUT,
     AsyncStatus,
+    CalculatableTimeout,
     SignalDatatype,
     SignalR,
     SignalRW,
     StandardReadable,
     StandardReadableFormat,
+    WatchableAsyncStatus,
     observe_value,
     wait_for_value,
 )
@@ -311,7 +321,7 @@ class BlockRwRbv(BlockRw[T], Locatable[T]):
         }
 
 
-class BlockMot(Motor):
+class BlockMot(Motor, Movable[float], HasName):
     """Device representing an IBEX block pointing at a motor."""
 
     def __init__(
@@ -368,6 +378,15 @@ class BlockMot(Motor):
     def __repr__(self) -> str:
         """Debug representation of this block."""
         return f"{self.__class__.__name__}(name={self.name})"
+
+    def set(  # pyright: ignore
+        self, value: float, timeout: CalculatableTimeout = CALCULATE_TIMEOUT
+    ) -> WatchableAsyncStatus[float]:
+        """Pass through set to superclass.
+
+        This is needed so that type-checker correctly understands the type of set.
+        """
+        return super().set(value, timeout)
 
 
 def block_r(datatype: type[T], block_name: str) -> BlockR[T]:
