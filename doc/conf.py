@@ -30,6 +30,7 @@ nitpick_ignore_regex = [
 ]
 
 myst_enable_extensions = ["dollarmath", "strikethrough"]
+suppress_warnings = ["myst.strikethrough"]
 
 extensions = [
     "myst_parser",
