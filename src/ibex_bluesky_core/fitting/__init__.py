@@ -1,4 +1,5 @@
 """Fitting methods used by the LiveFit callback."""
+
 from abc import ABC, abstractmethod
 from collections.abc import Callable
 
