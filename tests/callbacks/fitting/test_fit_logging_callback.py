@@ -9,8 +9,7 @@ from bluesky.plans import scan
 from ophyd_async.core import soft_signal_rw
 
 from ibex_bluesky_core import run_engine
-from ibex_bluesky_core.callbacks import LiveFitLogger
-from ibex_bluesky_core.callbacks._fitting import LiveFit
+from ibex_bluesky_core.callbacks import LiveFit, LiveFitLogger
 from ibex_bluesky_core.fitting import FitMethod, Linear
 
 time = 1728049423.5860472

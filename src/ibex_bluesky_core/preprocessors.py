@@ -13,7 +13,6 @@ from ophyd_async.plan_stubs import ensure_connected
 from ibex_bluesky_core.utils import get_pv_prefix
 
 logger = logging.getLogger(__name__)
-# todo all
 
 
 def _get_rb_number_signal() -> SignalR[str]:

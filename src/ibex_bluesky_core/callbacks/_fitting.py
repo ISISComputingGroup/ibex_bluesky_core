@@ -12,8 +12,7 @@ import numpy as np
 from bluesky.callbacks import CallbackBase
 from bluesky.callbacks import LiveFit as _DefaultLiveFit
 from bluesky.callbacks.core import make_class_safe
-from event_model import RunStart, RunStop
-from event_model.documents.event import Event
+from event_model import Event, RunStart, RunStop
 
 from ibex_bluesky_core.callbacks._utils import (
     DATA,

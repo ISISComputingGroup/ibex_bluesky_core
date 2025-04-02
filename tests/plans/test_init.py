@@ -9,12 +9,13 @@ from ophyd_async.testing import callback_on_mock_put, set_mock_value
 
 from ibex_bluesky_core.devices.block import BlockMot, BlockR
 from ibex_bluesky_core.devices.simpledae import (
+    Controller,
+    MonitorNormalizer,
     PeriodPerPointController,
     RunPerPointController,
     SimpleDae,
+    Waiter,
 )
-from ibex_bluesky_core.devices.simpledae._reducers import MonitorNormalizer
-from ibex_bluesky_core.devices.simpledae._strategies import Controller, Waiter
 from ibex_bluesky_core.fitting import Gaussian
 from ibex_bluesky_core.plans import (
     adaptive_scan,

@@ -6,7 +6,7 @@ import lmfit
 import numpy as np
 import numpy.typing as npt
 
-from ibex_bluesky_core.callbacks._fitting import LiveFit
+from ibex_bluesky_core.callbacks import LiveFit
 from ibex_bluesky_core.fitting import FitMethod, Linear
 
 

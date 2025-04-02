@@ -22,14 +22,13 @@ from ibex_bluesky_core.callbacks.reflectometry import (
     DetMapHeightScanLiveDispatcher,
     LivePColorMesh,
 )
-from ibex_bluesky_core.devices.simpledae import SimpleDae, check_dae_strategies
-from ibex_bluesky_core.devices.simpledae._controllers import (
+from ibex_bluesky_core.devices.simpledae import (
     PeriodPerPointController,
-)
-from ibex_bluesky_core.devices.simpledae._reducers import (
     PeriodSpecIntegralsReducer,
+    SimpleDae,
+    Waiter,
+    check_dae_strategies,
 )
-from ibex_bluesky_core.devices.simpledae._strategies import Waiter
 from ibex_bluesky_core.fitting import Gaussian
 from ibex_bluesky_core.plan_stubs import call_qt_aware
 

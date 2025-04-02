@@ -1,12 +1,11 @@
 import pytest
 from ophyd_async.testing import get_mock_put, set_mock_value
 
-from ibex_bluesky_core.devices.dae import RunstateEnum
-from ibex_bluesky_core.devices.dae._controls import BeginRunExBits
-from ibex_bluesky_core.devices.simpledae import SimpleDae
-from ibex_bluesky_core.devices.simpledae._controllers import (
+from ibex_bluesky_core.devices.dae import BeginRunExBits, RunstateEnum
+from ibex_bluesky_core.devices.simpledae import (
     PeriodPerPointController,
     RunPerPointController,
+    SimpleDae,
 )
 
 

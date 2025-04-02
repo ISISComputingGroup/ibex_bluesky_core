@@ -1,8 +1,7 @@
 import pytest
 from bluesky.run_engine import RunEngine
 
-from ibex_bluesky_core.devices.simpledae import SimpleDae
-from ibex_bluesky_core.devices.simpledae._strategies import Controller, Reducer, Waiter
+from ibex_bluesky_core.devices.simpledae import Controller, Reducer, SimpleDae, Waiter
 from ibex_bluesky_core.run_engine import get_run_engine
 
 MOCK_PREFIX = "UNITTEST:MOCK:"
