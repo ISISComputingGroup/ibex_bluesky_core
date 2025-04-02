@@ -6,19 +6,37 @@ Current
 
 ## Context
 
-For counts data, the uncertainty on counts is typically defined by poisson counting statistics, i.e. the standard deviation on `N` counts is `sqrt(N)`.
+For counts data, the uncertainty on counts is typically defined by poisson counting statistics, i.e. the standard
+deviation on `N` counts is `sqrt(N)`.
 
-This can be problematic in cases where zero counts have been collected, as the standard deviation will then be zero, which will subsequently lead to "infinite" point weightings in downstream fitting routines for example.
+This can be problematic in cases where zero counts have been collected, as the standard deviation will then be zero,
+which will subsequently lead to "infinite" point weightings in downstream fitting routines for example.
 
 A number of possible approaches were considered:
 
-| Option | Description |
-| --- | --- |
-| A | Reject data with zero counts, i.e. explicitly throw an exception if any data with zero counts is seen as part of a scan. |
-| B | Use a standard deviation of `NaN` for points with zero counts. |
-| C | Define the standard deviation of `N` counts as `1` if counts are zero, otherwise `sqrt(N)`. This is one of the approaches available in mantid for example. |
-| D | Define the standard deviation of `N` counts as `sqrt(N+0.5)` unconditionally - on the basis that "half a count" is smaller than the smallest possible actual measurement which can be taken. |
-| E | No special handling, calculate std. dev. as `sqrt(N)`. |
+### Option A
+
+Reject data with zero counts, i.e. explicitly throw an exception if any data with zero counts is seen as part of a scan.
+
+### Option B
+
+Use a standard deviation of `NaN` for points with zero counts.
+
+### Option C
+
+Define the standard deviation of `N` counts as `1` if counts are zero, otherwise `sqrt(N)`. This is one of the
+approaches [available in mantid](https://github.com/mantidproject/mantid/blob/bbbb86edc2c3fa554499770463aa25c2b46984e5/docs/source/algorithms/SetUncertainties-v1.rst#L16) for example.
+
+### Option D
+
+Define the standard deviation of `N` counts as `sqrt(N+0.5)` unconditionally - on the basis that "half a count" is 
+smaller than the smallest possible actual measurement which can be taken.
+
+### Option E
+
+No special handling, calculate std. dev. as `sqrt(N)`.
+
+---
 
 For clarity, the following table shows the value and associated uncertainty for each option:
 
@@ -53,6 +71,8 @@ The consensus was to go with Option D.
 ## Justification
 
 - Option A will cause real-life scans to crash in low counts regions.
-- Option B involves `NaN`s, which have many surprising floating-point characteristics and are highly likely to be a source of future bugs.
+- Option B involves `NaN`s, which have many surprising floating-point characteristics and are highly likely to be a
+source of future bugs.
 - Option D was preferred to option C by scientists present, because it is continuous.
-- Option E causes surprising results and/or crashes downstream, for example fitting may consider points with zero uncertainty to have "infinite" weight, therefore effectively disregarding all other data.
+- Option E causes surprising results and/or crashes downstream, for example fitting may consider points with zero
+uncertainty to have "infinite" weight, therefore effectively disregarding all other data.
