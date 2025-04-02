@@ -16,6 +16,7 @@ from bluesky.utils import Msg, make_decorator
 from event_model import RunStart
 from matplotlib.axes import Axes
 
+from ibex_bluesky_core.callbacks._document_logger import DocLoggingCallback
 from ibex_bluesky_core.callbacks._file_logger import (
     HumanReadableFileCallback,
 )
@@ -30,6 +31,7 @@ logger = logging.getLogger(__name__)
 
 
 __all__ = [
+    "DocLoggingCallback",
     "HumanReadableFileCallback",
     "ISISCallbacks",
     "LiveFit",

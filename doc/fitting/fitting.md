@@ -2,7 +2,7 @@
 
 Similar to [`LivePlot`](../callbacks/plotting.md), [`ibex_bluesky_core`](ibex_bluesky_core) provides a thin wrapper around Bluesky's [`LiveFit`](ibex_bluesky_core.callbacks.LiveFit) class, enhancing it with additional functionality to better support real-time data fitting. This wrapper not only offers a wide selection of models to fit your data on, but also introduces guess generation for fit parameters. As new data points are acquired, the wrapper refines these guesses dynamically, improving the accuracy of the fit with each additional piece of data, allowing for more efficient and adaptive real-time fitting workflows.
 
-In order to use the wrapper, import[`LiveFit`](ibex_bluesky_core.callbacks.fitting.LiveFit from [`ibex_bluesky_core`](ibex_bluesky_core) rather than 
+In order to use the wrapper, import[`LiveFit`](ibex_bluesky_core.callbacks.LiveFit from [`ibex_bluesky_core`](ibex_bluesky_core) rather than 
 `bluesky` directly:
 ```py
 from ibex_bluesky_core.callbacks.fitting import LiveFit
@@ -66,11 +66,11 @@ We support **standard fits** for the following trends in data. See [Standard Fit
 | Trapezoid | [Trapezoid](./standard_fits.md#trapezoid)                     | None |
 | PeakStats (COM) **\*** | -                                                             | -
 
-\* Native to Bluesky there is support for `PeakStats` which "computes peak statsitics after a run finishes." See [Bluesky docs](https://blueskyproject.io/bluesky/main/callbacks.html#peakstats) for more information on this. Similar to [`LiveFit`](ibex_bluesky_core.callbacks.fitting.LiveFit) and `LiveFitPLot`, `PeakStats` is a callback and must be passed to `PeakStatsPlot` to be plotted on a set of axes, which is subscribed to by the `RunEngine`.
+\* Native to Bluesky there is support for `PeakStats` which "computes peak statsitics after a run finishes." See [Bluesky docs](https://blueskyproject.io/bluesky/main/callbacks.html#peakstats) for more information on this. Similar to [`LiveFit`](ibex_bluesky_core.callbacks.LiveFit) and `LiveFitPLot`, `PeakStats` is a callback and must be passed to `PeakStatsPlot` to be plotted on a set of axes, which is subscribed to by the `RunEngine`.
 
 -------
 
-Each of the above fit classes has a `.fit()` which returns an object of type [`FitMethod`](ibex_bluesky_core.fitting.FitMethod). This tells [`LiveFit`](ibex_bluesky_core.callbacks.fitting.LiveFit) how to perform fitting on the data. [`FitMethod`](ibex_bluesky_core.fitting.FitMethod) is defined in `ibex_bluesky_core.fitting`.
+Each of the above fit classes has a `.fit()` which returns an object of type [`FitMethod`](ibex_bluesky_core.fitting.FitMethod). This tells [`LiveFit`](ibex_bluesky_core.callbacks.LiveFit) how to perform fitting on the data. [`FitMethod`](ibex_bluesky_core.fitting.FitMethod) is defined in `ibex_bluesky_core.fitting`.
 
 There are *two* ways that you can choose how to fit a model to your data:
 
