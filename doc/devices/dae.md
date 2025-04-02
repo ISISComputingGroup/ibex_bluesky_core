@@ -4,9 +4,9 @@ The [`SimpleDae`](ibex_bluesky_core.devices.simpledae.SimpleDae) class is design
 majority of DAE use-cases within bluesky.
 
 This class uses several objects to configure its behaviour:
-- The [`Controller`](ibex_bluesky_core.devices.simpledae.strategies.Controller)  is responsible for beginning and ending acquisitions.
-- The [`Waiter`](ibex_bluesky_core.devices.simpledae.strategies.Waiter) is responsible for waiting for an acquisition to be "complete".
-- The [`Reducer`](ibex_bluesky_core.devices.simpledae.strategies.Reducer) is responsible for publishing data from an acquisition that has 
+- The [`Controller`](ibex_bluesky_core.devices.simpledae.Controller)  is responsible for beginning and ending acquisitions.
+- The [`Waiter`](ibex_bluesky_core.devices.simpledae.Waiter) is responsible for waiting for an acquisition to be "complete".
+- The [`Reducer`](ibex_bluesky_core.devices.simpledae.Reducer) is responsible for publishing data from an acquisition that has 
   just been completed.
 
 This means that [`SimpleDae`](ibex_bluesky_core.devices.simpledae.SimpleDae) is generic enough to cope with most typical DAE use-casess, for
@@ -14,7 +14,7 @@ example running using either one DAE run per scan point, or one DAE period per s
 
 For complex use-cases, particularly those where the DAE may need to start and stop multiple 
 acquisitions per scan point (e.g. polarization measurements), [`SimpleDae`](ibex_bluesky_core.devices.simpledae.SimpleDae) is unlikely to be 
-suitable; instead the [`Dae`](ibex_bluesky_core.devices.dae.dae.Dae) class should be subclassed directly to allow for finer control.
+suitable; instead the [`Dae`](ibex_bluesky_core.devices.dae.Dae) class should be subclassed directly to allow for finer control.
 
 ## Example configurations
 
@@ -23,11 +23,7 @@ suitable; instead the [`Dae`](ibex_bluesky_core.devices.dae.dae.Dae) class shoul
 ```python
 
 from ibex_bluesky_core.utils import get_pv_prefix
-from ibex_bluesky_core.devices.simpledae import SimpleDae
-from ibex_bluesky_core.devices.simpledae._controllers import RunPerPointController
-from ibex_bluesky_core.devices.simpledae._waiters import GoodFramesWaiter
-from ibex_bluesky_core.devices.simpledae._reducers import GoodFramesNormalizer
-
+from ibex_bluesky_core.devices.simpledae import SimpleDae, RunPerPointController, GoodFramesWaiter, GoodFramesNormalizer
 prefix = get_pv_prefix()
 # One DAE run for each scan point, save the runs after each point.
 controller = RunPerPointController(save_run=True)
@@ -56,10 +52,7 @@ reducer.intensity.set_name("normalized counts")
 ```python
 
 from ibex_bluesky_core.utils import get_pv_prefix
-from ibex_bluesky_core.devices.simpledae import SimpleDae
-from ibex_bluesky_core.devices.simpledae._controllers import PeriodPerPointController
-from ibex_bluesky_core.devices.simpledae._waiters import PeriodGoodFramesWaiter
-from ibex_bluesky_core.devices.simpledae._reducers import PeriodGoodFramesNormalizer
+from ibex_bluesky_core.devices.simpledae import SimpleDae, PeriodPerPointController, PeriodGoodFramesWaiter, PeriodGoodFramesNormalizer
 
 prefix = get_pv_prefix()
 # One DAE period for each scan point, save the runs after the scan.
@@ -89,39 +82,39 @@ plan using `yield from bps.mv(dae.number_of_periods, num_points)` before startin
 
 ### Start of scan (`stage`)
 
-[`SimpleDae`](ibex_bluesky_core.devices.simpledae) will call [`controller.setup()`](ibex_bluesky_core.devices.simpledae.strategies.Controller.setup) to allow any pre-scan setup to be done.
+[`SimpleDae`](ibex_bluesky_core.devices.simpledae.SimpleDae) will call [`controller.setup()`](ibex_bluesky_core.devices.simpledae.Controller.setup) to allow any pre-scan setup to be done.
 
 For example, this is where the period-per-point controller object will begin a DAE run.
 
 ### Each scan point (`trigger`)
 
-[`SimpleDae`](ibex_bluesky_core.devices.simpledae) will call:
-- [`controller.start_counting()`](ibex_bluesky_core.devices.simpledae.strategies.Controller.start_counting) to begin counting for a single scan point.
-- [`waiter.wait()`](ibex_bluesky_core.devices.simpledae.strategies.Waiter.wait) to wait for that acquisition to complete
-- [`controller.stop_counting()`](ibex_bluesky_core.devices.simpledae.strategies.Controller.stop_counting) to finish counting for a single scan point.
-- [`reducer.reduce_data()`](ibex_bluesky_core.devices.simpledae.strategies.Reducer.reduce_data) to do any necessary post-processing on 
+[`SimpleDae`](ibex_bluesky_core.devices.simpledae.SimpleDae) will call:
+- [`controller.start_counting()`](ibex_bluesky_core.devices.simpledae.Controller.start_counting) to begin counting for a single scan point.
+- [`waiter.wait()`](ibex_bluesky_core.devices.simpledae.Waiter.wait) to wait for that acquisition to complete
+- [`controller.stop_counting()`](ibex_bluesky_core.devices.simpledae.Controller.stop_counting) to finish counting for a single scan point.
+- [`reducer.reduce_data()`](ibex_bluesky_core.devices.simpledae.Reducer.reduce_data) to do any necessary post-processing on 
   the raw DAE data (e.g. normalization)
 
 ### Each scan point (`read`)
 
 Any signals marked as "interesting" by the controller, reducer or waiter will be published
-in the top-level documents published when `read()`ing the [`SimpleDae`](ibex_bluesky_core.devices.simpledae) object.
+in the top-level documents published when `read()`ing the [`SimpleDae`](ibex_bluesky_core.devices.simpledae.SimpleDae) object.
 
 These may correspond to EPICS signals directly from the DAE (e.g. good frames), or may be 
 soft signals derived at runtime (e.g. normalized intensity).
 
-This means that the [`SimpleDae`](ibex_bluesky_core.devices.simpledae) object is suitable for use as a detector in most bluesky
+This means that the [`SimpleDae`](ibex_bluesky_core.devices.simpledae.SimpleDae) object is suitable for use as a detector in most bluesky
 plans, and will make an appropriate set of data available in the emitted documents.
 
 ### End of scan (`unstage`)
 
-[`SimpleDae`](ibex_bluesky_core.devices.simpledae) will call [`controller.teardown()`](ibex_bluesky_core.devices.simpledae.strategies.Controller.teardown) to allow any post-scan teardown to be done.
+[`SimpleDae`](ibex_bluesky_core.devices.simpledae.SimpleDae) will call [`controller.teardown()`](ibex_bluesky_core.devices.simpledae.Controller.teardown) to allow any post-scan teardown to be done.
 
 For example, this is where the period-per-point controller object will end a DAE run.
 
 ## Controllers
 
-The [`Controller`]( ibex_bluesky_core.devices.simpledae.controllers) class is responsible for starting and stopping acquisitions, in a generic
+The [`Controller`]( ibex_bluesky_core.devices.simpledae.Controller) class is responsible for starting and stopping acquisitions, in a generic
 way.
 
 ### RunPerPointController
@@ -131,7 +124,7 @@ either end runs or abort them on completion.
 
 This controller causes the following signals to be published by `SimpleDae`:
 
-- [`controller.run_number`](ibex_bluesky_core.devices.simpledae.controllers.RunPerPointController) - The run number into which data was collected. Only published 
+- [`controller.run_number`](ibex_bluesky_core.devices.simpledae.RunPerPointController) - The run number into which data was collected. Only published 
   if runs are being saved.
 
 ### PeriodPerPointController
@@ -157,20 +150,20 @@ def plan():
     yield from bp.scan([dae], block, 0, 10, num=num_points)
 ```
 
-The controller causes the following signals to be published by [`SimpleDae`](ibex_bluesky_core.devices.simpledae) :
+The controller causes the following signals to be published by [`SimpleDae`](ibex_bluesky_core.devices.simpledae.SimpleDae) :
 
-- [`simpledae.period_num`]( ibex_bluesky_core.devices.simpledae.controllers.PeriodPerPointController) - the period number into which this scan point was counted.
+- [`simpledae.period_num`]( ibex_bluesky_core.devices.simpledae.PeriodPerPointController) - the period number into which this scan point was counted.
 
 ## Reducers
 
-A [`Reducer`](ibex_bluesky_core.devices.simpledae.reducers) for a [`SimpleDae`](ibex_bluesky_core.devices.simpledae) is responsible for publishing any data derived from the raw
+A [`Reducer`](ibex_bluesky_core.devices.simpledae.Reducer) for a [`SimpleDae`](ibex_bluesky_core.devices.simpledae.SimpleDae) is responsible for publishing any data derived from the raw
 DAE signals. For example, normalizing intensities are implemented as a reducer.
 
 A reducer may produce any number of reduced signals.
 
 ### GoodFramesNormalizer
 
-[`GoodFramesNormalizer`](ibex_bluesky_core.devices.simpledae.reducers.GoodFramesNormalizer)
+[`GoodFramesNormalizer`](ibex_bluesky_core.devices.simpledae.GoodFramesNormalizer)
 
 This normalizer sums a set of user-defined detector spectra, and then divides by the number
 of good frames.
@@ -184,7 +177,7 @@ Published signals:
 
 ### PeriodGoodFramesNormalizer
 
-[`PeriodGoodFramesNormalizer`](ibex_bluesky_core.devices.simpledae.reducers.PeriodGoodFramesNormalizer)
+[`PeriodGoodFramesNormalizer`](ibex_bluesky_core.devices.simpledae.PeriodGoodFramesNormalizer)
 
 Equivalent to the `GoodFramesNormalizer` above, but uses good frames only from the current
 period. This should be used if a controller which counts into multiple periods is being used.
@@ -198,7 +191,7 @@ Published signals:
 
 ### DetectorMonitorNormalizer
 
-[`DetectorMonitorNormalizer`](ibex_bluesky_core.devices.simpledae.reducers.MonitorNormalizer)
+[`DetectorMonitorNormalizer`](ibex_bluesky_core.devices.simpledae.MonitorNormalizer)
 
 This normalizer sums a set of user-defined detector spectra, and then divides by the sum
 of a set of user-defined monitor spectra.
@@ -227,7 +220,7 @@ Published signals:
 Scalar Normalizers (such as PeriodGoodFramesNormalizer, GoodFramesNormalizer) can be passed a
 summing function which can optionally sum spectra between provided time of flight or wavelength bounds.
 
-[`PeriodGoodFramesNormalizer`](ibex_bluesky_core.devices.simpledae.reducers.PeriodGoodFramesNormalizer)
+[`PeriodGoodFramesNormalizer`](ibex_bluesky_core.devices.simpledae.PeriodGoodFramesNormalizer)
 
 
 Here is an example showing creating a scalar normalizer with time of flight bounds from 15000 to 25000 μs, and summing 2 detectors:
@@ -243,7 +236,7 @@ reducer = PeriodGoodFramesNormalizer(
 )
 ```
 
-[`tof_bounded_spectra`](ibex_bluesky_core.devices.simpledae.reducers.tof_bounded_spectra)
+[`tof_bounded_spectra`](ibex_bluesky_core.devices.simpledae.tof_bounded_spectra)
 
 
 Monitor Normalizers, which have both a monitor as well as detector, can be passed a summing function for each of these components independently, e.g. the detector can use time of flight while the monitor uses wavelength. tof_bounded_spectra assumes that all pixels being summed share the same flight-path length. Where two separate instances of tof_bounded_spectra are used, such as in DetectorMonitorNormalizer, these may have different flight path lengths from each other.
@@ -265,7 +258,7 @@ reducer = MonitorNormalizer(
     monitor_summer=tof_bounded_spectra(tof_bounds)
 )
 ```
-[`wavelength_bounded_spectra`](ibex_bluesky_core.devices.simpledae.reducers.wavelength_bounded_spectra)
+[`wavelength_bounded_spectra`](ibex_bluesky_core.devices.simpledae.wavelength_bounded_spectra)
 
 
 - In either case, the bounds are passed as a scipp array, which needs a `dims` attribute, `values` passed
@@ -276,7 +269,7 @@ as a list, and `units` (μs/microseconds for time of flight bounding, and angstr
 
 ## Waiters
 
-A [`waiter`](ibex_bluesky_core.devices.simpledae.waiters) defines an arbitrary strategy for how long to count at each point.
+A [`waiter`](ibex_bluesky_core.devices.simpledae.Waiter) defines an arbitrary strategy for how long to count at each point.
 
 Some waiters may be very simple, such as waiting for a fixed amount of time or for a number
 of good frames or microamp-hours. However, it is also possible to define much more 
@@ -284,7 +277,7 @@ sophisticated waiters, for example waiting until sufficient statistics have been
 
 ### GoodUahWaiter
 
-[`GoodUahWaiter`](ibex_bluesky_core.devices.simpledae.waiters.GoodUahWaiter)
+[`GoodUahWaiter`](ibex_bluesky_core.devices.simpledae.GoodUahWaiter)
 
 Waits for a user-specified number of microamp-hours.
 
@@ -293,7 +286,7 @@ Published signals:
 
 ### GoodFramesWaiter
 
-[`GoodFramesWaiter`](ibex_bluesky_core.devices.simpledae.waiters.GoodFramesWaiter)
+[`GoodFramesWaiter`](ibex_bluesky_core.devices.simpledae.GoodFramesWaiter)
 
 Waits for a user-specified number of good frames (in total for the entire run)
 
@@ -302,7 +295,7 @@ Published signals:
 
 ### PeriodGoodFramesWaiter
 
-[`PeriodGoodFramesWaiter`](ibex_bluesky_core.devices.simpledae.waiters.PeriodGoodFramesWaiter)
+[`PeriodGoodFramesWaiter`](ibex_bluesky_core.devices.simpledae.PeriodGoodFramesWaiter)
 
 Waits for a user-specified number of good frames (in the current period)
 
@@ -311,7 +304,7 @@ Published signals:
 
 ### MEventsWaiter
 
-[`MEventsWaiter`](ibex_bluesky_core.devices.simpledae.waiters.MEventsWaiter)
+[`MEventsWaiter`](ibex_bluesky_core.devices.simpledae.MEventsWaiter)
 
 Waits for a user-specified number of millions of events
 
@@ -320,7 +313,7 @@ Published signals:
 
 ### TimeWaiter
 
-[`TimeWaiter`](ibex_bluesky_core.devices.simpledae.waiters.TimeWaiter)
+[`TimeWaiter`](ibex_bluesky_core.devices.simpledae.TimeWaiter)
 
 Waits for a user-specified time duration, irrespective of DAE state.
 
@@ -330,9 +323,9 @@ Does not publish any additional signals.
 
 ## `Dae` (base class, advanced)
 
-[`Dae`](ibex_bluesky_core.devices.dae) is the principal class in ibex_bluesky_core which exposes configuration settings
-and controls from the ISIS data acquisition electronics (DAE). [`SimpleDae`](ibex_bluesky_core.devices.simpledae) derives from
-DAE, so all of the signals available on [`Dae`](ibex_bluesky_core.devices.dae) are also available on [`SimpleDae`](ibex_bluesky_core.devices.simpledae).
+[`Dae`](ibex_bluesky_core.devices.dae.Dae) is the principal class in ibex_bluesky_core which exposes configuration settings
+and controls from the ISIS data acquisition electronics (DAE). [`SimpleDae`](ibex_bluesky_core.devices.simpledae.SimpleDae) derives from
+DAE, so all of the signals available on [`Dae`](ibex_bluesky_core.devices.dae.Dae) are also available on [`SimpleDae`](ibex_bluesky_core.devices.simpledae.SimpleDae).
 
 ```{note}
  The `Dae` class is not intended to be used directly in scans - it is a low-level class
@@ -352,7 +345,7 @@ DAE, so all of the signals available on [`Dae`](ibex_bluesky_core.devices.dae) a
 ### Top-level signals
 
 Some DAE parameters, particularly metadata parameters, are exposed as simple signals, 
-for example [`dae.title`](ibex_bluesky_core.devices.dae) or [`dae.good_uah`](ibex_bluesky_core.devices.dae).
+for example [`dae.title`](ibex_bluesky_core.devices.dae.Dae) or [`dae.good_uah`](ibex_bluesky_core.devices.dae.Dae).
 
 These signals are directly readable and settable from plans:
 
@@ -368,26 +361,26 @@ def plan(dae: Dae):
 
 ### Period-specific signals
 
-For signals which apply to the current period, see [`dae.period`](ibex_bluesky_core.devices.dae.dae_period), which contains signals
-such as [`dae.period.good_uah`](ibex_bluesky_core.devices.dae.dae_period) (the number of good uamp-hours collected in the current period).
+For signals which apply to the current period, see [`dae.period`](ibex_bluesky_core.devices.dae.DaePeriod), which contains signals
+such as [`dae.period.good_uah`](ibex_bluesky_core.devices.dae.DaePeriod) (the number of good uamp-hours collected in the current period).
 
 
 ### Controlling the DAE directly
 
-It is possible to control the DAE directly using the signals provided by [`dae.controls`](ibex_bluesky_core.devices.dae.dae_controls).
+It is possible to control the DAE directly using the signals provided by [`dae.controls`](ibex_bluesky_core.devices.dae.DaeControls).
 
 The intention is that these signals should be used by higher-level _devices_, rather than being
 used by plans directly.
 
-For example, beginning a run is possible via [`dae.controls.begin_run.trigger()`](ibex_bluesky_core.devices.dae.dae_controls).
+For example, beginning a run is possible via [`dae.controls.begin_run.trigger()`](ibex_bluesky_core.devices.dae.DaeControls).
 
 ### Additional begin_run flags
 
 Options on `begin` (for example, beginning a run in paused mode) can be specified
-using the [`dae.controls.begin_run_ex`](ibex_bluesky_core.devices.dae.dae_controls) signal.
+using the [`dae.controls.begin_run_ex`](ibex_bluesky_core.devices.dae.DaeControls) signal.
 
 Unlike the standard `begin_run` signal, this needs to be `set()` rather than simply
-`trigger()`ed, the value on set is a combination of flags from [`BeginRunExBits`](ibex_bluesky_core.devices.dae.dae_controls.BeginRunExBits) .
+`trigger()`ed, the value on set is a combination of flags from [`BeginRunExBits`](ibex_bluesky_core.devices.dae.BeginRunExBits) .
 
 
 ### DAE Settings
@@ -397,11 +390,11 @@ configuration parameters which are available under the "experiment setup" tab in
 example wiring/detector/spectra tables, tcb settings, or vetos.
 
 The classes implemented in this way are:
-- `DaeTCBSettings` ([`dae.tcb_settings`](ibex_bluesky_core.devices.dae.dae_tcb_settings))
+- `DaeTCBSettings` ([`dae.tcb_settings`](ibex_bluesky_core.devices.dae.DaeTCBSettings))
   - Parameters which appear under the "time channels" tab in IBEX
-- `DaeSettings` ([`dae.dae_settings`](ibex_bluesky_core.devices.dae.dae_settings))
+- `DaeSettings` ([`dae.dae_settings`](ibex_bluesky_core.devices.dae.DaeSettings))
   - Parameters which appear under the "data acquisition" tab in IBEX
-- `DaePeriodSettings` ([`dae.period_settings`](ibex_bluesky_core.devices.dae.dae_period_settings)): 
+- `DaePeriodSettings` ([`dae.period_settings`](ibex_bluesky_core.devices.dae.DaePeriodSettings)): 
   - Parameters which appear under the "periods" tab in IBEX
 
 To read or change these settings from plans, use the associated dataclasses, which are
@@ -428,11 +421,11 @@ def plan(dae: Dae):
 
 ### DAE Spectra
 
-Raw spectra are provided by the [`DaeSpectra`](ibex_bluesky_core.devices.dae.dae_spectra) class. Not all spectra are automatically available
+Raw spectra are provided by the [`DaeSpectra`](ibex_bluesky_core.devices.dae.DaeSpectra) class. Not all spectra are automatically available
 on the base DAE object - user classes will define the specific set of spectra which they are
 interested in.
 
-A [`DaeSpectra`](ibex_bluesky_core.devices.dae.dae_spectra) object provides 3 arrays:
+A [`DaeSpectra`](ibex_bluesky_core.devices.dae.DaeSpectra) object provides 3 arrays:
 - `tof` (x-axis): time of flight.
 - `counts` (y-axis): number of counts
   - Suitable for summing counts
