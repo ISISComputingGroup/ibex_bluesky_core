@@ -76,6 +76,7 @@ class Dae(StandardReadable):
         self.number_of_periods: DaeCheckingSignal[int] = DaeCheckingSignal(
             int, f"{dae_prefix}NUMPERIODS"
         )
+        self.max_periods: SignalR[int] = epics_signal_r(int, f"{dae_prefix}NUMPERIODS:MAX")
 
         self.dae_settings = DaeSettings(dae_prefix)
         self.period_settings = DaePeriodSettings(dae_prefix)
