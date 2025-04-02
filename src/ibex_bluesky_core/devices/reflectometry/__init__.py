@@ -3,6 +3,7 @@
 import asyncio
 import logging
 
+from bluesky.protocols import NamedMovable
 from ophyd_async.core import (
     AsyncStatus,
     SignalR,
@@ -18,16 +19,19 @@ from ibex_bluesky_core.utils import get_pv_prefix
 logger = logging.getLogger(__name__)
 
 
-class ReflParameter(StandardReadable):
+class ReflParameter(StandardReadable, NamedMovable[float]):
     """Utility device for a reflectometry server parameter."""
 
-    def __init__(self, prefix: str, name: str, changing_timeout_s: float) -> None:
+    def __init__(
+        self, prefix: str, name: str, changing_timeout_s: float, *, has_redefine: bool = True
+    ) -> None:
         """Reflectometry server parameter.
 
         Args:
             prefix: the PV prefix.
             name: the name of the parameter.
             changing_timeout_s: seconds to wait for the CHANGING signal to go to False after a set.
+            has_redefine: whether this parameter can be redefined.
 
         """
         with self.add_children_as_readables(StandardReadableFormat.HINTED_SIGNAL):
@@ -36,7 +40,10 @@ class ReflParameter(StandardReadable):
         self.changing: SignalR[bool] = epics_signal_r(
             bool, f"{prefix}REFL_01:PARAM:{name}:CHANGING"
         )
-        self.redefine = ReflParameterRedefine(prefix=f"{prefix}REFL_01:PARAM:{name}:", name="")
+        if has_redefine:
+            self.redefine = ReflParameterRedefine(prefix=f"{prefix}REFL_01:PARAM:{name}:", name="")
+        else:
+            self.redefine = None
         self.changing_timeout = changing_timeout_s
         super().__init__(name=name)
         self.readback.set_name(name)
