@@ -346,3 +346,10 @@ def test_block_reprs():
     assert repr(BlockRw(float, block_name="bar", prefix="")) == "BlockRw(name=bar)"
     assert repr(BlockRwRbv(float, block_name="baz", prefix="")) == "BlockRwRbv(name=baz)"
     assert repr(BlockMot(block_name="qux", prefix="")) == "BlockMot(name=qux)"
+
+
+async def test_block_mot_set(mot_block):
+    set_mock_value(mot_block.user_setpoint, 10)
+    set_mock_value(mot_block.velocity, 10)
+    await mot_block.set(20)
+    get_mock_put(mot_block.user_setpoint).assert_called_once_with(20, wait=True)
