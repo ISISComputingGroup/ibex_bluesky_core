@@ -1,16 +1,14 @@
 """For IBEX Bluesky scan fitting."""
+
 import csv
 import logging
 import os
 import warnings
-from collections.abc import Callable
 from datetime import datetime
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
-import lmfit
 import numpy as np
-import numpy.typing as npt
 from bluesky.callbacks import LiveFit as _DefaultLiveFit, CallbackBase
 from bluesky.callbacks.core import make_class_safe
 from event_model import RunStart, RunStop
@@ -18,40 +16,9 @@ from event_model.documents.event import Event
 
 from ibex_bluesky_core.callbacks import get_default_output_path
 from ibex_bluesky_core.callbacks._utils import TIME, UID, get_instrument, RB, UNKNOWN_RB, DATA
+from ibex_bluesky_core.callbacks.fitting.fitting_utils import FitMethod
 
 logger = logging.getLogger(__name__)
-
-
-class FitMethod:
-    """Tell LiveFit how to fit to a scan. Has a Model function and a Guess function.
-
-    Model - Takes x values and a set of parameters to return y values.
-    Guess - Takes x and y values and returns a rough 'guess' of the original parameters.
-    """
-
-    model: lmfit.Model
-    guess: Callable[[npt.NDArray[np.float64], npt.NDArray[np.float64]], dict[str, lmfit.Parameter]]
-
-    def __init__(
-        self,
-        model: lmfit.Model | Callable[[npt.NDArray[np.float64]], npt.NDArray[np.float64]],
-        guess: Callable[
-            [npt.NDArray[np.float64], npt.NDArray[np.float64]], dict[str, lmfit.Parameter]
-        ],
-    ) -> None:
-        """Assign model and guess functions.
-
-        Args:
-            model (lmfit.Model | Callable): The model function to use.
-            guess (Callable): The guess function to use.
-
-        """
-        self.guess = guess
-
-        if callable(model):
-            self.model = lmfit.Model(model)
-        else:
-            self.model = model
 
 
 @make_class_safe(logger=logger)  # pyright: ignore (pyright doesn't understand this decorator)
