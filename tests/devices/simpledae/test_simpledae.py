@@ -14,11 +14,11 @@ from ibex_bluesky_core.devices.simpledae import (
     check_dae_strategies,
     monitor_normalising_dae,
 )
-from ibex_bluesky_core.devices.simpledae.reducers import (
+from ibex_bluesky_core.devices.simpledae._reducers import (
     GoodFramesNormalizer,
     PeriodGoodFramesNormalizer,
 )
-from ibex_bluesky_core.devices.simpledae.strategies import Controller, Reducer, Waiter
+from ibex_bluesky_core.devices.simpledae._strategies import Controller, Reducer, Waiter
 
 
 @pytest.fixture

@@ -38,11 +38,11 @@ from lmfit.model import ModelResult
 
 from ibex_bluesky_core.utils import get_pv_prefix
 from ibex_bluesky_core.devices.simpledae import SimpleDae
-from ibex_bluesky_core.devices.simpledae.controllers import PeriodPerPointController
-from ibex_bluesky_core.devices.simpledae.reducers import (
+from ibex_bluesky_core.devices.simpledae._controllers import PeriodPerPointController
+from ibex_bluesky_core.devices.simpledae._reducers import (
     PeriodSpecIntegralsReducer,
 )
-from ibex_bluesky_core.devices.simpledae.waiters import PeriodGoodFramesWaiter
+from ibex_bluesky_core.devices.simpledae._waiters import PeriodGoodFramesWaiter
 from ibex_bluesky_core.plans.reflectometry import angle_scan_plan
 
 
@@ -125,11 +125,11 @@ from bluesky.utils import Msg
 from ibex_bluesky_core.utils import get_pv_prefix
 from ibex_bluesky_core.devices.block import block_rw
 from ibex_bluesky_core.devices.simpledae import SimpleDae
-from ibex_bluesky_core.devices.simpledae.controllers import PeriodPerPointController
-from ibex_bluesky_core.devices.simpledae.reducers import (
+from ibex_bluesky_core.devices.simpledae._controllers import PeriodPerPointController
+from ibex_bluesky_core.devices.simpledae._reducers import (
     PeriodSpecIntegralsReducer,
 )
-from ibex_bluesky_core.devices.simpledae.waiters import PeriodGoodFramesWaiter
+from ibex_bluesky_core.devices.simpledae._waiters import PeriodGoodFramesWaiter
 from ibex_bluesky_core.plans.reflectometry import (
     DetMapAlignResult,
     height_and_angle_scan_plan

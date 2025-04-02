@@ -13,8 +13,8 @@ from ibex_bluesky_core.devices.simpledae import (
     RunPerPointController,
     SimpleDae,
 )
-from ibex_bluesky_core.devices.simpledae.reducers import MonitorNormalizer
-from ibex_bluesky_core.devices.simpledae.strategies import Controller, Waiter
+from ibex_bluesky_core.devices.simpledae._reducers import MonitorNormalizer
+from ibex_bluesky_core.devices.simpledae._strategies import Controller, Waiter
 from ibex_bluesky_core.fitting import Gaussian
 from ibex_bluesky_core.plans import (
     adaptive_scan,

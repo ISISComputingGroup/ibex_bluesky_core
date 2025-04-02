@@ -11,20 +11,19 @@ from lmfit.models import PolynomialModel
 from numpy import polynomial as p
 from numpy import typing as npt
 
-
 __all__ = [
-    "FitMethod",
-    "Fit",
-    "Gaussian",
-    "Linear",
-    "SlitScan",
-    "Lorentzian",
     "ERF",
     "ERFC",
-    "Trapezoid",
-    "TopHat",
-    "Polynomial",
     "DampedOsc",
+    "Fit",
+    "FitMethod",
+    "Gaussian",
+    "Linear",
+    "Lorentzian",
+    "Polynomial",
+    "SlitScan",
+    "TopHat",
+    "Trapezoid",
 ]
 
 

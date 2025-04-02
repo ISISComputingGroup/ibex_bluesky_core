@@ -24,10 +24,9 @@ suitable; instead the [`Dae`](ibex_bluesky_core.devices.dae.dae.Dae) class shoul
 
 from ibex_bluesky_core.utils import get_pv_prefix
 from ibex_bluesky_core.devices.simpledae import SimpleDae
-from ibex_bluesky_core.devices.simpledae.controllers import RunPerPointController
-from ibex_bluesky_core.devices.simpledae.waiters import GoodFramesWaiter
-from ibex_bluesky_core.devices.simpledae.reducers import GoodFramesNormalizer
-
+from ibex_bluesky_core.devices.simpledae._controllers import RunPerPointController
+from ibex_bluesky_core.devices.simpledae._waiters import GoodFramesWaiter
+from ibex_bluesky_core.devices.simpledae._reducers import GoodFramesNormalizer
 
 prefix = get_pv_prefix()
 # One DAE run for each scan point, save the runs after each point.
@@ -36,15 +35,15 @@ controller = RunPerPointController(save_run=True)
 waiter = GoodFramesWaiter(500)
 # Sum spectra 1..99 inclusive, then normalize by total good frames
 reducer = GoodFramesNormalizer(
-    prefix=prefix,
-    detector_spectra=[i for i in range(1, 100)],
+  prefix=prefix,
+  detector_spectra=[i for i in range(1, 100)],
 )
 
 dae = SimpleDae(
-    prefix=prefix,
-    controller=controller,
-    waiter=waiter,
-    reducer=reducer,
+  prefix=prefix,
+  controller=controller,
+  waiter=waiter,
+  reducer=reducer,
 )
 
 # Can give signals user-friendly names if desired
@@ -58,10 +57,9 @@ reducer.intensity.set_name("normalized counts")
 
 from ibex_bluesky_core.utils import get_pv_prefix
 from ibex_bluesky_core.devices.simpledae import SimpleDae
-from ibex_bluesky_core.devices.simpledae.controllers import PeriodPerPointController
-from ibex_bluesky_core.devices.simpledae.waiters import PeriodGoodFramesWaiter
-from ibex_bluesky_core.devices.simpledae.reducers import PeriodGoodFramesNormalizer
-
+from ibex_bluesky_core.devices.simpledae._controllers import PeriodPerPointController
+from ibex_bluesky_core.devices.simpledae._waiters import PeriodGoodFramesWaiter
+from ibex_bluesky_core.devices.simpledae._reducers import PeriodGoodFramesNormalizer
 
 prefix = get_pv_prefix()
 # One DAE period for each scan point, save the runs after the scan.
@@ -70,15 +68,15 @@ controller = PeriodPerPointController(save_run=True)
 waiter = PeriodGoodFramesWaiter(500)
 # Sum spectra 1..99 inclusive, then normalize by period good frames
 reducer = PeriodGoodFramesNormalizer(
-    prefix=prefix,
-    detector_spectra=[i for i in range(1, 100)],
+  prefix=prefix,
+  detector_spectra=[i for i in range(1, 100)],
 )
 
 dae = SimpleDae(
-    prefix=prefix,
-    controller=controller,
-    waiter=waiter,
-    reducer=reducer,
+  prefix=prefix,
+  controller=controller,
+  waiter=waiter,
+  reducer=reducer,
 )
 ```
 
@@ -360,7 +358,8 @@ These signals are directly readable and settable from plans:
 
 ```python
 import bluesky.plan_stubs as bps
-from ibex_bluesky_core.devices.dae.dae import Dae
+from ibex_bluesky_core.devices.dae import Dae
+
 
 def plan(dae: Dae):
     current_title = yield from bps.rd(dae.title)
@@ -410,19 +409,20 @@ suffixed with `Data` (e.g. `DaeSettingsData` is the dataclass corresponding to `
 
 ```python
 import bluesky.plan_stubs as bps
-from ibex_bluesky_core.devices.dae.dae import Dae
-from ibex_bluesky_core.devices.dae.dae_settings import DaeSettingsData
+from ibex_bluesky_core.devices.dae import Dae
+from ibex_bluesky_core.devices.dae._settings import DaeSettingsData
+
 
 def plan(dae: Dae):
-    # On read, settings are returned together as an instance of a dataclass.
-    current_settings: DaeSettingsData = yield from bps.rd(dae.dae_settings)
-    wiring_table: str = current_settings.wiring_filepath
+  # On read, settings are returned together as an instance of a dataclass.
+  current_settings: DaeSettingsData = yield from bps.rd(dae.dae_settings)
+  wiring_table: str = current_settings.wiring_filepath
 
-    # On set, any unprovided settings are left unchanged.
-    yield from bps.mv(dae.dae_settings, DaeSettingsData(
-        wiring_filepath="a_new_wiring_table.dat",
-        spectra_filepath="a_new_spectra_table.dat"
-    ))
+  # On set, any unprovided settings are left unchanged.
+  yield from bps.mv(dae.dae_settings, DaeSettingsData(
+    wiring_filepath="a_new_wiring_table.dat",
+    spectra_filepath="a_new_spectra_table.dat"
+  ))
 ```
 
 
