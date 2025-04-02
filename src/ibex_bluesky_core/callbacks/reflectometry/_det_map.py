@@ -32,7 +32,7 @@ from bluesky.callbacks.stream import LiveDispatcher
 from event_model import Event, EventDescriptor, RunStart, RunStop
 from matplotlib.axes import Axes
 
-from ibex_bluesky_core.callbacks.plotting import show_plot
+from ibex_bluesky_core.callbacks._plotting import show_plot
 
 logger = logging.getLogger(__name__)
 
