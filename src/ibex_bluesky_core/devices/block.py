@@ -6,14 +6,24 @@ from collections.abc import Callable
 from dataclasses import dataclass
 from typing import Generic, TypeVar
 
-from bluesky.protocols import Locatable, Location, NamedMovable, Triggerable
+from bluesky.protocols import (
+    HasName,
+    Locatable,
+    Location,
+    Movable,
+    NamedMovable,
+    Triggerable,
+)
 from ophyd_async.core import (
+    CALCULATE_TIMEOUT,
     AsyncStatus,
+    CalculatableTimeout,
     SignalDatatype,
     SignalR,
     SignalRW,
     StandardReadable,
     StandardReadableFormat,
+    WatchableAsyncStatus,
     observe_value,
     wait_for_value,
 )
@@ -39,6 +49,7 @@ __all__ = [
     "block_r",
     "block_rw",
     "block_rw_rbv",
+    "block_w",
 ]
 
 # When using the global moving flag, we want to give IOCs enough time to update the
@@ -173,6 +184,7 @@ class BlockRw(BlockR[T], NamedMovable[T]):
         block_name: str,
         *,
         write_config: BlockWriteConfig[T] | None = None,
+        sp_suffix: str = ":SP",
     ) -> None:
         """Create a new read-write block.
 
@@ -193,9 +205,13 @@ class BlockRw(BlockR[T], NamedMovable[T]):
             prefix: the current instrument's PV prefix
             block_name: the name of the block
             write_config: Settings which control how this device will set the underlying PVs
+            sp_suffix: Suffix to append to PV for the setpoint. Defaults to ":SP" but can
+                be set to empty string to read and write to exactly the same PV.
 
         """
-        self.setpoint: SignalRW[T] = epics_signal_rw(datatype, f"{prefix}CS:SB:{block_name}:SP")
+        self.setpoint: SignalRW[T] = epics_signal_rw(
+            datatype, f"{prefix}CS:SB:{block_name}{sp_suffix}"
+        )
 
         self._write_config: BlockWriteConfig[T] = write_config or BlockWriteConfig()
 
@@ -305,7 +321,7 @@ class BlockRwRbv(BlockRw[T], Locatable[T]):
         }
 
 
-class BlockMot(Motor):
+class BlockMot(Motor, Movable[float], HasName):
     """Device representing an IBEX block pointing at a motor."""
 
     def __init__(
@@ -363,6 +379,15 @@ class BlockMot(Motor):
         """Debug representation of this block."""
         return f"{self.__class__.__name__}(name={self.name})"
 
+    def set(  # pyright: ignore
+        self, value: float, timeout: CalculatableTimeout = CALCULATE_TIMEOUT
+    ) -> WatchableAsyncStatus[float]:
+        """Pass through set to superclass.
+
+        This is needed so that type-checker correctly understands the type of set.
+        """
+        return super().set(value, timeout)
+
 
 def block_r(datatype: type[T], block_name: str) -> BlockR[T]:
     """Get a local read-only block for the current instrument.
@@ -373,14 +398,38 @@ def block_r(datatype: type[T], block_name: str) -> BlockR[T]:
 
 
 def block_rw(
-    datatype: type[T], block_name: str, *, write_config: BlockWriteConfig[T] | None = None
+    datatype: type[T],
+    block_name: str,
+    *,
+    write_config: BlockWriteConfig[T] | None = None,
+    sp_suffix: str = ":SP",
 ) -> BlockRw[T]:
     """Get a local read-write block for the current instrument.
 
     See documentation of BlockRw for more information.
     """
     return BlockRw(
-        datatype=datatype, prefix=get_pv_prefix(), block_name=block_name, write_config=write_config
+        datatype=datatype,
+        prefix=get_pv_prefix(),
+        block_name=block_name,
+        write_config=write_config,
+        sp_suffix=sp_suffix,
+    )
+
+
+def block_w(
+    datatype: type[T], block_name: str, *, write_config: BlockWriteConfig[T] | None = None
+) -> BlockRw[T]:
+    """Get a write-only block for the current instrument.
+
+    This is actually just :obj:`ibex_bluesky_core.devices.block.BlockRw` but with no SP suffix.
+    """
+    return BlockRw(
+        datatype=datatype,
+        prefix=get_pv_prefix(),
+        block_name=block_name,
+        write_config=write_config,
+        sp_suffix="",
     )
 
 

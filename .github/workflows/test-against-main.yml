@@ -1,4 +1,4 @@
-name: test-against-main
+name: future-dependency-compatibility-test
 on:
   schedule:
     - cron: "0 0 * * *"

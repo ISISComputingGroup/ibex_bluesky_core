@@ -65,18 +65,15 @@ class ReflParameter(StandardReadable):
 class ReflParameterRedefine(StandardReadable):
     """Utility device for redefining a reflectometry server parameter."""
 
-    def __init__(self, prefix: str, name: str, changed_timeout_s: float = 5.0) -> None:
+    def __init__(self, prefix: str, name: str) -> None:
         """Reflectometry server parameter redefinition.
 
         Args:
             prefix: the reflectometry parameter full address.
             name: the name of the parameter redefinition.
-            changed_timeout_s: seconds to wait for the CHANGED signal to go True after a set.
 
         """
-        self.changed: SignalR[bool] = epics_signal_r(bool, f"{prefix}DEFINE_POS_CHANGED")
         self.define_pos_sp = epics_signal_w(float, f"{prefix}DEFINE_POS_SP")
-        self.changed_timeout = changed_timeout_s
         super().__init__(name)
 
     @AsyncStatus.wrap
@@ -89,12 +86,10 @@ class ReflParameterRedefine(StandardReadable):
         """
         logger.info("setting %s to %s", self.define_pos_sp.source, value)
         await self.define_pos_sp.set(value, wait=True, timeout=None)
-        logger.info("waiting for %s", self.changed.source)
-        await asyncio.sleep(0.1)
-        async for chg in observe_value(self.changed, done_timeout=self.changed_timeout):
-            logger.debug("%s: %s", self.changed.source, chg)
-            if chg:
-                break
+        logger.info("waiting for 1s for redefine to finish")
+        # The Reflectometry server has a CHANGED PV for a redefine, but it doesn't actually
+        # give a monitor update, so just wait an arbitrary length of time for it to be done.
+        await asyncio.sleep(1.0)
 
 
 def refl_parameter(name: str, changing_timeout_s: float = 60.0) -> ReflParameter:
