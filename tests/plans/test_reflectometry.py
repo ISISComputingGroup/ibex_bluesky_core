@@ -328,3 +328,28 @@ def test_that_if_problem_found_and_type_random_then_re_ask(RE, prefix, simpledae
         )
 
         assert scan.call_count == 2
+
+
+async def test_plan_exits_if_three_selected_when_optimising_axis(
+    RE, prefix, simpledae, monkeypatch
+):
+    with (
+        patch("ibex_bluesky_core.devices.reflectometry.get_pv_prefix", return_value=prefix),
+        patch(
+            "ibex_bluesky_core.plans.reflectometry._autoalign.scan",
+            side_effect=[_fake_scan(), _fake_scan()],
+        ),
+    ):
+        param = ReflParameter(prefix=prefix, name="S1VG", changing_timeout_s=60)
+        await param.connect(mock=True)
+        monkeypatch.setattr("builtins.input", lambda str: "3")
+        r = RE(
+            optimise_axis_against_intensity(
+                simpledae,
+                alignment_param=param,
+                rel_scan_ranges=[10.0],
+                fit_method=SlitScan().fit(),
+                fit_param="",
+            )
+        )
+        assert r.plan_result is None
