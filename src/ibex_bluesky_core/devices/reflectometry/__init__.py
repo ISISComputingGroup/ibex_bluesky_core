@@ -3,6 +3,7 @@
 import asyncio
 import logging
 
+from bluesky.protocols import NamedMovable
 from ophyd_async.core import (
     AsyncStatus,
     SignalR,
@@ -21,7 +22,9 @@ logger = logging.getLogger(__name__)
 class ReflParameter(StandardReadable, NamedMovable[float]):
     """Utility device for a reflectometry server parameter."""
 
-    def __init__(self, prefix: str, name: str, changing_timeout_s: float, *, has_redefine: bool = True) -> None:
+    def __init__(
+        self, prefix: str, name: str, changing_timeout_s: float, *, has_redefine: bool = True
+    ) -> None:
         """Reflectometry server parameter.
 
         Args:
