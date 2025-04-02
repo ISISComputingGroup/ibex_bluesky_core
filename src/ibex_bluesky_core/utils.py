@@ -7,6 +7,8 @@ from typing import Any, Protocol
 
 from bluesky.protocols import NamedMovable, Readable
 
+__all__ = ["centred_pixel", "get_pv_prefix", "NamedReadableAndMovable"]
+
 
 def centred_pixel(centre: int, pixel_range: int) -> list[int]:
     """Given a centre and range, return a contiguous range of pixels around the centre, inclusive.

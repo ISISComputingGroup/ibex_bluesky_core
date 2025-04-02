@@ -12,6 +12,22 @@ from numpy import polynomial as p
 from numpy import typing as npt
 
 
+__all__ = [
+    "FitMethod",
+    "Fit",
+    "Gaussian",
+    "Linear",
+    "SlitScan",
+    "Lorentzian",
+    "ERF",
+    "ERFC",
+    "Trapezoid",
+    "TopHat",
+    "Polynomial",
+    "DampedOsc",
+]
+
+
 class FitMethod:
     """Tell LiveFit how to fit to a scan. Has a Model function and a Guess function.
 

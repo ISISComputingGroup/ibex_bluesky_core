@@ -18,6 +18,8 @@ from ibex_bluesky_core.utils import get_pv_prefix
 
 logger = logging.getLogger(__name__)
 
+__all__ = ["ReflParameter", "ReflParameterRedefine", "refl_parameter"]
+
 
 class ReflParameter(StandardReadable, NamedMovable[float]):
     """Utility device for a reflectometry server parameter."""
