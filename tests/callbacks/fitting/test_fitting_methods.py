@@ -9,7 +9,7 @@ import pytest
 import scipy.signal as scsi
 
 from ibex_bluesky_core.callbacks.fitting import LiveFit
-from ibex_bluesky_core.callbacks.fitting.fitting_utils import (
+from ibex_bluesky_core.fitting import (
     ERF,
     ERFC,
     DampedOsc,

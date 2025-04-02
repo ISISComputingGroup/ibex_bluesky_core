@@ -79,7 +79,7 @@ When only using the standard fits provided by [`ibex_bluesky_core`](ibex_bluesky
 
 ```py
 from bluesky.callbacks import LiveFitPlot
-from ibex_bluesky_core.callbacks.fitting.fitting_utils import [FIT]
+from ibex_bluesky_core.callbacks.fitting import [FIT]
 
 # Pass [FIT].fit() to the first parameter of LiveFit
 lf = LiveFit([FIT].fit(), y="y_signal", x="x_signal", update_every=0.5)
@@ -156,11 +156,11 @@ This means that aslong as the parameters returned from the guess function match 
 
 ```py
 import lmfit
-from ibex_bluesky_core.callbacks.fitting.fitting_utils import Linear
+from ibex_bluesky_core.fitting import Linear
+
 
 def different_model(x: float, c1: float, c0: float) -> float:
-    
-    return c1 * x + c0 ** 2 # y = mx + (c ** 2)
+  return c1 * x + c0 ** 2  # y = mx + (c ** 2)
 
 
 fit_method = FitMethod(different_model, Linear.guess())
@@ -174,19 +174,20 @@ lf = LiveFit(fit_method, y="y_signal", x="x_signal", update_every=0.5)
 
 ```py
 import lmfit
-from ibex_bluesky_core.callbacks.fitting.fitting_utils import Linear
+from ibex_bluesky_core.fitting import Linear
+
 
 # This Guessing. function isn't very good because it's return values don't change on the data already collected in the Bluesky run
 # It always guesses that the linear function is y = x
 
 def different_guess(x: float, c1: float, c0: float) -> float:
-    
-    init_guess = {
-        "c1": lmfit.Parameter("c1", 1), # gradient
-        "c0": lmfit.Parameter("c0", 0), # y - intercept
-    }
+  init_guess = {
+    "c1": lmfit.Parameter("c1", 1),  # gradient
+    "c0": lmfit.Parameter("c0", 0),  # y - intercept
+  }
 
-    return init_guess
+  return init_guess
+
 
 fit_method = FitMethod(Linear.model(), different_guess)
 # Uses the standard linear model and the user defined Guessing. function

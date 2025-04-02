@@ -9,8 +9,8 @@ from bluesky.utils import Msg
 from lmfit.model import ModelResult
 
 from ibex_bluesky_core.callbacks import ISISCallbacks
-from ibex_bluesky_core.callbacks.fitting import FitMethod
 from ibex_bluesky_core.devices.simpledae import SimpleDae
+from ibex_bluesky_core.fitting import FitMethod
 from ibex_bluesky_core.plan_stubs import prompt_user_for_choice
 from ibex_bluesky_core.plans import scan
 

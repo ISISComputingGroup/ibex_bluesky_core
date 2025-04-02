@@ -21,8 +21,8 @@ from ibex_bluesky_core.callbacks.file_logger import (
     HumanReadableFileCallback,
 )
 from ibex_bluesky_core.callbacks.fitting import LiveFit, LiveFitLogger
-from ibex_bluesky_core.callbacks import FitMethod
 from ibex_bluesky_core.callbacks.plotting import LivePlot
+from ibex_bluesky_core.fitting import FitMethod
 
 logger = logging.getLogger(__name__)
 

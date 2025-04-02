@@ -9,9 +9,9 @@ from bluesky.plans import scan
 from ophyd_async.core import soft_signal_rw
 
 from ibex_bluesky_core import run_engine
-from ibex_bluesky_core.callbacks.fitting import FitMethod, LiveFit
-from ibex_bluesky_core.callbacks.fitting.fitting_utils import Linear
 from ibex_bluesky_core.callbacks import LiveFitLogger
+from ibex_bluesky_core.callbacks.fitting import LiveFit
+from ibex_bluesky_core.fitting import FitMethod, Linear
 
 time = 1728049423.5860472
 
@@ -29,8 +29,8 @@ def test_after_fitting_callback_writes_to_file_successfully_no_y_uncertainty(
     lf = LiveFit(Linear.fit(), y="invariant", x="motor", update_every=50)
     lfl = LiveFitLogger(lf, y="invariant", x="motor", postfix=postfix, output_dir=filepath)
     with (
-        patch("ibex_bluesky_core.callbacks.fitting.livefit_logger.open", m),
-        patch("ibex_bluesky_core.callbacks.fitting.livefit_logger.os.makedirs"),
+        patch("ibex_bluesky_core.callbacks.fitting.open", m),
+        patch("ibex_bluesky_core.callbacks.fitting.os.makedirs"),
     ):
         with patch("time.time", MagicMock(return_value=time)):
             RE(scan([invariant], mot, -1, 1, 3), [lf, lfl], rb_number="0")
@@ -63,8 +63,8 @@ def test_fitting_callback_handles_no_rb_number_save(
     lf = LiveFit(Linear.fit(), y="invariant", x="motor", update_every=50)
     lfl = LiveFitLogger(lf, y="invariant", x="motor", postfix=postfix, output_dir=filepath)
     with (
-        patch("ibex_bluesky_core.callbacks.fitting.livefit_logger.open", m),
-        patch("ibex_bluesky_core.callbacks.fitting.livefit_logger.os.makedirs"),
+        patch("ibex_bluesky_core.callbacks.fitting.open", m),
+        patch("ibex_bluesky_core.callbacks.fitting.os.makedirs"),
     ):
         with patch("time.time", MagicMock(return_value=time)):
             RE(scan([invariant], mot, -1, 1, 3), [lf, lfl])
@@ -92,8 +92,8 @@ def test_after_fitting_callback_writes_to_file_successfully_with_y_uncertainty(
     )
 
     with (
-        patch("ibex_bluesky_core.callbacks.fitting.livefit_logger.open", m),
-        patch("ibex_bluesky_core.callbacks.fitting.livefit_logger.os.makedirs"),
+        patch("ibex_bluesky_core.callbacks.fitting.open", m),
+        patch("ibex_bluesky_core.callbacks.fitting.os.makedirs"),
     ):
         with patch("time.time", MagicMock(return_value=time)):
             RE(scan([invariant, uncertainty], mot, -1, 1, 3), [lf, lfl], rb_number="0")
@@ -129,8 +129,8 @@ def test_file_not_written_if_no_fitting_result(RE: run_engine.RunEngine):
     lfl = LiveFitLogger(lf, y="invariant", x="motor", postfix=postfix, output_dir=filepath)
 
     with (
-        patch("ibex_bluesky_core.callbacks.fitting.livefit_logger.open", m),
-        patch("ibex_bluesky_core.callbacks.fitting.livefit_logger.os.makedirs"),
+        patch("ibex_bluesky_core.callbacks.fitting.open", m),
+        patch("ibex_bluesky_core.callbacks.fitting.os.makedirs"),
     ):
         RE(scan([invariant], mot, -1, 1, 3), [lf, lfl], rb_number="0")
 

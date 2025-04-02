@@ -96,7 +96,7 @@ To determine what to do in the event of a value being "invalid" you can use a pl
 
 ```python
 from ibex_bluesky_core.plans.reflectometry import optimise_axis_against_intensity
-from ibex_bluesky_core.callbacks.fitting.fitting_utils import SlitScan
+from ibex_bluesky_core.fitting import SlitScan
 from typing import Generator
 from bluesky.utils import Msg
 import bluesky.plan_stubs as bps
@@ -107,6 +107,7 @@ def problem_found_plan() -> Generator[Msg, None, None]:
     # by yielding from bps.null()
     yield from bps.null()
     print("There was a problem - oh no!")
+
 
 def plan():
     yield from optimise_axis_against_intensity(

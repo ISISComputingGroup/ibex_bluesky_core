@@ -9,14 +9,15 @@ from pathlib import Path
 from zoneinfo import ZoneInfo
 
 import numpy as np
-from bluesky.callbacks import LiveFit as _DefaultLiveFit, CallbackBase
+from bluesky.callbacks import CallbackBase
+from bluesky.callbacks import LiveFit as _DefaultLiveFit
 from bluesky.callbacks.core import make_class_safe
 from event_model import RunStart, RunStop
 from event_model.documents.event import Event
 
 from ibex_bluesky_core.callbacks import get_default_output_path
-from ibex_bluesky_core.callbacks._utils import TIME, UID, get_instrument, RB, UNKNOWN_RB, DATA
-from ibex_bluesky_core.callbacks.fitting.fitting_utils import FitMethod
+from ibex_bluesky_core.callbacks._utils import DATA, RB, TIME, UID, UNKNOWN_RB, get_instrument
+from ibex_bluesky_core.fitting import FitMethod
 
 logger = logging.getLogger(__name__)
 
