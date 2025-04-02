@@ -1,4 +1,4 @@
-# Variance addition to counts data
+# 5. Variance addition to counts data
 
 ## Status
 
@@ -54,5 +54,5 @@ The consensus was to go with Option D.
 
 - Option A will cause real-life scans to crash in low counts regions.
 - Option B involves `NaN`s, which have many surprising floating-point characteristics and are highly likely to be a source of future bugs.
-- Option D was preferred to option C by scientists present.
+- Option D was preferred to option C by scientists present, because it is continuous.
 - Option E causes surprising results and/or crashes downstream, for example fitting may consider points with zero uncertainty to have "infinite" weight, therefore effectively disregarding all other data.

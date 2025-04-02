@@ -1,4 +1,4 @@
-# Use `scipp`
+# 4. Use `scipp`
 
 ## Status
 
