@@ -21,7 +21,7 @@ and the counts observed on that detector pixel - with the aim of finding the ang
 occurs.
 
 This plan returns the result of the angle fit, or `None` if the fit failed. The model used is a 
-{py:obj}`Gaussian<ibex_bluesky_core.callbacks.fitting.fitting_utils.Gaussian>`.
+{py:obj}`Gaussian<ibex_bluesky_core.fitting.Gaussian>`.
 
 The following is a full example of how {py:obj}`angle_scan_plan<ibex_bluesky_core.plans.reflectometry.angle_scan_plan>`
 may be called, configuring an appropriate {py:obj}`SimpleDae<ibex_bluesky_core.devices.simpledae.SimpleDae>`.
@@ -107,7 +107,7 @@ This plan returns a typed dictionary, {py:obj}`DetMapAlignResult<ibex_bluesky_co
 - `"height_fit"`: the result of the height fit, or `None` if the fit failed.
 
 Both the height & angle data are fitted using two independent
-{py:obj}`Gaussian<ibex_bluesky_core.callbacks.fitting.fitting_utils.Gaussian>` models.
+{py:obj}`Gaussian<ibex_bluesky_core.fitting.Gaussian>` models.
 
 The following is a full example of how {py:obj}`angle_scan_plan<ibex_bluesky_core.plans.reflectometry.height_and_angle_scan_plan>`
 may be called, configuring an appropriate {py:obj}`SimpleDae<ibex_bluesky_core.devices.simpledae.SimpleDae>` and a
