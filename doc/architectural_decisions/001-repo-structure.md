@@ -26,10 +26,11 @@ Superseded by [ADR 6](006-where-to-put-code.md).
 
 The core repository will not depend on [`genie_python`](https://github.com/isiscomputinggroup/genie), so that other
 groups at RAL can use this repository. The [uktena](https://github.com/isiscomputinggroup/uktena) python *distribution* 
-depends on this repository.
+includes this repository as one of its included libraries.
 
 This `ibex_bluesky_core` repository is analogous to a similar repo, 
-[dodal](https://github.com/diamondlightsource/dodal), being used at Diamond Light Source.
+[dodal](https://github.com/diamondlightsource/dodal), being used at Diamond Light Source, or
+[apstools](https://github.com/BCDA-APS/apstools), being used at the Advanced Photon Source.
 
 ## Consequences
 
