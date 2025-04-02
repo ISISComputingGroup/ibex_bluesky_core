@@ -155,7 +155,7 @@ async def test_redefine_refl_parameter(RE):
 
     RE(redefine_refl_parameter(param, 42.0))
 
-    get_mock_put(param.redefine.define_pos_sp).assert_called_once_with(42.0, wait=True)
+    get_mock_put(param.redefine.define_pos_sp).assert_called_once_with(42.0, wait=True)  # pyright: ignore [reportOptionalMemberAccess]
 
 
 async def test_raises_when_attempting_to_redefine_refl_parameter_with_no_redefine(RE):
