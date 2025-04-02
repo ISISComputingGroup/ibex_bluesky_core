@@ -19,9 +19,17 @@ from ibex_bluesky_core.devices.simpledae._reducers import (
     GoodFramesNormalizer,
     MonitorNormalizer,
     PeriodGoodFramesNormalizer,
+    PeriodSpecIntegralsReducer,
     ScalarNormalizer,
+    tof_bounded_spectra,
+    wavelength_bounded_spectra,
 )
-from ibex_bluesky_core.devices.simpledae._strategies import Controller, Reducer, Waiter
+from ibex_bluesky_core.devices.simpledae._strategies import (
+    Controller,
+    ProvidesExtraReadables,
+    Reducer,
+    Waiter,
+)
 from ibex_bluesky_core.devices.simpledae._waiters import (
     GoodFramesWaiter,
     GoodUahWaiter,
@@ -35,6 +43,7 @@ from ibex_bluesky_core.utils import get_pv_prefix
 logger = logging.getLogger(__name__)
 
 __all__ = [
+    "Controller",
     "GoodFramesNormalizer",
     "GoodFramesWaiter",
     "GoodUahWaiter",
@@ -43,13 +52,19 @@ __all__ = [
     "PeriodGoodFramesNormalizer",
     "PeriodGoodFramesWaiter",
     "PeriodPerPointController",
+    "PeriodSpecIntegralsReducer",
+    "ProvidesExtraReadables",
+    "Reducer",
     "RunPerPointController",
     "ScalarNormalizer",
     "SimpleDae",
     "SimpleWaiter",
     "TimeWaiter",
+    "Waiter",
     "check_dae_strategies",
     "monitor_normalising_dae",
+    "tof_bounded_spectra",
+    "wavelength_bounded_spectra",
 ]
 
 TController_co = TypeVar("TController_co", bound="Controller", default="Controller", covariant=True)
