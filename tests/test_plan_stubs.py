@@ -155,7 +155,20 @@ async def test_redefine_refl_parameter(RE):
 
     RE(redefine_refl_parameter(param, 42.0))
 
-    get_mock_put(param.redefine.define_pos_sp).assert_called_once_with(42.0, wait=True)
+    get_mock_put(param.redefine.define_pos_sp).assert_called_once_with(42.0, wait=True)  # pyright: ignore [reportOptionalMemberAccess]
+
+
+async def test_raises_when_attempting_to_redefine_refl_parameter_with_no_redefine(RE):
+    param = ReflParameter(
+        prefix="", name="some_refl_parameter_no_redefine", changing_timeout_s=1, has_redefine=False
+    )
+    await param.connect(mock=True)
+    with pytest.raises(
+        ValueError,
+        match=r"Parameter some_refl_parameter_no_redefine"
+        r" cannot be redefined.",
+    ):
+        RE(redefine_refl_parameter(param, 42.0))
 
 
 def test_get_user_input(RE):
