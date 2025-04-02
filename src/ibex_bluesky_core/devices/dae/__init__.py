@@ -18,16 +18,32 @@ from ophyd_async.core import (
 from ophyd_async.epics.core import epics_signal_r, epics_signal_rw, epics_signal_w
 
 from ibex_bluesky_core.devices import isis_epics_signal_rw
-from ibex_bluesky_core.devices.dae._controls import DaeControls
+from ibex_bluesky_core.devices.dae._controls import BeginRunEx, BeginRunExBits, DaeControls
 from ibex_bluesky_core.devices.dae._event_mode import DaeEventMode
 from ibex_bluesky_core.devices.dae._monitor import DaeMonitor
 from ibex_bluesky_core.devices.dae._period import DaePeriod
-from ibex_bluesky_core.devices.dae._period_settings import DaePeriodSettings
-from ibex_bluesky_core.devices.dae._settings import DaeSettings
+from ibex_bluesky_core.devices.dae._period_settings import (
+    DaePeriodSettings,
+    DaePeriodSettingsData,
+    PeriodSource,
+    PeriodType,
+    SinglePeriodSettings,
+)
+from ibex_bluesky_core.devices.dae._settings import DaeSettings, DaeSettingsData, DaeTimingSource
 from ibex_bluesky_core.devices.dae._spectra import DaeSpectra
-from ibex_bluesky_core.devices.dae._tcb_settings import DaeTCBSettings
+from ibex_bluesky_core.devices.dae._tcb_settings import (
+    DaeTCBSettings,
+    DaeTCBSettingsData,
+    TCBCalculationMethod,
+    TCBTimeUnit,
+    TimeRegime,
+    TimeRegimeMode,
+    TimeRegimeRow,
+)
 
 __all__ = [
+    "BeginRunEx",
+    "BeginRunExBits",
     "Dae",
     "DaeCheckingSignal",
     "DaeControls",
@@ -35,10 +51,22 @@ __all__ = [
     "DaeMonitor",
     "DaePeriod",
     "DaePeriodSettings",
+    "DaePeriodSettingsData",
     "DaeSettings",
+    "DaeSettingsData",
     "DaeSpectra",
     "DaeTCBSettings",
+    "DaeTCBSettingsData",
+    "DaeTimingSource",
+    "PeriodSource",
+    "PeriodType",
     "RunstateEnum",
+    "SinglePeriodSettings",
+    "TCBCalculationMethod",
+    "TCBTimeUnit",
+    "TimeRegime",
+    "TimeRegimeMode",
+    "TimeRegimeRow",
 ]
 
 T = TypeVar("T", bound=SignalDatatype)
