@@ -31,7 +31,7 @@ def my_plan():
 ## `redefine_refl_parameter`
 
 The {py:obj}`ibex_bluesky_core.plan_stubs.redefine_refl_parameter` plan stub can be used to redefine the current
-position of a {py:obj}`ibex_bluesky_core.devices.reflectometry.ReflParameter` to a new value.
+position of a {py:obj}`ibex_bluesky_core.devices.reflectometry.ReflParameter` to a new value. Note that some reflectometry parameters ie. `Theta` cannot be redefined, so these must be constructed with `has_redefine=False`. This plan stub will handle this case and raise an error if a user tries to redefine it. 
 
 This plan stub has an identical API to that of the {py:obj}`ibex_bluesky_core.plan_stubs.redefine_motor` plan stub
 described above, but operates on a reflectometry parameter rather than a motor.
