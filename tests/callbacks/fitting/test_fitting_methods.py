@@ -8,7 +8,7 @@ import numpy.typing as npt
 import pytest
 import scipy.signal as scsi
 
-from ibex_bluesky_core.callbacks.fitting import LiveFit
+from ibex_bluesky_core.callbacks._fitting import LiveFit
 from ibex_bluesky_core.fitting import (
     ERF,
     ERFC,

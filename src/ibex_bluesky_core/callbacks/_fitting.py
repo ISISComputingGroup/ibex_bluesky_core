@@ -15,8 +15,15 @@ from bluesky.callbacks.core import make_class_safe
 from event_model import RunStart, RunStop
 from event_model.documents.event import Event
 
-from ibex_bluesky_core.callbacks import get_default_output_path
-from ibex_bluesky_core.callbacks._utils import DATA, RB, TIME, UID, UNKNOWN_RB, get_instrument
+from ibex_bluesky_core.callbacks._utils import (
+    DATA,
+    RB,
+    TIME,
+    UID,
+    UNKNOWN_RB,
+    get_default_output_path,
+    get_instrument,
+)
 from ibex_bluesky_core.fitting import FitMethod
 
 logger = logging.getLogger(__name__)
