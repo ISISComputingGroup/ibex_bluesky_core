@@ -11,7 +11,7 @@ from ophyd_async.core import soft_signal_rw
 from ibex_bluesky_core import run_engine
 from ibex_bluesky_core.callbacks.fitting import FitMethod, LiveFit
 from ibex_bluesky_core.callbacks.fitting.fitting_utils import Linear
-from ibex_bluesky_core.callbacks.fitting.livefit_logger import LiveFitLogger
+from ibex_bluesky_core.callbacks import LiveFitLogger
 
 time = 1728049423.5860472
 
