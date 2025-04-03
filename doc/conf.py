@@ -29,7 +29,7 @@ nitpick_ignore_regex = [
     ("py:obj", r"^.*\.T.*_co$"),
 ]
 
-myst_enable_extensions = ["dollarmath", "strikethrough"]
+myst_enable_extensions = ["dollarmath", "strikethrough", "colon_fence"]
 suppress_warnings = ["myst.strikethrough"]
 
 extensions = [
