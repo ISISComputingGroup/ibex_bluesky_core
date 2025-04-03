@@ -364,7 +364,7 @@ can stall the `RunEngine`'s internal event loop, break keyboard-interrupts, and 
 functionality instead - for example:
 - [`yield from bps.sleep()`](https://blueskyproject.io/bluesky/main/generated/bluesky.plan_stubs.sleep.html#bluesky.plan_stubs.sleep) instead of `time.sleep()`
 - [`yield from bps.mv(block_object, value)`](https://blueskyproject.io/bluesky/main/generated/bluesky.plan_stubs.mv.html#bluesky.plan_stubs.mv) instead of `g.cset(block_name, value)`
-- [`value = yield from bps.rd(block_object)`](https://blueskyproject.io/bluesky/main/generated/bluesky.plan_stubs.rd.html#bluesky.plan_stubs.rd) instead of `g.cget(block_name)["value"]`
+- [`value = yield from bps.rd(block_object)`](https://blueskyproject.io/bluesky/main/generated/bluesky.plan_stubs.rd.html#bluesky.plan_stubs.rd) instead of `value = g.cget(block_name)["value"]`
 
 If you must call an external function which may be long running or do I/O from a plan, review 
 [call_sync](../plan_stubs/external_code).
