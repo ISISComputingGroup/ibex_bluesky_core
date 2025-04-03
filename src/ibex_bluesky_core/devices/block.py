@@ -2,6 +2,7 @@
 
 import asyncio
 import logging
+import sys
 from collections.abc import Callable
 from dataclasses import dataclass
 from typing import Generic, TypeVar
@@ -57,6 +58,8 @@ __all__ = [
 # looking at the global moving flag.
 GLOBAL_MOVING_FLAG_PRE_WAIT = 0.1
 
+aio_timeout_error = asyncio.exceptions.TimeoutError if sys.version_info < (3, 11) else TimeoutError
+
 
 @dataclass(kw_only=True, frozen=True)
 class BlockWriteConfig(Generic[T]):
@@ -101,6 +104,11 @@ class BlockWriteConfig(Generic[T]):
         move, and all movement needs to be complete before the set is considered complete. Defaults
         to False.
 
+    timeout_is_error:
+        Whether a write timeout is considered an error. Defaults to True. If False, a set will be
+        marked as complete without error even if the block has not given a completion callback or
+        satisfied set_success_func within settle_time_s.
+
     """
 
     use_completion_callback: bool = True
@@ -108,6 +116,7 @@ class BlockWriteConfig(Generic[T]):
     set_timeout_s: float | None = None
     settle_time_s: float = 0.0
     use_global_moving_flag: bool = False
+    timeout_is_error: bool = True
 
 
 class RunControl(StandardReadable):
@@ -272,7 +281,19 @@ class BlockRw(BlockR[T], NamedMovable[T]):
             )
             await asyncio.sleep(self._write_config.settle_time_s)
 
-        await set_and_settle(value)
+        if self._write_config.timeout_is_error:
+            await set_and_settle(value)
+        else:
+            try:
+                await set_and_settle(value)
+            except aio_timeout_error as e:
+                logger.info(
+                    "block set %s value=%s failed with %s, but continuing anyway because "
+                    "continue_on_failed_write is set.",
+                    self.name,
+                    value,
+                    e,
+                )
         logger.info("block set complete %s value=%s", self.name, value)
 
 
@@ -362,6 +383,7 @@ class BlockMot(Motor, Movable[float], HasName):
         use_global_moving_flag:
             This is unnecessary for a single motor block, as a completion callback will always be
             used instead to detect when a single move has finished.
+
         """
         self.run_control = RunControl(f"{prefix}CS:SB:{block_name}:RC:")
 
