@@ -1,13 +1,12 @@
-[<img src="https://github.com/ISISComputingGroup/ibex_bluesky_core/actions/workflows/test-against-main.yml/badge.svg">](https://github.com/ISISComputingGroup/ibex_bluesky_core/actions/workflows/test-against-main.yml)
-[<img src="https://github.com/ISISComputingGroup/ibex_bluesky_core/actions/workflows/lint-and-test-nightly.yml/badge.svg">](https://github.com/ISISComputingGroup/ibex_bluesky_core/actions/workflows/lint-and-test-nightly.yml)
-
-
 ![ibex_bluesky_core](https://github.com/IsisComputingGroup/ibex_bluesky_core/blob/main/doc/logo.svg?sanitize=true&raw=true)
 
 Core bluesky plan stubs &amp; devices for use at ISIS.
 
-Documentation: https://isiscomputinggroup.github.io/ibex_bluesky_core/
-
-Source: https://github.com/ISISComputingGroup/ibex_bluesky_core
-
-PyPi: https://pypi.org/project/ibex-bluesky-core/
+| -                                                                                                                                      | -                                                                                                                                                                                                                                |
+|----------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| [Documentation](https://isiscomputinggroup.github.io/ibex_bluesky_core/)                                                               | [![sphinx](https://github.com/ISISComputingGroup/ibex_bluesky_core/actions/workflows/documentation.yml/badge.svg)](https://github.com/ISISComputingGroup/ibex_bluesky_core/actions/workflows/documentation.yml)                  |
+| [CI (nightly)](https://github.com/ISISComputingGroup/ibex_bluesky_core/actions/workflows/lint-and-test-nightly.yml)                    | [<img src="https://github.com/ISISComputingGroup/ibex_bluesky_core/actions/workflows/lint-and-test-nightly.yml/badge.svg">](https://github.com/ISISComputingGroup/ibex_bluesky_core/actions/workflows/lint-and-test-nightly.yml) |
+| [CI (`bluesky` & `ophyd-async` main)](https://github.com/ISISComputingGroup/ibex_bluesky_core/actions/workflows/test-against-main.yml) | [<img src="https://github.com/ISISComputingGroup/ibex_bluesky_core/actions/workflows/test-against-main.yml/badge.svg">](https://github.com/ISISComputingGroup/ibex_bluesky_core/actions/workflows/test-against-main.yml)         |
+| [PyPI](https://pypi.org/project/ibex-bluesky-core/)                                                                                    | ![PyPI - Version](https://img.shields.io/pypi/v/ibex_bluesky_core)                                                                                                                                                               |
+| [Github](https://github.com/ISISComputingGroup/ibex_bluesky_core)                                                                      | ![GitHub Release](https://img.shields.io/github/v/release/IsisComputingGroup/ibex_bluesky_core)                                                                                                                                  |
+| [License](https://github.com/ISISComputingGroup/ibex_bluesky_core/blob/main/LICENSE)                                                   | ![GitHub License](https://img.shields.io/github/license/ISISComputingGroup/ibex_bluesky_core)                                                                                                                                    |
