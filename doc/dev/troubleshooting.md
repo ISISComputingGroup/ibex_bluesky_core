@@ -2,11 +2,14 @@
 
 ## Where is ...?
 
-### Instrument-specific bluesky code
+### Instrument-specific bluesky plans & devices.
 
 This is located in each instrument's `inst` script area, with their other instrument-specific scripts.
 
-`c:\Instrument\Settings\config\NDX<inst>\configurations\Python\inst\bluesky`
+`c:\Instrument\Settings\config\NDX<inst>\configurations\Python\inst\bluesky`.
+
+Instrument-specific bluesky plans will typically be defined in the `plans` module in the above area, and devices will 
+be defined in a `devices` module.
 
 ### This library (`ibex_bluesky_core`)
 
@@ -29,21 +32,29 @@ Log files are stored in `C:\Instrument\Var\logs\bluesky`.
 
 ```{note}
 Older log files will be moved by the log rotation script to 
-`\\isis\inst$\Backups$\stage-deleted\ndx<instrument>\Instrument\Var\logs\bluesky`
+`<isis share>\inst$\Backups$\stage-deleted\ndx<instrument>\Instrument\Var\logs\bluesky`
 ```
 
 The default log level is `INFO` and all messages from `ibex_bluesky_core`, `bluesky` and `ophyd_async` are captured.
 
 If you need to increase this to `DEBUG` to isolate an issue, you can do so using 
-{py:obj}`ibex_bluesky_core.log.set_bluesky_log_levels`.
+{py:obj}`ibex_bluesky_core.log.set_bluesky_log_levels`. See [logging documentation](logging.md) for a full example
+showing how to do this.
 
 ### Scientist-facing data
 
-Scientist-facing output files are written to `\\isis\inst$\NDX<inst>\user\test\scans\<current rb number>` by default.
+Scientist-facing output files are written to `<isis share>\inst$\NDX<inst>\user\test\scans\<current rb number>` by 
+default.
 
-The path can be customized by passing extra arguments to 
-{py:obj}`ibex_bluesky_core.callbacks.file_logger.HumanReadableFileCallback` for the "human-readable" files, or 
-{py:obj}`ibex_bluesky_core.callbacks.fitting.livefit_logger.LiveFitLogger` for the fit output files.
+Custom file-output paths can be specified by passing extra arguments to 
+{py:obj}`HumanReadableFileCallback<ibex_bluesky_core.callbacks.file_logger.HumanReadableFileCallback>` 
+for the "human-readable" files, or 
+{py:obj}`LiveFitLogger<ibex_bluesky_core.callbacks.fitting.livefit_logger.LiveFitLogger>` 
+for the fit output files. These callbacks may be hidden behind
+{py:obj}`ISISCallbacks<ibex_bluesky_core.callbacks.ISISCallbacks>` which also allows specifying output paths.
+
+See [dae_scan manual system test](https://github.com/ISISComputingGroup/ibex_bluesky_core/blob/0.2.1/manual_system_tests/dae_scan.py#L83)
+for an example of how to configure these output paths using {py:obj}`ISISCallbacks<ibex_bluesky_core.callbacks.ISISCallbacks>`.
 
 ### Raw diagnostic data
 
@@ -56,7 +67,7 @@ to the run engine by default in {py:obj}`ibex_bluesky_core.run_engine.get_run_en
 
 ```{note}
 Older raw documents will be moved by the log rotation script to 
-`\\isis\inst$\Backups$\stage-deleted\ndx<instrument>\Instrument\Var\logs\bluesky\raw_documents`
+`<isis share>\inst$\Backups$\stage-deleted\ndx<instrument>\Instrument\Var\logs\bluesky\raw_documents`
 ```
 
 ---
@@ -65,10 +76,19 @@ Older raw documents will be moved by the log rotation script to
 
 ### Run a plan
 
-To run a plan, you need to pass it to the `RE` object, which is available by default in the top-level python shell in
-the GUI.
+To run a plan, you need to pass it to the `RE` object, which is made for you by default, as an initialisation command,
+in IBEX GUI versions later than 2025.2. 
 
-For example:
+:::{tip}
+For versions of the GUI earlier than 2025.2, where the run engine is not created automatically, an `RE` object can be 
+made manually using
+```python
+from ibex_bluesky_core.run_engine import get_run_engine
+RE = get_run_engine()
+```
+:::
+
+For example, to run a plan, use:
 
 ```
 >>> RE(some_clever_plan(which, takes, some, arguments))
@@ -226,7 +246,8 @@ For a {py:obj}`writable block<ibex_bluesky_core.devices.block.BlockRw>`, a `writ
 See the options on {py:obj}`BlockWriteConfig<ibex_bluesky_core.devices.block.BlockWriteConfig>` for detailed options. These are specified
 when first creating the `block` object, which is likely to be in 
 `\Instrument\Settings\config\NDX<inst>\configurations\Python\inst\bluesky\devices.py`, or dynamically created as part
-of a wrapper plan.
+of a wrapper plan. See [block documentation](../devices/blocks.md) for detailed documentation about how to set up block
+devices.
 
 For complex cases, where a `set` being complete depends on multiple conditions, a custom `ophyd_async` device is usually
 the cleanest way to accomplish this. These can be defined in an instrument's `inst` scripts area if they are specific
