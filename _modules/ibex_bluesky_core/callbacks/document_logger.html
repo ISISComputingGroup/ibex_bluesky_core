@@ -1,0 +1,210 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ibex_bluesky_core.callbacks.document_logger &mdash; ibex_bluesky_core 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+
+  
+    <link rel="shortcut icon" href="../../../_static/favicon.svg"/>
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #343131" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            ibex_bluesky_core
+              <img src="../../../_static/logo.svg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Tutorial</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial/overview.html">Getting started</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Devices</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../devices/blocks.html">Blocks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../devices/dae.html">DAE (Data Acquisition Electronics)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Callbacks</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../callbacks/docs_logging_callback.html">Document Logging Callback</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../callbacks/file_writing.html">File writing callbacks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../callbacks/plotting.html">Plotting</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Fitting</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../fitting/fitting.html">Fitting Callback</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../fitting/livefit_logger.html">Fitting Files Callback</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../fitting/standard_fits.html">Standard Fitting Models</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Plan stubs</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../plan_stubs/external_code.html"><code class="docutils literal notranslate"><span class="pre">call_sync</span></code> (calling external code)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../plan_stubs/matplotlib_helpers.html"><span class="xref myst"><code class="docutils literal notranslate"><span class="pre">call_qt_aware</span></code></span> (matplotlib helpers)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../plan_stubs/redefining.html">Redefinition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../plan_stubs/user_input.html">User input helpers</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Plans</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../plans/plans.html">General Plans</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Plans (Reflectometry)</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../plans/reflectometry/autoalign.html">Auto-alignment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../plans/reflectometry/detector_mapping_alignment.html">Detector-mapping alignment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../plans/reflectometry/refl_param_scan.html">Reflectometry parameter scans</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Preprocessors</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../preprocessors/rbnumberpp.html">RB Number injection preprocessor</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Developer information</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../dev/create_a_release.html">Release Process</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../dev/logging.html">Logging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../dev/manual_system_testing.html">Manual system testing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../dev/set_up_dev_environment.html">Local development</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../dev/sphinx_notes.html">Notes on Sphinx and addons</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../dev/troubleshooting.html">Troubleshooting</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Architectural decisions</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../architectural_decisions/001-repo-structure.html">1. Repository structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../architectural_decisions/002-use-ophyd-async.html">2. Use <code class="docutils literal notranslate"><span class="pre">ophyd-async</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../architectural_decisions/003-run-in-process.html">3. Run in-process</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../architectural_decisions/004-use-scipp.html">4. Use <code class="docutils literal notranslate"><span class="pre">scipp</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../architectural_decisions/005-variance-addition.html">5. Variance addition to counts data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../architectural_decisions/006-where-to-put-code.html">6. Where to put code</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../_api.html">API</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #343131" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">ibex_bluesky_core</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+          <li class="breadcrumb-item"><a href="../callbacks.html">ibex_bluesky_core.callbacks</a></li>
+      <li class="breadcrumb-item active">ibex_bluesky_core.callbacks.document_logger</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for ibex_bluesky_core.callbacks.document_logger</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Logs all documents that the BlueSky run engine creates via a callback.&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">orjson</span>
+
+<span class="n">log_location</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;C:</span><span class="se">\\</span><span class="s2">&quot;</span><span class="p">)</span> <span class="o">/</span> <span class="s2">&quot;instrument&quot;</span> <span class="o">/</span> <span class="s2">&quot;var&quot;</span> <span class="o">/</span> <span class="s2">&quot;logs&quot;</span> <span class="o">/</span> <span class="s2">&quot;bluesky&quot;</span> <span class="o">/</span> <span class="s2">&quot;raw_documents&quot;</span>
+
+
+<div class="viewcode-block" id="DocLoggingCallback">
+<a class="viewcode-back" href="../../../generated/ibex_bluesky_core.callbacks.document_logger.html#ibex_bluesky_core.callbacks.document_logger.DocLoggingCallback">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">DocLoggingCallback</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Logs all documents under log_location, with the file name of their UID (.log).&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialise current_start_document and filename.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_start_document</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">filename</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">document</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Is called when a new document needs to be processed. Writes document to a file.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            name: The type of the document e.g start, event, stop</span>
+<span class="sd">            document: The contents of the docuement as a dictionary</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;start&quot;</span><span class="p">:</span>
+            <span class="n">log_location</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">current_start_document</span> <span class="o">=</span> <span class="n">document</span><span class="p">[</span><span class="s2">&quot;uid&quot;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">filename</span> <span class="o">=</span> <span class="n">log_location</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">current_start_document</span><span class="si">}</span><span class="s2">.log&quot;</span>
+
+        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">filename</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;Could not create filename.&quot;</span>
+        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_start_document</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;Saw a non-start document before a start.&quot;</span>
+
+        <span class="n">to_write</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span> <span class="s2">&quot;document&quot;</span><span class="p">:</span> <span class="n">document</span><span class="p">}</span>
+
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">,</span> <span class="s2">&quot;ab&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">outfile</span><span class="p">:</span>
+            <span class="n">outfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span>
+                <span class="n">orjson</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span>
+                    <span class="n">to_write</span><span class="p">,</span> <span class="n">option</span><span class="o">=</span><span class="n">orjson</span><span class="o">.</span><span class="n">OPT_SERIALIZE_NUMPY</span> <span class="o">|</span> <span class="n">orjson</span><span class="o">.</span><span class="n">OPT_APPEND_NEWLINE</span>
+                <span class="p">)</span>
+            <span class="p">)</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

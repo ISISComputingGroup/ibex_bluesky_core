@@ -1,0 +1,26 @@
+
+
+``ibex_bluesky_core.callbacks.plotting``
+========================================
+        
+        
+
+.. automodule:: ibex_bluesky_core.callbacks.plotting
+    :members:
+    :show-inheritance:
+
+    
+    
+    
+
+    
+    
+    .. rubric:: Members
+
+    .. autosummary::
+        :nosignatures:
+    
+        LivePlot
+        show_plot
+    
+    
