@@ -1,17 +1,62 @@
-"""Defines the standard fits. The model and guess functions for each fit."""
+"""Fitting methods used by the LiveFit callback."""
 
 from abc import ABC, abstractmethod
 from collections.abc import Callable
 
 import lmfit
 import numpy as np
-import numpy.typing as npt
 import scipy
 import scipy.special
 from lmfit.models import PolynomialModel
 from numpy import polynomial as p
+from numpy import typing as npt
 
-from ibex_bluesky_core.callbacks.fitting import FitMethod
+__all__ = [
+    "ERF",
+    "ERFC",
+    "DampedOsc",
+    "Fit",
+    "FitMethod",
+    "Gaussian",
+    "Linear",
+    "Lorentzian",
+    "Polynomial",
+    "SlitScan",
+    "TopHat",
+    "Trapezoid",
+]
+
+
+class FitMethod:
+    """Tell LiveFit how to fit to a scan. Has a Model function and a Guess function.
+
+    Model - Takes x values and a set of parameters to return y values.
+    Guess - Takes x and y values and returns a rough 'guess' of the original parameters.
+    """
+
+    model: lmfit.Model
+    guess: Callable[[npt.NDArray[np.float64], npt.NDArray[np.float64]], dict[str, lmfit.Parameter]]
+
+    def __init__(
+        self,
+        model: lmfit.Model | Callable[[npt.NDArray[np.float64]], npt.NDArray[np.float64]],
+        guess: Callable[
+            [npt.NDArray[np.float64], npt.NDArray[np.float64]], dict[str, lmfit.Parameter]
+        ],
+    ) -> None:
+        """Assign model and guess functions.
+
+        Args:
+            model (lmfit.Model | Callable): The model function to use.
+            guess (Callable): The guess function to use.
+
+        """
+        self.guess = guess
+
+        if callable(model):
+            self.model = lmfit.Model(model)
+        else:
+            self.model = model
 
 
 class Fit(ABC):

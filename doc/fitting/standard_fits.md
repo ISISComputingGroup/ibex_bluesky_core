@@ -2,7 +2,7 @@
 
 ## Linear
 
-API Reference: [`Linear`](ibex_bluesky_core.callbacks.fitting.fitting_utils.Linear)
+API Reference: [`Linear`](ibex_bluesky_core.fitting.Linear)
 
 - `c1` - Gradient
 - `c0` - (y) Intercept
@@ -13,7 +13,7 @@ y = c_1x + c_0
 
 ## Polynomial
 
-API Reference: [`Polynomial`](ibex_bluesky_core.callbacks.fitting.fitting_utils.Polynomial)
+API Reference: [`Polynomial`](ibex_bluesky_core.fitting.Polynomial)
 
 - `cn` ... `c0` - Polynomial coefficients
 
@@ -24,7 +24,7 @@ y = c_{n}x^n + c_{n-1}x^n-1 + ... + c_1 * x^1 + c_0
 
 ## Gaussian
 
-API Reference: [`Gaussian`](ibex_bluesky_core.callbacks.fitting.fitting_utils.Gaussian)
+API Reference: [`Gaussian`](ibex_bluesky_core.fitting.Gaussian)
 
 - `amp` - The maximum height of the Gaussian above `background`
 - `sigma` - A scalar for Gaussian width
@@ -39,7 +39,7 @@ y = \text{amp} * e^{-\frac{(x - x0) ^ 2}{2 * \text{sigma}^2}} + \text{background
 
 ## Lorentzian
 
-API Reference: [`Lorentzian`](ibex_bluesky_core.callbacks.fitting.fitting_utils.Lorentzian)
+API Reference: [`Lorentzian`](ibex_bluesky_core.fitting.Lorentzian)
 
 - `amp` - The maximum height of the Lorentzian above `background`
 - `sigma` - A scalar for Lorentzian width
@@ -54,7 +54,7 @@ y = \frac{\text{amp}}{1 + \frac{x - \text{center}}{\text{sigma}}^2} + \text{back
 
 ## Damped Oscillator (DampedOsc)
 
-API Reference: [`DampedOsc`](ibex_bluesky_core.callbacks.fitting.fitting_utils.DampedOsc)
+API Reference: [`DampedOsc`](ibex_bluesky_core.fitting.DampedOsc)
 
 - `center` - The centre (x) of the oscillation
 - `amp` - The maximum height of the curve above 0
@@ -69,7 +69,7 @@ y = \text{amp} * \cos((x - \text{center}) * \text{freq}) * e^{-\frac{x - \text{c
 
 ##  Slit Scan (SlitScan)
 
-API Reference: [`SlitScan`](ibex_bluesky_core.callbacks.fitting.fitting_utils.SlitScan)
+API Reference: [`SlitScan`](ibex_bluesky_core.fitting.SlitScan)
 
 - `background` $b$ - The minimum value (y) of the model
 - `inflection0` $i_0$ - The x coord of the first inflection point
@@ -93,7 +93,7 @@ y = \min(\text{lin_seg}, \text{exp_seg})
 
 ## Error Function (ERF)
 
-API Reference: [`ERF`](ibex_bluesky_core.callbacks.fitting.fitting_utils.ERF)
+API Reference: [`ERF`](ibex_bluesky_core.fitting.ERF)
 
 - `cen` - The centre (x) of the model
 - `stretch` - A horizontal stretch factor for the model
@@ -108,7 +108,7 @@ y = background + scale * erf(stretch * (x - cen))
 
 ## Complementary Error Function (ERFC)
 
-API Reference: [`ERFC`](ibex_bluesky_core.callbacks.fitting.fitting_utils.ERFC)
+API Reference: [`ERFC`](ibex_bluesky_core.fitting.ERFC)
 
 - `cen` - The centre (x) of the model
 - `stretch` - A horizontal stretch factor for the model
@@ -123,7 +123,7 @@ y = background + scale * erfc(stretch * (x - cen))
 
 ## Top Hat (TopHat)
 
-API Reference: [`TopHat`](ibex_bluesky_core.callbacks.fitting.fitting_utils.TopHat)
+API Reference: [`TopHat`](ibex_bluesky_core.fitting.TopHat)
 
 - `cen` - The centre (x) of the model
 - `width` - How wide the 'hat' is
@@ -142,7 +142,7 @@ y =
 
 ## Trapezoid
 
-API Reference: [`Trapezoid`](ibex_bluesky_core.callbacks.fitting.fitting_utils.Trapezoid)
+API Reference: [`Trapezoid`](ibex_bluesky_core.fitting.Trapezoid)
 
 - `cen` - The centre (x) of the model
 - `gradient` - How steep the edges of the trapezoid are

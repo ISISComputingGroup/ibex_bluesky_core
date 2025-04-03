@@ -4,9 +4,10 @@ from collections.abc import Generator
 
 from bluesky import Msg
 
-from ibex_bluesky_core.callbacks import FitMethod, ISISCallbacks
+from ibex_bluesky_core.callbacks import ISISCallbacks
 from ibex_bluesky_core.devices.reflectometry import refl_parameter
 from ibex_bluesky_core.devices.simpledae import monitor_normalising_dae
+from ibex_bluesky_core.fitting import FitMethod
 from ibex_bluesky_core.plans import (
     adaptive_scan,
     scan,
