@@ -401,7 +401,7 @@ async def test_period_good_frames_normalizer_uncertainties(
     simpledae: SimpleDae,
     period_good_frames_reducer: PeriodGoodFramesNormalizer,
 ):
-    set_mock_value(simpledae.period.good_frames, 123.0)
+    set_mock_value(simpledae.period.good_frames, 123)
 
     period_good_frames_reducer.detectors[1].read_spectrum_dataarray = AsyncMock(
         return_value=sc.DataArray(
