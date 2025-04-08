@@ -1,4 +1,4 @@
-# Where to put code
+# 6. Where to put code
 
 ## Status
 

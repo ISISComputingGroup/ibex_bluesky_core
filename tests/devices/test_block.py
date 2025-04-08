@@ -1,6 +1,7 @@
 # pyright: reportMissingParameterType=false
 import asyncio
 import sys
+from contextlib import nullcontext
 from unittest.mock import ANY, MagicMock, call, patch
 
 import bluesky.plan_stubs as bps
@@ -73,7 +74,7 @@ def test_block_naming(rw_rbv_block):
 def test_mot_block_naming(mot_block):
     assert mot_block.name == "mot_block"
     assert mot_block.user_readback.name == "mot_block"
-    assert mot_block.user_setpoint.name == ("mot_block-user_setpoint")
+    assert mot_block.user_setpoint.name == "mot_block-user_setpoint"
 
 
 def test_block_signal_monitors_correct_pv(rw_rbv_block):
@@ -346,3 +347,26 @@ def test_block_reprs():
     assert repr(BlockRw(float, block_name="bar", prefix="")) == "BlockRw(name=bar)"
     assert repr(BlockRwRbv(float, block_name="baz", prefix="")) == "BlockRwRbv(name=baz)"
     assert repr(BlockMot(block_name="qux", prefix="")) == "BlockMot(name=qux)"
+
+
+async def test_block_mot_set(mot_block):
+    set_mock_value(mot_block.user_setpoint, 10)
+    set_mock_value(mot_block.velocity, 10)
+    await mot_block.set(20)
+    get_mock_put(mot_block.user_setpoint).assert_called_once_with(20, wait=True)
+
+
+@pytest.mark.parametrize("timeout_is_error", [True, False])
+async def test_block_failing_write(timeout_is_error):
+    block = await _block_with_write_config(BlockWriteConfig(timeout_is_error=timeout_is_error))
+
+    get_mock_put(block.setpoint).side_effect = aio_timeout_error
+
+    with pytest.raises(aio_timeout_error) if timeout_is_error else nullcontext():
+        await block.set(1)
+
+
+async def test_block_failing_write_with_default_write_config(writable_block):
+    get_mock_put(writable_block.setpoint).side_effect = aio_timeout_error
+    with pytest.raises(aio_timeout_error):
+        await writable_block.set(1)
