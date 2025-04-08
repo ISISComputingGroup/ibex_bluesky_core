@@ -12,20 +12,23 @@ from bluesky.run_engine import RunEngine
 from ophyd_async.testing import get_mock_put, set_mock_value
 
 from ibex_bluesky_core.devices import compress_and_hex, dehex_and_decompress
+from ibex_bluesky_core.devices.dae import convert_xml_to_names_and_values, set_value_in_dae_xml
 from ibex_bluesky_core.devices.dae.dae import Dae, RunstateEnum
+from ibex_bluesky_core.devices.dae.dae_controls import BeginRunExBits
 from ibex_bluesky_core.devices.dae.dae_period_settings import (
     DaePeriodSettings,
     DaePeriodSettingsData,
     PeriodSource,
     PeriodType,
     SinglePeriodSettings,
+    _convert_period_settings_to_xml,
 )
 from ibex_bluesky_core.devices.dae.dae_settings import (
     DaeSettings,
     DaeSettingsData,
     TimingSource,
 )
-from ibex_bluesky_core.devices.dae.dae_spectra import VARIANCE_ADDITION, DaeSpectra
+from ibex_bluesky_core.devices.dae.dae_spectra import DaeSpectra
 from ibex_bluesky_core.devices.dae.dae_tcb_settings import (
     CalculationMethod,
     DaeTCBSettings,
@@ -34,11 +37,8 @@ from ibex_bluesky_core.devices.dae.dae_tcb_settings import (
     TimeRegimeMode,
     TimeRegimeRow,
     TimeUnit,
+    _convert_tcb_settings_to_xml,
 )
-from src.ibex_bluesky_core.devices.dae import convert_xml_to_names_and_values, set_value_in_dae_xml
-from src.ibex_bluesky_core.devices.dae.dae_controls import BeginRunExBits
-from src.ibex_bluesky_core.devices.dae.dae_period_settings import _convert_period_settings_to_xml
-from src.ibex_bluesky_core.devices.dae.dae_tcb_settings import _convert_tcb_settings_to_xml
 from tests.conftest import MOCK_PREFIX
 from tests.devices.dae_testing_data import (
     dae_settings_template,
@@ -980,9 +980,9 @@ async def test_read_spectrum_dataarray(spectrum: DaeSpectra):
                 dims=["tof"],
                 values=[1000, 2000, 3000],
                 variances=[
-                    1000 + VARIANCE_ADDITION,
-                    2000 + VARIANCE_ADDITION,
-                    3000 + VARIANCE_ADDITION,
+                    1000,
+                    2000,
+                    3000,
                 ],
                 unit=sc.units.counts,
                 dtype="float32",

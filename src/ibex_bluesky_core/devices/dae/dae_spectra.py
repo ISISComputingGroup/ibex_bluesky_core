@@ -10,7 +10,6 @@ from numpy.typing import NDArray
 from ophyd_async.core import Array1D, SignalR, StandardReadable
 from ophyd_async.epics.core import epics_signal_r
 
-VARIANCE_ADDITION = 0.5
 logger = logging.getLogger(__name__)
 
 
@@ -116,14 +115,11 @@ class DaeSpectra(StandardReadable):
         if unit is None:
             raise ValueError("Could not determine engineering units of tof edges.")
 
-        # See doc\architectural_decisions\005-variance-addition.md
-        # for justfication of the VARIANCE_ADDITION to variances
-
         return sc.DataArray(
             data=sc.Variable(
                 dims=["tof"],
                 values=counts,
-                variances=counts + VARIANCE_ADDITION,
+                variances=counts,
                 unit=sc.units.counts,
                 dtype="float64",
             ),
