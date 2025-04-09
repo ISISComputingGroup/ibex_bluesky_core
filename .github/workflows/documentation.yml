@@ -3,9 +3,13 @@ name: sphinx
 on: [push, pull_request, workflow_call]
 
 jobs:
+  vale:
+    name: vale
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: errata-ai/vale-action@v2.1.1
   call_sphinx_builder:
     uses: ISISComputingGroup/reusable-workflows/.github/workflows/sphinx.yml@main
     secrets: inherit
-  vale:
-    uses: errata-ai/vale-action@v2.1.1
 
