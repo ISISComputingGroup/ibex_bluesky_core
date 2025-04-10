@@ -3,7 +3,7 @@ from unittest.mock import MagicMock, patch
 
 from matplotlib import pyplot as plt
 
-from ibex_bluesky_core.callbacks.plotting import LivePlot, show_plot
+from ibex_bluesky_core.callbacks import LivePlot, show_plot
 
 
 def test_ibex_plot_callback_calls_show_on_start():
@@ -14,10 +14,10 @@ def test_ibex_plot_callback_calls_show_on_start():
     lp = LivePlot(y=MagicMock(), x=MagicMock())
 
     with (
-        patch("ibex_bluesky_core.callbacks.plotting.plt.show") as mock_plt_show,
-        patch("ibex_bluesky_core.callbacks.plotting._DefaultLivePlot.start") as mock_start,
-        patch("ibex_bluesky_core.callbacks.plotting._DefaultLivePlot.event") as mock_event,
-        patch("ibex_bluesky_core.callbacks.plotting.matplotlib.get_backend") as mock_get_backend,
+        patch("ibex_bluesky_core.callbacks._plotting.plt.show") as mock_plt_show,
+        patch("ibex_bluesky_core.callbacks._plotting._DefaultLivePlot.start") as mock_start,
+        patch("ibex_bluesky_core.callbacks._plotting._DefaultLivePlot.event") as mock_event,
+        patch("ibex_bluesky_core.callbacks._plotting.matplotlib.get_backend") as mock_get_backend,
     ):
         mock_get_backend.return_value = "simulated_genie_python_matplotlib_backed"
         sentinel: Any = object()
@@ -32,8 +32,8 @@ def test_ibex_plot_callback_calls_show_on_start():
 
 def test_show_plot_only_shows_if_backend_is_genie():
     with (
-        patch("ibex_bluesky_core.callbacks.plotting.plt.show") as mock_plt_show,
-        patch("ibex_bluesky_core.callbacks.plotting.matplotlib.get_backend") as mock_get_backend,
+        patch("ibex_bluesky_core.callbacks._plotting.plt.show") as mock_plt_show,
+        patch("ibex_bluesky_core.callbacks._plotting.matplotlib.get_backend") as mock_get_backend,
     ):
         mock_get_backend.return_value = "qtagg"
         show_plot()

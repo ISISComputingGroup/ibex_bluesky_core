@@ -11,7 +11,7 @@ import matplotlib
 from bluesky.run_engine import RunEngine
 from bluesky.utils import DuringTask
 
-from ibex_bluesky_core.callbacks.document_logger import DocLoggingCallback
+from ibex_bluesky_core.callbacks import DocLoggingCallback
 from ibex_bluesky_core.preprocessors import add_rb_number_processor
 
 __all__ = ["get_run_engine"]

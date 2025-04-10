@@ -10,7 +10,7 @@ from ibex_bluesky_core.callbacks import (
     LiveFitLogger,
     LivePlot,
 )
-from ibex_bluesky_core.callbacks.fitting.fitting_utils import Linear
+from ibex_bluesky_core.fitting import Linear
 
 
 def test_peak_stats_without_peak_stats_callback_raises():

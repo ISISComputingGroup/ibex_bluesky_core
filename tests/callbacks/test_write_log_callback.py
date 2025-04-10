@@ -8,7 +8,7 @@ from unittest.mock import call, mock_open, patch
 import pytest
 from event_model import DataKey, Event, EventDescriptor, RunStart, RunStop
 
-from ibex_bluesky_core.callbacks.file_logger import HumanReadableFileCallback
+from ibex_bluesky_core.callbacks import HumanReadableFileCallback
 
 save_path = Path("C:\\") / "instrument" / "var" / "logs" / "bluesky" / "output_files"
 
@@ -26,8 +26,8 @@ def test_header_data_all_available_on_start(cb):
         time=time, uid=uid, scan_id=scan_id, rb_number="0", detectors=["dae"], motors=("block",)
     )
     with (
-        patch("ibex_bluesky_core.callbacks.file_logger.open", mock_open()) as mock_file,
-        patch("ibex_bluesky_core.callbacks.file_logger.os.makedirs"),
+        patch("ibex_bluesky_core.callbacks._file_logger.open", mock_open()) as mock_file,
+        patch("ibex_bluesky_core.callbacks._file_logger.os.makedirs"),
     ):
         cb.start(run_start)
         result = (
@@ -50,8 +50,8 @@ def test_no_rb_number_folder(cb):
     run_start = RunStart(time=time, uid=uid, scan_id=scan_id, detectors=["dae"], motors=("block",))
 
     with (
-        patch("ibex_bluesky_core.callbacks.file_logger.open", mock_open()) as mock_file,
-        patch("ibex_bluesky_core.callbacks.file_logger.os.makedirs") as mock_mkdir,
+        patch("ibex_bluesky_core.callbacks._file_logger.open", mock_open()) as mock_file,
+        patch("ibex_bluesky_core.callbacks._file_logger.os.makedirs") as mock_mkdir,
     ):
         cb.start(run_start)
         result = save_path / "Unknown RB" / f"{node()}_block_2024-10-04_13-43-43Z.txt"
@@ -71,8 +71,8 @@ def test_no_motors_doesnt_append_to_filename(cb):
     run_start = RunStart(time=time, uid=uid, scan_id=scan_id, detectors=["dae"])
 
     with (
-        patch("ibex_bluesky_core.callbacks.file_logger.open", mock_open()) as mock_file,
-        patch("ibex_bluesky_core.callbacks.file_logger.os.makedirs") as mock_mkdir,
+        patch("ibex_bluesky_core.callbacks._file_logger.open", mock_open()) as mock_file,
+        patch("ibex_bluesky_core.callbacks._file_logger.os.makedirs") as mock_mkdir,
     ):
         cb.start(run_start)
         result = save_path / "Unknown RB" / f"{node()}_2024-10-04_13-43-43Z.txt"
@@ -117,7 +117,7 @@ def test_event_prints_header_with_units_and_respects_precision_of_value_on_first
 
     # This just contains the value
     event = Event(uid=uid, data={field_name: expected_value}, descriptor=descriptor, seq_num=1)
-    with patch("ibex_bluesky_core.callbacks.file_logger.open", mock_open()) as mock_file:
+    with patch("ibex_bluesky_core.callbacks._file_logger.open", mock_open()) as mock_file:
         cb.event(event)
 
     mock_file.assert_called_with(cb.filename, "a", newline="", encoding="utf-8")
@@ -142,7 +142,7 @@ def test_event_prints_header_without_units_and_does_not_truncate_precision_if_no
 
     # This just contains the value
     event = Event(uid=uid, data={field_name: expected_value}, descriptor=descriptor, seq_num=1)
-    with patch("ibex_bluesky_core.callbacks.file_logger.open", mock_open()) as mock_file:
+    with patch("ibex_bluesky_core.callbacks._file_logger.open", mock_open()) as mock_file:
         cb.event(event)
 
     mock_file.assert_called_with(cb.filename, "a", newline="", encoding="utf-8")
@@ -168,7 +168,7 @@ def test_event_prints_header_only_on_first_event_and_does_not_truncate_if_not_fl
         uid=uid, data={field_name: expected_value}, descriptor=descriptor, seq_num=2
     )
 
-    with patch("ibex_bluesky_core.callbacks.file_logger.open", mock_open()) as mock_file:
+    with patch("ibex_bluesky_core.callbacks._file_logger.open", mock_open()) as mock_file:
         cb.event(second_event)
 
     mock_file.assert_called_with(cb.filename, "a", newline="", encoding="utf-8")
@@ -194,7 +194,7 @@ def test_event_called_before_filename_specified_does_nothing():
         uid=uid, data={field_name: expected_value}, descriptor=descriptor, seq_num=2
     )
 
-    with patch("ibex_bluesky_core.callbacks.file_logger.open", mock_open()) as mock_file:
+    with patch("ibex_bluesky_core.callbacks._file_logger.open", mock_open()) as mock_file:
         cb.event(second_event)
 
     mock_file.assert_not_called()
