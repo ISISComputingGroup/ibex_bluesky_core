@@ -19,6 +19,7 @@ __all__ = ["get_run_engine"]
 
 from ibex_bluesky_core.plan_stubs import CALL_QT_AWARE_MSG_KEY, CALL_SYNC_MSG_KEY
 from ibex_bluesky_core.run_engine._msg_handlers import call_qt_aware_handler, call_sync_handler
+from ibex_bluesky_core.version import version
 
 logger = logging.getLogger(__name__)
 
@@ -93,6 +94,8 @@ def get_run_engine() -> RunEngine:
         during_task=dt,
         call_returns_result=True,  # Will be default in a future bluesky version.
     )
+
+    RE.md["versions"]["ibex_bluesky_core"] = version
 
     log_callback = DocLoggingCallback()
     RE.subscribe(log_callback)
