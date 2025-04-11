@@ -120,6 +120,7 @@ reportUntypedClassDecorator = true
 reportUntypedFunctionDecorator = true
 
 [tool.setuptools_scm]
+version_file = "src/ibex_bluesky_core/version.py"
 
 [tool.build_sphinx]
 
