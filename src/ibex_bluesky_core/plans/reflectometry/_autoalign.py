@@ -148,14 +148,14 @@ def _optimise_axis_over_range(  # noqa: PLR0913 PLR0917
         choice = yield from prompt_user_for_choice(
             prompt=f"Type '1' if you would like to re-scan, '2' to "
             f"move {alignment_param.name} to {alignment_param_value} and keep going, "
-            f"or '3' to exit now.",
+            f"or '3' to pause now.",
             choices=["1", "2", "3"],
         )
         if choice == "1":
             return icc, False
         elif choice == "3":
-            _print_and_log("Plan terminated.")
-            raise GeneratorExit()
+            _print_and_log("Plan paused.")
+            yield from bps.pause()
 
     _print_and_log(f"Moving {alignment_param.name} to {alignment_param_value}.")
     yield from bps.mv(alignment_param, alignment_param_value)  # type: ignore
@@ -221,33 +221,28 @@ def optimise_axis_against_intensity(  # noqa: PLR0913
     while True:  # If a problem is found, then start the alignment again
         all_ok = True
         icc = None
-        try:
-            for rel_scan_range in rel_scan_ranges:
-                icc, all_ok = yield from _optimise_axis_over_range(
-                    dae=dae,
-                    alignment_param=alignment_param,
-                    rel_scan_range=rel_scan_range,
-                    num_points=num_points,
-                    is_good_fit=is_good_fit,
-                    fit_param=fit_param,
-                    problem_found_plan=problem_found_plan,
-                    fit_method=fit_method,
-                    periods=periods,
-                    save_run=save_run,
-                )
+        for rel_scan_range in rel_scan_ranges:
+            icc, all_ok = yield from _optimise_axis_over_range(
+                dae=dae,
+                alignment_param=alignment_param,
+                rel_scan_range=rel_scan_range,
+                num_points=num_points,
+                is_good_fit=is_good_fit,
+                fit_param=fit_param,
+                problem_found_plan=problem_found_plan,
+                fit_method=fit_method,
+                periods=periods,
+                save_run=save_run,
+            )
 
-                if not all_ok:
-                    logger.info(
-                        "Problem found during _optimise_axis_over_range, restarting scan loop"
-                    )
-                    break
+            if not all_ok:
+                logger.info("Problem found during _optimise_axis_over_range, restarting scan loop")
+                break
 
-            if all_ok:
-                logger.info(
-                    "Finished optimise_axis_against_intensity with param=%s, ranges=%s",
-                    alignment_param.name,
-                    rel_scan_ranges,
-                )
-                return icc
-        except GeneratorExit:
-            return None
+        if all_ok:
+            logger.info(
+                "Finished optimise_axis_against_intensity with param=%s, ranges=%s",
+                alignment_param.name,
+                rel_scan_ranges,
+            )
+            return icc

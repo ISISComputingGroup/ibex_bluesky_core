@@ -5,7 +5,7 @@ from unittest.mock import MagicMock, patch
 
 import bluesky.plan_stubs as bps
 import pytest
-from bluesky.utils import Msg
+from bluesky.utils import Msg, RunEngineInterrupted
 from lmfit.model import ModelResult
 
 from ibex_bluesky_core.callbacks import ISISCallbacks
@@ -343,13 +343,13 @@ async def test_plan_exits_if_three_selected_when_optimising_axis(
         param = ReflParameter(prefix=prefix, name="S1VG", changing_timeout_s=60)
         await param.connect(mock=True)
         monkeypatch.setattr("builtins.input", lambda str: "3")
-        r = RE(
-            optimise_axis_against_intensity(
-                simpledae,
-                alignment_param=param,
-                rel_scan_ranges=[10.0],
-                fit_method=SlitScan().fit(),
-                fit_param="",
+        with pytest.raises(RunEngineInterrupted):
+            RE(
+                optimise_axis_against_intensity(
+                    simpledae,
+                    alignment_param=param,
+                    rel_scan_ranges=[10.0],
+                    fit_method=SlitScan().fit(),
+                    fit_param="",
+                )
             )
-        )
-        assert r.plan_result is None
