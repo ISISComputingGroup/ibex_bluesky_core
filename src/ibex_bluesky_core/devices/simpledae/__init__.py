@@ -196,8 +196,8 @@ def monitor_normalising_dae(
         reducer=reducer,
     )
 
-    dae.reducer.intensity.set_name("intensity")  # type: ignore
-    dae.reducer.intensity_stddev.set_name("intensity_stddev")  # type: ignore
+    dae.reducer.intensity.set_name("intensity")
+    dae.reducer.intensity_stddev.set_name("intensity_stddev")
     return dae
 
 
