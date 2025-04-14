@@ -27,7 +27,7 @@ from ibex_bluesky_core.fitting import FitMethod
 
 logger = logging.getLogger(__name__)
 
-# ruff: noqa: PLR0913, PLR0912, PLR0917
+# ruff: noqa: PLR0913
 
 
 __all__ = [

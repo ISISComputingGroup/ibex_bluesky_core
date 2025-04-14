@@ -16,6 +16,7 @@ from ibex_bluesky_core.devices.simpledae._controllers import (
     RunPerPointController,
 )
 from ibex_bluesky_core.devices.simpledae._reducers import (
+    VARIANCE_ADDITION,
     GoodFramesNormalizer,
     MonitorNormalizer,
     PeriodGoodFramesNormalizer,
@@ -43,6 +44,7 @@ from ibex_bluesky_core.utils import get_pv_prefix
 logger = logging.getLogger(__name__)
 
 __all__ = [
+    "VARIANCE_ADDITION",
     "Controller",
     "GoodFramesNormalizer",
     "GoodFramesWaiter",

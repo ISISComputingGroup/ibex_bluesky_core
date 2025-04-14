@@ -36,7 +36,6 @@ from ibex_bluesky_core.devices.dae._helpers import (
     _convert_xml_to_names_and_values,
     _set_value_in_dae_xml,
 )
-from ibex_bluesky_core.devices.dae._spectra import VARIANCE_ADDITION
 from src.ibex_bluesky_core.devices.dae import BeginRunExBits
 from src.ibex_bluesky_core.devices.dae._period_settings import _convert_period_settings_to_xml
 from src.ibex_bluesky_core.devices.dae._tcb_settings import _convert_tcb_settings_to_xml
@@ -981,9 +980,9 @@ async def test_read_spectrum_dataarray(spectrum: DaeSpectra):
                 dims=["tof"],
                 values=[1000, 2000, 3000],
                 variances=[
-                    1000 + VARIANCE_ADDITION,
-                    2000 + VARIANCE_ADDITION,
-                    3000 + VARIANCE_ADDITION,
+                    1000,
+                    2000,
+                    3000,
                 ],
                 unit=sc.units.counts,
                 dtype="float32",
