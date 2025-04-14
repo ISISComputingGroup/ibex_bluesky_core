@@ -6,19 +6,19 @@ from ophyd_async.testing import set_mock_value
 
 from ibex_bluesky_core.devices.dae import DaeCheckingSignal
 from ibex_bluesky_core.devices.simpledae import (
+    Controller,
+    GoodFramesNormalizer,
     GoodFramesWaiter,
+    PeriodGoodFramesNormalizer,
     PeriodGoodFramesWaiter,
     PeriodPerPointController,
+    Reducer,
     RunPerPointController,
     SimpleDae,
+    Waiter,
     check_dae_strategies,
     monitor_normalising_dae,
 )
-from ibex_bluesky_core.devices.simpledae.reducers import (
-    GoodFramesNormalizer,
-    PeriodGoodFramesNormalizer,
-)
-from ibex_bluesky_core.devices.simpledae.strategies import Controller, Reducer, Waiter
 
 
 @pytest.fixture

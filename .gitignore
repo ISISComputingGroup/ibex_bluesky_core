@@ -165,3 +165,5 @@ _build/
 
 ibex-bluesky-core-pytest-logs
 ibex-bluesky-core-pytest-output
+
+src/ibex_bluesky_core/version.py
