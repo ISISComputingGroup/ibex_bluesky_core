@@ -2,18 +2,29 @@
 
 import asyncio
 import logging
+import sys
 from collections.abc import Callable
 from dataclasses import dataclass
 from typing import Generic, TypeVar
 
-from bluesky.protocols import Locatable, Location, NamedMovable, Triggerable
+from bluesky.protocols import (
+    HasName,
+    Locatable,
+    Location,
+    Movable,
+    NamedMovable,
+    Triggerable,
+)
 from ophyd_async.core import (
+    CALCULATE_TIMEOUT,
     AsyncStatus,
+    CalculatableTimeout,
     SignalDatatype,
     SignalR,
     SignalRW,
     StandardReadable,
     StandardReadableFormat,
+    WatchableAsyncStatus,
     observe_value,
     wait_for_value,
 )
@@ -39,12 +50,15 @@ __all__ = [
     "block_r",
     "block_rw",
     "block_rw_rbv",
+    "block_w",
 ]
 
 # When using the global moving flag, we want to give IOCs enough time to update the
 # global flag before checking it. This is an amount of time always applied before
 # looking at the global moving flag.
 GLOBAL_MOVING_FLAG_PRE_WAIT = 0.1
+
+aio_timeout_error = asyncio.exceptions.TimeoutError if sys.version_info < (3, 11) else TimeoutError
 
 
 @dataclass(kw_only=True, frozen=True)
@@ -90,6 +104,11 @@ class BlockWriteConfig(Generic[T]):
         move, and all movement needs to be complete before the set is considered complete. Defaults
         to False.
 
+    timeout_is_error:
+        Whether a write timeout is considered an error. Defaults to True. If False, a set will be
+        marked as complete without error even if the block has not given a completion callback or
+        satisfied set_success_func within settle_time_s.
+
     """
 
     use_completion_callback: bool = True
@@ -97,6 +116,7 @@ class BlockWriteConfig(Generic[T]):
     set_timeout_s: float | None = None
     settle_time_s: float = 0.0
     use_global_moving_flag: bool = False
+    timeout_is_error: bool = True
 
 
 class RunControl(StandardReadable):
@@ -173,6 +193,7 @@ class BlockRw(BlockR[T], NamedMovable[T]):
         block_name: str,
         *,
         write_config: BlockWriteConfig[T] | None = None,
+        sp_suffix: str = ":SP",
     ) -> None:
         """Create a new read-write block.
 
@@ -193,9 +214,13 @@ class BlockRw(BlockR[T], NamedMovable[T]):
             prefix: the current instrument's PV prefix
             block_name: the name of the block
             write_config: Settings which control how this device will set the underlying PVs
+            sp_suffix: Suffix to append to PV for the setpoint. Defaults to ":SP" but can
+                be set to empty string to read and write to exactly the same PV.
 
         """
-        self.setpoint: SignalRW[T] = epics_signal_rw(datatype, f"{prefix}CS:SB:{block_name}:SP")
+        self.setpoint: SignalRW[T] = epics_signal_rw(
+            datatype, f"{prefix}CS:SB:{block_name}{sp_suffix}"
+        )
 
         self._write_config: BlockWriteConfig[T] = write_config or BlockWriteConfig()
 
@@ -256,7 +281,19 @@ class BlockRw(BlockR[T], NamedMovable[T]):
             )
             await asyncio.sleep(self._write_config.settle_time_s)
 
-        await set_and_settle(value)
+        if self._write_config.timeout_is_error:
+            await set_and_settle(value)
+        else:
+            try:
+                await set_and_settle(value)
+            except aio_timeout_error as e:
+                logger.info(
+                    "block set %s value=%s failed with %s, but continuing anyway because "
+                    "continue_on_failed_write is set.",
+                    self.name,
+                    value,
+                    e,
+                )
         logger.info("block set complete %s value=%s", self.name, value)
 
 
@@ -305,7 +342,7 @@ class BlockRwRbv(BlockRw[T], Locatable[T]):
         }
 
 
-class BlockMot(Motor):
+class BlockMot(Motor, Movable[float], HasName):
     """Device representing an IBEX block pointing at a motor."""
 
     def __init__(
@@ -346,6 +383,7 @@ class BlockMot(Motor):
         use_global_moving_flag:
             This is unnecessary for a single motor block, as a completion callback will always be
             used instead to detect when a single move has finished.
+
         """
         self.run_control = RunControl(f"{prefix}CS:SB:{block_name}:RC:")
 
@@ -363,6 +401,15 @@ class BlockMot(Motor):
         """Debug representation of this block."""
         return f"{self.__class__.__name__}(name={self.name})"
 
+    def set(  # pyright: ignore
+        self, value: float, timeout: CalculatableTimeout = CALCULATE_TIMEOUT
+    ) -> WatchableAsyncStatus[float]:
+        """Pass through set to superclass.
+
+        This is needed so that type-checker correctly understands the type of set.
+        """
+        return super().set(value, timeout)
+
 
 def block_r(datatype: type[T], block_name: str) -> BlockR[T]:
     """Get a local read-only block for the current instrument.
@@ -373,14 +420,38 @@ def block_r(datatype: type[T], block_name: str) -> BlockR[T]:
 
 
 def block_rw(
-    datatype: type[T], block_name: str, *, write_config: BlockWriteConfig[T] | None = None
+    datatype: type[T],
+    block_name: str,
+    *,
+    write_config: BlockWriteConfig[T] | None = None,
+    sp_suffix: str = ":SP",
 ) -> BlockRw[T]:
     """Get a local read-write block for the current instrument.
 
     See documentation of BlockRw for more information.
     """
     return BlockRw(
-        datatype=datatype, prefix=get_pv_prefix(), block_name=block_name, write_config=write_config
+        datatype=datatype,
+        prefix=get_pv_prefix(),
+        block_name=block_name,
+        write_config=write_config,
+        sp_suffix=sp_suffix,
+    )
+
+
+def block_w(
+    datatype: type[T], block_name: str, *, write_config: BlockWriteConfig[T] | None = None
+) -> BlockRw[T]:
+    """Get a write-only block for the current instrument.
+
+    This is actually just :obj:`ibex_bluesky_core.devices.block.BlockRw` but with no SP suffix.
+    """
+    return BlockRw(
+        datatype=datatype,
+        prefix=get_pv_prefix(),
+        block_name=block_name,
+        write_config=write_config,
+        sp_suffix="",
     )
 
 

@@ -9,9 +9,9 @@ from bluesky.utils import Msg
 from lmfit.model import ModelResult
 
 from ibex_bluesky_core.callbacks import ISISCallbacks
-from ibex_bluesky_core.callbacks.fitting.fitting_utils import Gaussian, SlitScan
 from ibex_bluesky_core.devices.reflectometry import ReflParameter
 from ibex_bluesky_core.devices.simpledae import SimpleDae
+from ibex_bluesky_core.fitting import Gaussian, SlitScan
 from ibex_bluesky_core.plans.reflectometry import (
     optimise_axis_against_intensity,
     refl_adaptive_scan,

@@ -9,7 +9,6 @@ import logging
 import os
 import sys
 from functools import cache
-from logging import Formatter
 from logging.handlers import TimedRotatingFileHandler
 
 __all__ = ["file_handler", "set_bluesky_log_levels", "setup_logging"]
@@ -32,7 +31,7 @@ def file_handler() -> TimedRotatingFileHandler:
     handler = TimedRotatingFileHandler(os.path.join(log_location, "bluesky.log"), "midnight")
 
     handler.setFormatter(
-        Formatter(
+        logging.Formatter(
             "%(asctime)s (%(process)d) %(name)s %(filename)s "
             "[line:%(lineno)d] %(levelname)s %(message)s"
         ),

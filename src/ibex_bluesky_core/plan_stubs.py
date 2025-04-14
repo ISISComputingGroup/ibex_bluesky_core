@@ -37,19 +37,12 @@ def call_sync(func: Callable[P, T], *args: P.args, **kwargs: P.kwargs) -> Genera
 
     - Blocking the whole event loop
     - Breaking keyboard interrupt handling
-    - Not clearing the active checkpoint
 
     It does not necessarily guard against all possible cases, and as such it is *recommended* to
     use native bluesky functionality wherever possible in preference to this plan stub. This should
     be seen as an escape-hatch.
 
     The wrapped function will be run in a new thread.
-
-    This plan stub will clear any active checkpoints before running the external code, because
-    in general the external code is not safe to re-run later once it has started (e.g. it may have
-    done relative sets, or may have started some external process). This means that if a plan is
-    interrupted at any point between a call_sync and the next checkpoint, the plan cannot be
-    resumed - in this case bluesky.utils.FailedPause will appear in the ctrl-c stack trace.
 
     Args:
         func: A callable to run.
@@ -60,7 +53,6 @@ def call_sync(func: Callable[P, T], *args: P.args, **kwargs: P.kwargs) -> Genera
         The return value of the wrapped function
 
     """
-    yield from bps.clear_checkpoint()
     return cast(T, (yield Msg(CALL_SYNC_MSG_KEY, func, *args, **kwargs)))
 
 
@@ -128,6 +120,8 @@ def redefine_refl_parameter(
         position: The position to set.
 
     """
+    if parameter.redefine is None:
+        raise ValueError(f"Parameter {parameter.name} cannot be redefined.")
     logger.info("Redefining refl parameter %s to %s", parameter.name, position)
     yield from bps.mv(parameter.redefine, position)
 

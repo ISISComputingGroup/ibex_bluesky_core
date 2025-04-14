@@ -32,9 +32,12 @@ from bluesky.callbacks.stream import LiveDispatcher
 from event_model import Event, EventDescriptor, RunStart, RunStop
 from matplotlib.axes import Axes
 
-from ibex_bluesky_core.callbacks.plotting import show_plot
+from ibex_bluesky_core.callbacks import show_plot
+from ibex_bluesky_core.devices.simpledae import VARIANCE_ADDITION
 
 logger = logging.getLogger(__name__)
+
+__all__ = ["DetMapAngleScanLiveDispatcher", "DetMapHeightScanLiveDispatcher", "LivePColorMesh"]
 
 
 class DetMapHeightScanLiveDispatcher(LiveDispatcher):
@@ -60,23 +63,23 @@ class DetMapHeightScanLiveDispatcher(LiveDispatcher):
         det_data = doc["data"][self._det_name]
         mon_data = doc["data"][self._mon_name]
 
-        det = sc.Variable(
-            dims=["spectrum"], values=det_data, variances=det_data + 0.5, dtype="float64"
-        )
-        mon = sc.Variable(
-            dims=["spectrum"], values=mon_data, variances=mon_data + 0.5, dtype="float64"
-        )
+        det = sc.Variable(dims=["spectrum"], values=det_data, variances=det_data, dtype="float64")
+        mon = sc.Variable(dims=["spectrum"], values=mon_data, variances=mon_data, dtype="float64")
 
         det_sum = det.sum()
         mon_sum = mon.sum()
+
+        # See doc\architectural_decisions\005-variance-addition.md
+        # for justification of this addition to variances.
+        det_sum.variance += VARIANCE_ADDITION
 
         if mon_sum.value == 0.0:
             raise ValueError(
                 "No monitor counts. Check beamline setup & beam status. "
                 "I/I_0 normalization not possible."
             )
-        else:
-            normalized = det_sum / mon_sum
+
+        normalized = det_sum / mon_sum
 
         doc["data"][self._out_name] = normalized.value
         doc["data"][self._out_name + "_err"] = math.sqrt(normalized.variance)

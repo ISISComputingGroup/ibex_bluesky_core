@@ -9,8 +9,8 @@ from bluesky.utils import Msg
 from lmfit.model import ModelResult
 
 from ibex_bluesky_core.callbacks import ISISCallbacks
-from ibex_bluesky_core.callbacks.fitting import FitMethod
 from ibex_bluesky_core.devices.simpledae import SimpleDae
+from ibex_bluesky_core.fitting import FitMethod
 from ibex_bluesky_core.plan_stubs import prompt_user_for_choice
 from ibex_bluesky_core.plans import scan
 
@@ -82,8 +82,8 @@ def _optimise_axis_over_range(  # noqa: PLR0913 PLR0917
         dae (SimpleDae): A readable DAE object.
         alignment_param (AlignmentParam): The alignment parameter to be scanned over and optimised.
         fit_param (str): Which property of fit_method you aim to optimise. e.g centre (x0)
-            of a Gaussian. See fitting/fitting_utils for the possible options for each fitting
-            method.
+            of a Gaussian. See :mod:`ibex_bluesky_core.fitting` for the
+            possible options for each fitting method.
         rel_scan_range (float): The current relative scan range.
         num_points (int): The number of points across the scan.
         fit_method (FitMethod): The relationship to expect between the alignment parameter
@@ -188,8 +188,8 @@ def optimise_axis_against_intensity(  # noqa: PLR0913
         fit_method (FitMethod): The relationship to expect between the alignment parameter
             and the beam. e.g Gaussian.
         fit_param (str): Which property of fit_method you aim to optimise. e.g centre (x0)
-            of a Gaussian. See fitting/fitting_utils for the possible options for each fitting
-            method.
+            of a Gaussian. See :mod:`ibex_bluesky_core.fitting` for the possible options
+            for each fitting method.
         rel_scan_ranges (list[float]): Scan range relative to the current motor position.
             If the list has more than one element then it will rescan for each range.
             Scans between mot_pos - rel_scan_range / 2 -> mot_pos + rel_scan_range / 2

@@ -57,7 +57,6 @@ def good_plan():
     # Note use of g.some_function, rather than g.some_function() - i.e. a function reference
     # We can also access the returned value from the call.
     return_value = yield from call_sync(g.some_function, 123, keyword_argument=456)
-    yield from bps.checkpoint()
     yield from bps.close_run()
 ```
 
@@ -65,13 +64,3 @@ It is strongly recommended that any functions run in this way are "fast" (i.e. l
 In particular, avoid doing arbitrarily-long waits - for example, waiting for detector data
 or sample environment. For these long-running tasks, seek to implement at least the long-running parts using 
 native bluesky mechanisms.
-
-```{note}
-`bps.checkpoint()` above instructs bluesky that this is a safe point from which to resume a plan. 
-`call_sync` always clears an active checkpoint first, as the code it runs may have arbitrary external
-side effects.
-
-If a plan is interrupted with no checkpoint active, it cannot be resumed later (it effectively forces
-the plan to abort rather than pause). You will see `bluesky.utils.FailedPause` as part of the traceback
-on ctrl-c, if this is the case.
-```

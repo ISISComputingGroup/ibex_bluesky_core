@@ -8,7 +8,7 @@ import pytest
 from bluesky.utils import Msg
 from ophyd_async.epics.motor import UseSetMode
 from ophyd_async.plan_stubs import ensure_connected
-from ophyd_async.testing import callback_on_mock_put, get_mock_put, set_mock_value
+from ophyd_async.testing import get_mock_put
 
 from ibex_bluesky_core.devices.block import BlockMot
 from ibex_bluesky_core.devices.reflectometry import ReflParameter
@@ -153,13 +153,22 @@ async def test_redefine_refl_parameter(RE):
     param = ReflParameter(prefix="", name="some_refl_parameter", changing_timeout_s=60)
     await param.connect(mock=True)
 
-    callback_on_mock_put(
-        param.redefine.define_pos_sp, lambda *a, **k: set_mock_value(param.redefine.changed, True)
-    )
-
     RE(redefine_refl_parameter(param, 42.0))
 
-    get_mock_put(param.redefine.define_pos_sp).assert_called_once_with(42.0, wait=True)
+    get_mock_put(param.redefine.define_pos_sp).assert_called_once_with(42.0, wait=True)  # pyright: ignore [reportOptionalMemberAccess]
+
+
+async def test_raises_when_attempting_to_redefine_refl_parameter_with_no_redefine(RE):
+    param = ReflParameter(
+        prefix="", name="some_refl_parameter_no_redefine", changing_timeout_s=1, has_redefine=False
+    )
+    await param.connect(mock=True)
+    with pytest.raises(
+        ValueError,
+        match=r"Parameter some_refl_parameter_no_redefine"
+        r" cannot be redefined.",
+    ):
+        RE(redefine_refl_parameter(param, 42.0))
 
 
 def test_get_user_input(RE):

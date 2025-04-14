@@ -12,10 +12,10 @@ from ophyd_async.core import AsyncStatus, SignalRW, StandardReadable
 from ibex_bluesky_core.devices import (
     isis_epics_signal_rw,
 )
-from ibex_bluesky_core.devices.dae import (
-    convert_xml_to_names_and_values,
-    get_all_elements_in_xml_with_child_called_name,
-    set_value_in_dae_xml,
+from ibex_bluesky_core.devices.dae._helpers import (
+    _convert_xml_to_names_and_values,
+    _get_all_elements_in_xml_with_child_called_name,
+    _set_value_in_dae_xml,
 )
 
 logger = logging.getLogger(__name__)
@@ -46,7 +46,7 @@ DETECTOR_TABLE = "Detector Table"
 WIRING_TABLE = "Wiring Table"
 
 
-class TimingSource(Enum):
+class DaeTimingSource(Enum):
     """The DAE timing source."""
 
     ISIS = 0
@@ -68,7 +68,7 @@ class DaeSettingsData:
     mon_spect: int | None = None
     mon_from: int | None = None
     mon_to: int | None = None
-    timing_source: TimingSource | None = None
+    timing_source: DaeTimingSource | None = None
     smp_veto: bool | None = None
     ts2_veto: bool | None = None
     hz50_veto: bool | None = None
@@ -89,7 +89,7 @@ class DaeSettingsData:
 
 def _convert_xml_to_dae_settings(value: str) -> DaeSettingsData:
     root = ET.fromstring(value)
-    settings_from_xml = convert_xml_to_names_and_values(root)
+    settings_from_xml = _convert_xml_to_names_and_values(root)
     return DaeSettingsData(
         wiring_filepath=settings_from_xml[WIRING_TABLE],
         detector_filepath=settings_from_xml[DETECTOR_TABLE],
@@ -97,7 +97,7 @@ def _convert_xml_to_dae_settings(value: str) -> DaeSettingsData:
         mon_spect=int(settings_from_xml[MONITOR_SPECTRUM]),
         mon_from=int(settings_from_xml[FROM]),
         mon_to=int(settings_from_xml[TO]),
-        timing_source=TimingSource(int(settings_from_xml[DAE_TIMING_SOURCE])),
+        timing_source=DaeTimingSource(int(settings_from_xml[DAE_TIMING_SOURCE])),
         smp_veto=bool(int(settings_from_xml[SMP_CHOPPER_VETO])),
         ts2_veto=bool(int(settings_from_xml[TS2_PULSE_VETO])),
         hz50_veto=bool(int(settings_from_xml[ISIS_50HZ_VETO])),
@@ -123,30 +123,30 @@ def _bool_to_int_or_none(to_convert: bool | None) -> int | None:
 
 def _convert_dae_settings_to_xml(current_xml: str, settings: DaeSettingsData) -> str:
     root = ET.fromstring(current_xml)
-    elements = get_all_elements_in_xml_with_child_called_name(root)
-    set_value_in_dae_xml(elements, WIRING_TABLE, settings.wiring_filepath)
-    set_value_in_dae_xml(elements, DETECTOR_TABLE, settings.detector_filepath)
-    set_value_in_dae_xml(elements, SPECTRA_TABLE, settings.spectra_filepath)
-    set_value_in_dae_xml(elements, FROM, settings.mon_from)
-    set_value_in_dae_xml(elements, TO, settings.mon_to)
-    set_value_in_dae_xml(elements, MONITOR_SPECTRUM, settings.mon_spect)
-    set_value_in_dae_xml(elements, DAE_TIMING_SOURCE, settings.timing_source)
-    set_value_in_dae_xml(elements, SMP_CHOPPER_VETO, _bool_to_int_or_none(settings.smp_veto))
-    set_value_in_dae_xml(elements, TS2_PULSE_VETO, _bool_to_int_or_none(settings.ts2_veto))
-    set_value_in_dae_xml(elements, ISIS_50HZ_VETO, _bool_to_int_or_none(settings.hz50_veto))
-    set_value_in_dae_xml(elements, VETO0, _bool_to_int_or_none(settings.ext0_veto))
-    set_value_in_dae_xml(elements, VETO1, _bool_to_int_or_none(settings.ext1_veto))
-    set_value_in_dae_xml(elements, VETO2, _bool_to_int_or_none(settings.ext2_veto))
-    set_value_in_dae_xml(elements, VETO3, _bool_to_int_or_none(settings.ext3_veto))
-    set_value_in_dae_xml(elements, FERMI_CHOPPER_VETO, _bool_to_int_or_none(settings.fermi_veto))
-    set_value_in_dae_xml(elements, FC_DELAY, settings.fermi_delay)
-    set_value_in_dae_xml(elements, FC_WIDTH, settings.fermi_width)
-    set_value_in_dae_xml(elements, MUON_MS_MODE, _bool_to_int_or_none(settings.muon_ms_mode))
-    set_value_in_dae_xml(elements, MUON_CERENKOV_PULSE, settings.muon_cherenkov_pulse)
-    set_value_in_dae_xml(elements, VETO0_NAME, settings.veto_0_name)
-    set_value_in_dae_xml(elements, VETO1_NAME, settings.veto_1_name)
-    set_value_in_dae_xml(elements, VETO2_NAME, settings.veto_2_name)
-    set_value_in_dae_xml(elements, VETO3_NAME, settings.veto_3_name)
+    elements = _get_all_elements_in_xml_with_child_called_name(root)
+    _set_value_in_dae_xml(elements, WIRING_TABLE, settings.wiring_filepath)
+    _set_value_in_dae_xml(elements, DETECTOR_TABLE, settings.detector_filepath)
+    _set_value_in_dae_xml(elements, SPECTRA_TABLE, settings.spectra_filepath)
+    _set_value_in_dae_xml(elements, FROM, settings.mon_from)
+    _set_value_in_dae_xml(elements, TO, settings.mon_to)
+    _set_value_in_dae_xml(elements, MONITOR_SPECTRUM, settings.mon_spect)
+    _set_value_in_dae_xml(elements, DAE_TIMING_SOURCE, settings.timing_source)
+    _set_value_in_dae_xml(elements, SMP_CHOPPER_VETO, _bool_to_int_or_none(settings.smp_veto))
+    _set_value_in_dae_xml(elements, TS2_PULSE_VETO, _bool_to_int_or_none(settings.ts2_veto))
+    _set_value_in_dae_xml(elements, ISIS_50HZ_VETO, _bool_to_int_or_none(settings.hz50_veto))
+    _set_value_in_dae_xml(elements, VETO0, _bool_to_int_or_none(settings.ext0_veto))
+    _set_value_in_dae_xml(elements, VETO1, _bool_to_int_or_none(settings.ext1_veto))
+    _set_value_in_dae_xml(elements, VETO2, _bool_to_int_or_none(settings.ext2_veto))
+    _set_value_in_dae_xml(elements, VETO3, _bool_to_int_or_none(settings.ext3_veto))
+    _set_value_in_dae_xml(elements, FERMI_CHOPPER_VETO, _bool_to_int_or_none(settings.fermi_veto))
+    _set_value_in_dae_xml(elements, FC_DELAY, settings.fermi_delay)
+    _set_value_in_dae_xml(elements, FC_WIDTH, settings.fermi_width)
+    _set_value_in_dae_xml(elements, MUON_MS_MODE, _bool_to_int_or_none(settings.muon_ms_mode))
+    _set_value_in_dae_xml(elements, MUON_CERENKOV_PULSE, settings.muon_cherenkov_pulse)
+    _set_value_in_dae_xml(elements, VETO0_NAME, settings.veto_0_name)
+    _set_value_in_dae_xml(elements, VETO1_NAME, settings.veto_1_name)
+    _set_value_in_dae_xml(elements, VETO2_NAME, settings.veto_2_name)
+    _set_value_in_dae_xml(elements, VETO3_NAME, settings.veto_3_name)
     return tostring(root, encoding="unicode")
 
 
