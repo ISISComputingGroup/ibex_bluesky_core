@@ -11,9 +11,10 @@ from bluesky.protocols import NamedMovable, Readable
 from bluesky.utils import Msg
 from ophyd_async.plan_stubs import ensure_connected
 
-from ibex_bluesky_core.callbacks import FitMethod, ISISCallbacks
+from ibex_bluesky_core.callbacks import ISISCallbacks
 from ibex_bluesky_core.devices.block import BlockMot
 from ibex_bluesky_core.devices.simpledae import monitor_normalising_dae
+from ibex_bluesky_core.fitting import FitMethod
 from ibex_bluesky_core.utils import NamedReadableAndMovable, centred_pixel, get_pv_prefix
 
 if TYPE_CHECKING:

@@ -11,6 +11,8 @@ from ophyd_async.epics.core import epics_signal_rw
 
 T = TypeVar("T", bound=SignalDatatype)
 
+__all__ = ["compress_and_hex", "dehex_and_decompress", "isis_epics_signal_rw"]
+
 
 def dehex_and_decompress(value: bytes) -> bytes:
     """Decompresses the inputted string, assuming it is in hex encoding.

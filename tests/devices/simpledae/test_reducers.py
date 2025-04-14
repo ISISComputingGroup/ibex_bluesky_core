@@ -8,14 +8,14 @@ import pytest
 import scipp as sc
 from ophyd_async.testing import get_mock_put, set_mock_value
 
-from ibex_bluesky_core.devices.simpledae import SimpleDae
-from ibex_bluesky_core.devices.simpledae.reducers import (
+from ibex_bluesky_core.devices.simpledae import (
     VARIANCE_ADDITION,
     GoodFramesNormalizer,
     MonitorNormalizer,
     PeriodGoodFramesNormalizer,
     PeriodSpecIntegralsReducer,
     ScalarNormalizer,
+    SimpleDae,
     tof_bounded_spectra,
     wavelength_bounded_spectra,
 )

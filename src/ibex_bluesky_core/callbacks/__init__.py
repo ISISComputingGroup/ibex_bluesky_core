@@ -16,19 +16,30 @@ from bluesky.utils import Msg, make_decorator
 from event_model import RunStart
 from matplotlib.axes import Axes
 
-from ibex_bluesky_core.callbacks._utils import get_default_output_path
-from ibex_bluesky_core.callbacks.file_logger import (
+from ibex_bluesky_core.callbacks._document_logger import DocLoggingCallback
+from ibex_bluesky_core.callbacks._file_logger import (
     HumanReadableFileCallback,
 )
-from ibex_bluesky_core.callbacks.fitting import FitMethod, LiveFit
-from ibex_bluesky_core.callbacks.fitting.livefit_logger import (
-    LiveFitLogger,
-)
-from ibex_bluesky_core.callbacks.plotting import LivePlot
+from ibex_bluesky_core.callbacks._fitting import LiveFit, LiveFitLogger
+from ibex_bluesky_core.callbacks._plotting import LivePlot, show_plot
+from ibex_bluesky_core.callbacks._utils import get_default_output_path
+from ibex_bluesky_core.fitting import FitMethod
 
 logger = logging.getLogger(__name__)
 
 # ruff: noqa: PLR0913
+
+
+__all__ = [
+    "DocLoggingCallback",
+    "HumanReadableFileCallback",
+    "ISISCallbacks",
+    "LiveFit",
+    "LiveFitLogger",
+    "LivePlot",
+    "get_default_output_path",
+    "show_plot",
+]
 
 
 class ISISCallbacks:

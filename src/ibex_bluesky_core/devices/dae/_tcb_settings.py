@@ -14,10 +14,10 @@ from ibex_bluesky_core.devices import (
     dehex_and_decompress,
     isis_epics_signal_rw,
 )
-from ibex_bluesky_core.devices.dae import (
-    convert_xml_to_names_and_values,
-    get_all_elements_in_xml_with_child_called_name,
-    set_value_in_dae_xml,
+from ibex_bluesky_core.devices.dae._helpers import (
+    _convert_xml_to_names_and_values,
+    _get_all_elements_in_xml_with_child_called_name,
+    _set_value_in_dae_xml,
 )
 
 logger = logging.getLogger(__name__)
@@ -27,14 +27,14 @@ CALCULATION_METHOD = "Calculation Method"
 TIME_CHANNEL_FILE = "Time Channel File"
 
 
-class TimeUnit(Enum):
+class TCBTimeUnit(Enum):
     """Time unit for DAE TCB settings."""
 
     MICROSECONDS = 0
     NANOSECONDS = 1
 
 
-class CalculationMethod(Enum):
+class TCBCalculationMethod(Enum):
     """Calculation method for DAE TCB settings."""
 
     SPECIFY_PARAMETERS = 0
@@ -74,18 +74,18 @@ class DaeTCBSettingsData:
 
     tcb_tables: dict[int, TimeRegime] | None = None
     tcb_file: str | None = None
-    time_unit: TimeUnit | None = None
-    tcb_calculation_method: CalculationMethod | None = None
+    time_unit: TCBTimeUnit | None = None
+    tcb_calculation_method: TCBCalculationMethod | None = None
 
 
 def _convert_xml_to_tcb_settings(value: str) -> DaeTCBSettingsData:
     root = ET.fromstring(value)
-    settings_from_xml = convert_xml_to_names_and_values(root)
+    settings_from_xml = _convert_xml_to_names_and_values(root)
 
     return DaeTCBSettingsData(
         tcb_file=settings_from_xml[TIME_CHANNEL_FILE],
-        tcb_calculation_method=CalculationMethod(int(settings_from_xml[CALCULATION_METHOD])),
-        time_unit=TimeUnit(int(settings_from_xml[TIME_UNIT])),
+        tcb_calculation_method=TCBCalculationMethod(int(settings_from_xml[CALCULATION_METHOD])),
+        time_unit=TCBTimeUnit(int(settings_from_xml[TIME_UNIT])),
         tcb_tables={
             tr: TimeRegime(
                 rows={
@@ -106,17 +106,17 @@ def _convert_xml_to_tcb_settings(value: str) -> DaeTCBSettingsData:
 def _convert_tcb_settings_to_xml(current_xml: str, settings: DaeTCBSettingsData) -> str:
     # get xml here, then substitute values from the dataclasses
     root = ET.fromstring(current_xml)
-    elements = get_all_elements_in_xml_with_child_called_name(root)
-    set_value_in_dae_xml(elements, TIME_CHANNEL_FILE, settings.tcb_file)
-    set_value_in_dae_xml(elements, CALCULATION_METHOD, settings.tcb_calculation_method)
-    set_value_in_dae_xml(elements, TIME_UNIT, settings.time_unit)
+    elements = _get_all_elements_in_xml_with_child_called_name(root)
+    _set_value_in_dae_xml(elements, TIME_CHANNEL_FILE, settings.tcb_file)
+    _set_value_in_dae_xml(elements, CALCULATION_METHOD, settings.tcb_calculation_method)
+    _set_value_in_dae_xml(elements, TIME_UNIT, settings.time_unit)
     if settings.tcb_tables is not None:
         for tr, regime in settings.tcb_tables.items():
             for r, row in regime.rows.items():
-                set_value_in_dae_xml(elements, f"TR{tr} From {r}", row.from_)
-                set_value_in_dae_xml(elements, f"TR{tr} To {r}", row.to)
-                set_value_in_dae_xml(elements, f"TR{tr} Steps {r}", row.steps)
-                set_value_in_dae_xml(elements, f"TR{tr} In Mode {r}", row.mode)
+                _set_value_in_dae_xml(elements, f"TR{tr} From {r}", row.from_)
+                _set_value_in_dae_xml(elements, f"TR{tr} To {r}", row.to)
+                _set_value_in_dae_xml(elements, f"TR{tr} Steps {r}", row.steps)
+                _set_value_in_dae_xml(elements, f"TR{tr} In Mode {r}", row.mode)
     return tostring(root, encoding="unicode")
 
 

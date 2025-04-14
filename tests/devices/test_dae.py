@@ -12,33 +12,33 @@ from bluesky.run_engine import RunEngine
 from ophyd_async.testing import get_mock_put, set_mock_value
 
 from ibex_bluesky_core.devices import compress_and_hex, dehex_and_decompress
-from ibex_bluesky_core.devices.dae import convert_xml_to_names_and_values, set_value_in_dae_xml
-from ibex_bluesky_core.devices.dae.dae import Dae, RunstateEnum
-from ibex_bluesky_core.devices.dae.dae_controls import BeginRunExBits
-from ibex_bluesky_core.devices.dae.dae_period_settings import (
+from ibex_bluesky_core.devices.dae import (
+    BeginRunExBits,
+    Dae,
     DaePeriodSettings,
     DaePeriodSettingsData,
-    PeriodSource,
-    PeriodType,
-    SinglePeriodSettings,
-    _convert_period_settings_to_xml,
-)
-from ibex_bluesky_core.devices.dae.dae_settings import (
     DaeSettings,
     DaeSettingsData,
-    TimingSource,
-)
-from ibex_bluesky_core.devices.dae.dae_spectra import DaeSpectra
-from ibex_bluesky_core.devices.dae.dae_tcb_settings import (
-    CalculationMethod,
+    DaeSpectra,
     DaeTCBSettings,
     DaeTCBSettingsData,
+    DaeTimingSource,
+    PeriodSource,
+    PeriodType,
+    RunstateEnum,
+    SinglePeriodSettings,
+    TCBCalculationMethod,
+    TCBTimeUnit,
     TimeRegime,
     TimeRegimeMode,
     TimeRegimeRow,
-    TimeUnit,
-    _convert_tcb_settings_to_xml,
 )
+from ibex_bluesky_core.devices.dae._helpers import (
+    _convert_xml_to_names_and_values,
+    _set_value_in_dae_xml,
+)
+from ibex_bluesky_core.devices.dae._period_settings import _convert_period_settings_to_xml
+from ibex_bluesky_core.devices.dae._tcb_settings import _convert_tcb_settings_to_xml
 from tests.conftest import MOCK_PREFIX
 from tests.devices.dae_testing_data import (
     dae_settings_template,
@@ -124,7 +124,7 @@ def test_set_value_in_xml_sets_a_value():
 
     root = ET.fromstring(INITIAL_XML.format(name=name, initial_val=initial_val))
     value_to_set = "234"
-    set_value_in_dae_xml(root.findall(".//child"), name, value_to_set)
+    _set_value_in_dae_xml(root.findall(".//child"), name, value_to_set)
 
     assert root[0][1].text == value_to_set
 
@@ -138,7 +138,7 @@ def test_set_value_with_enum_in_xml_sets_a_value():
 
     root = ET.fromstring(INITIAL_XML.format(name=name, initial_val=initial_val))
     value_to_set = SomeEnum.TEST
-    set_value_in_dae_xml(root.findall(".//child"), name, value_to_set)
+    _set_value_in_dae_xml(root.findall(".//child"), name, value_to_set)
 
     assert root[0][1].text == value_to_set.value
 
@@ -148,7 +148,7 @@ def test_set_value_with_none_in_xml_doesnt_set_a_value():
     initial_val = "456"
 
     root = ET.fromstring(INITIAL_XML.format(name=name, initial_val=initial_val))
-    set_value_in_dae_xml(root.findall(".//child"), name, None)
+    _set_value_in_dae_xml(root.findall(".//child"), name, None)
 
     assert root[0][1].text == initial_val
 
@@ -158,7 +158,7 @@ def test_set_value_with_no_valid_children_in_xml_doesnt_set_a_value():
     initial_val = "456"
 
     root = ET.fromstring(INITIAL_XML.format(name=name, initial_val=initial_val))
-    set_value_in_dae_xml(root.findall(".//child"), name + "thisisnowinvalid", "789")
+    _set_value_in_dae_xml(root.findall(".//child"), name + "thisisnowinvalid", "789")
 
     assert root[0][1].text == initial_val
 
@@ -179,7 +179,7 @@ def test_get_names_and_values_from_xml():
         </element>
         """
     root = ET.fromstring(test_xml)
-    ret = convert_xml_to_names_and_values(root)
+    ret = _convert_xml_to_names_and_values(root)
     assert ret[name] == initial_val
 
 
@@ -194,7 +194,7 @@ def test_get_names_and_values_without_name_does_not_get_parsed():
         </Cluster>
         """
     root = ET.fromstring(test_xml)
-    ret = convert_xml_to_names_and_values(root)
+    ret = _convert_xml_to_names_and_values(root)
     assert not ret
 
 
@@ -209,7 +209,7 @@ def test_get_names_and_values_without_value_does_not_get_parsed():
         </Cluster>
         """
     root = ET.fromstring(test_xml)
-    ret = convert_xml_to_names_and_values(root)
+    ret = _convert_xml_to_names_and_values(root)
     assert ret == {"test": None}
 
 
@@ -230,7 +230,7 @@ async def test_dae_settings_get_parsed_correctly():
     expected_muon_ck_pulse = 3
     expected_fc_delay = 1
     expected_fc_width = 2
-    expected_timing_source = TimingSource.ISIS
+    expected_timing_source = DaeTimingSource.ISIS
     expected_from = 0
     expected_to = 1000
     expected_mon_spec = 555
@@ -409,8 +409,8 @@ async def test_period_settings_get_parsed_correctly():
 
 async def test_tcb_settings_get_parsed_correctly():
     expected_tcb_file = "C:\\tcb.dat"
-    expected_calc_method = CalculationMethod.SPECIFY_PARAMETERS
-    expected_time_unit = TimeUnit.MICROSECONDS
+    expected_calc_method = TCBCalculationMethod.SPECIFY_PARAMETERS
+    expected_time_unit = TCBTimeUnit.MICROSECONDS
 
     expected_tr1_from_1 = 0
     expected_tr1_to_1 = 10

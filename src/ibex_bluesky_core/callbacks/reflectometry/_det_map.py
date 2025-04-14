@@ -32,10 +32,12 @@ from bluesky.callbacks.stream import LiveDispatcher
 from event_model import Event, EventDescriptor, RunStart, RunStop
 from matplotlib.axes import Axes
 
-from ibex_bluesky_core.callbacks.plotting import show_plot
-from ibex_bluesky_core.devices.simpledae.reducers import VARIANCE_ADDITION
+from ibex_bluesky_core.callbacks import show_plot
+from ibex_bluesky_core.devices.simpledae import VARIANCE_ADDITION
 
 logger = logging.getLogger(__name__)
+
+__all__ = ["DetMapAngleScanLiveDispatcher", "DetMapHeightScanLiveDispatcher", "LivePColorMesh"]
 
 
 class DetMapHeightScanLiveDispatcher(LiveDispatcher):

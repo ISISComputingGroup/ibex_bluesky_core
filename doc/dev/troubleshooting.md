@@ -47,9 +47,9 @@ Scientist-facing output files are written to `<isis share>\inst$\NDX<inst>\user\
 default.
 
 Custom file-output paths can be specified by passing extra arguments to 
-{py:obj}`HumanReadableFileCallback<ibex_bluesky_core.callbacks.file_logger.HumanReadableFileCallback>` 
+{py:obj}`HumanReadableFileCallback<ibex_bluesky_core.callbacks.HumanReadableFileCallback>` 
 for the "human-readable" files, or 
-{py:obj}`LiveFitLogger<ibex_bluesky_core.callbacks.fitting.livefit_logger.LiveFitLogger>` 
+{py:obj}`LiveFitLogger<ibex_bluesky_core.callbacks.LiveFitLogger>` 
 for the fit output files. These callbacks may be hidden behind
 {py:obj}`ISISCallbacks<ibex_bluesky_core.callbacks.ISISCallbacks>` which also allows specifying output paths.
 
@@ -62,7 +62,7 @@ Raw documents emitted by bluesky are stored in `C:\Instrument\Var\logs\bluesky\r
 data emitted by bluesky scans. The filenames in this directory correspond to bluesky's scan ID, which is printed to 
 the console at the end of each scan, and is also included as metadata in the scientist-facing output files.
 
-These files are written by {py:obj}`ibex_bluesky_core.callbacks.document_logger.DocLoggingCallback`, which is subscribed
+These files are written by {py:obj}`ibex_bluesky_core.callbacks.DocLoggingCallback`, which is subscribed
 to the run engine by default in {py:obj}`ibex_bluesky_core.run_engine.get_run_engine`.
 
 ```{note}
