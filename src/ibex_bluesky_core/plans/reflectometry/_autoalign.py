@@ -154,7 +154,7 @@ def _optimise_axis_over_range(  # noqa: PLR0913 PLR0917
             return icc, False
 
     _print_and_log(f"Moving {alignment_param.name} to {alignment_param_value}.")
-    yield from bps.mv(alignment_param, alignment_param_value)  # type: ignore
+    yield from bps.mv(alignment_param, alignment_param_value)
 
     return icc, True
 
