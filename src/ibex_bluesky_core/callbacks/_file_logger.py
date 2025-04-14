@@ -34,6 +34,9 @@ from ibex_bluesky_core.callbacks._utils import (
 logger = logging.getLogger(__name__)
 
 
+__all__ = ["HumanReadableFileCallback"]
+
+
 class HumanReadableFileCallback(CallbackBase):
     """Outputs bluesky runs to human-readable output files in the specified directory path."""
 

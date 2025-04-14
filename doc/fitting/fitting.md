@@ -161,7 +161,7 @@ from ibex_bluesky_core.fitting import FitMethod, Linear
 
 
 def different_model(x: float, c1: float, c0: float) -> float:
-  return c1 * x + c0 ** 2  # y = mx + (c ** 2)
+    return c1 * x + c0 ** 2  # y = mx + (c ** 2)
 
 
 fit_method = FitMethod(different_model, Linear.guess())
@@ -183,12 +183,12 @@ from ibex_bluesky_core.fitting import FitMethod, Linear
 # It always guesses that the linear function is y = x
 
 def different_guess(x: float, c1: float, c0: float) -> float:
-  init_guess = {
-    "c1": lmfit.Parameter("c1", 1),  # gradient
-    "c0": lmfit.Parameter("c0", 0),  # y - intercept
-  }
-
-  return init_guess
+    init_guess = {
+      "c1": lmfit.Parameter("c1", 1),  # gradient
+      "c0": lmfit.Parameter("c0", 0),  # y - intercept
+    }
+  
+    return init_guess
 
 
 fit_method = FitMethod(Linear.model(), different_guess)

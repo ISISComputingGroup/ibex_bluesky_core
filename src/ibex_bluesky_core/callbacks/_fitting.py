@@ -27,6 +27,8 @@ from ibex_bluesky_core.fitting import FitMethod
 
 logger = logging.getLogger(__name__)
 
+__all__ = ["LiveFit", "LiveFitLogger"]
+
 
 @make_class_safe(logger=logger)  # pyright: ignore (pyright doesn't understand this decorator)
 class LiveFit(_DefaultLiveFit):

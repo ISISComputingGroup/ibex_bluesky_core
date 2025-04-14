@@ -37,6 +37,8 @@ from ibex_bluesky_core.devices.simpledae import VARIANCE_ADDITION
 
 logger = logging.getLogger(__name__)
 
+__all__ = ["DetMapAngleScanLiveDispatcher", "DetMapHeightScanLiveDispatcher", "LivePColorMesh"]
+
 
 class DetMapHeightScanLiveDispatcher(LiveDispatcher):
     """LiveDispatcher for reflectometry height scans.
