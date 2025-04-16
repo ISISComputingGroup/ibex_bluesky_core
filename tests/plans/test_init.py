@@ -7,15 +7,16 @@ from ophyd_async.plan_stubs import ensure_connected
 from ophyd_async.sim import SimMotor
 from ophyd_async.testing import callback_on_mock_put, set_mock_value
 
-from ibex_bluesky_core.callbacks.fitting.fitting_utils import Gaussian
 from ibex_bluesky_core.devices.block import BlockMot, BlockR
 from ibex_bluesky_core.devices.simpledae import (
+    Controller,
+    MonitorNormalizer,
     PeriodPerPointController,
     RunPerPointController,
     SimpleDae,
+    Waiter,
 )
-from ibex_bluesky_core.devices.simpledae.reducers import MonitorNormalizer
-from ibex_bluesky_core.devices.simpledae.strategies import Controller, Waiter
+from ibex_bluesky_core.fitting import Gaussian
 from ibex_bluesky_core.plans import (
     adaptive_scan,
     motor_adaptive_scan,

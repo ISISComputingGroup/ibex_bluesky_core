@@ -6,8 +6,8 @@ import lmfit
 import numpy as np
 import numpy.typing as npt
 
-from ibex_bluesky_core.callbacks.fitting import FitMethod, LiveFit
-from ibex_bluesky_core.callbacks.fitting.fitting_utils import Linear
+from ibex_bluesky_core.callbacks import LiveFit
+from ibex_bluesky_core.fitting import FitMethod, Linear
 
 
 def test_guess_called():

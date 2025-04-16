@@ -12,10 +12,10 @@ from ophyd_async.core import AsyncStatus, Device, SignalRW
 from ibex_bluesky_core.devices import (
     isis_epics_signal_rw,
 )
-from ibex_bluesky_core.devices.dae import (
-    convert_xml_to_names_and_values,
-    get_all_elements_in_xml_with_child_called_name,
-    set_value_in_dae_xml,
+from ibex_bluesky_core.devices.dae._helpers import (
+    _convert_xml_to_names_and_values,
+    _get_all_elements_in_xml_with_child_called_name,
+    _set_value_in_dae_xml,
 )
 
 logger = logging.getLogger(__name__)
@@ -68,7 +68,7 @@ class DaePeriodSettingsData:
 
 def _convert_xml_to_period_settings(value: str) -> DaePeriodSettingsData:
     root = ET.fromstring(value)
-    settings_from_xml = convert_xml_to_names_and_values(root)
+    settings_from_xml = _convert_xml_to_names_and_values(root)
     return DaePeriodSettingsData(
         periods_soft_num=int(settings_from_xml[PERIODS_SOFT_NUM]),
         periods_type=PeriodType(int(settings_from_xml[PERIOD_TYPE])),
@@ -91,20 +91,20 @@ def _convert_xml_to_period_settings(value: str) -> DaePeriodSettingsData:
 def _convert_period_settings_to_xml(current_xml: str, value: DaePeriodSettingsData) -> str:
     # get xml here, then substitute values from the dataclasses
     root = ET.fromstring(current_xml)
-    elements = get_all_elements_in_xml_with_child_called_name(root)
-    set_value_in_dae_xml(elements, PERIODS_SOFT_NUM, value.periods_soft_num)
-    set_value_in_dae_xml(elements, PERIOD_TYPE, value.periods_type)
-    set_value_in_dae_xml(elements, PERIOD_SETUP_SOURCE, value.periods_src)
-    set_value_in_dae_xml(elements, PERIOD_FILE, value.periods_file)
-    set_value_in_dae_xml(elements, PERIOD_SEQUENCES, value.periods_seq)
-    set_value_in_dae_xml(elements, OUTPUT_DELAY, value.periods_delay)
+    elements = _get_all_elements_in_xml_with_child_called_name(root)
+    _set_value_in_dae_xml(elements, PERIODS_SOFT_NUM, value.periods_soft_num)
+    _set_value_in_dae_xml(elements, PERIOD_TYPE, value.periods_type)
+    _set_value_in_dae_xml(elements, PERIOD_SETUP_SOURCE, value.periods_src)
+    _set_value_in_dae_xml(elements, PERIOD_FILE, value.periods_file)
+    _set_value_in_dae_xml(elements, PERIOD_SEQUENCES, value.periods_seq)
+    _set_value_in_dae_xml(elements, OUTPUT_DELAY, value.periods_delay)
     if value.periods_settings is not None:
         for i in range(1, 8 + 1):
             period = value.periods_settings[i - 1]
-            set_value_in_dae_xml(elements, f"Type {i}", period.type)
-            set_value_in_dae_xml(elements, f"Frames {i}", period.frames)
-            set_value_in_dae_xml(elements, f"Output {i}", period.output)
-            set_value_in_dae_xml(elements, f"Label {i}", period.label)
+            _set_value_in_dae_xml(elements, f"Type {i}", period.type)
+            _set_value_in_dae_xml(elements, f"Frames {i}", period.frames)
+            _set_value_in_dae_xml(elements, f"Output {i}", period.output)
+            _set_value_in_dae_xml(elements, f"Label {i}", period.label)
     return tostring(root, encoding="unicode")
 
 

@@ -11,7 +11,7 @@ from ophyd_async.core import (
     wait_for_value,
 )
 
-from ibex_bluesky_core.devices.simpledae.strategies import Waiter
+from ibex_bluesky_core.devices.simpledae._strategies import Waiter
 
 logger = logging.getLogger(__name__)
 

@@ -7,6 +7,8 @@ import orjson
 
 log_location = Path("C:\\") / "instrument" / "var" / "logs" / "bluesky" / "raw_documents"
 
+__all__ = ["DocLoggingCallback"]
+
 
 class DocLoggingCallback:
     """Logs all documents under log_location, with the file name of their UID (.log)."""

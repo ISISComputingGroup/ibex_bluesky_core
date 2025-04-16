@@ -11,6 +11,8 @@ from event_model.documents import Event, RunStart
 
 logger = logging.getLogger(__name__)
 
+__all__ = ["LivePlot", "show_plot"]
+
 
 def show_plot() -> None:
     """Call plt.show().
