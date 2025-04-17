@@ -95,7 +95,7 @@ class PlotPNGSaver(QtAwareCallback):
         self,
         x: str,
         y: str,
-        ax: Axes | None,
+        ax: Axes,
         postfix: str,
         output_dir: str | os.PathLike[str] | None,
     ) -> None:
@@ -110,13 +110,19 @@ class PlotPNGSaver(QtAwareCallback):
 
         """
         super().__init__()
-        if ax is None:
-            raise ValueError("ax is None")
         self.x = x
         self.y = y
         self.ax = ax
         self.postfix = postfix
         self.output_dir = Path(output_dir or get_default_output_path())
+        self.filename = None
+
+    def start(self, doc: RunStart) -> None:
+        self.filename = (
+            self.output_dir
+            / f"{_get_rb_num(doc)}"
+            / f"{get_instrument()}_{self.x}_{self.y}_{format_time(doc)}Z{self.postfix}.png"
+        )
 
     def stop(self, doc: RunStop) -> None:
         """Write the current plot to a PNG file.
@@ -125,10 +131,5 @@ class PlotPNGSaver(QtAwareCallback):
             doc: The stop document.
 
         """
-        rb_num = _get_rb_num(doc)
-        filename = (
-            self.output_dir
-            / f"{rb_num}"
-            / f"{get_instrument()}_{self.x}_{self.y}_{format_time(doc)}Z{self.postfix}.png"
-        )
-        self.ax.figure.savefig(filename, format="png")  # pyright: ignore [reportAttributeAccessIssue, reportOptionalMemberAccess]
+
+        self.ax.figure.savefig(self.filename, format="png")  # pyright: ignore [reportAttributeAccessIssue, reportOptionalMemberAccess]
