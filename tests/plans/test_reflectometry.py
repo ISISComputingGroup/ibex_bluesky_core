@@ -95,7 +95,9 @@ def test_refl_adaptive_scan_creates_refl_param_device_and_simpledae(RE, prefix):
 # Auto-Alignment Utils
 
 
-def test_found_problem_callback_is_called_if_problem(RE, simpledae, prefix, monkeypatch):
+def test_optimise_axis_against_intensity_found_problem_callback_is_called_if_problem(
+    RE, simpledae, prefix, monkeypatch
+):
     """Test that if a problem is found then the problem callback plan is run"""
 
     def plan(mock) -> Generator[Msg, None, None]:
@@ -143,7 +145,9 @@ def test_found_problem_callback_is_called_if_problem(RE, simpledae, prefix, monk
         (0, None),
     ],
 )
-def test_alignment_param_value_outside_of_scan_range_returns_problem(param_value, problem_str):
+def test_optimise_axis_against_intensity_alignment_param_value_outside_scan_range_returns_problem(
+    param_value, problem_str
+):
     """Test that if the optimised value is outside of the scan range then it is reported"""
     with (
         patch("lmfit.model.ModelResult") as mr,
@@ -160,7 +164,7 @@ def test_alignment_param_value_outside_of_scan_range_returns_problem(param_value
 
 
 @pytest.mark.parametrize("problem", [False, True])
-def test_that_user_checks_are_called_when_provided(problem):
+def test_check_parameter_that_user_checks_are_called_when_provided(problem):
     """Test that a user provided check function on the optimised value is always ran"""
     mock = MagicMock()
 
@@ -182,7 +186,9 @@ def test_that_user_checks_are_called_when_provided(problem):
         )
 
 
-def test_that_if_no_problem_found_then_motor_is_moved(RE, prefix, simpledae):
+def test_optimise_axis_against_intensity_that_if_no_problem_found_then_motor_is_moved(
+    RE, prefix, simpledae
+):
     """Test that if no problems are found with the optimised
     value then move the motor to it
     """
@@ -234,7 +240,9 @@ def test_that_if_no_problem_found_then_motor_is_moved(RE, prefix, simpledae):
         mv.assert_called_once()
 
 
-def test_that_if_problem_found_and_type_1_then_re_scan(RE, prefix, simpledae, monkeypatch):
+def test_optimise_axis_against_intensity_if_problem_found_and_type_1_then_re_scan(
+    RE, prefix, simpledae, monkeypatch
+):
     """Test that if a problem is found, and the user types 1, then rescan.
     Then if they type 2, moves to value.
     """
@@ -330,7 +338,39 @@ def test_that_if_problem_found_and_type_random_then_re_ask(RE, prefix, simpledae
         assert scan.call_count == 2
 
 
-async def test_plan_exits_if_three_selected_when_optimising_axis(
+async def test_optimise_axis_against_intensity_exits_if_three_selected_when_optimising_axis(
+    RE, prefix, simpledae, monkeypatch
+):
+    with (
+        patch("ibex_bluesky_core.devices.reflectometry.get_pv_prefix", return_value=prefix),
+        patch(
+            "ibex_bluesky_core.plans.reflectometry._autoalign.scan",
+            side_effect=[_fake_scan(), _fake_scan()],
+        ) as scan,
+    ):
+        param = ReflParameter(prefix=prefix, name="S1VG", changing_timeout_s=60)
+        await param.connect(mock=True)
+        monkeypatch.setattr("builtins.input", lambda str: "3")
+        with pytest.raises(RunEngineInterrupted):
+            RE(
+                optimise_axis_against_intensity(
+                    simpledae,
+                    alignment_param=param,
+                    rel_scan_ranges=[10.0],
+                    fit_method=SlitScan().fit(),
+                    fit_param="",
+                )
+            )
+
+        assert RE.state == "paused"
+
+        monkeypatch.setattr("builtins.input", lambda str: "2")
+        RE.resume()
+        assert scan.call_count == 2
+        assert RE.state == "idle"
+
+
+async def test_optimise_axis_against_intensity_pauses_then_rescans_on_resume_and_can_pause_again(
     RE, prefix, simpledae, monkeypatch
 ):
     with (
@@ -353,3 +393,10 @@ async def test_plan_exits_if_three_selected_when_optimising_axis(
                     fit_param="",
                 )
             )
+
+        assert RE.state == "paused"
+
+        # pause again when prompted
+        monkeypatch.setattr("builtins.input", lambda str: "3")
+        with pytest.raises(RunEngineInterrupted):
+            RE.resume()

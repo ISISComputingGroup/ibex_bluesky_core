@@ -148,7 +148,7 @@ def _optimise_axis_over_range(  # noqa: PLR0913 PLR0917
         choice = yield from prompt_user_for_choice(
             prompt=f"Type '1' if you would like to re-scan,\n '2' to "
             f"move {alignment_param.name} to {alignment_param_value} and keep going, "
-            f"or\n '3' to pause now - use RE.resume() to continue.\n",
+            f"or\n '3' to pause now - use RE.resume() to rescan if you wish.\n",
             choices=["1", "2", "3"],
         )
         if choice == "1":
