@@ -21,7 +21,7 @@ from ibex_bluesky_core.callbacks._file_logger import (
     HumanReadableFileCallback,
 )
 from ibex_bluesky_core.callbacks._fitting import LiveFit, LiveFitLogger
-from ibex_bluesky_core.callbacks._plotting import LivePlot, show_plot, PlotPNGSaver
+from ibex_bluesky_core.callbacks._plotting import LivePlot, PlotPNGSaver, show_plot
 from ibex_bluesky_core.callbacks._utils import get_default_output_path
 from ibex_bluesky_core.fitting import FitMethod
 
@@ -37,6 +37,7 @@ __all__ = [
     "LiveFit",
     "LiveFitLogger",
     "LivePlot",
+    "PlotPNGSaver",
     "get_default_output_path",
     "show_plot",
 ]
@@ -45,7 +46,7 @@ __all__ = [
 class ISISCallbacks:
     """ISIS standard callbacks for use within plans."""
 
-    def __init__(
+    def __init__(  # noqa: PLR0912
         self,
         *,
         x: str,

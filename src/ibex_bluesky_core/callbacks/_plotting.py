@@ -23,7 +23,7 @@ from ibex_bluesky_core.callbacks._utils import (
 
 logger = logging.getLogger(__name__)
 
-__all__ = ["LivePlot", "show_plot", "PlotPNGSaver"]
+__all__ = ["LivePlot", "PlotPNGSaver", "show_plot"]
 
 
 def show_plot() -> None:
