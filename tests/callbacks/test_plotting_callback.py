@@ -1,6 +1,7 @@
 from typing import Any
 from unittest.mock import MagicMock, patch
 
+import pytest
 from matplotlib import pyplot as plt
 from matplotlib.axes import Axes
 from matplotlib.figure import Figure
@@ -123,3 +124,11 @@ def test_errorbars_not_created_if_no_yerr():
 
     lp.update_plot()
     assert not ax.errorbar.called
+
+
+def test_no_filename_raises():
+    ax = MagicMock(spec=Axes)
+    ax.figure = MagicMock(spec=Figure)
+    s = PlotPNGSaver(x="x", y="y", ax=ax, postfix="123", output_dir="")
+    with pytest.raises(ValueError, match=r"No filename specified for plot PNG"):
+        s.stop({"uid": "0"})
