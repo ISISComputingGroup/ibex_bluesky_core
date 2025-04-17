@@ -21,7 +21,7 @@ from ibex_bluesky_core.callbacks._file_logger import (
     HumanReadableFileCallback,
 )
 from ibex_bluesky_core.callbacks._fitting import LiveFit, LiveFitLogger
-from ibex_bluesky_core.callbacks._plotting import LivePlot, show_plot
+from ibex_bluesky_core.callbacks._plotting import LivePlot, PlotPNGSaver, show_plot
 from ibex_bluesky_core.callbacks._utils import get_default_output_path
 from ibex_bluesky_core.fitting import FitMethod
 
@@ -37,6 +37,7 @@ __all__ = [
     "LiveFit",
     "LiveFitLogger",
     "LivePlot",
+    "PlotPNGSaver",
     "get_default_output_path",
     "show_plot",
 ]
@@ -45,7 +46,7 @@ __all__ = [
 class ISISCallbacks:
     """ISIS standard callbacks for use within plans."""
 
-    def __init__(
+    def __init__(  # noqa: PLR0912
         self,
         *,
         x: str,
@@ -66,6 +67,9 @@ class ISISCallbacks:
         live_fit_logger_output_dir: str | PathLike[str] | None = None,
         live_fit_logger_postfix: str = "",
         human_readable_file_postfix: str = "",
+        save_plot_to_png: bool = True,
+        plot_png_output_dir: str | PathLike[str] | None = None,
+        plot_png_postfix: str = "",
     ) -> None:
         """A collection of ISIS standard callbacks for use within plans.
 
@@ -124,7 +128,11 @@ class ISISCallbacks:
             live_fit_logger_output_dir: the output directory for live fit logger.
             live_fit_logger_postfix: the postfix to add to live fit logger.
             human_readable_file_postfix: optional postfix to add to human-readable file logger.
+            save_plot_to_png: whether to save the plot to a PNG file.
+            plot_png_output_dir: the output directory for plotting PNG files.
+            plot_png_postfix: the postfix to add to PNG plot files.
         """  # noqa
+        fig = None
         self._subs = []
         self._peak_stats = None
         self._live_fit = None
@@ -213,6 +221,16 @@ class ISISCallbacks:
                     yerr=yerr,
                 )
             )
+            if save_plot_to_png and ax is not None:
+                self._subs.append(
+                    PlotPNGSaver(
+                        x=x,
+                        y=y,
+                        ax=ax,
+                        output_dir=plot_png_output_dir,
+                        postfix=plot_png_postfix,
+                    )
+                )
 
     @property
     def live_fit(self) -> LiveFit:
