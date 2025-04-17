@@ -220,7 +220,7 @@ class ISISCallbacks:
                     yerr=yerr,
                 )
             )
-            if save_plot_to_png:
+            if save_plot_to_png and ax is not None:
                 self._subs.append(
                     PlotPNGSaver(
                         x=x,

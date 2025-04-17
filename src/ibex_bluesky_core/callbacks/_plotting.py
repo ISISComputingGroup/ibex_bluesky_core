@@ -133,5 +133,7 @@ class PlotPNGSaver(QtAwareCallback):
             doc: The stop document.
 
         """
+        if self.filename is None:
+            raise ValueError("No filename specified for plot PNG")
 
-        self.ax.figure.savefig(self.filename, format="png")  # pyright: ignore [reportAttributeAccessIssue, reportOptionalMemberAccess]
+        self.ax.figure.savefig(self.filename, format="png")  # pyright: ignore [reportAttributeAccessIssue]
