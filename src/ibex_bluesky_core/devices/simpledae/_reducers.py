@@ -20,8 +20,8 @@ from ophyd_async.core import (
 )
 from scippneutron import conversion
 
-from ibex_bluesky_core.devices.dae.dae_spectra import DaeSpectra
-from ibex_bluesky_core.devices.simpledae.strategies import Reducer
+from ibex_bluesky_core.devices.dae import DaeSpectra
+from ibex_bluesky_core.devices.simpledae._strategies import Reducer
 
 logger = logging.getLogger(__name__)
 
@@ -30,6 +30,7 @@ if TYPE_CHECKING:
 
 
 INTENSITY_PRECISION = 6
+VARIANCE_ADDITION = 0.5
 
 
 async def sum_spectra(spectra: Collection[DaeSpectra]) -> sc.Variable | sc.DataArray:
@@ -176,20 +177,21 @@ class ScalarNormalizer(Reducer, StandardReadable, ABC):
             self.sum_detector(self.detectors.values()), self.denominator(dae).get_value()
         )
 
+        if denominator == 0.0:
+            raise ValueError("Cannot normalize; denominator is zero. Check beamline configuration.")
+
+        # See doc\architectural_decisions\005-variance-addition.md
+        # for justification of this addition to variances.
+        summed_counts.variance += VARIANCE_ADDITION
+
+        intensity = summed_counts / denominator
+
         self._det_counts_setter(float(summed_counts.value))
+        self._det_counts_stddev_setter(math.sqrt(summed_counts.variance))
 
-        if denominator == 0.0:  # To avoid zero division
-            self._intensity_setter(0.0)
-            intensity_var = 0.0
-        else:
-            intensity = summed_counts / denominator
-            self._intensity_setter(intensity.value)
-            intensity_var = intensity.variance if intensity.variance is not None else 0.0
+        self._intensity_setter(intensity.value)
+        self._intensity_stddev_setter(math.sqrt(intensity.variance))
 
-        detector_counts_var = 0.0 if summed_counts.variance is None else summed_counts.variance
-
-        self._det_counts_stddev_setter(math.sqrt(detector_counts_var))
-        self._intensity_stddev_setter(math.sqrt(intensity_var))
         logger.info("reduction complete")
 
     def additional_readable_signals(self, dae: "SimpleDae") -> list[Device]:
@@ -284,25 +286,25 @@ class MonitorNormalizer(Reducer, StandardReadable):
             self.sum_monitor(self.monitors.values()),
         )
 
-        if monitor_counts.value == 0.0:  # To avoid zero division
-            self._intensity_setter(0.0)
-            intensity_var = 0.0
+        if monitor_counts.value == 0.0:
+            raise ValueError(
+                "Cannot normalize; got zero monitor counts. Check beamline configuration."
+            )
 
-        else:
-            intensity = detector_counts / monitor_counts
-            self._intensity_setter(float(intensity.value))
-            intensity_var = intensity.variance if intensity.variance is not None else 0.0
+        # See doc\architectural_decisions\005-variance-addition.md
+        # for justification of this addition to variances.
+        detector_counts.variance += VARIANCE_ADDITION
 
-        self._intensity_stddev_setter(math.sqrt(intensity_var))
+        intensity = detector_counts / monitor_counts
 
+        self._intensity_setter(float(intensity.value))
         self._det_counts_setter(float(detector_counts.value))
         self._mon_counts_setter(float(monitor_counts.value))
 
-        detector_counts_var = 0.0 if detector_counts.variance is None else detector_counts.variance
-        monitor_counts_var = 0.0 if monitor_counts.variance is None else monitor_counts.variance
+        self._intensity_stddev_setter(math.sqrt(intensity.variance))
+        self._det_counts_stddev_setter(math.sqrt(detector_counts.variance))
+        self._mon_counts_stddev_setter(math.sqrt(monitor_counts.variance))
 
-        self._det_counts_stddev_setter(math.sqrt(detector_counts_var))
-        self._mon_counts_stddev_setter(math.sqrt(monitor_counts_var))
         logger.info("reduction complete")
 
     def additional_readable_signals(self, dae: "SimpleDae") -> list[Device]:

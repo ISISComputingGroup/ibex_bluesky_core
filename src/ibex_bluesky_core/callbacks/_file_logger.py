@@ -11,7 +11,6 @@ from event_model.documents.event_descriptor import EventDescriptor
 from event_model.documents.run_start import RunStart
 from event_model.documents.run_stop import RunStop
 
-from ibex_bluesky_core.callbacks import get_default_output_path
 from ibex_bluesky_core.callbacks._utils import (
     DATA,
     DATA_KEYS,
@@ -26,10 +25,14 @@ from ibex_bluesky_core.callbacks._utils import (
     UNITS,
     _get_rb_num,
     format_time,
+    get_default_output_path,
     get_instrument,
 )
 
 logger = logging.getLogger(__name__)
+
+
+__all__ = ["HumanReadableFileCallback"]
 
 
 class HumanReadableFileCallback(CallbackBase):

@@ -11,9 +11,10 @@ from bluesky.protocols import NamedMovable, Readable
 from bluesky.utils import Msg
 from ophyd_async.plan_stubs import ensure_connected
 
-from ibex_bluesky_core.callbacks import FitMethod, ISISCallbacks
+from ibex_bluesky_core.callbacks import ISISCallbacks
 from ibex_bluesky_core.devices.block import BlockMot
 from ibex_bluesky_core.devices.simpledae import monitor_normalising_dae
+from ibex_bluesky_core.fitting import FitMethod
 from ibex_bluesky_core.utils import NamedReadableAndMovable, centred_pixel, get_pv_prefix
 
 if TYPE_CHECKING:
@@ -29,7 +30,7 @@ def scan(  # noqa: PLR0913
     stop: float,
     num: int,
     *,
-    model: FitMethod,
+    model: FitMethod | None = None,
     periods: bool = True,
     save_run: bool = False,
     rel: bool = False,
@@ -68,19 +69,17 @@ def scan(  # noqa: PLR0913
 
 
 def _set_up_fields_and_icc(
-    block: NamedMovable[Any], dae: "SimpleDae", model: FitMethod, periods: bool, save_run: bool
+    block: NamedMovable[Any],
+    dae: "SimpleDae",
+    model: FitMethod | None,
+    periods: bool,
+    save_run: bool,
 ) -> ISISCallbacks:
     fields = [block.name]
     if periods:
         fields.append(dae.period_num.name)  # type: ignore
     elif save_run:
         fields.append(dae.controller.run_number.name)  # type: ignore
-    fields.extend(
-        [
-            dae.reducer.intensity.name,  # type: ignore
-            dae.reducer.intensity_stddev.name,  # type: ignore
-        ]
-    )
     icc = ISISCallbacks(
         y=dae.reducer.intensity.name,  # type: ignore
         yerr=dae.reducer.intensity_stddev.name,  # type: ignore
@@ -100,7 +99,7 @@ def adaptive_scan(  # noqa: PLR0913, PLR0917
     max_step: float,
     target_delta: float,
     *,
-    model: FitMethod,
+    model: FitMethod | None = None,
     periods: bool = True,
     save_run: bool = False,
     rel: bool = False,
@@ -164,7 +163,7 @@ def motor_scan(  # noqa: PLR0913
     frames: int,
     det: int,
     mon: int,
-    model: FitMethod,
+    model: FitMethod | None = None,
     pixel_range: int = 0,
     periods: bool = True,
     save_run: bool = False,
@@ -225,7 +224,7 @@ def motor_adaptive_scan(  # noqa: PLR0913
     frames: int,
     det: int,
     mon: int,
-    model: FitMethod,
+    model: FitMethod | None = None,
     pixel_range: int = 0,
     periods: bool = True,
     save_run: bool = False,

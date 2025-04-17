@@ -17,20 +17,19 @@ from matplotlib.axes import Axes
 from ophyd_async.plan_stubs import ensure_connected
 
 from ibex_bluesky_core.callbacks import ISISCallbacks, LiveFit
-from ibex_bluesky_core.callbacks.fitting.fitting_utils import Gaussian
 from ibex_bluesky_core.callbacks.reflectometry import (
     DetMapAngleScanLiveDispatcher,
     DetMapHeightScanLiveDispatcher,
     LivePColorMesh,
 )
-from ibex_bluesky_core.devices.simpledae import SimpleDae, check_dae_strategies
-from ibex_bluesky_core.devices.simpledae.controllers import (
+from ibex_bluesky_core.devices.simpledae import (
     PeriodPerPointController,
-)
-from ibex_bluesky_core.devices.simpledae.reducers import (
     PeriodSpecIntegralsReducer,
+    SimpleDae,
+    Waiter,
+    check_dae_strategies,
 )
-from ibex_bluesky_core.devices.simpledae.strategies import Waiter
+from ibex_bluesky_core.fitting import Gaussian
 from ibex_bluesky_core.plan_stubs import call_qt_aware
 
 __all__ = ["DetMapAlignResult", "angle_scan_plan", "height_and_angle_scan_plan"]

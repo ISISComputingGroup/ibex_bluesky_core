@@ -48,7 +48,7 @@ An example of using one of these could be:
 from ibex_bluesky_core.devices.simpledae import SimpleDae
 from ibex_bluesky_core.devices.block import BlockRw, BlockWriteConfig
 from ibex_bluesky_core.plans import scan
-from ibex_bluesky_core.callbacks.fitting.fitting_utils import Linear
+from ibex_bluesky_core.fitting import Linear
 
 def my_plan():
     dae = SimpleDae(...) # Give your DAE options here
@@ -73,7 +73,7 @@ for example if you just wanted to scan over a motor, wait for 400 frames, and pe
 
 ```python
 >>> from ibex_bluesky_core.plans import motor_scan
->>> from ibex_bluesky_core.callbacks.fitting.fitting_utils import Linear
+>>> from ibex_bluesky_core.fitting import Linear
 >>> result = RE(motor_scan("motor_block", 1, 10, 11, model=Linear().fit(), frames=400, det=1, mon=3))
 >>> result.plan_result.live_fit
 ```

@@ -1,21 +1,21 @@
 # Fitting Callback
 
-Similar to [`LivePlot`](../callbacks/plotting.md), `ibex_bluesky_core` provides a thin wrapper around Bluesky's LiveFit class, enhancing it with additional functionality to better support real-time data fitting. This wrapper not only offers a wide selection of models to fit your data on, but also introduces guess generation for fit parameters. As new data points are acquired, the wrapper refines these guesses dynamically, improving the accuracy of the fit with each additional piece of data, allowing for more efficient and adaptive real-time fitting workflows.
+Similar to [`LivePlot`](../callbacks/plotting.md), [`ibex_bluesky_core`](ibex_bluesky_core) provides a thin wrapper around Bluesky's [`LiveFit`](ibex_bluesky_core.callbacks.LiveFit) class, enhancing it with additional functionality to better support real-time data fitting. This wrapper not only offers a wide selection of models to fit your data on, but also introduces guess generation for fit parameters. As new data points are acquired, the wrapper refines these guesses dynamically, improving the accuracy of the fit with each additional piece of data, allowing for more efficient and adaptive real-time fitting workflows.
 
-In order to use the wrapper, import `LiveFit` from `ibex_bluesky_core` rather than 
+In order to use the wrapper, import[`LiveFit`](ibex_bluesky_core.callbacks.LiveFit from [`ibex_bluesky_core`](ibex_bluesky_core) rather than 
 `bluesky` directly:
 ```py
 from ibex_bluesky_core.callbacks.fitting import LiveFit
 ```
-**Note:** that you do not *need* `LivePlot` for `LiveFit` to work but it may be useful to know visaully how well the model fits to the raw data.
+**Note:** that you do not *need* [`LivePlot`](ibex_bluesky_core.callbacks.LivePlot)  for [`LiveFit`](ibex_bluesky_core.callbacks.LiveFit) to work but it may be useful to know visaully how well the model fits to the raw data.
 
 ## Configuration
 
 Below is a full example showing how to use standard `matplotlib` & `bluesky` functionality to apply fitting to a scan, using LivePlot and LiveFit. The fitting callback is set to expect data to take the form of a gaussian.
 ```py
 import matplotlib.pyplot as plt
-from ibex_bluesky_core.callbacks.plotting import LivePlot
-from ibex_bluesky_core.callbacks.fitting import LiveFit
+from ibex_bluesky_core.callbacks import LiveFit, LivePlot
+from ibex_bluesky_core.fitting import Gaussian
 from bluesky.callbacks import LiveFitPlot
 
 # Create a new figure to plot onto.
@@ -31,9 +31,9 @@ fit_callback = LiveFit(Gaussian.fit(), y="y_signal", x="x_signal", yerr="yerr_si
 fit_plot_callback = LiveFitPlot(fit_callback, ax=ax, color="r")
 ```
 
-**Note:** that the `LiveFit` callback doesn't directly do the plotting, it will return function parameters of the model its trying to fit to; a `LiveFit` object must be passed to `LiveFitPlot` which can then be subscribed to the `RunEngine`. See the [Bluesky Documentation](https://blueskyproject.io/bluesky/main/callbacks.html#livefitplot) for information on the various arguments that can be passed to the `LiveFitPlot` class.
+**Note:** that the [`LiveFit`](ibex_bluesky_core.callbacks.LiveFit) callback doesn't directly do the plotting, it will return function parameters of the model its trying to fit to; a [`LiveFit`](ibex_bluesky_core.callbacks.LiveFit) object must be passed to `LiveFitPlot` which can then be subscribed to the `RunEngine`. See the [Bluesky Documentation](https://blueskyproject.io/bluesky/main/callbacks.html#livefitplot) for information on the various arguments that can be passed to the `LiveFitPlot` class.
 
-Using the `yerr` argument allows you to pass uncertainties via a signal to LiveFit, so that the "weight" of each point influences the fit produced. By not providing a signal name you choose not to use uncertainties/weighting in the fitting calculation. Each weight is computed as `1/(standard deviation at point)` and is taken into account to determine how much a point affects the overall fit of the data. Same as the rest of `LiveFit`, the fit will be updated after every new point collected now taking into account the weights of each point. Uncertainty data is collected from Bluesky event documents after each new point.
+Using the `yerr` argument allows you to pass uncertainties via a signal to LiveFit, so that the "weight" of each point influences the fit produced. By not providing a signal name you choose not to use uncertainties/weighting in the fitting calculation. Each weight is computed as `1/(standard deviation at point)` and is taken into account to determine how much a point affects the overall fit of the data. Same as the rest of [`LiveFit`](ibex_bluesky_core.callbacks.LiveFit), the fit will be updated after every new point collected now taking into account the weights of each point. Uncertainty data is collected from Bluesky event documents after each new point.
 
 The `plot_callback` and `fit_plot_callback` objects can then be subscribed to the `RunEngine`, using the same methods as described in [`LivePlot`](../callbacks/plotting.md). See the following example using `@subs_decorator`:
 
@@ -52,34 +52,34 @@ def plan() -> ...
 
 We support **standard fits** for the following trends in data. See [Standard Fits](./standard_fits.md) for more infomation on the behaviour of these fits.
 
-| Trend | Class Name in fitting_utils | Arguments | 
-| ----- | -------------------------| ----------|
-| Linear | [Linear](./standard_fits.md#linear) | None |
-| Polynomial | [Polynomial](./standard_fits.md#polynomial) | Polynomial Degree (int) |
-| Gaussian | [Gaussian](./standard_fits.md#gaussian) | None |
-| Lorentzian | [Lorentzian](./standard_fits.md#lorentzian) | None |
-| Damped Oscillator | [DampedOsc](./standard_fits.md#damped-oscillator-dampedosc) | None |
-| Slit Scan Fit | [SlitScan](./standard_fits.md#slit-scan-slitscan) | None |
-| Error Function | [ERF](./standard_fits.md#error-function-erf) | None |
+| Trend | Class Name in [`fitting`](ibex_bluesky_core.fitting)          | Arguments | 
+| ----- |---------------------------------------------------------------| ----------|
+| Linear | [Linear](./standard_fits.md#linear)                           | None |
+| Polynomial | [Polynomial](./standard_fits.md#polynomial)                   | Polynomial Degree (int) |
+| Gaussian | [Gaussian](./standard_fits.md#gaussian)                       | None |
+| Lorentzian | [Lorentzian](./standard_fits.md#lorentzian)                   | None |
+| Damped Oscillator | [DampedOsc](./standard_fits.md#damped-oscillator-dampedosc)   | None |
+| Slit Scan Fit | [SlitScan](./standard_fits.md#slit-scan-slitscan)             | None |
+| Error Function | [ERF](./standard_fits.md#error-function-erf)                  | None |
 | Complementary Error Function | [ERFC](./standard_fits.md/#complementary-error-function-erfc) | None |
-| Top Hat | [TopHat](./standard_fits.md#top-hat-tophat) | None |
-| Trapezoid | [Trapezoid](./standard_fits.md#trapezoid) | None |
-| PeakStats (COM) **\*** | - | -
+| Top Hat | [TopHat](./standard_fits.md#top-hat-tophat)                   | None |
+| Trapezoid | [Trapezoid](./standard_fits.md#trapezoid)                     | None |
+| PeakStats (COM) **\*** | -                                                             | -
 
-\* Native to Bluesky there is support for `PeakStats` which "computes peak statsitics after a run finishes." See [Bluesky docs](https://blueskyproject.io/bluesky/main/callbacks.html#peakstats) for more information on this. Similar to `LiveFit` and `LiveFitPLot`, `PeakStats` is a callback and must be passed to `PeakStatsPlot` to be plotted on a set of axes, which is subscribed to by the `RunEngine`.
+\* Native to Bluesky there is support for `PeakStats` which "computes peak statsitics after a run finishes." See [Bluesky docs](https://blueskyproject.io/bluesky/main/callbacks.html#peakstats) for more information on this. Similar to [`LiveFit`](ibex_bluesky_core.callbacks.LiveFit) and `LiveFitPLot`, `PeakStats` is a callback and must be passed to `PeakStatsPlot` to be plotted on a set of axes, which is subscribed to by the `RunEngine`.
 
 -------
 
-Each of the above fit classes has a `.fit()` which returns an object of type `FitMethod`. This tells `LiveFit` how to perform fitting on the data. `FitMethod` is defined in `ibex_bluesky_core.callbacks.fitting`.
+Each of the above fit classes has a `.fit()` which returns an object of type [`FitMethod`](ibex_bluesky_core.fitting.FitMethod). This tells [`LiveFit`](ibex_bluesky_core.callbacks.LiveFit) how to perform fitting on the data. [`FitMethod`](ibex_bluesky_core.fitting.FitMethod) is defined in `ibex_bluesky_core.fitting`.
 
 There are *two* ways that you can choose how to fit a model to your data:
 
 ### Option 1: Use the standard fits
-When only using the standard fits provided by `ibex_bluesky_core`, the following syntax can be used, replacing `[FIT]` with your chosen one from `ibex_bluesky_core.callbacks.fitting.fitting_utils`:
+When only using the standard fits provided by [`ibex_bluesky_core`](ibex_bluesky_core), the following syntax can be used, replacing `[FIT]` with your chosen one from `ibex_bluesky_core.fitting`:
 
 ```py
 from bluesky.callbacks import LiveFitPlot
-from ibex_bluesky_core.callbacks.fitting.fitting_utils import [FIT]
+from ibex_bluesky_core.fitting import [FIT]
 
 # Pass [FIT].fit() to the first parameter of LiveFit
 lf = LiveFit([FIT].fit(), y="y_signal", x="x_signal", update_every=0.5)
@@ -87,7 +87,7 @@ lf = LiveFit([FIT].fit(), y="y_signal", x="x_signal", update_every=0.5)
 # Then subscribe to LiveFitPlot(lf, ...)
 ```
 
-The `[FIT].fit()` function will pass the `FitMethod` object straight to the `LiveFit` class.
+The `[FIT].fit()` function will pass the [`FitMethod`](ibex_bluesky_core.fitting.FitMethod) object straight to the [`LiveFit`](ibex_bluesky_core.callbacks.LiveFit) class.
 
 **Note:** that for the fits in the above table that require parameters, you will need to pass value(s) to their `.fit` method. For example Polynomial fitting:
 
@@ -98,7 +98,7 @@ lf = LiveFit(Polynomial.fit(3),  y="y_signal", x="x_signal", update_every=0.5)
 
 ### Option 2: Use custom fits
 
-If you wish, you can define your own non-standard `FitMethod` object. The `FitMethod` class takes two function arguments as follows:
+If you wish, you can define your own non-standard [`FitMethod`](ibex_bluesky_core.fitting.FitMethod) object. The [`FitMethod`](ibex_bluesky_core.fitting.FitMethod) class takes two function arguments as follows:
 
 - `model` 
     - A function representing the behaviour of the model.
@@ -156,11 +156,12 @@ This means that aslong as the parameters returned from the guess function match 
 
 ```py
 import lmfit
-from ibex_bluesky_core.callbacks.fitting.fitting_utils import Linear
+from ibex_bluesky_core.callbacks import LiveFit
+from ibex_bluesky_core.fitting import FitMethod, Linear
+
 
 def different_model(x: float, c1: float, c0: float) -> float:
-    
-    return c1 * x + c0 ** 2 # y = mx + (c ** 2)
+    return c1 * x + c0 ** 2  # y = mx + (c ** 2)
 
 
 fit_method = FitMethod(different_model, Linear.guess())
@@ -174,19 +175,21 @@ lf = LiveFit(fit_method, y="y_signal", x="x_signal", update_every=0.5)
 
 ```py
 import lmfit
-from ibex_bluesky_core.callbacks.fitting.fitting_utils import Linear
+from ibex_bluesky_core.callbacks import LiveFit
+from ibex_bluesky_core.fitting import FitMethod, Linear
+
 
 # This Guessing. function isn't very good because it's return values don't change on the data already collected in the Bluesky run
 # It always guesses that the linear function is y = x
 
 def different_guess(x: float, c1: float, c0: float) -> float:
-    
     init_guess = {
-        "c1": lmfit.Parameter("c1", 1), # gradient
-        "c0": lmfit.Parameter("c0", 0), # y - intercept
+      "c1": lmfit.Parameter("c1", 1),  # gradient
+      "c0": lmfit.Parameter("c0", 0),  # y - intercept
     }
-
+  
     return init_guess
+
 
 fit_method = FitMethod(Linear.model(), different_guess)
 # Uses the standard linear model and the user defined Guessing. function
