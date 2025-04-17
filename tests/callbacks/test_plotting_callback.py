@@ -131,4 +131,4 @@ def test_no_filename_raises():
     ax.figure = MagicMock(spec=Figure)
     s = PlotPNGSaver(x="x", y="y", ax=ax, postfix="123", output_dir="")
     with pytest.raises(ValueError, match=r"No filename specified for plot PNG"):
-        s.stop({"uid": "0"})
+        s.stop({"uid": "0", "exit_status": "success", "run_start": "", "time": 123456789})
