@@ -20,6 +20,7 @@ __all__ = [
     "Gaussian",
     "Linear",
     "Lorentzian",
+    "NegativeTrapezoid",
     "Polynomial",
     "SlitScan",
     "TopHat",
@@ -468,7 +469,6 @@ class ERFC(Fit):
                 "stretch": lmfit.Parameter("stretch", (max(x) - min(x)) / 2),
                 "scale": lmfit.Parameter("scale", (max(y) - min(y)) / 2),
                 "background": lmfit.Parameter("background", np.min(y)),
-                "method": "leastsq",
             }
 
             return init_guess
@@ -688,66 +688,3 @@ class NegativeTrapezoid(Fit):
             return init_guess
 
         return guess
-
-
-if __name__ == "__main__":
-    model = NegativeTrapezoid.fit()
-
-    x = np.linspace(0, 15000, 44)
-    y = 5 - np.array(
-        [
-            0,
-            0.1,
-            0.2,
-            0.3,
-            0.4,
-            0.5,
-            4.5,
-            4.6,
-            4.7,
-            4.8,
-            4.9,
-            5,
-            5,
-            5,
-            5,
-            5,
-            5,
-            5,
-            5,
-            5,
-            5,
-            5,
-            5,
-            5,
-            5,
-            5,
-            4.9,
-            4.8,
-            4.7,
-            4.6,
-            2,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-            0,
-        ]
-    )
-
-    guess = model.guess(x, y)
-    print(f"guess = {guess}")
-    f = model.model.fit(data=y, x=x, **guess)
-    print(f.fit_report())
-    import matplotlib.pyplot as plt
-
-    f.plot_fit()
-    plt.show()
