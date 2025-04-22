@@ -468,11 +468,50 @@ class ERFC(Fit):
                 "stretch": lmfit.Parameter("stretch", (max(x) - min(x)) / 2),
                 "scale": lmfit.Parameter("scale", (max(y) - min(y)) / 2),
                 "background": lmfit.Parameter("background", np.min(y)),
+                "method": "leastsq",
             }
 
             return init_guess
 
         return guess
+
+
+def _center_of_mass_and_mass(
+    x: npt.NDArray[np.float64], y: npt.NDArray[np.float64]
+) -> tuple[float, float]:
+    """Compute the centre of mass of the area under a curve defined by a series of (x, y) points.
+
+    The "area under the curve" is a shape bounded by:
+    - min(y), along the bottom edge
+    - min(x), on the left-hand edge
+    - max(x), on the right-hand edge
+    - straight lines joining (x, y) data points to their nearest neighbours
+        along the x-axis, along the top edge
+    This is implemented by geometric decomposition of the shape into a series of trapezoids,
+    which are further decomposed into rectangular and triangular regions.
+    """
+    sort_indices = np.argsort(x, kind="stable")
+    x = np.take_along_axis(x, sort_indices, axis=None)
+    y = np.take_along_axis(y - np.min(y), sort_indices, axis=None)
+    widths = np.diff(x)
+
+    # Area under the curve for two adjacent points is a right trapezoid.
+    # Split that trapezoid into a rectangular region, plus a right triangle.
+    # Find area and effective X CoM for each.
+    rect_areas = widths * np.minimum(y[:-1], y[1:])
+    rect_x_com = (x[:-1] + x[1:]) / 2.0
+    triangle_areas = widths * np.abs(y[:-1] - y[1:]) / 2.0
+    triangle_x_com = np.where(
+        y[:-1] > y[1:], x[:-1] + (widths / 3.0), x[:-1] + (2.0 * widths / 3.0)
+    )
+
+    total_area = np.sum(rect_areas + triangle_areas)
+    if total_area == 0.0:
+        # If all data was flat, return central x
+        return (x[0] + x[-1]) / 2.0, 0
+
+    com = np.sum(rect_areas * rect_x_com + triangle_areas * triangle_x_com) / total_area
+    return com, total_area
 
 
 class TopHat(Fit):
@@ -502,19 +541,20 @@ class TopHat(Fit):
         def guess(
             x: npt.NDArray[np.float64], y: npt.NDArray[np.float64]
         ) -> dict[str, lmfit.Parameter]:
-            top = np.where(y > np.mean(y))[0]
-            # Guess that any value above the mean is the top part
-
-            if len(top) > 0:
-                width = x[np.max(top)] - x[np.min(top)]
-            else:
-                width = (max(x) - min(x)) / 2
+            com, total_area = _center_of_mass_and_mass(x, y)
+            width = (np.max(y) - np.min(y)) / total_area
 
             init_guess = {
-                "cen": lmfit.Parameter("cen", np.mean(x)),
-                "width": lmfit.Parameter("width", width),
-                "height": lmfit.Parameter("height", (max(y) - min(y))),
-                "background": lmfit.Parameter("background", min(y)),
+                "cen": lmfit.Parameter("cen", com, min=np.min(x), max=np.max(x)),
+                "width": lmfit.Parameter("width", width, min=0, max=np.max(x) - np.min(x)),
+                "height": lmfit.Parameter(
+                    "height",
+                    (max(y) - min(y)),
+                    min=-(np.max(y) - np.min(y)),
+                    max=np.max(y) - np.min(y),
+                ),
+                "background": lmfit.Parameter("background", min(y), min=np.min(y), max=np.max(y)),
+                "method": "basinhopping",
             }
 
             return init_guess
@@ -557,39 +597,157 @@ class Trapezoid(Fit):
         def guess(
             x: npt.NDArray[np.float64], y: npt.NDArray[np.float64]
         ) -> dict[str, lmfit.Parameter]:
-            top = np.where(y > np.mean(y))[0]
-            # Guess that any value above the y mean is the top part
+            com, total_mass = _center_of_mass_and_mass(x, y)
+            y_range = np.max(y) - np.min(y)
+            if y_range != 0:
+                width_guess = total_mass / y_range
+            else:
+                width_guess = (np.max(x) - np.min(x)) / 2
 
-            cen = np.mean(x)
+            # Guess that the gradient is the maximum gradient between any two points
+            gradients = np.zeros_like(x[1:], dtype=np.float64)
+            x_diffs = x[:-1] - x[1:]
+            y_diffs = y[:-1] - y[1:]
+            np.divide(y_diffs, x_diffs, out=gradients, where=x_diffs != 0)
+            gradient_guess = np.max(np.abs(gradients))
+
+            height = np.max(y) - np.min(y)
             background = np.min(y)
-            height = np.max(y) - background
-
-            if top.size > 0:
-                i = np.min(top)
-                x1 = x[i]  # x1 is the left of the top part
-            else:
-                width_top = (np.max(x) - np.min(x)) / 2
-                x1 = cen - width_top / 2
-
-            x0 = 0.5 * (np.min(x) + x1)  # Guess that x0 is half way between min(x) and x1
-
-            if height == 0.0:
-                gradient = 0.0
-            else:
-                gradient = height / (x1 - x0)
-
-            y_intercept0 = np.max(y) - gradient * x1  # To find the slope function
-            y_tip = gradient * cen + y_intercept0
-            y_offset = y_tip - height - background
+            y_offset = gradient_guess * width_guess / 2.0
 
             init_guess = {
-                "cen": lmfit.Parameter("cen", cen),
-                "gradient": lmfit.Parameter("gradient", gradient, min=0),
+                "cen": lmfit.Parameter("cen", com, min=np.min(x), max=np.max(x)),
+                "gradient": lmfit.Parameter("gradient", gradient_guess, min=0),
                 "height": lmfit.Parameter("height", height, min=0),
                 "background": lmfit.Parameter("background", background),
-                "y_offset": lmfit.Parameter("y_offset", y_offset, min=0),
+                "y_offset": lmfit.Parameter("y_offset", y_offset),
             }
 
             return init_guess
 
         return guess
+
+
+class NegativeTrapezoid(Fit):
+    """Negative Trapezoid Fitting."""
+
+    equation = """
+    y = clip(y_offset - height + background + gradient * abs(x - cen),
+     background - height, background)"""
+
+    @classmethod
+    def model(cls, *args: int) -> lmfit.Model:
+        """Negative Trapezoid Model."""
+
+        def model(
+            x: npt.NDArray[np.float64],
+            cen: float,
+            gradient: float,
+            height: float,
+            background: float,
+            y_offset: float,  # Acts as a width multiplier
+        ) -> npt.NDArray[np.float64]:
+            y = y_offset - height + background + gradient * np.abs(x - cen)
+            y = np.maximum(y, background - height)
+            y = np.minimum(y, background)
+            return y
+
+        return lmfit.Model(model, name=f"{cls.__name__}  [{cls.equation}]")
+
+    @classmethod
+    def guess(
+        cls, *args: int
+    ) -> Callable[[npt.NDArray[np.float64], npt.NDArray[np.float64]], dict[str, lmfit.Parameter]]:
+        """Negative Trapezoid Guessing."""
+
+        def guess(
+            x: npt.NDArray[np.float64], y: npt.NDArray[np.float64]
+        ) -> dict[str, lmfit.Parameter]:
+            com, total_mass = _center_of_mass_and_mass(x, -y)
+            width_guess = total_mass / (np.max(y) - np.min(y))
+
+            # Guess that the gradient is the maximum gradient between any two points
+            gradients = np.zeros_like(x[1:], dtype=np.float64)
+            x_diffs = x[:-1] - x[1:]
+            y_diffs = y[:-1] - y[1:]
+            np.divide(y_diffs, x_diffs, out=gradients, where=x_diffs != 0)
+            gradient_guess = np.max(np.abs(gradients))
+
+            height = np.max(y) - np.min(y)
+            background = np.max(y)
+            y_offset = -gradient_guess * width_guess / 2.0
+
+            init_guess = {
+                "cen": lmfit.Parameter("cen", com, min=np.min(x), max=np.max(x)),
+                "gradient": lmfit.Parameter("gradient", gradient_guess, min=0),
+                "height": lmfit.Parameter("height", height, min=0),
+                "background": lmfit.Parameter("background", background),
+                "y_offset": lmfit.Parameter("y_offset", y_offset),
+            }
+
+            return init_guess
+
+        return guess
+
+
+if __name__ == "__main__":
+    model = NegativeTrapezoid.fit()
+
+    x = np.linspace(0, 15000, 44)
+    y = 5 - np.array(
+        [
+            0,
+            0.1,
+            0.2,
+            0.3,
+            0.4,
+            0.5,
+            4.5,
+            4.6,
+            4.7,
+            4.8,
+            4.9,
+            5,
+            5,
+            5,
+            5,
+            5,
+            5,
+            5,
+            5,
+            5,
+            5,
+            5,
+            5,
+            5,
+            5,
+            5,
+            4.9,
+            4.8,
+            4.7,
+            4.6,
+            2,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+        ]
+    )
+
+    guess = model.guess(x, y)
+    print(f"guess = {guess}")
+    f = model.model.fit(data=y, x=x, **guess)
+    print(f.fit_report())
+    import matplotlib.pyplot as plt
+
+    f.plot_fit()
+    plt.show()
