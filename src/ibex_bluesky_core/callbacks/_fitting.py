@@ -141,7 +141,7 @@ class LiveFitLogger(CallbackBase):
 
         self.livefit = livefit
         self.postfix = postfix
-        self.output_dir = Path(output_dir or get_default_output_path())
+        self.output_dir = Path(output_dir or get_default_output_path() / "fitting")
         self.current_start_document: str | None = None
 
         self.x = x
