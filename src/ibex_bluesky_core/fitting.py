@@ -514,6 +514,19 @@ def _center_of_mass_and_mass(
     return com, total_area
 
 
+def _guess_cen_and_width(
+    x: npt.NDArray[np.float64], y: npt.NDArray[np.float64]
+) -> tuple[float, float]:
+    """Guess the center and width of a positive peak."""
+    com, total_area = _center_of_mass_and_mass(x, y)
+    y_range = np.max(y) - np.min(y)
+    if y_range == 0.0:
+        width = (np.max(x) - np.min(x)) / 2
+    else:
+        width = total_area / y_range
+    return com, width
+
+
 class TopHat(Fit):
     """Top Hat Fitting."""
 
@@ -541,25 +554,29 @@ class TopHat(Fit):
         def guess(
             x: npt.NDArray[np.float64], y: npt.NDArray[np.float64]
         ) -> dict[str, lmfit.Parameter]:
-            com, total_area = _center_of_mass_and_mass(x, y)
-            width = (np.max(y) - np.min(y)) / total_area
+            cen, width = _guess_cen_and_width(x, y)
 
             init_guess = {
-                "cen": lmfit.Parameter("cen", com, min=np.min(x), max=np.max(x)),
-                "width": lmfit.Parameter("width", width, min=0, max=np.max(x) - np.min(x)),
+                "cen": lmfit.Parameter("cen", cen),
+                "width": lmfit.Parameter("width", width, min=0),
                 "height": lmfit.Parameter(
                     "height",
-                    (max(y) - min(y)),
-                    min=-(np.max(y) - np.min(y)),
-                    max=np.max(y) - np.min(y),
+                    np.max(y) - np.min(y),
                 ),
-                "background": lmfit.Parameter("background", min(y), min=np.min(y), max=np.max(y)),
-                "method": "basinhopping",
+                "background": lmfit.Parameter("background", np.min(y)),
             }
 
             return init_guess
 
         return guess
+
+
+def _guess_trapezoid_gradient(x: npt.NDArray[np.float64], y: npt.NDArray[np.float64]) -> float:
+    gradients = np.zeros_like(x[1:], dtype=np.float64)
+    x_diffs = x[:-1] - x[1:]
+    y_diffs = y[:-1] - y[1:]
+    np.divide(y_diffs, x_diffs, out=gradients, where=x_diffs != 0)
+    return np.max(np.abs(gradients))
 
 
 class Trapezoid(Fit):
@@ -597,26 +614,15 @@ class Trapezoid(Fit):
         def guess(
             x: npt.NDArray[np.float64], y: npt.NDArray[np.float64]
         ) -> dict[str, lmfit.Parameter]:
-            com, total_mass = _center_of_mass_and_mass(x, y)
-            y_range = np.max(y) - np.min(y)
-            if y_range != 0:
-                width_guess = total_mass / y_range
-            else:
-                width_guess = (np.max(x) - np.min(x)) / 2
-
-            # Guess that the gradient is the maximum gradient between any two points
-            gradients = np.zeros_like(x[1:], dtype=np.float64)
-            x_diffs = x[:-1] - x[1:]
-            y_diffs = y[:-1] - y[1:]
-            np.divide(y_diffs, x_diffs, out=gradients, where=x_diffs != 0)
-            gradient_guess = np.max(np.abs(gradients))
+            cen, width = _guess_cen_and_width(x, y)
+            gradient_guess = _guess_trapezoid_gradient(x, y)
 
             height = np.max(y) - np.min(y)
             background = np.min(y)
-            y_offset = gradient_guess * width_guess / 2.0
+            y_offset = gradient_guess * width / 2.0
 
             init_guess = {
-                "cen": lmfit.Parameter("cen", com, min=np.min(x), max=np.max(x)),
+                "cen": lmfit.Parameter("cen", cen, min=np.min(x), max=np.max(x)),
                 "gradient": lmfit.Parameter("gradient", gradient_guess, min=0),
                 "height": lmfit.Parameter("height", height, min=0),
                 "background": lmfit.Parameter("background", background),
@@ -663,22 +669,15 @@ class NegativeTrapezoid(Fit):
         def guess(
             x: npt.NDArray[np.float64], y: npt.NDArray[np.float64]
         ) -> dict[str, lmfit.Parameter]:
-            com, total_mass = _center_of_mass_and_mass(x, -y)
-            width_guess = total_mass / (np.max(y) - np.min(y))
-
-            # Guess that the gradient is the maximum gradient between any two points
-            gradients = np.zeros_like(x[1:], dtype=np.float64)
-            x_diffs = x[:-1] - x[1:]
-            y_diffs = y[:-1] - y[1:]
-            np.divide(y_diffs, x_diffs, out=gradients, where=x_diffs != 0)
-            gradient_guess = np.max(np.abs(gradients))
+            cen, width = _guess_cen_and_width(x, -y)
+            gradient_guess = _guess_trapezoid_gradient(x, y)
 
             height = np.max(y) - np.min(y)
             background = np.max(y)
-            y_offset = -gradient_guess * width_guess / 2.0
+            y_offset = -gradient_guess * width / 2.0
 
             init_guess = {
-                "cen": lmfit.Parameter("cen", com, min=np.min(x), max=np.max(x)),
+                "cen": lmfit.Parameter("cen", cen, min=np.min(x), max=np.max(x)),
                 "gradient": lmfit.Parameter("gradient", gradient_guess, min=0),
                 "height": lmfit.Parameter("height", height, min=0),
                 "background": lmfit.Parameter("background", background),
