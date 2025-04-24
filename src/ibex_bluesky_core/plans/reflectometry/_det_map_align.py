@@ -87,6 +87,8 @@ def _angle_scan_callback_and_fit(
         ax=ax,
         live_fit_logger_postfix="_angle",
         human_readable_file_postfix="_angle",
+        live_fit_update_every=len(angle_map) - 1,
+        live_plot_show_every_event=False,
     )
     for cb in angle_scan_callbacks.subs:
         angle_scan_ld.subscribe(cb)
@@ -134,6 +136,7 @@ def angle_scan_plan(
     yield from ensure_connected(dae)
 
     yield from call_qt_aware(plt.close, "all")
+    yield from call_qt_aware(plt.show)
     _, ax = yield from call_qt_aware(plt.subplots)
 
     angle_cb, angle_fit = _angle_scan_callback_and_fit(reducer, angle_map, ax)

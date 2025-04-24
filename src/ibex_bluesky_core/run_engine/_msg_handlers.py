@@ -100,7 +100,7 @@ async def call_sync_handler(msg: Msg) -> Any:  # noqa: ANN401
 
 
 async def call_qt_aware_handler(msg: Msg) -> Any:  # noqa: ANN401
-    """Handle ibex_bluesky_core.plan_stubs.call_sync."""
+    """Handle ibex_bluesky_core.plan_stubs.call_qt_aware."""
     func = msg.obj
     done_event = Event()
     result: Any = None
@@ -121,7 +121,6 @@ async def call_qt_aware_handler(msg: Msg) -> Any:  # noqa: ANN401
                     msg.kwargs,
                 )
                 result = func(*msg.args, **msg.kwargs)
-
                 import matplotlib.pyplot as plt  # noqa: PLC0415
 
                 plt.show()

@@ -7,6 +7,7 @@ import matplotlib
 import matplotlib.pyplot as plt
 from bluesky.callbacks import LivePlot as _DefaultLivePlot
 from bluesky.callbacks.core import get_obj_fields, make_class_safe
+from event_model import RunStop
 from event_model.documents import Event, RunStart
 
 logger = logging.getLogger(__name__)
@@ -35,6 +36,7 @@ class LivePlot(_DefaultLivePlot):
         x: str | None = None,
         yerr: str | None = None,
         *args: Any,  # noqa: ANN401
+        show_every_event: bool = True,
         **kwargs: Any,  # noqa: ANN401
     ) -> None:
         """Initialise LivePlot.
@@ -45,9 +47,11 @@ class LivePlot(_DefaultLivePlot):
             yerr (str or None, optional): Name of uncertainties signal.
                 Providing None means do not plot uncertainties.
             *args: As per mpl_plotting.py
+            show_every_event (bool, optional): Whether to show plot every event, or just at the end.
             **kwargs: As per mpl_plotting.py
 
         """
+        self.show_every_event = show_every_event
         super().__init__(y=y, x=x, *args, **kwargs)  # noqa: B026
         if yerr is not None:
             self.yerr, *_others = get_obj_fields([yerr])
@@ -55,18 +59,28 @@ class LivePlot(_DefaultLivePlot):
             self.yerr = None
         self.yerr_data = []
 
+        self._mpl_errorbar_container = None
+
     def event(self, doc: Event) -> None:
         """Process an event document (delegate to superclass, then show the plot)."""
         new_yerr = None if self.yerr is None else doc["data"][self.yerr]
         self.update_yerr(new_yerr)
         super().event(doc)
-        show_plot()
+        if self.show_every_event:
+            show_plot()
 
-    def update_plot(self) -> None:
+    def update_plot(self, force: bool = False) -> None:
         """Create error bars if needed, then update plot."""
-        if self.yerr is not None:
-            self.ax.errorbar(x=self.x_data, y=self.y_data, yerr=self.yerr_data, fmt="none")  # type: ignore
-        super().update_plot()
+        if self.show_every_event or force:
+            if self.yerr is not None:
+                if self._mpl_errorbar_container is not None:
+                    # Remove old error bars before drawing new ones
+                    self._mpl_errorbar_container.remove()
+                self._mpl_errorbar_container = self.ax.errorbar(  # type: ignore
+                    x=self.x_data, y=self.y_data, yerr=self.yerr_data, fmt="none"
+                )
+
+            super().update_plot()
 
     def update_yerr(self, yerr: float | None) -> None:
         """Update uncertainties data."""
@@ -76,3 +90,10 @@ class LivePlot(_DefaultLivePlot):
         """Process an start document (delegate to superclass, then show the plot)."""
         super().start(doc)
         show_plot()
+
+    def stop(self, doc: RunStop) -> None:
+        """Process an start document (delegate to superclass, then show the plot)."""
+        super().stop(doc)
+        if not self.show_every_event:
+            self.update_plot(force=True)
+            show_plot()
