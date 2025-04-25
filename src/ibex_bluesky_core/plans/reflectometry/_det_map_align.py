@@ -88,7 +88,7 @@ def _angle_scan_callback_and_fit(
         live_fit_logger_postfix="_angle",
         human_readable_file_postfix="_angle",
         live_fit_update_every=len(angle_map) - 1,
-        live_plot_show_every_event=False,
+        live_plot_update_on_every_event=False,
     )
     for cb in angle_scan_callbacks.subs:
         angle_scan_ld.subscribe(cb)

@@ -68,7 +68,7 @@ class ISISCallbacks:
         live_fit_logger_postfix: str = "",
         human_readable_file_postfix: str = "",
         live_fit_update_every: int | None = 1,
-        live_plot_show_every_event: bool = True,
+        live_plot_update_on_every_event: bool = True,
     ) -> None:
         """A collection of ISIS standard callbacks for use within plans.
 
@@ -128,7 +128,7 @@ class ISISCallbacks:
             live_fit_logger_postfix: the postfix to add to live fit logger.
             human_readable_file_postfix: optional postfix to add to human-readable file logger.
             live_fit_update_every: How often, in points, to recompute the fit. If None, do not compute until the end.
-            live_plot_show_every_event: whether to show the live plot on every event, or just at the end.
+            live_plot_update_on_every_event: whether to show the live plot on every event, or just at the end.
         """  # noqa
         self._subs = []
         self._peak_stats = None
@@ -174,6 +174,7 @@ class ISISCallbacks:
             if is_matplotlib_backend_qt():
                 done_event = threading.Event()
 
+                # Note: not really a callback, this never gets attached to the runengine
                 class _Cb(QtAwareCallback):
                     def start(self, doc: RunStart) -> None:
                         nonlocal fig, ax
@@ -226,7 +227,7 @@ class ISISCallbacks:
                     linestyle="none",
                     ax=ax,
                     yerr=yerr,
-                    show_every_event=live_plot_show_every_event,
+                    update_on_every_event=live_plot_update_on_every_event,
                 )
             )
 

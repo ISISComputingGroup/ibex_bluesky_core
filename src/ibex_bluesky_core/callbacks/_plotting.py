@@ -36,7 +36,7 @@ class LivePlot(_DefaultLivePlot):
         x: str | None = None,
         yerr: str | None = None,
         *args: Any,  # noqa: ANN401
-        show_every_event: bool = True,
+        update_on_every_event: bool = True,
         **kwargs: Any,  # noqa: ANN401
     ) -> None:
         """Initialise LivePlot.
@@ -47,11 +47,12 @@ class LivePlot(_DefaultLivePlot):
             yerr (str or None, optional): Name of uncertainties signal.
                 Providing None means do not plot uncertainties.
             *args: As per mpl_plotting.py
-            show_every_event (bool, optional): Whether to show plot every event, or just at the end.
+            update_on_every_event (bool, optional): Whether to update plot every event,
+                or just at the end.
             **kwargs: As per mpl_plotting.py
 
         """
-        self.show_every_event = show_every_event
+        self.update_on_every_event = update_on_every_event
         super().__init__(y=y, x=x, *args, **kwargs)  # noqa: B026
         if yerr is not None:
             self.yerr, *_others = get_obj_fields([yerr])
@@ -66,12 +67,12 @@ class LivePlot(_DefaultLivePlot):
         new_yerr = None if self.yerr is None else doc["data"][self.yerr]
         self.update_yerr(new_yerr)
         super().event(doc)
-        if self.show_every_event:
+        if self.update_on_every_event:
             show_plot()
 
     def update_plot(self, force: bool = False) -> None:
         """Create error bars if needed, then update plot."""
-        if self.show_every_event or force:
+        if self.update_on_every_event or force:
             if self.yerr is not None:
                 if self._mpl_errorbar_container is not None:
                     # Remove old error bars before drawing new ones
@@ -94,6 +95,6 @@ class LivePlot(_DefaultLivePlot):
     def stop(self, doc: RunStop) -> None:
         """Process an start document (delegate to superclass, then show the plot)."""
         super().stop(doc)
-        if not self.show_every_event:
+        if not self.update_on_every_event:
             self.update_plot(force=True)
             show_plot()
