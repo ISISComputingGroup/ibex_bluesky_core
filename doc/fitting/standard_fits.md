@@ -161,3 +161,25 @@ y = \min(g(x), \text{background} + \text{height})
 ```
 
 ![TrapezoidModel](../_static/images_fits/trapezoid.png)
+
+## Negative Trapezoid
+
+API Reference: [`NegativeTrapezoid`](ibex_bluesky_core.fitting.NegativeTrapezoid)
+
+This model is the same shape as the trapezoid described above, but with a negative height.s
+
+- `cen` - The centre (x) of the model
+- `gradient` - How steep the edges of the trapezoid are
+- `height` - The maximum height of the model below `background`
+- `background` - The maximum value (y) of the model
+- `y_offset` - Acts as a width factor for the trapezoid. If you extrapolate the sides of the trapezoid until they meet, this value represents the y coord of this point minus height and background.
+
+```{math}
+f(x) = \text{y_offset} - \text{height} + \text{background} + \text{gradient} * |x - \text{cen}|
+```
+```{math}
+g(x) = \max(f(x), \text{background} - \text{height})
+```
+```{math}
+y = \min(g(x), \text{background})
+```
