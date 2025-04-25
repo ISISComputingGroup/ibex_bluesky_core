@@ -49,7 +49,7 @@ class LiveFit(_DefaultLiveFit):
             method (FitMethod): The FitMethod (Model & Guess) to use when fitting.
             y (str): The name of the dependant variable.
             x (str): The name of the independant variable.
-            update_every (int, optional): How often to update the fit.
+            update_every (int, optional): How often, in points, to update the fit.
             yerr (str or None, optional): Name of field in the Event document
                 that provides standard deviation for each Y value. None meaning
                 do not use uncertainties in fit.

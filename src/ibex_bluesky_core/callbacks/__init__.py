@@ -127,7 +127,7 @@ class ISISCallbacks:
             live_fit_logger_output_dir: the output directory for live fit logger.
             live_fit_logger_postfix: the postfix to add to live fit logger.
             human_readable_file_postfix: optional postfix to add to human-readable file logger.
-            live_fit_update_every: How often to recompute the fit. If None, do not compute until the end.
+            live_fit_update_every: How often, in points, to recompute the fit. If None, do not compute until the end.
             live_plot_show_every_event: whether to show the live plot on every event, or just at the end.
         """  # noqa
         self._subs = []
