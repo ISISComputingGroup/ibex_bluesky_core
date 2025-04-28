@@ -24,6 +24,7 @@ from ibex_bluesky_core.callbacks._fitting import LiveFit, LiveFitLogger
 from ibex_bluesky_core.callbacks._plotting import LivePlot, PlotPNGSaver, show_plot
 from ibex_bluesky_core.callbacks._utils import get_default_output_path
 from ibex_bluesky_core.fitting import FitMethod
+from ibex_bluesky_core.utils import is_matplotlib_backend_qt
 
 logger = logging.getLogger(__name__)
 
@@ -70,6 +71,8 @@ class ISISCallbacks:
         save_plot_to_png: bool = True,
         plot_png_output_dir: str | PathLike[str] | None = None,
         plot_png_postfix: str = "",
+        live_fit_update_every: int | None = 1,
+        live_plot_update_on_every_event: bool = True,
     ) -> None:
         """A collection of ISIS standard callbacks for use within plans.
 
@@ -131,6 +134,8 @@ class ISISCallbacks:
             save_plot_to_png: whether to save the plot to a PNG file.
             plot_png_output_dir: the output directory for plotting PNG files.
             plot_png_postfix: the postfix to add to PNG plot files.
+            live_fit_update_every: How often, in points, to recompute the fit. If None, do not compute until the end.
+            live_plot_update_on_every_event: whether to show the live plot on every event, or just at the end.
         """  # noqa
         fig = None
         self._subs = []
@@ -172,31 +177,42 @@ class ISISCallbacks:
 
         if (add_plot_cb or show_fit_on_plot) and not ax:
             logger.debug("No axis provided, creating a new one")
-            fig, ax, exc, result = None, None, None, None
-            done_event = threading.Event()
+            fig, ax = None, None
 
-            class _Cb(QtAwareCallback):
-                def start(self, doc: RunStart) -> None:
-                    nonlocal result, exc, fig, ax
-                    try:
-                        plt.close("all")
-                        fig, ax = plt.subplots()
-                    finally:
-                        done_event.set()
+            if is_matplotlib_backend_qt():
+                done_event = threading.Event()
 
-            cb = _Cb()
-            cb("start", {"time": 0, "uid": ""})
-            done_event.wait(10.0)
+                # Note: not really a callback, this never gets attached to the runengine
+                class _Cb(QtAwareCallback):
+                    def start(self, doc: RunStart) -> None:
+                        nonlocal fig, ax
+                        try:
+                            plt.close("all")
+                            fig, ax = plt.subplots()
+                        finally:
+                            done_event.set()
+
+                cb = _Cb()
+                cb("start", {"time": 0, "uid": ""})
+                done_event.wait(10.0)
+            else:
+                plt.close("all")
+                fig, ax = plt.subplots()
 
         if fit is not None:
-            self._live_fit = LiveFit(fit, y=y, x=x, yerr=yerr)
+            self._live_fit = LiveFit(fit, y=y, x=x, yerr=yerr, update_every=live_fit_update_every)
 
-            # Ideally this would append either livefitplot or livefit, not both, but there's a
-            # race condition if using the Qt backend where a fit result can be returned before
-            # the QtAwareCallback has had a chance to process it.
-            self._subs.append(self._live_fit)
             if show_fit_on_plot:
+                if is_matplotlib_backend_qt():
+                    # Ideally this would append either livefitplot
+                    # or livefit, not both, but there's a
+                    # race condition if using the Qt backend
+                    # where a fit result can be returned before
+                    # the QtAwareCallback has had a chance to process it.
+                    self._subs.append(self._live_fit)
                 self._subs.append(LiveFitPlot(livefit=self._live_fit, ax=ax))
+            else:
+                self._subs.append(self._live_fit)
 
             if add_live_fit_logger:
                 self._subs.append(
@@ -219,6 +235,7 @@ class ISISCallbacks:
                     linestyle="none",
                     ax=ax,
                     yerr=yerr,
+                    update_on_every_event=live_plot_update_on_every_event,
                 )
             )
             if save_plot_to_png and ax is not None:
