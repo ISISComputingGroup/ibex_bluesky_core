@@ -359,6 +359,10 @@ async def test_optimise_axis_against_intensity_exits_if_three_selected_when_opti
             "ibex_bluesky_core.plans.reflectometry._autoalign.scan",
             side_effect=[_fake_scan(), _fake_scan()],
         ) as scan,
+        patch(
+            "ibex_bluesky_core.plans.reflectometry._autoalign.ensure_connected",
+            return_value=bps.null(),
+        ),
     ):
         param = ReflParameter(prefix=prefix, name="S1VG", changing_timeout_s=60)
         await param.connect(mock=True)
@@ -390,6 +394,10 @@ async def test_optimise_axis_against_intensity_pauses_then_rescans_on_resume_and
         patch(
             "ibex_bluesky_core.plans.reflectometry._autoalign.scan",
             side_effect=[_fake_scan(), _fake_scan()],
+        ),
+        patch(
+            "ibex_bluesky_core.plans.reflectometry._autoalign.ensure_connected",
+            return_value=bps.null(),
         ),
     ):
         param = ReflParameter(prefix=prefix, name="S1VG", changing_timeout_s=60)
