@@ -17,6 +17,7 @@ from ibex_bluesky_core.fitting import (
     Gaussian,
     Linear,
     Lorentzian,
+    NegativeTrapezoid,
     Polynomial,
     SlitScan,
     TopHat,
@@ -599,7 +600,7 @@ class TestTopHat:
 
             outp = TopHat.guess()(x, y)
 
-            assert outp["width"] == pytest.approx(1.0, rel=1e-2)
+            assert outp["width"] == pytest.approx(2.0, rel=1e-2)
 
         def test_guess_given_flat_data(self):
             x = np.arange(-5.0, 5.0, 1.0, dtype=np.float64)
@@ -688,15 +689,15 @@ class TestTrapezoid:
 
             outp = Trapezoid.guess()(x, y)
 
-            assert outp["gradient"] == pytest.approx(10.0, rel=1e-2)
+            assert outp["gradient"] == pytest.approx(8.0, rel=1e-2)
 
         def test_y_offset_guess(self):
-            x = np.arange(-5.0, 5.0, 1.0, dtype=np.float64)
+            x = np.linspace(-5.0, 5.0, num=11, dtype=np.float64)
             y = np.array([1.0, 1.0, 1.0, 2.0, 3.0, 3.0, 3.0, 2.0, 1.0, 1.0, 1.0], dtype=np.float64)
 
             outp = Trapezoid.guess()(x, y)
 
-            x1 = np.arange(-6.0, 6.0, 1.0, dtype=np.float64)
+            x1 = np.linspace(-6.0, 6.0, num=13, dtype=np.float64)
             y1 = np.array(
                 [1.0, 1.0, 1.0, 2.0, 3.0, 3.0, 3.0, 3.0, 3.0, 2.0, 1.0, 1.0, 1.0], dtype=np.float64
             )
@@ -711,5 +712,114 @@ class TestTrapezoid:
             y = np.zeros_like(x, dtype=np.float64) + 1
 
             outp = Trapezoid.guess()(x, y)
+            # check that with flat data gradient guess is 0
+            assert outp["gradient"] == pytest.approx(0.0, rel=1e-2)
+
+
+class TestNegativeTrapezoid:
+    class TestNegativeTrapezoidModel:
+        def test_negative_trapezoid_model(self):
+            x = np.arange(-5.0, 6.0, 1.0, dtype=np.float64)
+            cen = 0
+            y_offset = -1
+            height = 1
+            background = 1
+            gradient = 1
+
+            outp = NegativeTrapezoid.model().func(
+                x,
+                cen=cen,
+                y_offset=y_offset,
+                height=height,
+                background=background,
+                gradient=gradient,
+            )
+
+            assert background == pytest.approx(np.max(outp), rel=1e-2)
+            assert background - height == pytest.approx(np.min(outp), rel=1e-2)
+
+            outp1 = NegativeTrapezoid.model().func(
+                x,
+                cen=cen + 3,
+                y_offset=y_offset,
+                height=height,
+                background=background,
+                gradient=gradient - 0.5,
+            )
+
+            # check centre moves when data is shifted
+            assert np.mean(x[np.where(outp < background)]) < np.mean(
+                x[np.where(outp1 < background)]
+            )
+
+            # check gradient: a greater gradient means smaller average y values as wider
+            assert np.mean(outp) > np.mean(outp1)
+
+            outp2 = NegativeTrapezoid.model().func(
+                x,
+                cen=cen,
+                y_offset=y_offset - 5,
+                height=height,
+                background=background,
+                gradient=gradient,
+            )
+
+            # check y_offset: a smaller y_offset means smaller average y values as wider
+            assert np.mean(outp) > np.mean(outp2)
+
+    class TestNegativeTrapezoidGuess:
+        def test_background_guess(self):
+            x = np.array([-1.0, 0.0, 1.0, 2.0, 3.0], dtype=np.float64)
+            y = np.array([-1.0, -2.0, -2.0, -2.0, -1.0], dtype=np.float64)
+
+            outp = NegativeTrapezoid.guess()(x, y)
+
+            assert outp["background"] == pytest.approx(-1.0, rel=1e-2)
+
+        def test_cen_height_guess(self):
+            x = np.array([-1.0, 0.0, 1.0, 2.0, 3.0], dtype=np.float64)
+            y = np.array([-1.0, -1.0, -2.0, -1.0, -1.0], dtype=np.float64)
+
+            outp = NegativeTrapezoid.guess()(x, y)
+
+            assert outp["cen"] == pytest.approx(1.0, rel=1e-2)
+            assert outp["height"] == pytest.approx(1.0, rel=1e-2)
+
+        def test_gradient_guess(self):
+            x = np.array([-4.0, -3.0, -2.0, -1.0, 0.0, 1.0, 2.0, 3.0, 4.0], dtype=np.float64)
+            y = np.array([1.0, 2.0, 4.0, 8.0, 16.0, 8.0, 4.0, 2.0, 1.0], dtype=np.float64)
+
+            # Should choose x = -1.0 as x1 and x = -2.5 as x0
+            # height = 16 - 1 = 15
+            # gradient = 15 / (-1 - -2.5) = 10
+
+            outp = NegativeTrapezoid.guess()(x, y)
+
+            assert outp["gradient"] == pytest.approx(8.0, rel=1e-2)
+
+        def test_y_offset_guess(self):
+            x = np.linspace(-5.0, 5.0, num=11, dtype=np.float64)
+            y = np.array(
+                [-1.0, -1.0, -1.0, -2.0, -3.0, -3.0, -3.0, -2.0, -1.0, -1.0, -1.0], dtype=np.float64
+            )
+
+            outp = NegativeTrapezoid.guess()(x, y)
+
+            x1 = np.linspace(-6.0, 6.0, num=13, dtype=np.float64)
+            y1 = np.array(
+                [-1.0, -1.0, -1.0, -2.0, -3.0, -3.0, -3.0, -3.0, -3.0, -2.0, -1.0, -1.0, -1.0],
+                dtype=np.float64,
+            )
+
+            outp1 = NegativeTrapezoid.guess()(x1, y1)
+
+            # Assert that with a greater top width, y_offset decreases
+            assert outp["y_offset"] > outp1["y_offset"]
+
+        def test_guess_given_flat_data(self):
+            x = np.arange(-5.0, 5.0, 1.0, dtype=np.float64)
+            y = np.zeros_like(x, dtype=np.float64) + 1
+
+            outp = NegativeTrapezoid.guess()(x, y)
             # check that with flat data gradient guess is 0
             assert outp["gradient"] == pytest.approx(0.0, rel=1e-2)

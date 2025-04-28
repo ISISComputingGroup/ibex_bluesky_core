@@ -7,7 +7,6 @@ from functools import cache
 from threading import Event
 
 import bluesky.preprocessors as bpp
-import matplotlib
 from bluesky.run_engine import RunEngine
 from bluesky.utils import DuringTask
 
@@ -19,6 +18,7 @@ __all__ = ["get_run_engine"]
 
 from ibex_bluesky_core.plan_stubs import CALL_QT_AWARE_MSG_KEY, CALL_SYNC_MSG_KEY
 from ibex_bluesky_core.run_engine._msg_handlers import call_qt_aware_handler, call_sync_handler
+from ibex_bluesky_core.utils import is_matplotlib_backend_qt
 from ibex_bluesky_core.version import version
 
 logger = logging.getLogger(__name__)
@@ -87,7 +87,7 @@ def get_run_engine() -> RunEngine:
     # See https://github.com/bluesky/bluesky/pull/1770 for details
     # We don't need to use our custom _DuringTask if matplotlib is
     # configured to use Qt.
-    dt = None if "qt" in matplotlib.get_backend() else _DuringTask()
+    dt = None if is_matplotlib_backend_qt() else _DuringTask()
 
     RE = RunEngine(
         loop=loop,

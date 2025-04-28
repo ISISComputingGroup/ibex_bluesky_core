@@ -7,6 +7,8 @@ import bluesky.plan_stubs as bps
 from bluesky.protocols import NamedMovable
 from bluesky.utils import Msg
 from lmfit.model import ModelResult
+from ophyd_async.core import Device
+from ophyd_async.plan_stubs import ensure_connected
 
 from ibex_bluesky_core.callbacks import ISISCallbacks
 from ibex_bluesky_core.devices.simpledae import SimpleDae
@@ -154,7 +156,7 @@ def _optimise_axis_over_range(  # noqa: PLR0913 PLR0917
             return icc, False
 
     _print_and_log(f"Moving {alignment_param.name} to {alignment_param_value}.")
-    yield from bps.mv(alignment_param, alignment_param_value)  # type: ignore
+    yield from bps.mv(alignment_param, alignment_param_value)
 
     return icc, True
 
@@ -206,6 +208,8 @@ def optimise_axis_against_intensity(  # noqa: PLR0913
         Instance of :obj:`ibex_bluesky_core.callbacks.ISISCallbacks`.
 
     """
+    assert isinstance(alignment_param, Device)
+    yield from ensure_connected(dae, alignment_param)
     problem_found_plan = problem_found_plan or bps.null
 
     logger.info(
