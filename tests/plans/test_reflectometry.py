@@ -108,6 +108,10 @@ def test_optimise_axis_against_intensity_found_problem_callback_is_called_if_pro
     mock = MagicMock()
 
     with (
+        patch(
+            "ibex_bluesky_core.plans.reflectometry._autoalign.ensure_connected",
+            return_value=bps.null(),
+        ),
         patch("ibex_bluesky_core.devices.reflectometry.get_pv_prefix", return_value=prefix),
         patch("ibex_bluesky_core.plans.reflectometry._autoalign.scan", return_value=_fake_scan()),
         patch("ibex_bluesky_core.plans.reflectometry._autoalign.bps.mv", return_value=bps.null()),
@@ -258,6 +262,10 @@ def test_optimise_axis_against_intensity_if_problem_found_and_type_1_then_re_sca
             return "2"
 
     with (
+        patch(
+            "ibex_bluesky_core.plans.reflectometry._autoalign.ensure_connected",
+            return_value=bps.null(),
+        ),
         patch("ibex_bluesky_core.devices.reflectometry.get_pv_prefix", return_value=prefix),
         patch(
             "ibex_bluesky_core.plans.reflectometry._autoalign._check_parameter",
@@ -307,6 +315,10 @@ def test_that_if_problem_found_and_type_random_then_re_ask(RE, prefix, simpledae
             return "2"
 
     with (
+        patch(
+            "ibex_bluesky_core.plans.reflectometry._autoalign.ensure_connected",
+            return_value=bps.null(),
+        ),
         patch("ibex_bluesky_core.devices.reflectometry.get_pv_prefix", return_value=prefix),
         patch(
             "ibex_bluesky_core.plans.reflectometry._autoalign._check_parameter",

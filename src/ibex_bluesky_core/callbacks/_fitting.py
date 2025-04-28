@@ -35,7 +35,13 @@ class LiveFit(_DefaultLiveFit):
     """LiveFit, customized for IBEX."""
 
     def __init__(
-        self, method: FitMethod, y: str, x: str, *, update_every: int = 1, yerr: str | None = None
+        self,
+        method: FitMethod,
+        y: str,
+        x: str,
+        *,
+        update_every: int | None = 1,
+        yerr: str | None = None,
     ) -> None:
         """Call Bluesky LiveFit with assumption that there is only one independant variable.
 
@@ -43,7 +49,7 @@ class LiveFit(_DefaultLiveFit):
             method (FitMethod): The FitMethod (Model & Guess) to use when fitting.
             y (str): The name of the dependant variable.
             x (str): The name of the independant variable.
-            update_every (int, optional): How often to update the fit. (seconds)
+            update_every (int, optional): How often, in points, to update the fit.
             yerr (str or None, optional): Name of field in the Event document
                 that provides standard deviation for each Y value. None meaning
                 do not use uncertainties in fit.
@@ -54,7 +60,10 @@ class LiveFit(_DefaultLiveFit):
         self.weight_data = []
 
         super().__init__(
-            model=method.model, y=y, independent_vars={"x": x}, update_every=update_every
+            model=method.model,
+            y=y,
+            independent_vars={"x": x},
+            update_every=update_every,  # type: ignore
         )
 
     def event(self, doc: Event) -> None:
@@ -110,7 +119,6 @@ class LiveFit(_DefaultLiveFit):
             self.result = self.model.fit(
                 self.ydata, weights=None if self.yerr is None else self.weight_data, **kwargs
             )
-            self.__stale = False
 
 
 class LiveFitLogger(CallbackBase):
@@ -141,7 +149,7 @@ class LiveFitLogger(CallbackBase):
 
         self.livefit = livefit
         self.postfix = postfix
-        self.output_dir = Path(output_dir or get_default_output_path())
+        self.output_dir = Path(output_dir or get_default_output_path() / "fitting")
         self.current_start_document: str | None = None
 
         self.x = x

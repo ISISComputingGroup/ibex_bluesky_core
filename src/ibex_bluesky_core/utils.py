@@ -5,9 +5,15 @@ from __future__ import annotations
 import os
 from typing import Any, Protocol
 
+import matplotlib
 from bluesky.protocols import NamedMovable, Readable
 
-__all__ = ["NamedReadableAndMovable", "centred_pixel", "get_pv_prefix"]
+__all__ = ["NamedReadableAndMovable", "centred_pixel", "get_pv_prefix", "is_matplotlib_backend_qt"]
+
+
+def is_matplotlib_backend_qt() -> bool:
+    """Return True if matplotlib is using a qt backend."""
+    return "qt" in matplotlib.get_backend().lower()
 
 
 def centred_pixel(centre: int, pixel_range: int) -> list[int]:

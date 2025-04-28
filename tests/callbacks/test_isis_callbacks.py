@@ -1,8 +1,10 @@
 # pyright: reportMissingParameterType=false
+from unittest.mock import patch
+
 import bluesky.plan_stubs as bps
 import pytest
-from bluesky.callbacks import LiveTable
-from bluesky.callbacks.fitting import PeakStats
+from bluesky.callbacks import LiveFitPlot, LiveTable
+from bluesky.callbacks.fitting import LiveFit, PeakStats
 
 from ibex_bluesky_core.callbacks import (
     HumanReadableFileCallback,
@@ -154,28 +156,35 @@ def test_do_not_add_live_fit_logger_then_not_added():
     assert not any([isinstance(i, LiveFitLogger) for i in icc.subs])
 
 
-def test_call_decorator(RE):
-    x = "X_signal"
-    y = "Y_signal"
-    icc = ISISCallbacks(
-        x=x,
-        y=y,
-        add_plot_cb=True,
-        add_table_cb=False,
-        add_peak_stats=False,
-        add_human_readable_file_cb=False,
-        show_fit_on_plot=False,
-    )
+@pytest.mark.parametrize("matplotlib_using_qt", [True, False])
+def test_call_decorator(RE, matplotlib_using_qt):
+    with patch(
+        "ibex_bluesky_core.callbacks.is_matplotlib_backend_qt", return_value=matplotlib_using_qt
+    ):
+        x = "X_signal"
+        y = "Y_signal"
+        icc = ISISCallbacks(
+            x=x,
+            y=y,
+            add_plot_cb=True,
+            add_table_cb=False,
+            add_peak_stats=False,
+            add_human_readable_file_cb=False,
+            show_fit_on_plot=True,
+            fit=Linear().fit(),
+        )
 
-    def f():
-        def _outer():
-            @icc
-            def _inner():
-                assert isinstance(icc.subs[0], LivePlot)
-                yield from bps.null()
+        def f():
+            def _outer():
+                @icc
+                def _inner():
+                    assert any(isinstance(sub, LivePlot) for sub in icc.subs)
+                    assert any(isinstance(sub, LiveFitPlot) for sub in icc.subs)
+                    assert any(isinstance(sub, LiveFit) for sub in icc.subs) == matplotlib_using_qt
+                    yield from bps.null()
 
-            yield from _inner()
+                yield from _inner()
 
-        return (yield from _outer())
+            return (yield from _outer())
 
-    RE(f())
+        RE(f())
