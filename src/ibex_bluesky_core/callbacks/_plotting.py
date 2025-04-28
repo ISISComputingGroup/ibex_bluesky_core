@@ -137,7 +137,7 @@ class PlotPNGSaver(QtAwareCallback):
         self.y = y
         self.ax = ax
         self.postfix = postfix
-        self.output_dir = Path(output_dir or get_default_output_path())
+        self.output_dir = Path(output_dir or get_default_output_path() / "PNGs")
         self.filename = None
 
     def start(self, doc: RunStart) -> None:
@@ -156,5 +156,5 @@ class PlotPNGSaver(QtAwareCallback):
         """
         if self.filename is None:
             raise ValueError("No filename specified for plot PNG")
-
+        os.makedirs(self.filename.parent, exist_ok=True)
         self.ax.figure.savefig(self.filename, format="png")  # pyright: ignore [reportAttributeAccessIssue]
