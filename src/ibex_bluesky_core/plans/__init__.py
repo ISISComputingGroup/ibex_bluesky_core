@@ -16,6 +16,8 @@ from ibex_bluesky_core.devices.block import BlockMot
 from ibex_bluesky_core.devices.simpledae import monitor_normalising_dae
 from ibex_bluesky_core.fitting import FitMethod
 from ibex_bluesky_core.utils import NamedReadableAndMovable, centred_pixel, get_pv_prefix
+from ibex_bluesky_core.plan_stubs import call_qt_aware
+import matplotlib.pyplot as plt
 
 if TYPE_CHECKING:
     from ibex_bluesky_core.devices.simpledae import SimpleDae
@@ -50,10 +52,13 @@ def scan(  # noqa: PLR0913
 
     """
     yield from ensure_connected(dae, block)  # type: ignore
+    
+    yield from call_qt_aware(plt.close, "all")
+    fix, ax = yield from call_qt_aware(plt.subplots)
 
     yield from bps.mv(dae.number_of_periods, num if periods else 1)
 
-    icc = _set_up_fields_and_icc(block, dae, model, periods, save_run)
+    icc = _set_up_fields_and_icc(block, dae, model, periods, save_run, ax)
 
     @icc
     def _inner() -> Generator[Msg, None, None]:
@@ -74,6 +79,7 @@ def _set_up_fields_and_icc(
     model: FitMethod | None,
     periods: bool,
     save_run: bool,
+    ax,
 ) -> ISISCallbacks:
     fields = [block.name]
     if periods:
@@ -86,6 +92,7 @@ def _set_up_fields_and_icc(
         x=block.name,
         measured_fields=fields,
         fit=model,
+        ax=ax,
     )
     return icc
 
@@ -126,10 +133,13 @@ def adaptive_scan(  # noqa: PLR0913, PLR0917
 
     """
     yield from ensure_connected(dae, block)  # type: ignore
+    
+    yield from call_qt_aware(plt.close, "all")
+    fix, ax = yield from call_qt_aware(plt.subplots)
 
     yield from bps.mv(dae.number_of_periods, 100)
 
-    icc = _set_up_fields_and_icc(block, dae, model, periods, save_run)
+    icc = _set_up_fields_and_icc(block, dae, model, periods, save_run, ax)
 
     @icc
     def _inner() -> Generator[Msg, None, None]:
