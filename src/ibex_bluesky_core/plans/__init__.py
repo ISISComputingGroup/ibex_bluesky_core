@@ -6,7 +6,6 @@ from typing import TYPE_CHECKING, Any
 import bluesky.plans as bp
 from bluesky import plan_stubs as bps
 from bluesky.plan_stubs import trigger_and_read
-from bluesky.preprocessors import run_decorator
 from bluesky.protocols import NamedMovable, Readable
 from bluesky.utils import Msg
 from ophyd_async.plan_stubs import ensure_connected
