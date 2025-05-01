@@ -12,7 +12,7 @@ from bluesky.utils import Msg
 from ophyd_async.plan_stubs import ensure_connected
 
 from ibex_bluesky_core.callbacks import ISISCallbacks
-from ibex_bluesky_core.devices.block import BlockMot
+from ibex_bluesky_core.devices.block import BlockMot, BlockRw, BlockWriteConfig
 from ibex_bluesky_core.devices.simpledae import monitor_normalising_dae
 from ibex_bluesky_core.fitting import FitMethod
 from ibex_bluesky_core.utils import NamedReadableAndMovable, centred_pixel, get_pv_prefix
@@ -192,7 +192,7 @@ def motor_scan(  # noqa: PLR0913
         an :obj:`ibex_bluesky_core.callbacks.ISISCallbacks` instance.
 
     """
-    block = BlockMot(prefix=get_pv_prefix(), block_name=block_name)
+    block = BlockRw(float, prefix=get_pv_prefix(), block_name=block_name, write_config=BlockWriteConfig(use_global_moving_flag=True))
     det_pixels = centred_pixel(det, pixel_range)
     dae = monitor_normalising_dae(
         det_pixels=det_pixels, frames=frames, periods=periods, save_run=save_run, monitor=mon
@@ -255,7 +255,7 @@ def motor_adaptive_scan(  # noqa: PLR0913
         an :obj:`ibex_bluesky_core.callbacks.ISISCallbacks` instance.
 
     """
-    block = BlockMot(prefix=get_pv_prefix(), block_name=block_name)
+    block = BlockRw(float, prefix=get_pv_prefix(), block_name=block_name, write_config=BlockWriteConfig(use_global_moving_flag=True))
     det_pixels = centred_pixel(det, pixel_range)
     dae = monitor_normalising_dae(
         det_pixels=det_pixels, frames=frames, periods=periods, save_run=save_run, monitor=mon
