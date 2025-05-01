@@ -1,0 +1,13 @@
+bluesky
+github
+repo
+ophyd
+coroutines
+beamline
+uktena
+mantid
+poisson
+prepended
+matplotlib
+reflectometers
+readback
