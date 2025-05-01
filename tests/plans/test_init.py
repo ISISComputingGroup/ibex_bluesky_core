@@ -30,7 +30,7 @@ def test_scan_motor_creates_block_device_and_dae(RE):
     prefix = "UNITTEST:"
     block_name = "some_block"
     with (
-        patch("ibex_bluesky_core.plans.get_pv_prefix", return_value=prefix),
+        patch("ibex_bluesky_core.devices.block.get_pv_prefix", return_value=prefix),
         patch("ibex_bluesky_core.devices.simpledae.get_pv_prefix", return_value=prefix),
         patch("ibex_bluesky_core.plans.scan") as scan,
     ):
@@ -56,7 +56,7 @@ def test_adaptive_scan_motor_creates_block_device_and_dae(RE):
     prefix = "UNITTEST:"
     block_name = "some_block"
     with (
-        patch("ibex_bluesky_core.plans.get_pv_prefix", return_value=prefix),
+        patch("ibex_bluesky_core.devices.block.get_pv_prefix", return_value=prefix),
         patch("ibex_bluesky_core.devices.simpledae.get_pv_prefix", return_value=prefix),
         patch("ibex_bluesky_core.plans.adaptive_scan") as scan,
     ):

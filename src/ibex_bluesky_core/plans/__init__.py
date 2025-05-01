@@ -12,15 +12,15 @@ from bluesky.utils import Msg
 from ophyd_async.plan_stubs import ensure_connected
 
 from ibex_bluesky_core.callbacks import ISISCallbacks
-from ibex_bluesky_core.devices.block import BlockMot, BlockRw, BlockWriteConfig
+from ibex_bluesky_core.devices.block import BlockWriteConfig, block_rw
 from ibex_bluesky_core.devices.simpledae import monitor_normalising_dae
 from ibex_bluesky_core.fitting import FitMethod
-from ibex_bluesky_core.utils import NamedReadableAndMovable, centred_pixel, get_pv_prefix
+from ibex_bluesky_core.utils import NamedReadableAndMovable, centred_pixel
 
 if TYPE_CHECKING:
     from ibex_bluesky_core.devices.simpledae import SimpleDae
 
-__all__ = ["BlockMot", "adaptive_scan", "motor_adaptive_scan", "motor_scan", "polling_plan", "scan"]
+__all__ = ["adaptive_scan", "motor_adaptive_scan", "motor_scan", "polling_plan", "scan"]
 
 
 def scan(  # noqa: PLR0913
@@ -193,9 +193,8 @@ def motor_scan(  # noqa: PLR0913
         an :obj:`ibex_bluesky_core.callbacks.ISISCallbacks` instance.
 
     """
-    block = BlockRw(
+    block = block_rw(
         float,
-        prefix=get_pv_prefix(),
         block_name=block_name,
         write_config=BlockWriteConfig(use_global_moving_flag=True),
     )
@@ -262,9 +261,8 @@ def motor_adaptive_scan(  # noqa: PLR0913
         an :obj:`ibex_bluesky_core.callbacks.ISISCallbacks` instance.
 
     """
-    block = BlockRw(
+    block = block_rw(
         float,
-        prefix=get_pv_prefix(),
         block_name=block_name,
         write_config=BlockWriteConfig(use_global_moving_flag=True),
     )
