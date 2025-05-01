@@ -10,11 +10,11 @@
 
 *Add appropriate label(s) to this PR*
 
- - 'Semver-Major' - Breaking Change
- - 'Semver-Minor' - New feature
- - 'bug' - Bug fix
- - 'documentation' - Document Changes
- - 'ignore-for-release' - Do not show in the release notes 
+ - 'bluesky-Semver-Major' - Breaking Change
+ - 'bluesky-Semver-Minor' - New feature
+ - 'bluesky-bug' - Bug fix
+ - 'bluesky-documentation' - Document Changes
+ - 'bluesky-ignore-for-release' - Do not show in the release notes 
 
  **Labels can be found of the right-hand sidebar of this PR once created**
 
