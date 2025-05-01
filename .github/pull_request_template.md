@@ -8,12 +8,12 @@
 
 ### Labels
 
-*Add approprate label(s) to this PR*
+*Add appropriate label(s) to this PR*
 
  - 'Semver-Major' - Breaking Change
  - 'Semver-Minor' - New feature
  - 'bug' - Bug fix
- - 'documentation' - Document changes
+ - 'documentation' - Document Changes
  - 'ignore-for-release' - Do not show in the release notes 
 
  **Labels can be found of the right-hand sidebar of this PR once created**
