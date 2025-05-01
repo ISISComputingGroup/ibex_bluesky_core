@@ -287,7 +287,6 @@ def motor_adaptive_scan(  # noqa: PLR0913
     )
 
 
-@run_decorator(md={})
 def polling_plan(
     motor: NamedReadableAndMovable, readable: Readable[Any], destination: float
 ) -> Generator[Msg, None, None]:
