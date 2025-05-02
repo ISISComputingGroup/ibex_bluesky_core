@@ -291,6 +291,9 @@ def polling_plan(
 ) -> Generator[Msg, None, None]:
     """Move to a destination but drop updates from readable if motor position has not changed.
 
+    Note - this does not start a run, this should be done with a run_decorator or similar in an
+    outer plan which calls this plan.
+
     Args:
         motor: the motor to move.
         readable: the readable to read updates from, but drop if motor has not moved.
