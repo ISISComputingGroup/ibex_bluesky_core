@@ -6,7 +6,7 @@ import math
 from abc import ABC, abstractmethod
 from collections.abc import Awaitable, Callable, Collection, Sequence
 from typing import TYPE_CHECKING
-
+from bluesky.protocols import NamedMovable
 import numpy as np
 import numpy.typing as npt
 import scipp as sc
@@ -19,7 +19,7 @@ from ophyd_async.core import (
     soft_signal_r_and_setter,
 )
 from scippneutron import conversion
-
+import bluesky.plan_stubs as bps
 from ibex_bluesky_core.devices.dae import DaeSpectra
 from ibex_bluesky_core.devices.simpledae._strategies import Reducer
 
@@ -316,6 +316,59 @@ class MonitorNormalizer(Reducer, StandardReadable):
             self.det_counts_stddev,
             self.mon_counts_stddev,
             self.intensity_stddev,
+        ]
+
+
+class Polariser(Reducer, StandardReadable):
+    def __init__(
+        self,
+        reducer_a: Reducer,
+        reducer_b: Reducer
+    ) -> None:
+        
+        self.reducer_a = reducer_a
+        self.reducer_b = reducer_b
+
+        self.polarisation, self._polarisation_setter = soft_signal_r_and_setter(
+            float, 0.0, precision=INTENSITY_PRECISION
+        )
+        self.polarisation_stddev, self._polarisation_stddev_setter = soft_signal_r_and_setter(
+            float, 0.0, precision=INTENSITY_PRECISION
+        )
+
+        self.polarisation_ratio, self._polarisation_ratio_setter = soft_signal_r_and_setter(
+            float, 0.0, precision=INTENSITY_PRECISION
+        )
+        self.polarisation_ratio_stddev, self._polarisation_ratio_stddev_setter = soft_signal_r_and_setter(
+            float, 0.0, precision=INTENSITY_PRECISION
+        )
+
+    async def reduce_data(self, dae: "SimpleDae") -> None:
+        """Apply the polarisation."""
+        logger.info("starting polarisation")
+
+        intensity_a = await self.reducer_a.intensity.get_value()
+        intensity_b = await self.reducer_b.intensity.get_value()
+        intensity_a_stddev = await self.reducer_a.intensity_stddev.get_value()
+        intensity_b_stddev = await self.reducer_b.intensity_stddev.get_value()
+
+        # use Polarization/asymmetry function
+        # polarisation = (intensity_a - intensity_b) / (intensity_a + intensity_b)
+        
+        polarisation_ratio = intensity_a / intensity_b
+        polarisation_ratio_stddev = 
+
+        self._polarisation_setter(float(polarisation))
+        self._polarisation_ratio_setter(float(polarisation_ratio))
+
+        
+
+    def additional_readable_signals(self, dae: "SimpleDae") -> list[Device]:
+        return [
+            self.polarisation,
+            self.polarisation_stddev,
+            self.polarisation_ratio,
+            self.polarisation_ratio_stddev,
         ]
 
 
