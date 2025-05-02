@@ -17,11 +17,11 @@ from ibex_bluesky_core.devices.simpledae import (
     Waiter,
 )
 from ibex_bluesky_core.fitting import Gaussian
+from ibex_bluesky_core.plan_stubs import polling_plan
 from ibex_bluesky_core.plans import (
     adaptive_scan,
     motor_adaptive_scan,
     motor_scan,
-    polling_plan,
     scan,
 )
 
