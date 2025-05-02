@@ -303,6 +303,8 @@ class PolarisingDae(SimpleDae):
         await self.controller.start_counting(self)
         await self.waiter.wait(self)
         await self.controller.stop_counting(self)
+
+        # for each wavelength bound
         await self.reducer_a.reduce_data(self)
 
         await bps.mv(self.flipper, self.flipper_states[1])
@@ -310,50 +312,17 @@ class PolarisingDae(SimpleDae):
         await self.controller.start_counting(self)
         await self.waiter.wait(self)
         await self.controller.stop_counting(self)
+
+        # for each wavelength bound
         await self.reducer_b.reduce_data(self)
 
+        # for each wavelength bound
         await self.polariser.reduce_data(self)
-        
 
-def monitor_normalising_polarising_dae(
-    *,
-    det_pixels: list[int],
-    frames: int,
-    periods: bool = True,
-    monitor: int = 1,
-    save_run: bool = False,
-    flipper: NamedMovable, # might have to use ophyd async Reference here
-    flipper_up_down: tuple[float, float] = (1,0),
-    bounds: sc.Variable,
-    total_flight_path_length: sc.Variable
-    ):
 
-    prefix = get_pv_prefix()
 
-    if periods:
-        controller = PeriodPerPointController(save_run=save_run)
-        waiter = PeriodGoodFramesWaiter(frames)
-    else:
-        controller = RunPerPointController(save_run=save_run)
-        waiter = GoodFramesWaiter(frames)
+# would need a new reducer_a and reducer_b per wavelenth band
 
-    # reducer = MonitorNormalizer(
-    #     prefix=prefix,
-    #     detector_spectra=det_pixels,
-    #     monitor_spectra=[monitor],
-    #     sum_detector=wavelength_bounded_spectra(bounds, total_flight_path_length),
-    #     sum_monitor=wavelength_bounded_spectra(bounds, total_flight_path_length),
-    # )
-
-    dae = PolarisingDae(
-        prefix=prefix,
-        controller=controller,
-        waiter=waiter,
-        reducer=reducer,
-        flipper=flipper,
-        flipper_up_down=flipper_up_down,
-    )
-
-    dae.reducer.intensity.set_name("intensity")
-    dae.reducer.intensity_stddev.set_name("intensity_stddev")
-    return dae
+# becauase MonitorNormalizer.init takes sum_detector & sum_monitor
+# which I will need to pass wavelength_bounded_spectra to
+# which will sum counts between a wavelength bound and publish signals for it

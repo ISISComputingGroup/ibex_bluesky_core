@@ -363,56 +363,148 @@ class MonitorNormalizer(Reducer, StandardReadable):
         ]
 
 
+class WavelengthBoundedNormalizer(Reducer, StandardReadable):
+    def __init__(
+        self,
+        prefix: str,
+        detector_spectra: Sequence[int],
+        monitor_spectra: Sequence[int],
+        intervals: list[sc.Variable], 
+        total_flight_path_length: sc.Variable
+    ) -> None:
+        
+        self.total_flight_path_length = total_flight_path_length
+        self.intervals = intervals
+
+        dae_prefix = prefix + "DAE:"
+
+        self.detectors = DeviceVector(
+            {i: DaeSpectra(dae_prefix=dae_prefix, spectra=i, period=0) for i in detector_spectra}
+        )
+        self.monitors = DeviceVector(
+            {i: DaeSpectra(dae_prefix=dae_prefix, spectra=i, period=0) for i in monitor_spectra}
+        )
+
+        self.det_counts, self._det_counts_setters = DeviceVector(
+            {i: soft_signal_r_and_setter(float, 0.0) for i in range(len(self.intervals))}
+        )
+        self.det_counts_stddevs, self._det_counts_stddev_setters = DeviceVector(
+            {i: soft_signal_r_and_setter(float, 0.0) for i in range(len(self.intervals))}
+        )
+
+        self.mon_counts, self._mon_counts_setters = DeviceVector(
+            {i: soft_signal_r_and_setter(float, 0.0) for i in range(len(self.intervals))}
+        )
+        self.mon_counts_stddevs, self._mon_counts_stddev_setters = DeviceVector(
+            {i: soft_signal_r_and_setter(float, 0.0) for i in range(len(self.intervals))}
+        )
+
+        self.intensities, self._intensity_setters = DeviceVector(
+            {i: soft_signal_r_and_setter(float, 0.0) for i in range(len(self.intervals))}
+        )
+        self.intensity_stddevs, self._intensity_stddev_setters = DeviceVector(
+            {i: soft_signal_r_and_setter(float, 0.0) for i in range(len(self.intervals))}
+        )
+
+        super().__init__(name="")
+
+    async def reduce_data(self, dae: "SimpleDae") -> None:
+        """Apply the normalisation."""
+        logger.info("starting normalisation")
+
+        for i in range(len(self.intervals)):
+
+            interval = self.intervals[0]
+
+            detector_counts, monitor_counts = await asyncio.gather(
+                wavelength_bounded_spectra(bounds=interval, total_flight_path_length=self.total_flight_path_length)(self.detectors.values()),
+                wavelength_bounded_spectra(bounds=interval, total_flight_path_length=self.total_flight_path_length)(self.monitors.values()),
+            )
+
+            if monitor_counts.value == 0.0:
+                raise ValueError(
+                    "Cannot normalize; got zero monitor counts. Check beamline configuration."
+                )
+
+            # See doc\architectural_decisions\005-variance-addition.md
+            # for justification of this addition to variances.
+            detector_counts.variance += VARIANCE_ADDITION
+
+            intensity = detector_counts / monitor_counts
+
+            self._intensity_setters[i](float(intensity.value))
+            self._det_counts_setters[i](float(detector_counts.value))
+            self._mon_counts_setters[i](float(monitor_counts.value))
+
+            self._intensity_stddev_setters[i](math.sqrt(intensity.variance))
+            self._det_counts_stddev_setters[i](math.sqrt(detector_counts.variance))
+            self._mon_counts_stddev_setters[i](math.sqrt(monitor_counts.variance))
+
+    def additional_readable_signals(self, dae: "SimpleDae") -> list[Device]:
+        return [
+            self.det_counts,
+            self.mon_counts,
+            self.intensities,
+            self.det_counts_stddevs,
+            self.mon_counts_stddevs,
+            self.intensity_stddevs,
+        ]
+
+
 class Polariser(Reducer, StandardReadable):
     def __init__(
         self,
         reducer_a: Reducer,
-        reducer_b: Reducer
+        reducer_b: Reducer,
+        intervals: list[sc.Variable],
     ) -> None:
         
         self.reducer_a = reducer_a
         self.reducer_b = reducer_b
+        self.intervals = intervals
 
-        self.polarisation, self._polarisation_setter = soft_signal_r_and_setter(
-            float, 0.0, precision=INTENSITY_PRECISION
+        self.polarisations, self._polarisation_setters = DeviceVector(
+            {i: soft_signal_r_and_setter(float, 0.0, precision=INTENSITY_PRECISION) for i in range(len(self.intervals))}
         )
-        self.polarisation_stddev, self._polarisation_stddev_setter = soft_signal_r_and_setter(
-            float, 0.0, precision=INTENSITY_PRECISION
+        self.polarisation_stddevs, self._polarisation_stddev_setters = DeviceVector(
+            {i: soft_signal_r_and_setter(float, 0.0, precision=INTENSITY_PRECISION) for i in range(len(self.intervals))}
         )
 
-        self.polarisation_ratio, self._polarisation_ratio_setter = soft_signal_r_and_setter(
-            float, 0.0, precision=INTENSITY_PRECISION
+        self.polarisation_ratios, self._polarisation_ratio_setters = DeviceVector(
+            {i: soft_signal_r_and_setter(float, 0.0, precision=INTENSITY_PRECISION) for i in range(len(self.intervals))}
         )
-        self.polarisation_ratio_stddev, self._polarisation_ratio_stddev_setter = soft_signal_r_and_setter(
-            float, 0.0, precision=INTENSITY_PRECISION
+        self.polarisation_ratio_stddevs, self._polarisation_ratio_stddev_setters = DeviceVector(
+            {i: soft_signal_r_and_setter(float, 0.0, precision=INTENSITY_PRECISION) for i in range(len(self.intervals))}
         )
 
     async def reduce_data(self, dae: "SimpleDae") -> None:
         """Apply the polarisation."""
         logger.info("starting polarisation")
 
-        intensity_a = await self.reducer_a.intensity.get_value()
-        intensity_b = await self.reducer_b.intensity.get_value()
-        intensity_a_stddev = await self.reducer_a.intensity_stddev.get_value()
-        intensity_b_stddev = await self.reducer_b.intensity_stddev.get_value()
+        for i in range(len(self.intervals)):
 
-        # use Polarization/asymmetry function
-        # polarisation = (intensity_a - intensity_b) / (intensity_a + intensity_b)
+            _intensity_a = await self.reducer_a.intensities[i].get_value()
+            _intensity_b = await self.reducer_b.intensities[i].get_value()
+            _intensity_a_stddev = await self.reducer_a.intensity_stddevs[i].get_value()
+            _intensity_b_stddev = await self.reducer_b.intensity_stddevs[i].get_value()
+
+            intensity_a = sc.scalar(value=_intensity_a, variance=_intensity_a_stddev, dtype=float)
+            intensity_b = sc.scalar(value=_intensity_b, variance=_intensity_b_stddev, dtype=float)
+
+            polarisation = polarization(intensity_a, intensity_b)        
+            polarisation_ratio = intensity_a / intensity_b
+
+            self._polarisation_setters[i](float(polarisation.value))
+            self._polarisation_ratio_setters[i](float(polarisation_ratio.value))
+            self._polarisation_stddev_setters[i](float(polarisation.variance))
+            self._polarisation_ratio_stddev_setters[i](float(polarisation_ratio.variance))
         
-        polarisation_ratio = intensity_a / intensity_b
-        polarisation_ratio_stddev = 
-
-        self._polarisation_setter(float(polarisation))
-        self._polarisation_ratio_setter(float(polarisation_ratio))
-
-        
-
     def additional_readable_signals(self, dae: "SimpleDae") -> list[Device]:
         return [
-            self.polarisation,
-            self.polarisation_stddev,
-            self.polarisation_ratio,
-            self.polarisation_ratio_stddev,
+            self.polarisations,
+            self.polarisation_stddevs,
+            self.polarisation_ratios,
+            self.polarisation_ratio_stddevs,
         ]
 
 
