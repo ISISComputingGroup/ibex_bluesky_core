@@ -7,7 +7,7 @@ from ophyd_async.plan_stubs import ensure_connected
 from ophyd_async.sim import SimMotor
 from ophyd_async.testing import callback_on_mock_put, get_mock_put, set_mock_value
 
-from ibex_bluesky_core.devices.block import BlockMot, BlockR
+from ibex_bluesky_core.devices.block import BlockMot, BlockR, BlockRw
 from ibex_bluesky_core.devices.simpledae import (
     Controller,
     MonitorNormalizer,
@@ -30,7 +30,7 @@ def test_scan_motor_creates_block_device_and_dae(RE):
     prefix = "UNITTEST:"
     block_name = "some_block"
     with (
-        patch("ibex_bluesky_core.plans.get_pv_prefix", return_value=prefix),
+        patch("ibex_bluesky_core.devices.block.get_pv_prefix", return_value=prefix),
         patch("ibex_bluesky_core.devices.simpledae.get_pv_prefix", return_value=prefix),
         patch("ibex_bluesky_core.plans.scan") as scan,
     ):
@@ -48,7 +48,7 @@ def test_scan_motor_creates_block_device_and_dae(RE):
         )
         scan.assert_called_once()
         assert isinstance(scan.call_args[1]["dae"], SimpleDae)
-        assert isinstance(scan.call_args[1]["block"], BlockMot)
+        assert isinstance(scan.call_args[1]["block"], BlockRw)
         assert scan.call_args[1]["block"].name == block_name
 
 
@@ -56,7 +56,7 @@ def test_adaptive_scan_motor_creates_block_device_and_dae(RE):
     prefix = "UNITTEST:"
     block_name = "some_block"
     with (
-        patch("ibex_bluesky_core.plans.get_pv_prefix", return_value=prefix),
+        patch("ibex_bluesky_core.devices.block.get_pv_prefix", return_value=prefix),
         patch("ibex_bluesky_core.devices.simpledae.get_pv_prefix", return_value=prefix),
         patch("ibex_bluesky_core.plans.adaptive_scan") as scan,
     ):
@@ -76,7 +76,7 @@ def test_adaptive_scan_motor_creates_block_device_and_dae(RE):
         )
         scan.assert_called_once()
         assert isinstance(scan.call_args[1]["dae"], SimpleDae)
-        assert isinstance(scan.call_args[1]["block"], BlockMot)
+        assert isinstance(scan.call_args[1]["block"], BlockRw)
         assert scan.call_args[1]["block"].name == block_name
 
 
