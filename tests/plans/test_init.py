@@ -1,8 +1,8 @@
 # pyright: reportMissingParameterType=false
-
 from unittest.mock import patch
 
 import pytest
+from bluesky.preprocessors import run_decorator
 from ophyd_async.plan_stubs import ensure_connected
 from ophyd_async.sim import SimMotor
 from ophyd_async.testing import callback_on_mock_put, set_mock_value
@@ -17,11 +17,11 @@ from ibex_bluesky_core.devices.simpledae import (
     Waiter,
 )
 from ibex_bluesky_core.fitting import Gaussian
+from ibex_bluesky_core.plan_stubs import polling_plan
 from ibex_bluesky_core.plans import (
     adaptive_scan,
     motor_adaptive_scan,
     motor_scan,
-    polling_plan,
     scan,
 )
 
@@ -289,8 +289,14 @@ async def test_polling_plan_drops_readable_updates_if_no_new_motor_position(RE):
     callback_on_mock_put(motor.user_readback, lots_of_updates_between_set)
     captured_events = []
 
+    @run_decorator(md={})
+    def p():
+        return (
+            yield from polling_plan(motor=motor, readable=block_readable, destination=destination)
+        )  # pyright: ignore[reportArgumentType])
+
     RE(
-        polling_plan(motor=motor, readable=block_readable, destination=destination),  # pyright: ignore[reportArgumentType]
+        p(),
         {"event": lambda x, y: captured_events.append(y["data"])},
     )
 
