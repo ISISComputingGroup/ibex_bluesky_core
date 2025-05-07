@@ -2,12 +2,10 @@
 
 import logging
 from typing import Generic
-import bluesky.plan_stubs as bps
-from bluesky.protocols import Triggerable, NamedMovable
+from bluesky.protocols import Triggerable
 from ophyd_async.core import (
     AsyncStageable,
     AsyncStatus,
-    Reference,
 )
 from typing_extensions import TypeVar
 import scipp as sc
@@ -23,9 +21,7 @@ from ibex_bluesky_core.devices.simpledae._reducers import (
     PeriodGoodFramesNormalizer,
     PeriodSpecIntegralsReducer,
     ScalarNormalizer,
-    tof_bounded_spectra,
-    wavelength_bounded_spectra,
-    Polariser
+    tof_bounded_spectra
 )
 from ibex_bluesky_core.devices.simpledae._strategies import (
     Controller,
@@ -42,6 +38,7 @@ from ibex_bluesky_core.devices.simpledae._waiters import (
     TimeWaiter,
 )
 from ibex_bluesky_core.utils import get_pv_prefix
+
 
 logger = logging.getLogger(__name__)
 
@@ -74,7 +71,6 @@ __all__ = [
 TController_co = TypeVar("TController_co", bound="Controller", default="Controller", covariant=True)
 TWaiter_co = TypeVar("TWaiter_co", bound="Waiter", default="Waiter", covariant=True)
 TReducer_co = TypeVar("TReducer_co", bound="Reducer", default="Reducer", covariant=True)
-TPolariser_co = TypeVar("TPolariser_co", bound="Polariser", default="Polariser", covariant=True)
 
 class SimpleDae(Dae, Triggerable, AsyncStageable, Generic[TController_co, TWaiter_co, TReducer_co]):
     """Configurable DAE with pluggable strategies for data collection, waiting, and reduction.
@@ -203,119 +199,8 @@ def monitor_normalising_dae(
     return dae
 
 
-class PolarisingDae(SimpleDae):
-
-    def __init__(
-        self,
-        *,
-        prefix: str,
-        name: str = "DAE",
-        controller: TController_co,
-        waiter: TWaiter_co,
-        reducer_a: TReducer_co,
-        reducer_b: TReducer_co,
-        polariser: TPolariser_co,
-        flipper: NamedMovable, # might have to use ophyd async Reference here
-        flipper_states: tuple[float, float]
-    ) -> None:
-        
-        self.flipper: Reference[NamedMovable] = Reference(flipper)
-        self.flipper_states: tuple[float, float] = flipper_states
-        
-        self.prefix = prefix
-        self.controller: TController_co = controller
-        self.waiter: TWaiter_co = waiter
-        self.reducer_a: TReducer_co = reducer_a
-        self.reducer_b: TReducer_co = reducer_b
-        self.polariser: TPolariser_co = polariser
-
-        logger.info(
-            "created polarisingdae with prefix=%s, controller=%s, waiter=%s, reducer_a=%s, reducer_b=%s, polariser=%s",
-            prefix,
-            controller,
-            waiter,
-            reducer_a,
-            reducer_b,
-            polariser
-        )
-
-        # controller, waiter and reducers may be Devices (but don't necessarily have to be),
-        # so can define their own signals. Do __init__ after defining those, so that the signals
-        # are connected/named and usable.
-        super().__init__(self, prefix=prefix, name=name)
-
-        # Ask each defined strategy what it's interesting signals are, and ensure those signals are
-        # published when the top-level SimpleDae object is read.
-        extra_readables = set()
-        for strategy in [self.controller, self.waiter, self.reducer_a, self.reducer_b]:
-            extra_readables.update(strategy.additional_readable_signals(self))
-        logger.info("extra readables: %s", list(extra_readables))
-        self.add_readables(devices=list(extra_readables))
-
-    
-    @AsyncStatus.wrap
-    async def trigger(self) -> None:
-        """Take a single measurement and prepare it for subsequent reading.
-
-        This waits for the acquisition and any defined reduction to be complete, such that
-        after this coroutine completes all relevant data is available via read()
-        """
-
-        await bps.mv(self.flipper.signal_ref(), self.flipper_states[0])
-
-        await self.controller.start_counting(self)
-        await self.waiter.wait(self)
-        await self.controller.stop_counting(self)
-        await self.reducer_a.reduce_data(self)
-
-        await bps.mv(self.flipper.signal_ref(), self.flipper_states[1])
-
-        await self.controller.start_counting(self)
-        await self.waiter.wait(self)
-        await self.controller.stop_counting(self)
-        await self.reducer_b.reduce_data(self)
-
-        await self.polariser.reduce_data(self)
-
-def polarising_dae(
-    det_pixels: list[int],
-    frames: int,
-    flipper: NamedMovable, # might have to use ophyd async Reference here
-    flipper_states: tuple[float, float],
-    intervals: list[sc.Variable],
-    periods: bool = True,
-    monitor: int = 1,
-    save_run: bool = False,
-) -> PolarisingDae:
-    
-    prefix = get_pv_prefix()
-
-    if periods:
-        controller = PeriodPerPointController(save_run=save_run)
-        waiter = PeriodGoodFramesWaiter(frames)
-    else:
-        controller = RunPerPointController(save_run=save_run)
-        waiter = GoodFramesWaiter(frames)
-
-    reducer_a = PeriodSpecIntegralsReducer(
-        prefix=prefix,
-        detector_spectra=det_pixels,
-        monitor_spectra=[monitor]
-    )
-
-    reducer_b = PeriodSpecIntegralsReducer(
-        prefix=prefix,
-        detector_spectra=det_pixels,
-        monitor_spectra=[monitor]
-    )
-
-    polariser = Polariser(reducer_a=reducer_a, reducer_b=reducer_b, intervals=intervals)
-
-    dae = PolarisingDae(controller=controller, waiter=waiter, reducer_a=reducer_a, reducer_b=reducer_b, polariser=polariser, flipper=flipper, flipper_states=flipper_states)
-    return dae
-
 def check_dae_strategies(
-    dae: SimpleDae | PolarisingDae,
+    dae: SimpleDae,
     *,
     expected_controller: type[Controller] | None = None,
     expected_waiter: type[Waiter] | None = None,

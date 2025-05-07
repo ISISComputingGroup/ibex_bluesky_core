@@ -8,7 +8,8 @@ from event_model.documents.event_descriptor import DataKey
 from numpy import float32
 from numpy.typing import NDArray
 from ophyd_async.core import Array1D, SignalR, StandardReadable
-from ophyd_async.epics.core import epics_signal_r, soft_signal_r_and_setter
+from ophyd_async.epics.core import epics_signal_r
+from ophyd_async.core import soft_signal_r_and_setter
 
 logger = logging.getLogger(__name__)
 
@@ -129,8 +130,8 @@ class DaeSpectra(StandardReadable):
         )
 
 
-class SpectraDevice(StandardReadable):
-    """Subdevice for a single spectra."""
+class WavelengthBand(StandardReadable):
+    """Subdevice for a single wavelength band."""
 
     def __init__(self, *, name: str = "") -> None:
 
@@ -144,7 +145,7 @@ class SpectraDevice(StandardReadable):
         self.intensity.set_name("intensity")
         self.intensity_stddev.set_name("intensity_stddev")
 
-        super.__init__(name=name)
+        super().__init__(name=name)
         
     def setter(self, *, det_counts: float, det_counts_stddev: float, mon_counts: float, mon_counts_stddev: float, intensity: float, intensity_stddev: float) -> None:
         
@@ -157,8 +158,8 @@ class SpectraDevice(StandardReadable):
         self._mon_counts_stddev_setter(mon_counts_stddev)
 
 
-class PolarisationDevice(StandardReadable):
-    """Subdevice for a single polarised wavlength-bounded spectra."""
+class PolarisedWavelengthBand(StandardReadable):
+    """Subdevice that holds polarisation info for two wavelength bands."""
 
     def __init__(self, *, name: str = "", intensity_precision: int = 6) -> None:
 
@@ -172,7 +173,7 @@ class PolarisationDevice(StandardReadable):
         self.polarisation_ratio.set_name("polarisation_ratio")
         self.polarisation_ratio_stddev.set_name("polarisation_ratio_stddev")
 
-        super.__init__(name=name)
+        super().__init__(name=name)
 
     def setter(self, *, polarisation: float, polarisation_stddev: float, polarisation_ratio: float, polarisation_ratio_stddev: float) -> None:
         
