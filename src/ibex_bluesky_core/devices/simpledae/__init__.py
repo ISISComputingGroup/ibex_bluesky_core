@@ -261,14 +261,14 @@ class PolarisingDae(SimpleDae):
         after this coroutine completes all relevant data is available via read()
         """
 
-        await bps.mv(self.flipper, self.flipper_states[0])
+        await bps.mv(self.flipper.signal_ref(), self.flipper_states[0])
 
         await self.controller.start_counting(self)
         await self.waiter.wait(self)
         await self.controller.stop_counting(self)
         await self.reducer_a.reduce_data(self)
 
-        await bps.mv(self.flipper, self.flipper_states[1])
+        await bps.mv(self.flipper.signal_ref(), self.flipper_states[1])
 
         await self.controller.start_counting(self)
         await self.waiter.wait(self)
