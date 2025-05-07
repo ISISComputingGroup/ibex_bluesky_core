@@ -1,9 +1,13 @@
 from typing import Any
 from unittest.mock import MagicMock, patch
 
+import pytest
 from matplotlib import pyplot as plt
+from matplotlib.axes import Axes
+from matplotlib.figure import Figure
 
-from ibex_bluesky_core.callbacks import LivePlot, show_plot
+from ibex_bluesky_core.callbacks import LivePlot, PlotPNGSaver, show_plot
+from ibex_bluesky_core.callbacks._utils import RB
 
 
 def test_ibex_plot_callback_calls_show_on_start():
@@ -77,6 +81,33 @@ def test_errorbars_created_if_yerr_is_given():
     ax.errorbar.assert_called_with(y=[y], x=[x], yerr=[yerr], fmt="none")
 
 
+def test_png_saved_on_run_stop():
+    ax = MagicMock(spec=Axes)
+    ax.figure = MagicMock(spec=Figure)
+    s = PlotPNGSaver(x="x", y="y", ax=ax, postfix="123", output_dir="")
+
+    s.start(
+        {
+            "uid": "0",
+            RB: 1234,  # pyright: ignore reportArgumentType
+            "time": 123456789,
+        }
+    )
+
+    s.stop(
+        {
+            "time": 234567891,
+            "uid": "2",
+            "exit_status": "success",
+            "run_start": "",
+        }
+    )
+
+    assert ax.figure.savefig.call_count == 1
+    assert ax.figure.savefig.call_args.kwargs["format"] == "png"
+    assert "x_y_1973-11-29_21-33-09Z123.png" in ax.figure.savefig.call_args.args[0].name
+
+
 def test_errorbars_not_created_if_no_yerr():
     _, ax = plt.subplots()
     ax.errorbar = MagicMock()
@@ -93,3 +124,11 @@ def test_errorbars_not_created_if_no_yerr():
 
     lp.update_plot()
     assert not ax.errorbar.called
+
+
+def test_no_filename_raises():
+    ax = MagicMock(spec=Axes)
+    ax.figure = MagicMock(spec=Figure)
+    s = PlotPNGSaver(x="x", y="y", ax=ax, postfix="123", output_dir="")
+    with pytest.raises(ValueError, match=r"No filename specified for plot PNG"):
+        s.stop({"uid": "0", "exit_status": "success", "run_start": "", "time": 123456789})
