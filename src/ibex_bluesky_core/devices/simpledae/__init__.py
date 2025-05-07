@@ -7,6 +7,7 @@ from bluesky.protocols import Triggerable, NamedMovable
 from ophyd_async.core import (
     AsyncStageable,
     AsyncStatus,
+    Reference,
 )
 from typing_extensions import TypeVar
 import scipp as sc
@@ -218,7 +219,7 @@ class PolarisingDae(SimpleDae):
         flipper_states: tuple[float, float]
     ) -> None:
         
-        self.flipper: NamedMovable = flipper
+        self.flipper: Reference[NamedMovable] = Reference(flipper)
         self.flipper_states: tuple[float, float] = flipper_states
         
         self.prefix = prefix
@@ -241,7 +242,7 @@ class PolarisingDae(SimpleDae):
         # controller, waiter and reducers may be Devices (but don't necessarily have to be),
         # so can define their own signals. Do __init__ after defining those, so that the signals
         # are connected/named and usable.
-        Dae.__init__(self, prefix=prefix, name=name)
+        super().__init__(self, prefix=prefix, name=name)
 
         # Ask each defined strategy what it's interesting signals are, and ensure those signals are
         # published when the top-level SimpleDae object is read.
