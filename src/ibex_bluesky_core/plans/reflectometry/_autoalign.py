@@ -148,11 +148,17 @@ def _optimise_axis_over_range(  # noqa: PLR0913 PLR0917
         yield from problem_found_plan()
 
         choice = yield from prompt_user_for_choice(
-            prompt=f"Type '1' if you would like to re-scan or type '2' to "
-            f"move {alignment_param.name} to {alignment_param_value} and keep going.",
-            choices=["1", "2"],
+            prompt=f"Type '1' if you would like to re-scan,\n '2' to "
+            f"move {alignment_param.name} to {alignment_param_value} and keep going, "
+            f"or\n '3' to pause now - use RE.resume() to rescan if you wish.\n",
+            choices=["1", "2", "3"],
         )
         if choice == "1":
+            return icc, False
+        elif choice == "3":
+            _print_and_log("Plan paused.")
+            yield from bps.checkpoint()
+            yield from bps.pause()
             return icc, False
 
     _print_and_log(f"Moving {alignment_param.name} to {alignment_param_value}.")
@@ -221,7 +227,6 @@ def optimise_axis_against_intensity(  # noqa: PLR0913
     while True:  # If a problem is found, then start the alignment again
         all_ok = True
         icc = None
-
         for rel_scan_range in rel_scan_ranges:
             icc, all_ok = yield from _optimise_axis_over_range(
                 dae=dae,
