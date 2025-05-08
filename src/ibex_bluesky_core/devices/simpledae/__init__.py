@@ -2,13 +2,15 @@
 
 import logging
 from typing import Generic
+
+import scipp as sc
 from bluesky.protocols import Triggerable
 from ophyd_async.core import (
     AsyncStageable,
     AsyncStatus,
 )
 from typing_extensions import TypeVar
-import scipp as sc
+
 from ibex_bluesky_core.devices.dae import Dae
 from ibex_bluesky_core.devices.simpledae._controllers import (
     PeriodPerPointController,
@@ -21,7 +23,7 @@ from ibex_bluesky_core.devices.simpledae._reducers import (
     PeriodGoodFramesNormalizer,
     PeriodSpecIntegralsReducer,
     ScalarNormalizer,
-    tof_bounded_spectra
+    tof_bounded_spectra,
 )
 from ibex_bluesky_core.devices.simpledae._strategies import (
     Controller,
@@ -38,7 +40,6 @@ from ibex_bluesky_core.devices.simpledae._waiters import (
     TimeWaiter,
 )
 from ibex_bluesky_core.utils import get_pv_prefix
-
 
 logger = logging.getLogger(__name__)
 
@@ -71,6 +72,7 @@ __all__ = [
 TController_co = TypeVar("TController_co", bound="Controller", default="Controller", covariant=True)
 TWaiter_co = TypeVar("TWaiter_co", bound="Waiter", default="Waiter", covariant=True)
 TReducer_co = TypeVar("TReducer_co", bound="Reducer", default="Reducer", covariant=True)
+
 
 class SimpleDae(Dae, Triggerable, AsyncStageable, Generic[TController_co, TWaiter_co, TReducer_co]):
     """Configurable DAE with pluggable strategies for data collection, waiting, and reduction.

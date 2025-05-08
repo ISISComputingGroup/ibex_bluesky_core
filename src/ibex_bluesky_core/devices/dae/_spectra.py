@@ -7,9 +7,8 @@ import scipp as sc
 from event_model.documents.event_descriptor import DataKey
 from numpy import float32
 from numpy.typing import NDArray
-from ophyd_async.core import Array1D, SignalR, StandardReadable
+from ophyd_async.core import Array1D, SignalR, StandardReadable, soft_signal_r_and_setter
 from ophyd_async.epics.core import epics_signal_r
-from ophyd_async.core import soft_signal_r_and_setter
 
 logger = logging.getLogger(__name__)
 
@@ -134,21 +133,32 @@ class WavelengthBand(StandardReadable):
     """Subdevice for a single wavelength band."""
 
     def __init__(self, *, name: str = "") -> None:
-
         self.det_counts, self._det_counts_setter = soft_signal_r_and_setter(float, 0.0)
         self.mon_counts, self._mon_counts_setter = soft_signal_r_and_setter(float, 0.0)
         self.intensity, self._intensity_setter = soft_signal_r_and_setter(float, 0.0)
-        self.det_counts_stddev, self._det_counts_stddev_setter = soft_signal_r_and_setter(float, 0.0)
-        self.mon_counts_stddev, self._mon_counts_stddev_setter = soft_signal_r_and_setter(float, 0.0)
+        self.det_counts_stddev, self._det_counts_stddev_setter = soft_signal_r_and_setter(
+            float, 0.0
+        )
+        self.mon_counts_stddev, self._mon_counts_stddev_setter = soft_signal_r_and_setter(
+            float, 0.0
+        )
         self.intensity_stddev, self._intensity_stddev_setter = soft_signal_r_and_setter(float, 0.0)
 
         self.intensity.set_name("intensity")
         self.intensity_stddev.set_name("intensity_stddev")
 
         super().__init__(name=name)
-        
-    def setter(self, *, det_counts: float, det_counts_stddev: float, mon_counts: float, mon_counts_stddev: float, intensity: float, intensity_stddev: float) -> None:
-        
+
+    def setter(
+        self,
+        *,
+        det_counts: float,
+        det_counts_stddev: float,
+        mon_counts: float,
+        mon_counts_stddev: float,
+        intensity: float,
+        intensity_stddev: float,
+    ) -> None:
         self._intensity_setter(intensity)
         self._det_counts_setter(det_counts)
         self._mon_counts_setter(mon_counts)
@@ -162,11 +172,18 @@ class PolarisedWavelengthBand(StandardReadable):
     """Subdevice that holds polarisation info for two wavelength bands."""
 
     def __init__(self, *, name: str = "", intensity_precision: int = 6) -> None:
-
-        self.polarisation, self._polarisation_setter = soft_signal_r_and_setter(float, 0.0, precision=intensity_precision)
-        self.polarisation_stddev, self._polarisation_stddev_setter = soft_signal_r_and_setter(float, 0.0, precision=intensity_precision)
-        self.polarisation_ratio, self._polarisation_ratio_setter = soft_signal_r_and_setter(float, 0.0, precision=intensity_precision)
-        self.polarisation_ratio_stddev, self._polarisation_ratio_stddev_setter = soft_signal_r_and_setter(float, 0.0, precision=intensity_precision)
+        self.polarisation, self._polarisation_setter = soft_signal_r_and_setter(
+            float, 0.0, precision=intensity_precision
+        )
+        self.polarisation_stddev, self._polarisation_stddev_setter = soft_signal_r_and_setter(
+            float, 0.0, precision=intensity_precision
+        )
+        self.polarisation_ratio, self._polarisation_ratio_setter = soft_signal_r_and_setter(
+            float, 0.0, precision=intensity_precision
+        )
+        self.polarisation_ratio_stddev, self._polarisation_ratio_stddev_setter = (
+            soft_signal_r_and_setter(float, 0.0, precision=intensity_precision)
+        )
 
         self.polarisation.set_name("polarisation")
         self.polarisation_stddev.set_name("polarisation_stddev")
@@ -175,10 +192,15 @@ class PolarisedWavelengthBand(StandardReadable):
 
         super().__init__(name=name)
 
-    def setter(self, *, polarisation: float, polarisation_stddev: float, polarisation_ratio: float, polarisation_ratio_stddev: float) -> None:
-        
+    def setter(
+        self,
+        *,
+        polarisation: float,
+        polarisation_stddev: float,
+        polarisation_ratio: float,
+        polarisation_ratio_stddev: float,
+    ) -> None:
         self._polarisation_setter(polarisation)
         self._polarisation_stddev_setter(polarisation_stddev)
         self._polarisation_ratio_setter(polarisation_ratio)
         self._polarisation_ratio_stddev_setter(polarisation_ratio_stddev)
-        
