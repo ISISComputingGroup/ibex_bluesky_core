@@ -1,30 +1,20 @@
-from unittest.mock import AsyncMock, MagicMock, patch, call
+from unittest.mock import MagicMock, patch, call
 
 import pytest
-from bluesky.protocols import NamedMovable, Movable
-from numpy.ma.testutils import assert_equal
-from ophyd_async.core import Device, StandardReadable, soft_signal_rw, SignalRW
-from ophyd_async.testing import set_mock_value
+from ophyd_async.core import soft_signal_rw, SignalRW
 import scipp as sc
-from ibex_bluesky_core.devices.dae import DaeCheckingSignal
 from ibex_bluesky_core.devices.polarisingdae import (
-    PolarisingReducer,
     PolarisingDae,
     polarising_dae
 )
 from ibex_bluesky_core.devices.simpledae import (
     Controller,
-    GoodFramesNormalizer,
     GoodFramesWaiter,
-    PeriodGoodFramesNormalizer,
     PeriodGoodFramesWaiter,
     PeriodPerPointController,
     Reducer,
     RunPerPointController,
-    SimpleDae,
     Waiter,
-    check_dae_strategies,
-    monitor_normalising_dae,
 )
 
 
@@ -42,9 +32,11 @@ def mock_waiter() -> Waiter:
 def mock_reducer() -> Reducer:
     return MagicMock(spec=Reducer)
 
+
 @pytest.fixture
 def mock_reducer_up() -> Reducer:
     return MagicMock(spec=Reducer)
+
 
 @pytest.fixture
 def mock_reducer_down() -> Reducer:
@@ -59,8 +51,7 @@ def flipper() -> SignalRW[float]:
 @pytest.fixture
 async def mock_polarising_dae(
     mock_controller: Controller, mock_waiter: Waiter, mock_reducer: Reducer, mock_reducer_up: Reducer, mock_reducer_down: Reducer, flipper: SignalRW,
-) -> SimpleDae:
-
+) -> PolarisingDae:
 
     mock_polarising_dae = PolarisingDae(
         prefix="unittest:mock:",
@@ -82,13 +73,13 @@ async def test_polarisingdae_calls_controller_twice_on_trigger(
     mock_polarising_dae: PolarisingDae, mock_controller: MagicMock
 ):
     await mock_polarising_dae.trigger()
-    assert_equal(mock_controller.start_counting.call_count, 2)
+    assert mock_controller.start_counting.call_count == 2
     mock_controller.start_counting.assert_has_calls([call(mock_polarising_dae), call(mock_polarising_dae)])
 
 
 async def test_simpledae_calls_waiter_twice_on_trigger(mock_polarising_dae: PolarisingDae, mock_waiter: MagicMock):
     await mock_polarising_dae.trigger()
-    assert_equal(mock_waiter.wait.call_count, 2)
+    assert mock_waiter.wait.call_count == 2
     mock_waiter.wait.assert_has_calls([call(mock_polarising_dae), call(mock_polarising_dae)])
 
 
