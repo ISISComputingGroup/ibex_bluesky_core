@@ -141,7 +141,7 @@ def run_plan(
     Raises:
         RuntimeError: if the run engine was not idle at the start of this call.
         RuntimeError: if a reentrant call to the run engine is detected.
-        RunEngineInterrupted: if the user, or the plan itself, explicitly
+        :py:obj:`bluesky.utils.RunEngineInterrupted`: if the user, or the plan itself, explicitly
             requests an interruption.
 
     Calling a plan using this function means that keyboard-interrupt handling will be
