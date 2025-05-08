@@ -3,17 +3,19 @@
 import asyncio
 import functools
 import logging
+from collections.abc import Generator
 from functools import cache
-from threading import Event
+from threading import Event, Lock
+from typing import Any, cast
 
 import bluesky.preprocessors as bpp
-from bluesky.run_engine import RunEngine
-from bluesky.utils import DuringTask
+from bluesky.run_engine import RunEngine, RunEngineResult
+from bluesky.utils import DuringTask, Msg, RunEngineControlException, RunEngineInterrupted
 
 from ibex_bluesky_core.callbacks import DocLoggingCallback
 from ibex_bluesky_core.preprocessors import add_rb_number_processor
 
-__all__ = ["get_run_engine"]
+__all__ = ["get_run_engine", "run_plan"]
 
 
 from ibex_bluesky_core.plan_stubs import CALL_QT_AWARE_MSG_KEY, CALL_SYNC_MSG_KEY
@@ -106,3 +108,75 @@ def get_run_engine() -> RunEngine:
     RE.preprocessors.append(functools.partial(bpp.plan_mutator, msg_proc=add_rb_number_processor))
 
     return RE
+
+
+_RUN_PLAN_LOCK = Lock()  # Explicitly *not* an RLock - RunEngine is not reentrant.
+
+
+def run_plan(
+    plan: Generator[Msg, Any, Any],
+    **metadata_kw: Any,  # noqa ANN401 - this really does accept anything serializable
+) -> RunEngineResult:
+    """Run a plan.
+
+    .. Warning::
+
+        The usual way to run a plan in bluesky is by calling ``RE(plan(...))`` interactively.
+        An ``RE`` object is already available in recent versions of the IBEX user interface,
+        or can be acquired by calling ``get_run_engine()``.
+
+        Use of this function is **not recommended**, but it is nevertheless provided as an escape
+        hatch for workflows which would otherwise be difficult to express or where parts of scanning
+        scripts have not, or cannot, be migrated to bluesky.
+
+    Args:
+        plan (positional-only): The plan to run. This is typically a generator instance.
+        metadata_kw (optional, keyword-only): Keyword arguments (metadata) to pass to the bluesky
+            run engine.
+
+    Returns:
+        A ``RunEngineResult`` instance. The return value of the plan can then be accessed using
+        the ``plan_result`` attribute.
+
+    Raises:
+        RuntimeError: if the run engine was not idle at the start of this call.
+        RuntimeError: if a reentrant call to the run engine is detected.
+        RunEngineInterrupted: if the user, or the plan itself, explicitly
+            requests an interruption.
+
+    Calling a plan using this function means that keyboard-interrupt handling will be
+    degraded: all keyboard interrupts will now force an immediate abort of the plan, using
+    ``RE.abort()``, rather than giving the possibility of gracefully resuming. Cleanup handlers
+    will execute during the ``RE.abort()``.
+
+    The bluesky run engine is not reentrant. It is a programming error to attempt to run a plan
+    using this function, from within a plan. To call a sub plan from within an outer plan, use::
+
+        def outer_plan():
+            ...
+            yield from subplan(...)
+
+    """
+    RE = get_run_engine()
+
+    if not _RUN_PLAN_LOCK.acquire(blocking=False):
+        raise RuntimeError("reentrant run_plan call attempted; this cannot be supported")
+    try:
+        if RE.state != "idle":
+            raise RuntimeError(
+                "Cannot run plan; RunEngine is not idle at start of run_plan call. "
+                "You may need to call RE.abort() to abort after a previous plan."
+            )
+        try:
+            return cast(RunEngineResult, RE(plan, **metadata_kw))
+        except (RunEngineInterrupted, RunEngineControlException):
+            raise RunEngineInterrupted(
+                "bluesky RunEngine interrupted; not resumable as running via run_plan"
+            ) from None
+        finally:
+            if RE.state != "idle":
+                # Safest reasonable default? Don't want to halt()
+                # as that wouldn't do cleanup e.g. dae settings
+                RE.abort()
+    finally:
+        _RUN_PLAN_LOCK.release()
