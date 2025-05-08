@@ -24,6 +24,7 @@ from ibex_bluesky_core.devices.simpledae._reducers import (
     PeriodSpecIntegralsReducer,
     ScalarNormalizer,
     tof_bounded_spectra,
+    wavelength_bounded_spectra
 )
 from ibex_bluesky_core.devices.simpledae._strategies import (
     Controller,

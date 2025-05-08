@@ -1,7 +1,7 @@
 import logging
 
 import scipp as sc
-from bluesky.protocols import NamedMovable
+from bluesky.protocols import NamedMovable, Movable
 from ophyd_async.core import (
     AsyncStatus,
     Reference,
@@ -11,21 +11,20 @@ from typing_extensions import TypeVar
 from ibex_bluesky_core.devices.polarisingdae._reducers import (
     PolarisingReducer,
     WavelengthBoundedNormalizer,
+    polarization
 )
-from ibex_bluesky_core.devices.simpledae import SimpleDae
-from ibex_bluesky_core.devices.simpledae._controllers import (
-    PeriodPerPointController,
-    RunPerPointController,
-)
-from ibex_bluesky_core.devices.simpledae._strategies import (
+
+from ibex_bluesky_core.devices.simpledae import (
+    SimpleDae,
     Controller,
     Reducer,
     Waiter,
-)
-from ibex_bluesky_core.devices.simpledae._waiters import (
     GoodFramesWaiter,
     PeriodGoodFramesWaiter,
+    PeriodPerPointController,
+    RunPerPointController,
 )
+
 from ibex_bluesky_core.utils import get_pv_prefix
 
 logger = logging.getLogger(__name__)
@@ -34,10 +33,14 @@ logger = logging.getLogger(__name__)
 TController_co = TypeVar("TController_co", bound="Controller", default="Controller", covariant=True)
 TWaiter_co = TypeVar("TWaiter_co", bound="Waiter", default="Waiter", covariant=True)
 TReducer_co = TypeVar("TReducer_co", bound="Reducer", default="Reducer", covariant=True)
-TPolariser_co = TypeVar(
-    "TPolariser_co", bound="PolarisingReducer", default="PolarisingReducer", covariant=True
-)
 
+__all__ = [
+    "PolarisingDae",
+    "polarising_dae",
+    "PolarisingReducer",
+    "WavelengthBoundedNormalizer",
+    "polarization"
+]
 
 class PolarisingDae(SimpleDae):
     def __init__(
@@ -49,11 +52,11 @@ class PolarisingDae(SimpleDae):
         waiter: TWaiter_co,
         reducer_up: TReducer_co,
         reducer_down: TReducer_co,
-        reducer: TPolariser_co,
-        flipper: NamedMovable,
+        reducer: TReducer_co,
+        flipper: Movable,
         flipper_states: tuple[float, float],
     ) -> None:
-        self.flipper: Reference[NamedMovable] = Reference(flipper)
+        self.flipper: Reference[Movable] = Reference(flipper)
         self.flipper_states: tuple[float, float] = flipper_states
 
         self._prefix = prefix
@@ -61,7 +64,7 @@ class PolarisingDae(SimpleDae):
         self.waiter: TWaiter_co = waiter
         self.reducer_up: TReducer_co = reducer_up
         self.reducer_down: TReducer_co = reducer_down
-        self.reducer: TPolariser_co = reducer
+        self.reducer: TReducer_co = reducer
 
         logger.info(
             "created polarisingdae with prefix=%s, controller=%s, waiter=%s, reducer=%s, reducer_up=%s, reducer_down=%s",
@@ -120,7 +123,7 @@ class PolarisingDae(SimpleDae):
 def polarising_dae(
     det_pixels: list[int],
     frames: int,
-    flipper: NamedMovable,
+    flipper: Movable,
     flipper_states: tuple[float, float],
     intervals: list[sc.Variable],
     total_flight_path_length: sc.Variable,
