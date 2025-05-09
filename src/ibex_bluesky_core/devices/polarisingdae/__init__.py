@@ -22,7 +22,7 @@ from ibex_bluesky_core.devices.simpledae import (
     GoodFramesWaiter,
     PeriodGoodFramesWaiter,
     PeriodPerPointController,
-    RunPerPointController,
+    RunPerPointController, wavelength_bounded_spectra,
 )
 
 from ibex_bluesky_core.utils import get_pv_prefix
@@ -140,20 +140,20 @@ def polarising_dae(
         controller = RunPerPointController(save_run=save_run)
         waiter = GoodFramesWaiter(frames)
 
+    sum_wavelength_bands = [wavelength_bounded_spectra(bounds=i, total_flight_path_length=total_flight_path_length) for i in intervals]
+
     reducer_up = WavelengthBoundedNormalizer(
         prefix=prefix,
         detector_spectra=det_pixels,
         monitor_spectra=[monitor],
-        intervals=intervals,
-        total_flight_path_length=total_flight_path_length,
+        sum_wavelength_bands=sum_wavelength_bands
     )
 
     reducer_down = WavelengthBoundedNormalizer(
         prefix=prefix,
         detector_spectra=det_pixels,
         monitor_spectra=[monitor],
-        intervals=intervals,
-        total_flight_path_length=total_flight_path_length,
+        sum_wavelength_bands=sum_wavelength_bands
     )
 
     reducer = PolarisingReducer(intervals=intervals)

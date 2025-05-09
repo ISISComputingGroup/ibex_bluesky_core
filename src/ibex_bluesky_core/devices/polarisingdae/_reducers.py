@@ -1,7 +1,7 @@
 import asyncio
 import logging
 import math
-from typing import TYPE_CHECKING, Sequence
+from typing import TYPE_CHECKING, Sequence, Callable, Collection, Awaitable
 
 import scipp as sc
 from ophyd_async.core import (
@@ -76,11 +76,11 @@ class WavelengthBoundedNormalizer(Reducer, StandardReadable):
         prefix: str,
         detector_spectra: Sequence[int],
         monitor_spectra: Sequence[int],
-        intervals: list[sc.Variable],
-        total_flight_path_length: sc.Variable,
+        sum_wavelength_bands: list[Callable[
+            [Collection[DaeSpectra]], Awaitable[sc.Variable | sc.DataArray]
+        ]]
     ) -> None:
-        self.total_flight_path_length = total_flight_path_length
-        self.intervals = intervals
+        self.sum_wavelength_bands = sum_wavelength_bands
 
         dae_prefix = prefix + "DAE:"
 
@@ -91,7 +91,7 @@ class WavelengthBoundedNormalizer(Reducer, StandardReadable):
             {i: DaeSpectra(dae_prefix=dae_prefix, spectra=i, period=0) for i in monitor_spectra}
         )
 
-        self.wavelength_bands = DeviceVector({i: WavelengthBand() for i in range(len(intervals))})
+        self.wavelength_bands = DeviceVector({i: WavelengthBand() for i in range(len(self.sum_wavelength_bands))})
 
         super().__init__(name="")
 
@@ -99,17 +99,13 @@ class WavelengthBoundedNormalizer(Reducer, StandardReadable):
         """Apply the normalisation."""
         logger.info("starting normalisation")
 
-        for i in range(len(self.intervals)):
-            interval = self.intervals[i]
+        for i in range(len(self.sum_wavelength_bands)):
+            sum_wavelength_band = self.sum_wavelength_bands
             wavelength_band = self.wavelength_bands[i]
 
             detector_counts_sc, monitor_counts_sc = await asyncio.gather(
-                wavelength_bounded_spectra(
-                    bounds=interval, total_flight_path_length=self.total_flight_path_length
-                )(self.detectors.values()),
-                wavelength_bounded_spectra(
-                    bounds=interval, total_flight_path_length=self.total_flight_path_length
-                )(self.monitors.values()),
+                sum_wavelength_band[i](self.detectors.values()),
+                sum_wavelength_band[i](self.monitors.values()),
             )
 
             if monitor_counts_sc.value == 0.0:
