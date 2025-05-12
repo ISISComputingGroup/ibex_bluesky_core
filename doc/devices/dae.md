@@ -286,7 +286,7 @@ Similar to LARMOR, A and B represent intensities before and after flipper switch
 Muon Instruments
 A and B refer to Measurements from different detector banks.
 
-{py:obj}`ibex_bluesky_core.devices.simpledae.reducers.polarization`
+{py:obj}`ibex_bluesky_core.devices.polarisingdae.reducers.polarization`
 
 ## Waiters
 
