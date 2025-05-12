@@ -15,6 +15,9 @@ from ibex_bluesky_core.devices.dae._spectra import PolarisedWavelengthBand, Wave
 from ibex_bluesky_core.devices.simpledae._reducers import wavelength_bounded_spectra
 from ibex_bluesky_core.devices.simpledae._strategies import Reducer
 
+import pytest
+from unittest.mock import patch, MagicMock
+
 logger = logging.getLogger(__name__)
 
 if TYPE_CHECKING:
@@ -103,8 +106,6 @@ class WavelengthBoundedNormalizer(Reducer, StandardReadable):
 
             sum_wavelength_band = self.sum_wavelength_bands[i]
             wavelength_band = self.wavelength_bands[i]
-            print(i)
-
             detector_counts_sc, monitor_counts_sc = await asyncio.gather(
                 sum_wavelength_band(self.detectors.values()),
                 sum_wavelength_band(self.monitors.values()),
@@ -160,14 +161,19 @@ class PolarisingReducer(Reducer, StandardReadable):
         """Apply the polarisation."""
         logger.info("starting polarisation")
 
+        if len(dae.reducer_up.wavelength_bands) != len(dae.reducer_down.wavelength_bands):
+            raise ValueError("Mismatched number of wavelength bands")
+
         for i in range(len(self.intervals)):
             wavelength_band = self.wavelength_bands[i]
 
             _intensity_up = await dae.reducer_up.wavelength_bands[i].intensity.get_value()
-            print(_intensity_up)
             _intensity_down = await dae.reducer_down.wavelength_bands[i].intensity.get_value()
+
+            if _intensity_up == 0.0 or _intensity_down == 0.0:
+                raise ValueError("Cannot calculate polarisation; zero intensity detected")
+
             _intensity_up_stddev = await dae.reducer_up.wavelength_bands[i].intensity_stddev.get_value()
-            print(_intensity_up_stddev)
             _intensity_down_stddev = await dae.reducer_down.wavelength_bands[i].intensity_stddev.get_value()
             intensity_up_sc = sc.scalar(
                 value=_intensity_up, variance=_intensity_up_stddev, dtype=float
