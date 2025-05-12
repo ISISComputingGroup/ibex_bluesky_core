@@ -659,7 +659,7 @@ async def test_monitor_normalizer_uncertainties(
     assert det_counts_stddev == math.sqrt(6000 + VARIANCE_ADDITION)
     assert mon_counts_stddev == math.sqrt(15000)
     assert intensity_stddev == pytest.approx(
-        (6000 / 15000) * math.sqrt((6000.5 / 6000**2) + (15000 / 15000**2)), 1e-8
+        (6000 / 15000) * math.sqrt(((6000 + VARIANCE_ADDITION) / 6000**2) + (15000 / 15000**2)), 1e-8
     )
 
 

@@ -100,12 +100,14 @@ class WavelengthBoundedNormalizer(Reducer, StandardReadable):
         logger.info("starting normalisation")
 
         for i in range(len(self.sum_wavelength_bands)):
-            sum_wavelength_band = self.sum_wavelength_bands
+
+            sum_wavelength_band = self.sum_wavelength_bands[i]
             wavelength_band = self.wavelength_bands[i]
+            print(i)
 
             detector_counts_sc, monitor_counts_sc = await asyncio.gather(
-                sum_wavelength_band[i](self.detectors.values()),
-                sum_wavelength_band[i](self.monitors.values()),
+                sum_wavelength_band(self.detectors.values()),
+                sum_wavelength_band(self.monitors.values()),
             )
 
             if monitor_counts_sc.value == 0.0:
@@ -159,17 +161,14 @@ class PolarisingReducer(Reducer, StandardReadable):
         logger.info("starting polarisation")
 
         for i in range(len(self.intervals)):
-            p_device = self.wavelength_bands[i]
+            wavelength_band = self.wavelength_bands[i]
 
             _intensity_up = await dae.reducer_up.wavelength_bands[i].intensity.get_value()
+            print(_intensity_up)
             _intensity_down = await dae.reducer_down.wavelength_bands[i].intensity.get_value()
-            _intensity_up_stddev = await dae.reducer_up.wavelength_bands[
-                i
-            ].intensity_stddev.get_value()
-            _intensity_down_stddev = await dae.reducer_down.wavelength_bands[
-                i
-            ].intensity_stddev.get_value()
-
+            _intensity_up_stddev = await dae.reducer_up.wavelength_bands[i].intensity_stddev.get_value()
+            print(_intensity_up_stddev)
+            _intensity_down_stddev = await dae.reducer_down.wavelength_bands[i].intensity_stddev.get_value()
             intensity_up_sc = sc.scalar(
                 value=_intensity_up, variance=_intensity_up_stddev, dtype=float
             )
@@ -185,7 +184,7 @@ class PolarisingReducer(Reducer, StandardReadable):
             polarisation_stddev = float(polarisation_sc.variance)
             polarisation_ratio_stddev = float(polarisation_ratio_sc.variance)
 
-            p_device.setter(
+            wavelength_band.setter(
                 polarisation=polarisation,
                 polarisation_stddev=polarisation_stddev,
                 polarisation_ratio=polarisation_ratio,

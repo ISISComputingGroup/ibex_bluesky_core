@@ -3,7 +3,7 @@ import re
 from unittest.mock import MagicMock, AsyncMock, patch
 
 import pytest
-from ophyd_async.core import SignalRW, soft_signal_rw
+from ophyd_async.core import SignalRW, soft_signal_rw, soft_signal_r_and_setter
 
 from ibex_bluesky_core.devices.dae._spectra import WavelengthBand, PolarisedWavelengthBand
 from ibex_bluesky_core.devices.polarisingdae import (
@@ -13,21 +13,105 @@ from ibex_bluesky_core.devices.polarisingdae import (
 )
 import scipp as sc
 
-from ibex_bluesky_core.devices.polarisingdae._reducers import VARIANCE_ADDITION
+from ibex_bluesky_core.devices.polarisingdae._reducers import VARIANCE_ADDITION, PolarisingReducer
 from ibex_bluesky_core.devices.simpledae import Controller, Waiter, Reducer
-from ibex_bluesky_core.devices.simpledae._reducers import sum_spectra
+from ibex_bluesky_core.devices.simpledae._reducers import sum_spectra, wavelength_bounded_spectra
 
 
-@pytest.fixture
-async def wavelength_bounded_normaliser() -> WavelengthBoundedNormalizer:
+async def wavelength_bounded_normaliser(sum_funcs) -> WavelengthBoundedNormalizer:
     reducer = WavelengthBoundedNormalizer(
         prefix="",
         detector_spectra=[1],
         monitor_spectra=[2],
-        sum_wavelength_bands=[sum_spectra]
+        sum_wavelength_bands=sum_funcs
     )
     await reducer.connect(mock=True)
     return reducer
+
+async def get_wavelength_bounded_normaliser() -> WavelengthBoundedNormalizer:
+    return await wavelength_bounded_normaliser(
+        [wavelength_bounded_spectra(
+            bounds=sc.array(
+                dims=["tof"],
+                values=[0, 9999999999.0],
+                unit=sc.units.angstrom,
+                dtype="float64"
+            ),
+            total_flight_path_length=sc.scalar(
+                value=10,
+                unit=sc.units.m,
+                dtype="float64"
+            )
+        )]
+    )
+
+
+async def get_wavelength_bounded_normaliser_two() -> WavelengthBoundedNormalizer:
+    return await wavelength_bounded_normaliser(
+        [
+            wavelength_bounded_spectra(
+                bounds=sc.array(
+                    dims=["tof"],
+                    values=[0.0, 0.0004],
+                    unit=sc.units.angstrom,
+                    dtype="float64"
+                ),
+                total_flight_path_length=sc.scalar(
+                    value=10,
+                    unit=sc.units.m,
+                    dtype="float64",
+                )
+            ),
+            wavelength_bounded_spectra(
+                bounds=sc.array(
+                    dims=["tof"],
+                    values=[0.0004, 9999999999.0],
+                    unit=sc.units.angstrom,
+                    dtype="float64"
+                ),
+                total_flight_path_length=sc.scalar(
+                    value=10,
+                    unit=sc.units.m,
+                    dtype="float64",
+                )
+            )
+        ]
+    )
+
+
+@pytest.fixture
+async def wavelength_bounded_normaliser_up() -> WavelengthBoundedNormalizer:
+    return await get_wavelength_bounded_normaliser()
+
+
+@pytest.fixture
+async def wavelength_bounded_normaliser_down() -> WavelengthBoundedNormalizer:
+    return await get_wavelength_bounded_normaliser()
+
+
+@pytest.fixture
+async def wavelength_bounded_normaliser_up_two() -> WavelengthBoundedNormalizer:
+    return await get_wavelength_bounded_normaliser_two()
+
+
+@pytest.fixture
+async def wavelength_bounded_normaliser_down_two() -> WavelengthBoundedNormalizer:
+    return await get_wavelength_bounded_normaliser_two()
+
+
+@pytest.fixture
+async def polarising_reducer() -> PolarisingReducer:
+    return PolarisingReducer(
+        [sc.array(dims=["tof"], values=[0, 9999999999.0], unit=sc.units.angstrom, dtype="float64")],
+    )
+
+
+@pytest.fixture
+async def polarising_reducer_two() -> PolarisingReducer:
+    return PolarisingReducer(
+        [sc.array(dims=["tof"], values=[0.0, 0.0004], unit=sc.units.angstrom, dtype="float64"),
+        sc.array(dims=["tof"], values=[0.0004, 9999999999.0], unit=sc.units.angstrom, dtype="float64")]
+    )
 
 
 @pytest.fixture
@@ -164,11 +248,11 @@ def test_polarization_arrays_of_different_sizes():
 
 def test_wavelength_bounded_normalizer_publishes_wavelength_bands(
     polarisingdae: PolarisingDae,
-    wavelength_bounded_normaliser: WavelengthBoundedNormalizer,
+    wavelength_bounded_normaliser_up: WavelengthBoundedNormalizer,
 ):
-    readables = wavelength_bounded_normaliser.additional_readable_signals(polarisingdae)
+    readables = wavelength_bounded_normaliser_up.additional_readable_signals(polarisingdae)
 
-    assert wavelength_bounded_normaliser.wavelength_bands == readables
+    assert wavelength_bounded_normaliser_up.wavelength_bands == readables
 
 
 async def test_wavelength_band_setter():
@@ -216,49 +300,62 @@ async def test_polarised_wavelength_band_setter():
     assert await polarised_wavelength_band.polarisation_ratio.get_value() == polarisation_ratio
     assert await polarised_wavelength_band.polarisation_ratio_stddev.get_value() == polarisation_ratio_stddev
 
-async def test_wavelength_bounded_normalizer(polarisingdae: PolarisingDae, wavelength_bounded_normaliser: WavelengthBoundedNormalizer):
-    wavelength_bounded_normaliser.detectors[1].read_spectrum_dataarray = AsyncMock(
-        return_value=sc.DataArray(
+async def test_wavelength_bounded_normalizer(polarisingdae: PolarisingDae, wavelength_bounded_normaliser_up_two: WavelengthBoundedNormalizer):
+    wavelength_bounded_normaliser_up_two.detectors[1].read_spectrum_dataarray = AsyncMock(
+
+        side_effect=lambda: sc.DataArray(
             data=sc.Variable(
                 dims=["tof"],
                 values=[1000.0, 2000.0, 3000.0],
                 variances=[1000.0, 2000.0, 3000.0],
                 unit=sc.units.counts,
             ),
-            coords={"tof": sc.array(dims=["tof"], values=[0, 1, 2, 3])},
+            coords={"tof": sc.array(dims=["tof"], values=[0, 1, 2, 3], unit=sc.units.us, dtype="float64")},
         )
     )
-    wavelength_bounded_normaliser.monitors[2].read_spectrum_dataarray = AsyncMock(
-        return_value=sc.DataArray(
+    wavelength_bounded_normaliser_up_two.monitors[2].read_spectrum_dataarray = AsyncMock(
+        side_effect=lambda: sc.DataArray(
             data=sc.Variable(
                 dims=["tof"],
                 values=[4000.0, 5000.0, 6000.0],
                 variances=[4000.0, 5000.0, 6000.0],
                 unit=sc.units.counts,
             ),
-            coords={"tof": sc.array(dims=["tof"], values=[0, 1, 2, 3])},
+            coords={"tof": sc.array(dims=["tof"], values=[0, 1, 2, 3], unit=sc.units.us, dtype="float64")},
         )
     )
 
-    with patch.object(wavelength_bounded_normaliser.wavelength_bands[0], 'setter') as setter_mock:
+    with patch.object(wavelength_bounded_normaliser_up_two.wavelength_bands[0], 'setter') as setter_mock:
 
-        await wavelength_bounded_normaliser.reduce_data(dae=polarisingdae)
+        await wavelength_bounded_normaliser_up_two.reduce_data(dae=polarisingdae)
 
         setter_mock.assert_called_once_with(
-            det_counts=6000,
-            det_counts_stddev=math.sqrt(6000 + VARIANCE_ADDITION),
-            mon_counts=15000,
-            mon_counts_stddev=math.sqrt(15000),
-            intensity=pytest.approx(6000 / 15000),
-            intensity_stddev=pytest.approx(
-            (6000 / 15000) * math.sqrt((6000.5 / 6000 ** 2) + (15000 / 15000 ** 2)), 1e-8)
+            det_counts=pytest.approx(1022.2273083661819),
+            det_counts_stddev=pytest.approx(31.980108010545898),
+            mon_counts=pytest.approx(4055.568270915455),
+            mon_counts_stddev=pytest.approx(63.68334374791775),
+            intensity=pytest.approx(0.2520552583708415),
+            intensity_stddev=pytest.approx(0.00882304684703932)
+        )
+
+    with patch.object(wavelength_bounded_normaliser_up_two.wavelength_bands[1], 'setter') as setter_mock:
+
+        await wavelength_bounded_normaliser_up_two.reduce_data(dae=polarisingdae)
+
+        setter_mock.assert_called_once_with(
+            det_counts=pytest.approx(4977.772691633818),
+            det_counts_stddev=pytest.approx(70.55687558015744),
+            mon_counts=pytest.approx(10944.431729084547),
+            mon_counts_stddev=pytest.approx(104.6156380713923),
+            intensity=pytest.approx(0.45482239871856617),
+            intensity_stddev=pytest.approx(0.0077757859250577885)
         )
 
 
-async def test_monitor_normalizer_zero_counts(
-    polarisingdae: PolarisingDae, wavelength_bounded_normaliser: WavelengthBoundedNormalizer
+async def test_wavelength_bounded_normaliser_zero_counts(
+    polarisingdae: PolarisingDae, wavelength_bounded_normaliser_up: WavelengthBoundedNormalizer
 ):
-    wavelength_bounded_normaliser.detectors[1].read_spectrum_dataarray = AsyncMock(
+    wavelength_bounded_normaliser_up.detectors[1].read_spectrum_dataarray = AsyncMock(
         return_value=sc.DataArray(
             data=sc.Variable(
                 dims=["tof"],
@@ -266,10 +363,10 @@ async def test_monitor_normalizer_zero_counts(
                 variances=[0.0, 0.0, 0.0],
                 unit=sc.units.counts,
             ),
-            coords={"tof": sc.array(dims=["tof"], values=[0, 1, 2, 3])},
+            coords={"tof": sc.array(dims=["tof"], values=[0, 1, 2, 3], unit=sc.units.us)},
         )
     )
-    wavelength_bounded_normaliser.monitors[2].read_spectrum_dataarray = AsyncMock(
+    wavelength_bounded_normaliser_up.monitors[2].read_spectrum_dataarray = AsyncMock(
         return_value=sc.DataArray(
             data=sc.Variable(
                 dims=["tof"],
@@ -277,7 +374,7 @@ async def test_monitor_normalizer_zero_counts(
                 variances=[0.0, 0.0, 0.0],
                 unit=sc.units.counts,
             ),
-            coords={"tof": sc.array(dims=["tof"], values=[0, 1, 2, 3])},
+            coords={"tof": sc.array(dims=["tof"], values=[0, 1, 2, 3], unit=sc.units.us)},
         )
     )
 
@@ -285,15 +382,86 @@ async def test_monitor_normalizer_zero_counts(
         ValueError,
         match=re.escape("Cannot normalize; got zero monitor counts. Check beamline configuration."),
     ):
-        await wavelength_bounded_normaliser.reduce_data(polarisingdae)
+        await wavelength_bounded_normaliser_up.reduce_data(polarisingdae)
 
 
-async def test_polarising_reducer():
-    pass
+async def test_polarising_reducer(
+    polarising_reducer_two: PolarisingReducer,
+    wavelength_bounded_normaliser_up_two: WavelengthBoundedNormalizer,
+    wavelength_bounded_normaliser_down_two: WavelengthBoundedNormalizer,
+    mock_controller: Controller,
+    mock_waiter: Waiter,
+    flipper: SignalRW,
+):
 
-    # test that data that goes into polarising_reducer via the two reducers wavelength bands subdevices
-    # is correctly used to do polarisation on a per wavelength band basis
-    # and setter is called per wavelength band
+    dae = PolarisingDae(
+        prefix="unittest:mock:",
+        name="polarisingdae",
+        controller=mock_controller,
+        waiter=mock_waiter,
+        reducer=polarising_reducer_two,
+        reducer_up=wavelength_bounded_normaliser_up_two,
+        reducer_down=wavelength_bounded_normaliser_down_two,
+        flipper=flipper,
+        flipper_states=(0.0, 1.0),
+    )
+
+    intensity_up_0 = 6000 / 15000
+    intensity_up_stddev_0 = (6000 / 15000) * math.sqrt(((6000 + VARIANCE_ADDITION) / 6000 ** 2) + (15000 / 15000 ** 2))
+    intensity_down_0 = 7000 / 15000
+    intensity_down_stddev_0 = (7000 / 15000) * math.sqrt(((7000 + VARIANCE_ADDITION) / 7000 ** 2) + (15000 / 15000 ** 2))
+
+    intensity_up_sc_0 = sc.scalar(value=intensity_up_0, variance=intensity_up_stddev_0)
+    intensity_down_sc_0 = sc.scalar(value=intensity_down_0, variance=intensity_down_stddev_0)
+
+    dae.reducer_up.wavelength_bands[0].intensity, _ = soft_signal_r_and_setter(float, intensity_up_0)
+    dae.reducer_up.wavelength_bands[0].intensity_stddev, _ = soft_signal_r_and_setter(float, intensity_up_stddev_0)
+    dae.reducer_down.wavelength_bands[0].intensity, _ = soft_signal_r_and_setter(float, intensity_down_0)
+    dae.reducer_down.wavelength_bands[0].intensity_stddev, _ = soft_signal_r_and_setter(float, intensity_down_stddev_0)
 
 
-# do test_wavelength_bounded_normalizer and test_polarising_reducer with a different normaliser instance with wavelength binning
+    intensity_up_1 = 8000 / 15000
+    intensity_up_stddev_1 = (8000 / 15000) * math.sqrt(((8000 + VARIANCE_ADDITION) / 8000 ** 2) + (15000 / 15000 ** 2))
+    intensity_down_1 = 7000 / 15000
+    intensity_down_stddev_1 = (7000 / 15000) * math.sqrt(((7000 + VARIANCE_ADDITION) / 7000 ** 2) + (15000 / 15000 ** 2))
+
+    intensity_up_sc_1 = sc.scalar(value=intensity_up_1, variance=intensity_up_stddev_1)
+    intensity_down_sc_1 = sc.scalar(value=intensity_down_1, variance=intensity_down_stddev_1)
+
+    dae.reducer_up.wavelength_bands[1].intensity, _ = soft_signal_r_and_setter(float, intensity_up_1)
+    dae.reducer_up.wavelength_bands[1].intensity_stddev, _ = soft_signal_r_and_setter(float, intensity_up_stddev_1)
+    dae.reducer_down.wavelength_bands[1].intensity, _ = soft_signal_r_and_setter(float, intensity_down_1)
+    dae.reducer_down.wavelength_bands[1].intensity_stddev, _ = soft_signal_r_and_setter(float, intensity_down_stddev_1)
+
+    with patch.object(polarising_reducer_two.wavelength_bands[0], 'setter') as setter_mock_0:
+        with patch.object(polarising_reducer_two.wavelength_bands[1], 'setter') as setter_mock_1:
+
+            await polarising_reducer_two.reduce_data(dae=dae)
+
+            polarisation_0 = polarization(
+                a=intensity_up_sc_0,
+                b=intensity_down_sc_0
+            )
+
+            polarisation_ratio_0 = intensity_up_sc_0 / intensity_down_sc_0
+
+            setter_mock_0.assert_called_once_with(
+                polarisation=polarisation_0.value,
+                polarisation_stddev=polarisation_0.variance,
+                polarisation_ratio=polarisation_ratio_0.value,
+                polarisation_ratio_stddev=polarisation_ratio_0.variance,
+            )
+
+            polarisation_1 = polarization(
+                a=intensity_up_sc_1,
+                b=intensity_down_sc_1
+            )
+
+            polarisation_ratio_1 = intensity_up_sc_1 / intensity_down_sc_1
+
+            setter_mock_1.assert_called_once_with(
+                polarisation=polarisation_1.value,
+                polarisation_stddev=polarisation_1.variance,
+                polarisation_ratio=polarisation_ratio_1.value,
+                polarisation_ratio_stddev=polarisation_ratio_1.variance,
+            )
