@@ -1,9 +1,6 @@
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
-from ophyd_async.core import Device, StandardReadable, soft_signal_rw
-from ophyd_async.testing import set_mock_value
-
 from ibex_bluesky_core.devices.dae import DaeCheckingSignal
 from ibex_bluesky_core.devices.simpledae import (
     Controller,
@@ -19,6 +16,8 @@ from ibex_bluesky_core.devices.simpledae import (
     check_dae_strategies,
     monitor_normalising_dae,
 )
+from ophyd_async.core import Device, StandardReadable, soft_signal_rw
+from ophyd_async.testing import set_mock_value
 
 
 @pytest.fixture
