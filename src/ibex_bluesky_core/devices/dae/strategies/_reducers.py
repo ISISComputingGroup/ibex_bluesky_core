@@ -20,10 +20,9 @@ from ophyd_async.core import (
 from scippneutron import conversion
 from typing_extensions import TYPE_CHECKING
 
-from ibex_bluesky_core.devices.dae import DaeSpectra, Dae
-from ibex_bluesky_core.devices.dae._spectra import WavelengthBand, PolarisedWavelengthBand
+from ibex_bluesky_core.devices.dae import Dae, DaeSpectra
+from ibex_bluesky_core.devices.dae._spectra import PolarisedWavelengthBand, WavelengthBand
 from ibex_bluesky_core.devices.dae.strategies._base import Reducer
-
 
 logger = logging.getLogger(__name__)
 

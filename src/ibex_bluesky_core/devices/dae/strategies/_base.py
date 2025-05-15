@@ -1,4 +1,5 @@
 """Base classes for DAE strategies."""
+
 from ophyd_async.core import Device
 
 from ibex_bluesky_core.devices.dae import Dae

@@ -58,6 +58,7 @@ def get_run_engine() -> RunEngine:
     - Run a plan::
 
         from bluesky.plans import count  # Or any other plan
+
         det = ...  # A "detector" object, for example a Block or Dae device.
         RE(count([det]))
 

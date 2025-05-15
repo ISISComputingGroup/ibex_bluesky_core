@@ -1,7 +1,6 @@
 """DAE control strategies."""
 
 import logging
-from ibex_bluesky_core.devices.dae.strategies._base import Controller
 
 from ophyd_async.core import (
     Device,
@@ -10,9 +9,11 @@ from ophyd_async.core import (
     wait_for_value,
 )
 
-from ibex_bluesky_core.devices.dae import BeginRunExBits, RunstateEnum, Dae
+from ibex_bluesky_core.devices.dae import BeginRunExBits, Dae, RunstateEnum
+from ibex_bluesky_core.devices.dae.strategies._base import Controller
 
 logger = logging.getLogger(__name__)
+
 
 async def _end_or_abort_run(dae: Dae, save: bool) -> None:
     if save:

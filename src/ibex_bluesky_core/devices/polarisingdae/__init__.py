@@ -2,30 +2,30 @@
 
 import logging
 from typing import Generic
-from typing_extensions import TypeVar
 
 import scipp as sc
 from bluesky.protocols import Movable, Triggerable
 from ophyd_async.core import (
+    AsyncStageable,
     AsyncStatus,
-    Reference, AsyncStageable,
+    Reference,
 )
+from typing_extensions import TypeVar
 
 from ibex_bluesky_core.devices.dae import Dae
 from ibex_bluesky_core.devices.dae.strategies import (
+    Controller,
+    GoodFramesWaiter,
+    PeriodGoodFramesWaiter,
+    PeriodPerPointController,
     PolarisingReducer,
+    Reducer,
+    RunPerPointController,
+    Waiter,
     WavelengthBoundedNormalizer,
     polarization,
-    Controller,
-    Waiter,
-    Reducer,
     wavelength_bounded_spectra,
-    PeriodPerPointController,
-    RunPerPointController,
-    GoodFramesWaiter,
-    PeriodGoodFramesWaiter
 )
-
 from ibex_bluesky_core.utils import get_pv_prefix
 
 logger = logging.getLogger(__name__)
@@ -44,7 +44,9 @@ TWaiter_co = TypeVar("TWaiter_co", bound="Waiter", default=Waiter, covariant=Tru
 TReducer_co = TypeVar("TReducer_co", bound="Reducer", default=Reducer, covariant=True)
 
 
-class PolarisingDae(Dae, Triggerable, AsyncStageable, Generic[TController_co, TWaiter_co, TReducer_co]):
+class PolarisingDae(
+    Dae, Triggerable, AsyncStageable, Generic[TController_co, TWaiter_co, TReducer_co]
+):
     """DAE with strategies for data collection, waiting, and reduction, suited for polarisation.
 
     This class is a more complex version of SimpleDae, with a more complex set of strategies.
@@ -124,12 +126,10 @@ class PolarisingDae(Dae, Triggerable, AsyncStageable, Generic[TController_co, TW
         logger.info("extra readables: %s", list(extra_readables))
         self.add_readables(devices=list(extra_readables))
 
-
     @AsyncStatus.wrap
     async def stage(self) -> None:
         """Pre-scan setup. Delegate to the controller."""
         await self.controller.setup(self)
-
 
     @AsyncStatus.wrap
     async def trigger(self) -> None:
@@ -153,7 +153,6 @@ class PolarisingDae(Dae, Triggerable, AsyncStageable, Generic[TController_co, TW
         await self.reducer_down.reduce_data(self)
 
         await self.reducer.reduce_data(self)
-
 
     @AsyncStatus.wrap
     async def unstage(self) -> None:

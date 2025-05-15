@@ -10,7 +10,6 @@ from ibex_bluesky_core.devices.dae.strategies import (
     PeriodGoodFramesWaiter,
     TimeWaiter,
 )
-
 from ibex_bluesky_core.devices.simpledae import SimpleDae
 
 SHORT_TIMEOUT = 0.01

@@ -16,11 +16,10 @@ from ibex_bluesky_core.devices.dae.strategies import (
     RunPerPointController,
     Waiter,
 )
-
 from ibex_bluesky_core.devices.simpledae import (
     SimpleDae,
+    check_dae_strategies,
     monitor_normalising_dae,
-    check_dae_strategies
 )
 
 

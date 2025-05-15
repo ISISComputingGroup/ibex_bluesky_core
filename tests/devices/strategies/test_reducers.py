@@ -18,7 +18,6 @@ from ibex_bluesky_core.devices.dae.strategies import (
     tof_bounded_spectra,
     wavelength_bounded_spectra,
 )
-
 from ibex_bluesky_core.devices.simpledae import SimpleDae
 
 
