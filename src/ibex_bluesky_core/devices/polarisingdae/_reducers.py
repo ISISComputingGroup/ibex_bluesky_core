@@ -1,7 +1,8 @@
 import asyncio
 import logging
 import math
-from typing import TYPE_CHECKING, Sequence, Callable, Collection, Awaitable
+from collections.abc import Awaitable, Callable, Collection, Sequence
+from typing import TYPE_CHECKING
 
 import scipp as sc
 from ophyd_async.core import (
@@ -39,9 +40,10 @@ def polarization(a: sc.Variable, b: sc.Variable) -> sc.Variable:
         polarization_value: This quantity is calculated as (a-b)/(a+b)
 
     On SANS instruments e.g. LARMOR, A and B correspond to intensity in different DAE
-    periods (before/after switching a flipper) and the output is interpreted as a neutron polarization ratio
-    Or reflectometry instruments e.g. POLREF, the situation is the same as on LARMOR
-    On muon instruments, A and B correspond to measuring from forward/backward detector banks, and the output is interpreted as a muon asymmetry
+    periods (before/after switching a flipper) and the output is interpreted as a neutron
+    polarization ratio. Or reflectometry instruments e.g. POLREF, the situation is
+    the same as on LARMOR. On muon instruments, A and B correspond to measuring from
+    forward/backward detector banks, and the output is interpreted as a muon asymmetry
 
     """
     if a.unit != b.unit:
@@ -71,14 +73,15 @@ def polarization(a: sc.Variable, b: sc.Variable) -> sc.Variable:
 
 class WavelengthBoundedNormalizer(Reducer, StandardReadable):
     """Sum a set of wavelength-bounded spectra, then normalise by monitor intensity."""
+
     def __init__(
         self,
         prefix: str,
         detector_spectra: Sequence[int],
         monitor_spectra: Sequence[int],
-        sum_wavelength_bands: list[Callable[
-            [Collection[DaeSpectra]], Awaitable[sc.Variable | sc.DataArray]
-        ]]
+        sum_wavelength_bands: list[
+            Callable[[Collection[DaeSpectra]], Awaitable[sc.Variable | sc.DataArray]]
+        ],
     ) -> None:
         """Init.
 
@@ -88,7 +91,7 @@ class WavelengthBoundedNormalizer(Reducer, StandardReadable):
             monitor_spectra: a sequence of spectra numbers (monitors) to sum.
             sum_wavelength_bands: takes a sequence of summing functions, each of which takes
                 spectra objects and returns a scipp scalar describing the detector intensity.
-                
+
         """
         self.sum_wavelength_bands = sum_wavelength_bands
 
@@ -101,7 +104,9 @@ class WavelengthBoundedNormalizer(Reducer, StandardReadable):
             {i: DaeSpectra(dae_prefix=dae_prefix, spectra=i, period=0) for i in monitor_spectra}
         )
 
-        self.wavelength_bands = DeviceVector({i: WavelengthBand() for i in range(len(self.sum_wavelength_bands))})
+        self.wavelength_bands = DeviceVector(
+            {i: WavelengthBand() for i in range(len(self.sum_wavelength_bands))}
+        )
 
         super().__init__(name="")
 
@@ -110,7 +115,6 @@ class WavelengthBoundedNormalizer(Reducer, StandardReadable):
         logger.info("starting normalisation")
 
         for i in range(len(self.sum_wavelength_bands)):
-
             sum_wavelength_band = self.sum_wavelength_bands[i]
             wavelength_band = self.wavelength_bands[i]
             detector_counts_sc, monitor_counts_sc = await asyncio.gather(
@@ -151,7 +155,8 @@ class WavelengthBoundedNormalizer(Reducer, StandardReadable):
 
 
 class PolarisingReducer(Reducer, StandardReadable):
-    """Calculate polarisation and asymmetry ratios from 'spin-up' and 'spin-down' states of a polarising DAE."""
+    """Calculate polarisation from 'spin-up' and 'spin-down' states of a polarising DAE."""
+
     def __init__(
         self,
         intervals: list[sc.Variable],
@@ -159,7 +164,8 @@ class PolarisingReducer(Reducer, StandardReadable):
         """Init.
 
         Args:
-            intervals: a sequence of scipp describing the intervals over which to calculate polarisation.
+            intervals: a sequence of scipp describing the wavelength intervals over which
+                to calculate polarisation.
 
         """
         self.intervals = intervals
@@ -182,19 +188,23 @@ class PolarisingReducer(Reducer, StandardReadable):
         for i in range(len(self.intervals)):
             wavelength_band = self.wavelength_bands[i]
 
-            _intensity_up = await dae.reducer_up.wavelength_bands[i].intensity.get_value()
-            _intensity_down = await dae.reducer_down.wavelength_bands[i].intensity.get_value()
+            intensity_up = await dae.reducer_up.wavelength_bands[i].intensity.get_value()
+            intensity_down = await dae.reducer_down.wavelength_bands[i].intensity.get_value()
 
-            if _intensity_up == 0.0 or _intensity_down == 0.0:
+            if intensity_up == 0.0 or intensity_down == 0.0:
                 raise ValueError("Cannot calculate polarisation; zero intensity detected")
 
-            _intensity_up_stddev = await dae.reducer_up.wavelength_bands[i].intensity_stddev.get_value()
-            _intensity_down_stddev = await dae.reducer_down.wavelength_bands[i].intensity_stddev.get_value()
+            intensity_up_stddev = await dae.reducer_up.wavelength_bands[
+                i
+            ].intensity_stddev.get_value()
+            intensity_down_stddev = await dae.reducer_down.wavelength_bands[
+                i
+            ].intensity_stddev.get_value()
             intensity_up_sc = sc.scalar(
-                value=_intensity_up, variance=_intensity_up_stddev, dtype=float
+                value=intensity_up, variance=intensity_up_stddev, dtype=float
             )
             intensity_down_sc = sc.scalar(
-                value=_intensity_down, variance=_intensity_down_stddev, dtype=float
+                value=intensity_down, variance=intensity_down_stddev, dtype=float
             )
 
             polarisation_sc = polarization(intensity_up_sc, intensity_down_sc)

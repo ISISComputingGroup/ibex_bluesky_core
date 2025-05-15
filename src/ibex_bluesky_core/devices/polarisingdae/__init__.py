@@ -13,20 +13,19 @@ from typing_extensions import TypeVar
 from ibex_bluesky_core.devices.polarisingdae._reducers import (
     PolarisingReducer,
     WavelengthBoundedNormalizer,
-    polarization
+    polarization,
 )
-
 from ibex_bluesky_core.devices.simpledae import (
-    SimpleDae,
     Controller,
-    Reducer,
-    Waiter,
     GoodFramesWaiter,
     PeriodGoodFramesWaiter,
     PeriodPerPointController,
-    RunPerPointController, wavelength_bounded_spectra,
+    Reducer,
+    RunPerPointController,
+    SimpleDae,
+    Waiter,
+    wavelength_bounded_spectra,
 )
-
 from ibex_bluesky_core.utils import get_pv_prefix
 
 logger = logging.getLogger(__name__)
@@ -38,11 +37,12 @@ TReducer_co = TypeVar("TReducer_co", bound="Reducer", default="Reducer", covaria
 
 __all__ = [
     "PolarisingDae",
-    "polarising_dae",
     "PolarisingReducer",
     "WavelengthBoundedNormalizer",
-    "polarization"
+    "polarising_dae",
+    "polarization",
 ]
+
 
 class PolarisingDae(SimpleDae):
     """DAE with strategies for data collection, waiting, and reduction, suited for polarisation.
@@ -52,7 +52,7 @@ class PolarisingDae(SimpleDae):
     states between runs.
     """
 
-    def __init__(
+    def __init__(  # noqa: PLR0913
         self,
         *,
         prefix: str,
@@ -95,7 +95,8 @@ class PolarisingDae(SimpleDae):
         self.reducer: TReducer_co = reducer
 
         logger.info(
-            "created polarisingdae with prefix=%s, controller=%s, waiter=%s, reducer=%s, reducer_up=%s, reducer_down=%s",
+            """created polarisingdae with prefix=%s, controller=%s,
+             waiter=%s, reducer=%s, reducer_up=%s, reducer_down=%s""",
             prefix,
             controller,
             waiter,
@@ -130,7 +131,6 @@ class PolarisingDae(SimpleDae):
         This waits for the acquisition and any defined reduction to be complete, such that
         after this coroutine completes, all relevant data is available via read()
         """
-
         await self.flipper().set(self.flipper_states[0])
 
         await self.controller.start_counting(self)
@@ -148,7 +148,7 @@ class PolarisingDae(SimpleDae):
         await self.reducer.reduce_data(self)
 
 
-def polarising_dae(
+def polarising_dae(  # noqa: PLR0913, PLR0917
     det_pixels: list[int],
     frames: int,
     flipper: Movable,
@@ -159,13 +159,12 @@ def polarising_dae(
     monitor: int = 1,
     save_run: bool = False,
 ) -> PolarisingDae:
-    """Create a Polarising DAE which normalises using a monitor, waits for frames,
-    uses wavelength binning, and calculates polarisation.
+    """Create a Polarising DAE which uses wavelength binning and calculates polarisation.
 
     This is a different version of monitor_normalising_dae, with a more complex set of strategies.
-    It requires a flipper device to be provided and will change the flipper between two neutron
-    states between runs. It uses wavelength-bounded binning, and on completion of the two runs
-    will calculate polarisation.
+    While already normalising using a monitor and waiting for frames, it requires a flipper device
+    to be provided and will change the flipper between two neutron states between runs. It uses
+    wavelength-bounded binning, and on completion of the two runs will calculate polarisation.
 
     Args:
         det_pixels: list of detector pixel to use for scanning.
@@ -173,12 +172,13 @@ def polarising_dae(
         flipper: A device which can be used to change the neutron state between runs.
         flipper_states: A tuple of two floats, the neutron states to be set between runs.
         intervals: list of wavelength intervals to use for binning.
-        total_flight_path_length: total flight path length of the neutron beam from monitor to detector.
+        total_flight_path_length: total flight path length of the neutron beam
+            from monitor to detector.
         periods: whether or not to use software periods.
         monitor: the monitor spectra number.
         save_run: whether or not to save the run of the DAE.
-    """
 
+    """
     prefix = get_pv_prefix()
 
     if periods:
@@ -188,20 +188,23 @@ def polarising_dae(
         controller = RunPerPointController(save_run=save_run)
         waiter = GoodFramesWaiter(frames)
 
-    sum_wavelength_bands = [wavelength_bounded_spectra(bounds=i, total_flight_path_length=total_flight_path_length) for i in intervals]
+    sum_wavelength_bands = [
+        wavelength_bounded_spectra(bounds=i, total_flight_path_length=total_flight_path_length)
+        for i in intervals
+    ]
 
     reducer_up = WavelengthBoundedNormalizer(
         prefix=prefix,
         detector_spectra=det_pixels,
         monitor_spectra=[monitor],
-        sum_wavelength_bands=sum_wavelength_bands
+        sum_wavelength_bands=sum_wavelength_bands,
     )
 
     reducer_down = WavelengthBoundedNormalizer(
         prefix=prefix,
         detector_spectra=det_pixels,
         monitor_spectra=[monitor],
-        sum_wavelength_bands=sum_wavelength_bands
+        sum_wavelength_bands=sum_wavelength_bands,
     )
 
     reducer = PolarisingReducer(intervals=intervals)
