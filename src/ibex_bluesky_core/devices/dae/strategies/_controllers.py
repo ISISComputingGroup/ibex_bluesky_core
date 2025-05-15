@@ -1,7 +1,7 @@
 """DAE control strategies."""
 
 import logging
-import typing
+from ibex_bluesky_core.devices.dae.strategies._base import Controller
 
 from ophyd_async.core import (
     Device,
@@ -10,16 +10,11 @@ from ophyd_async.core import (
     wait_for_value,
 )
 
-from ibex_bluesky_core.devices.dae import BeginRunExBits, RunstateEnum
-from ibex_bluesky_core.devices.simpledae._strategies import Controller
+from ibex_bluesky_core.devices.dae import BeginRunExBits, RunstateEnum, Dae
 
 logger = logging.getLogger(__name__)
 
-if typing.TYPE_CHECKING:
-    from ibex_bluesky_core.devices.simpledae import SimpleDae
-
-
-async def _end_or_abort_run(dae: "SimpleDae", save: bool) -> None:
+async def _end_or_abort_run(dae: Dae, save: bool) -> None:
     if save:
         logger.info("ending run")
         await dae.controls.end_run.trigger(wait=True, timeout=None)
@@ -49,7 +44,7 @@ class PeriodPerPointController(Controller):
         self._save_run = save_run
         self._current_period = 0
 
-    async def setup(self, dae: "SimpleDae") -> None:
+    async def setup(self, dae: Dae) -> None:
         """Pre-scan setup (begin a new run in paused mode)."""
         self._current_period = 0
         logger.info("setting up new run")
@@ -57,7 +52,7 @@ class PeriodPerPointController(Controller):
         await wait_for_value(dae.run_state, RunstateEnum.PAUSED, timeout=10)
         logger.info("setup complete")
 
-    async def start_counting(self, dae: "SimpleDae") -> None:
+    async def start_counting(self, dae: Dae) -> None:
         """Start counting a scan point.
 
         Increments the period by 1, then unpauses the run.
@@ -86,17 +81,17 @@ class PeriodPerPointController(Controller):
             timeout=10,
         )
 
-    async def stop_counting(self, dae: "SimpleDae") -> None:
+    async def stop_counting(self, dae: Dae) -> None:
         """Stop counting a scan point, by pausing the run."""
         logger.info("stop counting")
         await dae.controls.pause_run.trigger(wait=True, timeout=None)
         await wait_for_value(dae.run_state, RunstateEnum.PAUSED, timeout=10)
 
-    async def teardown(self, dae: "SimpleDae") -> None:
+    async def teardown(self, dae: Dae) -> None:
         """Finish taking data, ending or aborting the run."""
         await _end_or_abort_run(dae, self._save_run)
 
-    def additional_readable_signals(self, dae: "SimpleDae") -> list[Device]:
+    def additional_readable_signals(self, dae: Dae) -> list[Device]:
         """period_num is always an interesting signal if using this controller."""
         return [dae.period_num]
 
@@ -123,7 +118,7 @@ class RunPerPointController(Controller, StandardReadable):
         self.run_number, self._run_number_setter = soft_signal_r_and_setter(int, 0)
         super().__init__()
 
-    async def start_counting(self, dae: "SimpleDae") -> None:
+    async def start_counting(self, dae: Dae) -> None:
         """Start counting a scan point, by starting a DAE run."""
         logger.info("start counting")
         await dae.controls.begin_run.trigger(wait=True, timeout=None)
@@ -139,11 +134,11 @@ class RunPerPointController(Controller, StandardReadable):
         run_number = await dae.current_or_next_run_number.get_value()
         self._run_number_setter(run_number)
 
-    async def stop_counting(self, dae: "SimpleDae") -> None:
+    async def stop_counting(self, dae: Dae) -> None:
         """Stop counting a scan point, by ending or aborting the run."""
         await _end_or_abort_run(dae, self._save_run)
 
-    def additional_readable_signals(self, dae: "SimpleDae") -> list[Device]:
+    def additional_readable_signals(self, dae: Dae) -> list[Device]:
         """Run number is an interesting signal only if saving runs."""
         if self._save_run:
             return [self.run_number]

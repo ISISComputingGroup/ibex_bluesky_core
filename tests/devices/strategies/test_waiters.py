@@ -3,14 +3,15 @@ import asyncio
 import pytest
 from ophyd_async.testing import set_mock_value
 
-from ibex_bluesky_core.devices.simpledae import (
+from ibex_bluesky_core.devices.dae.strategies import (
     GoodFramesWaiter,
     GoodUahWaiter,
     MEventsWaiter,
     PeriodGoodFramesWaiter,
-    SimpleDae,
     TimeWaiter,
 )
+
+from ibex_bluesky_core.devices.simpledae import SimpleDae
 
 SHORT_TIMEOUT = 0.01
 

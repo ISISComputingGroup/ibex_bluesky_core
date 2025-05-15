@@ -6,14 +6,17 @@ import scipp as sc
 from ophyd_async.core import SignalRW, soft_signal_rw
 
 from ibex_bluesky_core.devices.dae._spectra import PolarisedWavelengthBand, WavelengthBand
-from ibex_bluesky_core.devices.polarisingdae import (
-    PolarisingDae,
+from ibex_bluesky_core.devices.polarisingdae import PolarisingDae
+from ibex_bluesky_core.devices.dae.strategies import (
+    VARIANCE_ADDITION,
+    PolarisingReducer,
+    Controller,
+    Reducer,
+    Waiter,
+    wavelength_bounded_spectra,
     WavelengthBoundedNormalizer,
     polarization,
 )
-from ibex_bluesky_core.devices.polarisingdae._reducers import VARIANCE_ADDITION, PolarisingReducer
-from ibex_bluesky_core.devices.simpledae import Controller, Reducer, Waiter
-from ibex_bluesky_core.devices.simpledae._reducers import wavelength_bounded_spectra
 
 
 @pytest.fixture
@@ -273,7 +276,7 @@ def test_wavelength_bounded_normalizer_publishes_wavelength_bands(
     """Test that WavelengthBoundedNormalizer publishes the correct signals."""
     readables = normalizer_single.additional_readable_signals(mock_dae)
 
-    assert normalizer_single.wavelength_bands == readables
+    assert list(normalizer_single.wavelength_bands.values()) == readables
 
 
 def test_polarising_reducer_publishes_wavelength_bands(
@@ -283,7 +286,7 @@ def test_polarising_reducer_publishes_wavelength_bands(
     """Test that PolarisingReducer publishes the correct signals."""
     readables = polarising_reducer_single.additional_readable_signals(mock_dae)
 
-    assert polarising_reducer_single.wavelength_bands == readables
+    assert list(polarising_reducer_single.wavelength_bands.values()) == readables
 
 
 async def test_wavelength_band_setter():

@@ -11,67 +11,29 @@ from ophyd_async.core import (
 from typing_extensions import TypeVar
 
 from ibex_bluesky_core.devices.dae import Dae
-from ibex_bluesky_core.devices.simpledae._controllers import (
+from ibex_bluesky_core.devices.dae.strategies import (
     PeriodPerPointController,
     RunPerPointController,
-)
-from ibex_bluesky_core.devices.simpledae._reducers import (
-    VARIANCE_ADDITION,
-    GoodFramesNormalizer,
     MonitorNormalizer,
-    PeriodGoodFramesNormalizer,
-    PeriodSpecIntegralsReducer,
-    ScalarNormalizer,
-    tof_bounded_spectra,
-    wavelength_bounded_spectra,
-)
-from ibex_bluesky_core.devices.simpledae._strategies import (
     Controller,
-    ProvidesExtraReadables,
     Reducer,
     Waiter,
-)
-from ibex_bluesky_core.devices.simpledae._waiters import (
     GoodFramesWaiter,
-    GoodUahWaiter,
-    MEventsWaiter,
     PeriodGoodFramesWaiter,
-    SimpleWaiter,
-    TimeWaiter,
 )
 from ibex_bluesky_core.utils import get_pv_prefix
 
 logger = logging.getLogger(__name__)
 
 __all__ = [
-    "VARIANCE_ADDITION",
-    "Controller",
-    "GoodFramesNormalizer",
-    "GoodFramesWaiter",
-    "GoodUahWaiter",
-    "MEventsWaiter",
-    "MonitorNormalizer",
-    "PeriodGoodFramesNormalizer",
-    "PeriodGoodFramesWaiter",
-    "PeriodPerPointController",
-    "PeriodSpecIntegralsReducer",
-    "ProvidesExtraReadables",
-    "Reducer",
-    "RunPerPointController",
-    "ScalarNormalizer",
     "SimpleDae",
-    "SimpleWaiter",
-    "TimeWaiter",
-    "Waiter",
     "check_dae_strategies",
-    "monitor_normalising_dae",
-    "tof_bounded_spectra",
-    "wavelength_bounded_spectra",
+    "monitor_normalising_dae"
 ]
 
-TController_co = TypeVar("TController_co", bound="Controller", default="Controller", covariant=True)
-TWaiter_co = TypeVar("TWaiter_co", bound="Waiter", default="Waiter", covariant=True)
-TReducer_co = TypeVar("TReducer_co", bound="Reducer", default="Reducer", covariant=True)
+TController_co = TypeVar("TController_co", bound="Controller", default=Controller, covariant=True)
+TWaiter_co = TypeVar("TWaiter_co", bound="Waiter", default=Waiter, covariant=True)
+TReducer_co = TypeVar("TReducer_co", bound="Reducer", default=Reducer, covariant=True)
 
 
 class SimpleDae(Dae, Triggerable, AsyncStageable, Generic[TController_co, TWaiter_co, TReducer_co]):

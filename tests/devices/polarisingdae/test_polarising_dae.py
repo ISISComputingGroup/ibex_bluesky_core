@@ -161,3 +161,12 @@ def test_polarising_dae_sets_up_single_period_correctly(flipper: SignalRW):
     assert isinstance(dae.waiter, GoodFramesWaiter)
     assert dae.waiter._value == frames
     assert isinstance(dae.controller, RunPerPointController)
+
+
+async def test_simpledae_calls_controller_on_stage_and_unstage(
+    mock_dae: PolarisingDae, mock_controller: MagicMock
+):
+    await mock_dae.stage()
+    mock_controller.setup.assert_called_once_with(mock_dae)
+    await mock_dae.unstage()
+    mock_controller.teardown.assert_called_once_with(mock_dae)
