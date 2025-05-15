@@ -12,11 +12,7 @@ from ophyd_async.core import (
 
 from ibex_bluesky_core.devices.dae import DaeSpectra
 from ibex_bluesky_core.devices.dae._spectra import PolarisedWavelengthBand, WavelengthBand
-from ibex_bluesky_core.devices.simpledae._reducers import wavelength_bounded_spectra
 from ibex_bluesky_core.devices.simpledae._strategies import Reducer
-
-import pytest
-from unittest.mock import patch, MagicMock
 
 logger = logging.getLogger(__name__)
 
