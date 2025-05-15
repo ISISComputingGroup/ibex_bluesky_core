@@ -20,7 +20,7 @@ from ophyd_async.core import (
 from scippneutron import conversion
 
 from ibex_bluesky_core.devices.dae import DaeSpectra
-from ibex_bluesky_core.devices.simpledae._strategies import Reducer
+from ibex_bluesky_core.devices.simpledae import Reducer, SimpleDae
 
 logger = logging.getLogger(__name__)
 

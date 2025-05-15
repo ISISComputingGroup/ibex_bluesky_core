@@ -3,7 +3,6 @@
 import logging
 from typing import Generic
 
-import scipp as sc
 from bluesky.protocols import Triggerable
 from ophyd_async.core import (
     AsyncStageable,
@@ -24,7 +23,7 @@ from ibex_bluesky_core.devices.simpledae._reducers import (
     PeriodSpecIntegralsReducer,
     ScalarNormalizer,
     tof_bounded_spectra,
-    wavelength_bounded_spectra
+    wavelength_bounded_spectra,
 )
 from ibex_bluesky_core.devices.simpledae._strategies import (
     Controller,
