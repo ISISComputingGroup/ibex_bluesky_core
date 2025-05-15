@@ -33,6 +33,7 @@ logger = logging.getLogger(__name__)
 __all__ = [
     "PolarisingDae",
     "PolarisingReducer",
+    "Reducer",
     "WavelengthBoundedNormalizer",
     "polarising_dae",
     "polarization",
@@ -41,11 +42,22 @@ __all__ = [
 
 TController_co = TypeVar("TController_co", bound="Controller", default=Controller, covariant=True)
 TWaiter_co = TypeVar("TWaiter_co", bound="Waiter", default=Waiter, covariant=True)
-TReducer_co = TypeVar("TReducer_co", bound="Reducer", default=Reducer, covariant=True)
+TWavelengthBoundedNormalizer_co = TypeVar(
+    "TWavelengthBoundedNormalizer_co",
+    bound="WavelengthBoundedNormalizer",
+    default=WavelengthBoundedNormalizer,
+    covariant=True,
+)
+TPolarisingReducer_co = TypeVar(
+    "TPolarisingReducer_co", bound="PolarisingReducer", default=PolarisingReducer, covariant=True
+)
 
 
 class PolarisingDae(
-    Dae, Triggerable, AsyncStageable, Generic[TController_co, TWaiter_co, TReducer_co]
+    Dae,
+    Triggerable,
+    AsyncStageable,
+    Generic[TController_co, TWaiter_co, TWavelengthBoundedNormalizer_co, TPolarisingReducer_co],
 ):
     """DAE with strategies for data collection, waiting, and reduction, suited for polarisation.
 
@@ -61,9 +73,9 @@ class PolarisingDae(
         name: str = "DAE",
         controller: TController_co,
         waiter: TWaiter_co,
-        reducer: TReducer_co,
-        reducer_up: TReducer_co,
-        reducer_down: TReducer_co,
+        reducer: TPolarisingReducer_co,
+        reducer_up: TWavelengthBoundedNormalizer_co,
+        reducer_down: TWavelengthBoundedNormalizer_co,
         flipper: Movable[float],
         flipper_states: tuple[float, float],
     ) -> None:
@@ -92,9 +104,9 @@ class PolarisingDae(
         self._prefix = prefix
         self.controller: TController_co = controller
         self.waiter: TWaiter_co = waiter
-        self.reducer_up: TReducer_co = reducer_up
-        self.reducer_down: TReducer_co = reducer_down
-        self.reducer: TReducer_co = reducer
+        self.reducer_up: TWavelengthBoundedNormalizer_co = reducer_up
+        self.reducer_down: TWavelengthBoundedNormalizer_co = reducer_down
+        self.reducer: TPolarisingReducer_co = reducer
 
         logger.info(
             """created polarisingdae with prefix=%s, controller=%s,

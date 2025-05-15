@@ -22,7 +22,7 @@ from scippneutron import conversion
 
 from ibex_bluesky_core.devices.dae import Dae, DaeSpectra
 from ibex_bluesky_core.devices.dae._spectra import PolarisedWavelengthBand, WavelengthBand
-from ibex_bluesky_core.devices.dae.strategies._base import Reducer
+from ibex_bluesky_core.devices.dae.strategies._base import ProvidesExtraReadables, Reducer
 
 logger = logging.getLogger(__name__)
 
@@ -564,7 +564,7 @@ class WavelengthBoundedNormalizer(Reducer, StandardReadable):
         return list(self.wavelength_bands.values())
 
 
-class PolarisingReducer(Reducer, StandardReadable):
+class PolarisingReducer(ProvidesExtraReadables, StandardReadable):
     """Calculate polarisation from 'spin-up' and 'spin-down' states of a polarising DAE."""
 
     def __init__(
