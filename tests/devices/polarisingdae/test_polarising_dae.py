@@ -114,7 +114,7 @@ def test_polarising_dae_sets_up_periods_correctly(flipper: SignalRW):
     with patch("ibex_bluesky_core.devices.polarisingdae.get_pv_prefix"):
         dae = polarising_dae(
             det_pixels=det_pixels, frames=frames, periods=True, monitor=monitor, save_run=save_run, 
-            intervals=intervals, total_flight_path_length=total_flight_path_length, 
+            intervals=intervals, total_flight_path_length=total_flight_path_length,
             flipper=flipper, flipper_states=flipper_states
         )
 

@@ -1,10 +1,8 @@
-import math
 import re
 from unittest.mock import MagicMock, AsyncMock, patch
 
 import pytest
-from ophyd_async.core import SignalRW, soft_signal_rw, soft_signal_r_and_setter
-from twisted.internet.defer import returnValue
+from ophyd_async.core import SignalRW, soft_signal_rw
 
 from ibex_bluesky_core.devices.dae._spectra import WavelengthBand, PolarisedWavelengthBand
 from ibex_bluesky_core.devices.polarisingdae import (
@@ -16,7 +14,7 @@ import scipp as sc
 
 from ibex_bluesky_core.devices.polarisingdae._reducers import VARIANCE_ADDITION, PolarisingReducer
 from ibex_bluesky_core.devices.simpledae import Controller, Waiter, Reducer
-from ibex_bluesky_core.devices.simpledae._reducers import sum_spectra, wavelength_bounded_spectra
+from ibex_bluesky_core.devices.simpledae._reducers import wavelength_bounded_spectra
 
 
 @pytest.fixture
