@@ -1,7 +1,9 @@
+"""An interface to the DAE for bluesky, suited for polarisation."""
+
 import logging
 
 import scipp as sc
-from bluesky.protocols import NamedMovable, Movable
+from bluesky.protocols import Movable
 from ophyd_async.core import (
     AsyncStatus,
     Reference,

@@ -74,6 +74,7 @@ def polarization(a: sc.Variable, b: sc.Variable) -> sc.Variable:
 
 
 class WavelengthBoundedNormalizer(Reducer, StandardReadable):
+    """Sum a set of wavelength-bounded spectra, then normalise by monitor intensity."""
     def __init__(
         self,
         prefix: str,
@@ -83,6 +84,16 @@ class WavelengthBoundedNormalizer(Reducer, StandardReadable):
             [Collection[DaeSpectra]], Awaitable[sc.Variable | sc.DataArray]
         ]]
     ) -> None:
+        """Init.
+
+        Args:
+            prefix: the PV prefix of the instrument to get spectra from (e.g. IN:DEMO:)
+            detector_spectra: a sequence of spectra numbers (detectors) to sum.
+            monitor_spectra: a sequence of spectra numbers (monitors) to sum.
+            sum_wavelength_bands: takes a sequence of summing functions, each of which takes
+                spectra objects and returns a scipp scalar describing the detector intensity.
+                
+        """
         self.sum_wavelength_bands = sum_wavelength_bands
 
         dae_prefix = prefix + "DAE:"
@@ -139,14 +150,22 @@ class WavelengthBoundedNormalizer(Reducer, StandardReadable):
             )
 
     def additional_readable_signals(self, dae: "PolarisingDae") -> list[Device]:
+        """Publish interesting signals derived or used by this reducer."""
         return self.wavelength_bands
 
 
 class PolarisingReducer(Reducer, StandardReadable):
+    """Calculate polarisation and asymmetry ratios from 'spin-up' and 'spin-down' states of a polarising DAE."""
     def __init__(
         self,
         intervals: list[sc.Variable],
     ) -> None:
+        """Init.
+
+        Args:
+            intervals: a sequence of scipp describing the intervals over which to calculate polarisation.
+
+        """
         self.intervals = intervals
 
         self.wavelength_bands = DeviceVector(
@@ -198,4 +217,5 @@ class PolarisingReducer(Reducer, StandardReadable):
             )
 
     def additional_readable_signals(self, dae: "SimpleDae") -> list[Device]:
+        """Publish interesting signals derived or used by this reducer."""
         return self.wavelength_bands
