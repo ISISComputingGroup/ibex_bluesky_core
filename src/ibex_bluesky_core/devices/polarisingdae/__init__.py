@@ -43,6 +43,13 @@ __all__ = [
 ]
 
 class PolarisingDae(SimpleDae):
+    """DAE with strategies for data collection, waiting, and reduction, suited for polarisation.
+
+    This class is a more complex version of SimpleDae, with a more complex set of strategies.
+    It requires a flipper device to be provided and will change the flipper between two neutron
+    states between runs.
+    """
+
     def __init__(
         self,
         *,
@@ -50,12 +57,31 @@ class PolarisingDae(SimpleDae):
         name: str = "DAE",
         controller: TController_co,
         waiter: TWaiter_co,
+        reducer: TReducer_co,
         reducer_up: TReducer_co,
         reducer_down: TReducer_co,
-        reducer: TReducer_co,
         flipper: Movable,
         flipper_states: tuple[float, float],
     ) -> None:
+        """Initialise a DAE with polarisation strategies.
+
+        Args:
+            prefix: the PV prefix of the instrument being controlled.
+            name: A friendly name for this DAE object.
+            controller: A DAE control strategy, defines how the DAE begins and ends data acquisition
+                Pre-defined strategies in the ibex_bluesky_core.devices.controllers module
+            waiter: A waiting strategy, defines how the DAE waits for an acquisition to be complete
+                Pre-defined strategies in the ibex_bluesky_core.devices.waiters module
+            reducer: A data reduction strategy, defines the post-processing on raw DAE data, for
+                example, polarisation. It will be triggered once after the two runs.
+            reducer_up: A data reduction strategy, defines the post-processing on raw DAE data.
+                Will trigger once after the first run is complete.
+            reducer_down: A data reduction strategy, defines the post-processing on raw DAE data.
+                Will trigger once after the second run is complete.
+            flipper: A device which can be used to change the neutron state between runs.
+            flipper_states: A tuple of two floats, the neutron states to be set between runs.
+
+        """
         self.flipper: Reference[Movable] = Reference(flipper)
         self.flipper_states: tuple[float, float] = flipper_states
 
@@ -77,7 +103,7 @@ class PolarisingDae(SimpleDae):
         )
 
         # controller, waiter and reducers may be Devices (but don't necessarily have to be),
-        # so can define their own signals. Do __init__ after defining those, so that the signals
+        # so can define their own signals. do __init__ after defining those, so that the signals
         # are connected/named and usable.
         super(SimpleDae, self).__init__(prefix=prefix, name=name)
 
@@ -97,10 +123,10 @@ class PolarisingDae(SimpleDae):
 
     @AsyncStatus.wrap
     async def trigger(self) -> None:
-        """Take a single measurement and prepare it for subsequent reading.
+        """Take a single measurement and prepare it for later reading.
 
         This waits for the acquisition and any defined reduction to be complete, such that
-        after this coroutine completes all relevant data is available via read()
+        after this coroutine completes, all relevant data is available via read()
         """
 
         await self.flipper().set(self.flipper_states[0])
@@ -131,6 +157,26 @@ def polarising_dae(
     monitor: int = 1,
     save_run: bool = False,
 ) -> PolarisingDae:
+    """Create a Polarising DAE which normalises using a monitor, waits for frames,
+    uses wavelength binning, and calculates polarisation.
+
+    This is a different version of monitor_normalising_dae, with a more complex set of strategies.
+    It requires a flipper device to be provided and will change the flipper between two neutron
+    states between runs. It uses wavelength-bounded binning, and on completion of the two runs
+    will calculate polarisation.
+
+    Args:
+        det_pixels: list of detector pixel to use for scanning.
+        frames: number of frames to wait for.
+        flipper: A device which can be used to change the neutron state between runs.
+        flipper_states: A tuple of two floats, the neutron states to be set between runs.
+        intervals: list of wavelength intervals to use for binning.
+        total_flight_path_length: total flight path length of the neutron beam from monitor to detector.
+        periods: whether or not to use software periods.
+        monitor: the monitor spectra number.
+        save_run: whether or not to save the run of the DAE.
+    """
+
     prefix = get_pv_prefix()
 
     if periods:
