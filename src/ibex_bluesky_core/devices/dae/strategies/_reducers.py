@@ -5,6 +5,7 @@ import logging
 import math
 from abc import ABC, abstractmethod
 from collections.abc import Awaitable, Callable, Collection, Sequence
+from typing import TYPE_CHECKING
 
 import numpy as np
 import numpy.typing as npt
@@ -18,7 +19,6 @@ from ophyd_async.core import (
     soft_signal_r_and_setter,
 )
 from scippneutron import conversion
-from typing_extensions import TYPE_CHECKING
 
 from ibex_bluesky_core.devices.dae import Dae, DaeSpectra
 from ibex_bluesky_core.devices.dae._spectra import PolarisedWavelengthBand, WavelengthBand
