@@ -5,6 +5,7 @@ import logging
 import math
 from abc import ABC, abstractmethod
 from collections.abc import Awaitable, Callable, Collection, Sequence
+from typing import TYPE_CHECKING
 
 import numpy as np
 import numpy.typing as npt
@@ -20,7 +21,10 @@ from ophyd_async.core import (
 from scippneutron import conversion
 
 from ibex_bluesky_core.devices.dae import DaeSpectra
-from ibex_bluesky_core.devices.simpledae import Reducer, SimpleDae
+from ibex_bluesky_core.devices.simpledae._strategies import Reducer
+
+if TYPE_CHECKING:
+    from ibex_bluesky_core.devices.simpledae import SimpleDae
 
 logger = logging.getLogger(__name__)
 
