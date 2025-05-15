@@ -6,8 +6,6 @@ from unittest.mock import AsyncMock
 import numpy as np
 import pytest
 import scipp as sc
-from ophyd_async.testing import get_mock_put, set_mock_value
-
 from ibex_bluesky_core.devices.simpledae import (
     VARIANCE_ADDITION,
     GoodFramesNormalizer,
@@ -19,6 +17,7 @@ from ibex_bluesky_core.devices.simpledae import (
     tof_bounded_spectra,
     wavelength_bounded_spectra,
 )
+from ophyd_async.testing import get_mock_put, set_mock_value
 
 
 @pytest.fixture
@@ -659,7 +658,8 @@ async def test_monitor_normalizer_uncertainties(
     assert det_counts_stddev == math.sqrt(6000 + VARIANCE_ADDITION)
     assert mon_counts_stddev == math.sqrt(15000)
     assert intensity_stddev == pytest.approx(
-        (6000 / 15000) * math.sqrt(((6000 + VARIANCE_ADDITION) / 6000**2) + (15000 / 15000**2)), 1e-8
+        (6000 / 15000) * math.sqrt(((6000 + VARIANCE_ADDITION) / 6000**2) + (15000 / 15000**2)),
+        1e-8,
     )
 
 
@@ -1037,4 +1037,3 @@ def test_period_spec_integrals_reducer_publishes_signals(simpledae: SimpleDae):
 
     np.testing.assert_equal(reducer.detectors, np.array([]))
     np.testing.assert_equal(reducer.monitors, np.array([]))
-
