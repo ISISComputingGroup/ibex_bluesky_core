@@ -53,7 +53,7 @@ async def mock_dae(
     mock_reducer: Reducer,
     mock_reducer_up: Reducer,
     mock_reducer_down: Reducer,
-    flipper: SignalRW,
+    flipper: SignalRW[float],
 ) -> PolarisingDae:
     mock_dae = PolarisingDae(
         prefix="unittest:mock:",
@@ -103,7 +103,7 @@ async def test_polarisingdae_calls_reducer_on_trigger(
     mock_reducer_down.reduce_data.assert_called_once_with(mock_dae)
 
 
-def test_polarising_dae_sets_up_periods_correctly(flipper: SignalRW):
+def test_polarising_dae_sets_up_periods_correctly(flipper: SignalRW[float]):
     """Test that the DAE is correctly configured for period-per-point operation."""
     det_pixels = [1, 2, 3]
     frames = 200
@@ -133,7 +133,7 @@ def test_polarising_dae_sets_up_periods_correctly(flipper: SignalRW):
     assert isinstance(dae.controller, PeriodPerPointController)
 
 
-def test_polarising_dae_sets_up_single_period_correctly(flipper: SignalRW):
+def test_polarising_dae_sets_up_single_period_correctly(flipper: SignalRW[float]):
     """Test that the DAE is correctly configured for run-per-point operation."""
     det_pixels = [1, 2, 3]
     frames = 200

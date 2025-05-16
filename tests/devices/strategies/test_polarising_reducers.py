@@ -3,7 +3,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 import scipp as sc
-from ophyd_async.core import SignalRW, soft_signal_rw
+from ophyd_async.core import DeviceVector, SignalRW, soft_signal_rw
 
 from ibex_bluesky_core.devices.dae._spectra import PolarisedWavelengthBand, WavelengthBand
 from ibex_bluesky_core.devices.dae.strategies import (
@@ -43,7 +43,9 @@ def flight_path() -> sc.Variable:
 
 
 @pytest.fixture
-async def normalizer_single(wavelength_bounds_single, flight_path) -> WavelengthBoundedNormalizer:
+async def normalizer_single(
+    wavelength_bounds_single: sc.Variable, flight_path: sc.Variable
+) -> WavelengthBoundedNormalizer:
     """Create a normalizer with a single wavelength band."""
     reducer = WavelengthBoundedNormalizer(
         prefix="",
@@ -60,7 +62,9 @@ async def normalizer_single(wavelength_bounds_single, flight_path) -> Wavelength
 
 
 @pytest.fixture
-async def normalizer_dual(wavelength_bounds_dual, flight_path) -> WavelengthBoundedNormalizer:
+async def normalizer_dual(
+    wavelength_bounds_dual: list[sc.Variable], flight_path: sc.Variable
+) -> WavelengthBoundedNormalizer:
     """Create a normalizer with two wavelength bands."""
     reducer = WavelengthBoundedNormalizer(
         prefix="",
@@ -80,7 +84,9 @@ async def normalizer_dual(wavelength_bounds_dual, flight_path) -> WavelengthBoun
 
 
 @pytest.fixture
-async def normalizer_dual_alt(wavelength_bounds_dual, flight_path) -> WavelengthBoundedNormalizer:
+async def normalizer_dual_alt(
+    wavelength_bounds_dual: list[sc.Variable], flight_path: sc.Variable
+) -> WavelengthBoundedNormalizer:
     """Create another normalizer with two wavelength bands."""
     reducer = WavelengthBoundedNormalizer(
         prefix="",
@@ -93,18 +99,6 @@ async def normalizer_dual_alt(wavelength_bounds_dual, flight_path) -> Wavelength
     )
     await reducer.connect(mock=True)
     return reducer
-
-
-@pytest.fixture
-def polarising_reducer_single(wavelength_bounds_single) -> PolarisingReducer:
-    """Create a polarising reducer with a single wavelength band."""
-    return PolarisingReducer([wavelength_bounds_single])
-
-
-@pytest.fixture
-def polarising_reducer_dual(wavelength_bounds_dual) -> PolarisingReducer:
-    """Create a polarising reducer with two wavelength bands."""
-    return PolarisingReducer(wavelength_bounds_dual)
 
 
 @pytest.fixture
@@ -123,18 +117,46 @@ def mock_reducer() -> Reducer:
 
 
 @pytest.fixture
-def mock_reducer_up() -> Reducer:
-    return MagicMock(spec=Reducer)
+def mock_reducer_up() -> WavelengthBoundedNormalizer:
+    return MagicMock(spec=WavelengthBoundedNormalizer)
 
 
 @pytest.fixture
-def mock_reducer_down() -> Reducer:
-    return MagicMock(spec=Reducer)
+def mock_reducer_down() -> WavelengthBoundedNormalizer:
+    return MagicMock(spec=WavelengthBoundedNormalizer)
 
 
 @pytest.fixture
 def flipper() -> SignalRW[float]:
     return soft_signal_rw(float, 0.0)
+
+
+@pytest.fixture
+def polarising_reducer_single(
+    wavelength_bounds_single: sc.Variable,
+    normalizer_dual: WavelengthBoundedNormalizer,
+    normalizer_dual_alt: WavelengthBoundedNormalizer,
+) -> PolarisingReducer:
+    """Create a polarising reducer with a single wavelength band."""
+    return PolarisingReducer(
+        intervals=[wavelength_bounds_single],
+        reducer_up=normalizer_dual,
+        reducer_down=normalizer_dual_alt,
+    )
+
+
+@pytest.fixture
+def polarising_reducer_dual(
+    wavelength_bounds_dual: list[sc.Variable],
+    normalizer_dual: WavelengthBoundedNormalizer,
+    normalizer_dual_alt: WavelengthBoundedNormalizer,
+) -> PolarisingReducer:
+    """Create a polarising reducer with two wavelength bands."""
+    return PolarisingReducer(
+        intervals=wavelength_bounds_dual,
+        reducer_up=normalizer_dual,
+        reducer_down=normalizer_dual_alt,
+    )
 
 
 @pytest.fixture
@@ -144,7 +166,7 @@ async def mock_dae(
     mock_reducer: Reducer,
     mock_reducer_up: Reducer,
     mock_reducer_down: Reducer,
-    flipper: SignalRW,
+    flipper: SignalRW[float],
 ) -> PolarisingDae:
     mock_polarising_dae = PolarisingDae(
         prefix="unittest:mock:",
@@ -205,13 +227,18 @@ async def test_dae(
     ],
 )
 def test_polarization_function_calculates_accurately(
-    a, b, variance_a, variance_b, expected_value, expected_uncertainty
+    a: float,
+    b: float,
+    variance_a: float,
+    variance_b: float,
+    expected_value: float,
+    expected_uncertainty: float,
 ):
     var_a = sc.Variable(dims=[], values=a, variances=variance_a, unit="", dtype="float64")
     var_b = sc.Variable(dims=[], values=b, variances=variance_b, unit="", dtype="float64")
     result_value = polarization(var_a, var_b)
 
-    result_uncertainty = (result_value.variance) ** 0.5  # uncertainty is sqrt of variance
+    result_uncertainty = result_value.variance**0.5  # uncertainty is sqrt of variance
 
     assert result_value == pytest.approx(expected_value)
     assert result_uncertainty == pytest.approx(expected_uncertainty)
@@ -234,7 +261,12 @@ def test_polarization_function_calculates_accurately(
     ],
 )
 def test_polarization_2_arrays(
-    a, b, variances_a, variances_b, expected_values, expected_uncertainties
+    a: float,
+    b: float,
+    variances_a: float,
+    variances_b: float,
+    expected_values: float,
+    expected_uncertainties: float,
 ):
     var_a = sc.Variable(dims=["x"], values=a, variances=variances_a, unit="")
     var_b = sc.Variable(dims=["x"], values=b, variances=variances_b, unit="")
@@ -433,8 +465,6 @@ async def test_wavelength_bounded_normaliser_zero_counts(
 async def test_polarising_reducer(
     test_dae: PolarisingDae,
     polarising_reducer_dual: PolarisingReducer,
-    normalizer_dual: WavelengthBoundedNormalizer,
-    normalizer_dual_alt: WavelengthBoundedNormalizer,
 ):
     """Test PolarisingReducer calculates polarisation from up/down data with wavelength bands."""
     # Test data
@@ -462,20 +492,20 @@ async def test_polarising_reducer(
     # Configure mock intensity values for up/down states
     for i, case in enumerate(test_cases):
         # Set up mock values for up state
-        test_dae.reducer_up.wavelength_bands[i].intensity.get_value = AsyncMock(
+        polarising_reducer_dual.reducer_up().wavelength_bands[i].intensity.get_value = AsyncMock(
             return_value=case["up_intensity"]
         )
-        test_dae.reducer_up.wavelength_bands[i].intensity_stddev.get_value = AsyncMock(
-            return_value=case["up_stddev"]
-        )
+        polarising_reducer_dual.reducer_up().wavelength_bands[
+            i
+        ].intensity_stddev.get_value = AsyncMock(return_value=case["up_stddev"])
 
         # Set up mock values for down state
-        test_dae.reducer_down.wavelength_bands[i].intensity.get_value = AsyncMock(
+        polarising_reducer_dual.reducer_down().wavelength_bands[i].intensity.get_value = AsyncMock(
             return_value=case["down_intensity"]
         )
-        test_dae.reducer_down.wavelength_bands[i].intensity_stddev.get_value = AsyncMock(
-            return_value=case["down_stddev"]
-        )
+        polarising_reducer_dual.reducer_down().wavelength_bands[
+            i
+        ].intensity_stddev.get_value = AsyncMock(return_value=case["down_stddev"])
 
     # Test both wavelength bands
     for i, case in enumerate(test_cases):
@@ -512,17 +542,15 @@ async def test_polarising_reducer(
 async def test_polarising_reducer_zero_intensity(
     test_dae: PolarisingDae,
     polarising_reducer_dual: PolarisingReducer,
-    normalizer_dual: WavelengthBoundedNormalizer,
-    normalizer_dual_alt: WavelengthBoundedNormalizer,
     invalid_intensity: tuple[float, float],
 ):
     """Test that PolarisingReducer handles zero intensities appropriately."""
     up_intensity, down_intensity = invalid_intensity
 
-    test_dae.reducer_up.wavelength_bands[0].intensity.get_value = AsyncMock(
+    polarising_reducer_dual.reducer_up().wavelength_bands[0].intensity.get_value = AsyncMock(
         return_value=up_intensity
     )
-    test_dae.reducer_down.wavelength_bands[0].intensity.get_value = AsyncMock(
+    polarising_reducer_dual.reducer_down().wavelength_bands[0].intensity.get_value = AsyncMock(
         return_value=down_intensity
     )
 
@@ -533,14 +561,16 @@ async def test_polarising_reducer_zero_intensity(
 async def test_polarising_reducer_mismatched_bands(
     test_dae: PolarisingDae,
     polarising_reducer_single: PolarisingReducer,
-    normalizer_dual: WavelengthBoundedNormalizer,
-    normalizer_dual_alt: WavelengthBoundedNormalizer,
 ):
     """Test that PolarisingReducer handles mismatched wavelength bands appropriately."""
     # Mock different number of wavelength bands for up and down states
 
-    test_dae.reducer_up.wavelength_bands = {0: MagicMock(), 1: MagicMock()}
-    test_dae.reducer_down.wavelength_bands = {0: MagicMock()}
+    polarising_reducer_single.reducer_up().wavelength_bands = DeviceVector(
+        children={0: WavelengthBand(), 1: WavelengthBand()}
+    )
+    polarising_reducer_single.reducer_down().wavelength_bands = DeviceVector(
+        children={0: WavelengthBand()}
+    )
 
     with pytest.raises(ValueError, match="Mismatched number of wavelength bands"):
         await polarising_reducer_single.reduce_data(test_dae)

@@ -5,7 +5,6 @@ import logging
 import math
 from abc import ABC, abstractmethod
 from collections.abc import Awaitable, Callable, Collection, Sequence
-from typing import TYPE_CHECKING
 
 import numpy as np
 import numpy.typing as npt
@@ -14,6 +13,7 @@ from ophyd_async.core import (
     Array1D,
     Device,
     DeviceVector,
+    Reference,
     SignalR,
     StandardReadable,
     soft_signal_r_and_setter,
@@ -22,13 +22,9 @@ from scippneutron import conversion
 
 from ibex_bluesky_core.devices.dae import Dae, DaeSpectra
 from ibex_bluesky_core.devices.dae._spectra import PolarisedWavelengthBand, WavelengthBand
-from ibex_bluesky_core.devices.dae.strategies._base import ProvidesExtraReadables, Reducer
+from ibex_bluesky_core.devices.dae.strategies._base import Reducer
 
 logger = logging.getLogger(__name__)
-
-
-if TYPE_CHECKING:
-    from ibex_bluesky_core.devices.polarisingdae import PolarisingDae
 
 
 INTENSITY_PRECISION = 6
@@ -564,22 +560,29 @@ class WavelengthBoundedNormalizer(Reducer, StandardReadable):
         return list(self.wavelength_bands.values())
 
 
-class PolarisingReducer(ProvidesExtraReadables, StandardReadable):
+class PolarisingReducer(Reducer, StandardReadable):
     """Calculate polarisation from 'spin-up' and 'spin-down' states of a polarising DAE."""
 
     def __init__(
         self,
         intervals: list[sc.Variable],
+        reducer_up: WavelengthBoundedNormalizer,
+        reducer_down: WavelengthBoundedNormalizer,
     ) -> None:
         """Init.
 
         Args:
             intervals: a sequence of scipp describing the wavelength intervals over which
                 to calculate polarisation.
+            reducer_up: A data reduction strategy, defines the post-processing on raw DAE data.
+                Used to retrieve intensity values from the up-spin state.
+            reducer_down: A data reduction strategy, defines the post-processing on raw DAE data.
+                Used to retrieve intensity values from the down-spin state.
 
         """
         self.intervals = intervals
-
+        self.reducer_up = Reference(reducer_up)
+        self.reducer_down = Reference(reducer_down)
         self.wavelength_bands = DeviceVector(
             {
                 i: PolarisedWavelengthBand(intensity_precision=INTENSITY_PRECISION)
@@ -588,28 +591,28 @@ class PolarisingReducer(ProvidesExtraReadables, StandardReadable):
         )
         super().__init__(name="")
 
-    async def reduce_data(self, dae: "PolarisingDae") -> None:
+    async def reduce_data(self, dae: Dae) -> None:
         """Apply the polarisation."""
         logger.info("starting polarisation")
 
-        if len(dae.reducer_up.wavelength_bands) != len(dae.reducer_down.wavelength_bands):
+        if len(self.reducer_up().wavelength_bands) != len(self.reducer_down().wavelength_bands):
             raise ValueError("Mismatched number of wavelength bands")
 
         for i in range(len(self.intervals)):
             wavelength_band = self.wavelength_bands[i]
 
-            intensity_up = await dae.reducer_up.wavelength_bands[i].intensity.get_value()
-            intensity_down = await dae.reducer_down.wavelength_bands[i].intensity.get_value()
+            intensity_up = await self.reducer_up().wavelength_bands[i].intensity.get_value()
+            intensity_down = await self.reducer_down().wavelength_bands[i].intensity.get_value()
 
             if intensity_up == 0.0 or intensity_down == 0.0:
                 raise ValueError("Cannot calculate polarisation; zero intensity detected")
 
-            intensity_up_stddev = await dae.reducer_up.wavelength_bands[
-                i
-            ].intensity_stddev.get_value()
-            intensity_down_stddev = await dae.reducer_down.wavelength_bands[
-                i
-            ].intensity_stddev.get_value()
+            intensity_up_stddev = (
+                await self.reducer_up().wavelength_bands[i].intensity_stddev.get_value()
+            )
+            intensity_down_stddev = (
+                await self.reducer_down().wavelength_bands[i].intensity_stddev.get_value()
+            )
             intensity_up_sc = sc.scalar(
                 value=intensity_up, variance=intensity_up_stddev, dtype=float
             )
@@ -632,6 +635,6 @@ class PolarisingReducer(ProvidesExtraReadables, StandardReadable):
                 polarisation_ratio_stddev=polarisation_ratio_stddev,
             )
 
-    def additional_readable_signals(self, dae: "PolarisingDae") -> list[Device]:
+    def additional_readable_signals(self, dae: Dae) -> list[Device]:
         """Publish interesting signals derived or used by this reducer."""
         return list(self.wavelength_bands.values())
