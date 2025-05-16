@@ -5,7 +5,6 @@ import logging
 import math
 from abc import ABC, abstractmethod
 from collections.abc import Awaitable, Callable, Collection, Sequence
-from typing import TYPE_CHECKING
 
 import numpy as np
 import numpy.typing as npt
@@ -20,17 +19,25 @@ from ophyd_async.core import (
 )
 from scippneutron import conversion
 
-from ibex_bluesky_core.devices.dae import DaeSpectra
-from ibex_bluesky_core.devices.simpledae._strategies import Reducer
+from ibex_bluesky_core.devices.dae import Dae, DaeSpectra
+from ibex_bluesky_core.devices.dae.strategies._extra_readables import ProvidesExtraReadables
 
 logger = logging.getLogger(__name__)
-
-if TYPE_CHECKING:
-    from ibex_bluesky_core.devices.simpledae import SimpleDae
 
 
 INTENSITY_PRECISION = 6
 VARIANCE_ADDITION = 0.5
+
+
+class Reducer(ProvidesExtraReadables):
+    """Reducer specifies any post-processing which needs to be done after a scan point completes."""
+
+    async def reduce_data(self, dae: Dae) -> None:
+        """Triggers a reduction of DAE data after a scan point has been measured.
+
+        Data that should be published by this reducer should be added as soft signals, in
+        a class which both implements this protocol and derives from StandardReadable.
+        """
 
 
 async def sum_spectra(spectra: Collection[DaeSpectra]) -> sc.Variable | sc.DataArray:
@@ -114,9 +121,12 @@ def wavelength_bounded_spectra(
         summed_counts = sc.scalar(value=0, unit=sc.units.counts, dtype="float64")
         for spec in asyncio.as_completed([s.read_spectrum_dataarray() for s in spectra]):
             wavelength_bounded_spectra = await spec
+            print(wavelength_bounded_spectra)
+            print(total_flight_path_length)
             wavelength_coord = conversion.tof.wavelength_from_tof(
                 tof=wavelength_bounded_spectra.coords["tof"], Ltotal=total_flight_path_length
             )
+            print(wavelength_coord)
             wavelength_bounded_spectra.coords["tof"] = wavelength_coord
             summed_counts += wavelength_bounded_spectra.rebin({"tof": bounds}).sum()
         return summed_counts
@@ -167,10 +177,10 @@ class ScalarNormalizer(Reducer, StandardReadable, ABC):
         super().__init__(name="")
 
     @abstractmethod
-    def denominator(self, dae: "SimpleDae") -> SignalR[int] | SignalR[float]:
+    def denominator(self, dae: Dae) -> SignalR[int] | SignalR[float]:
         """Get the normalization denominator, which is assumed to be a scalar signal."""
 
-    async def reduce_data(self, dae: "SimpleDae") -> None:
+    async def reduce_data(self, dae: Dae) -> None:
         """Apply the normalization."""
         logger.info("starting reduction")
         summed_counts, denominator = await asyncio.gather(
@@ -194,7 +204,7 @@ class ScalarNormalizer(Reducer, StandardReadable, ABC):
 
         logger.info("reduction complete")
 
-    def additional_readable_signals(self, dae: "SimpleDae") -> list[Device]:
+    def additional_readable_signals(self, dae: Dae) -> list[Device]:
         """Publish interesting signals derived or used by this reducer."""
         return [
             self.det_counts,
@@ -208,7 +218,7 @@ class ScalarNormalizer(Reducer, StandardReadable, ABC):
 class PeriodGoodFramesNormalizer(ScalarNormalizer):
     """Sum a set of user-specified spectra, then normalize by period good frames."""
 
-    def denominator(self, dae: "SimpleDae") -> SignalR[int]:
+    def denominator(self, dae: Dae) -> SignalR[int]:
         """Get normalization denominator (period good frames)."""
         return dae.period.good_frames
 
@@ -216,7 +226,7 @@ class PeriodGoodFramesNormalizer(ScalarNormalizer):
 class GoodFramesNormalizer(ScalarNormalizer):
     """Sum a set of user-specified spectra, then normalize by total good frames."""
 
-    def denominator(self, dae: "SimpleDae") -> SignalR[int]:
+    def denominator(self, dae: Dae) -> SignalR[int]:
         """Get normalization denominator (total good frames)."""
         return dae.good_frames
 
@@ -278,7 +288,7 @@ class MonitorNormalizer(Reducer, StandardReadable):
 
         super().__init__(name="")
 
-    async def reduce_data(self, dae: "SimpleDae") -> None:
+    async def reduce_data(self, dae: Dae) -> None:
         """Apply the normalization."""
         logger.info("starting reduction")
         detector_counts, monitor_counts = await asyncio.gather(
@@ -307,7 +317,7 @@ class MonitorNormalizer(Reducer, StandardReadable):
 
         logger.info("reduction complete")
 
-    def additional_readable_signals(self, dae: "SimpleDae") -> list[Device]:
+    def additional_readable_signals(self, dae: Dae) -> list[Device]:
         """Publish interesting signals derived or used by this reducer."""
         return [
             self.det_counts,
@@ -368,7 +378,7 @@ class PeriodSpecIntegralsReducer(Reducer, StandardReadable):
         """Get the monitors used by this reducer."""
         return self._monitors
 
-    async def _trigger_and_get_specdata(self, dae: "SimpleDae") -> npt.NDArray[np.int32]:
+    async def _trigger_and_get_specdata(self, dae: Dae) -> npt.NDArray[np.int32]:
         await dae.controls.update_run.trigger()
         await dae.raw_spec_data_proc.set(1, wait=True)
         (raw_data, nord) = await asyncio.gather(
@@ -377,7 +387,7 @@ class PeriodSpecIntegralsReducer(Reducer, StandardReadable):
         )
         return raw_data[:nord]
 
-    async def reduce_data(self, dae: "SimpleDae") -> None:
+    async def reduce_data(self, dae: Dae) -> None:
         """Expose detector & monitor integrals.
 
         After this method returns, it is valid to read from det_integrals and
@@ -423,7 +433,7 @@ class PeriodSpecIntegralsReducer(Reducer, StandardReadable):
 
         logger.info("reduction complete")
 
-    def additional_readable_signals(self, dae: "SimpleDae") -> list[Device]:
+    def additional_readable_signals(self, dae: Dae) -> list[Device]:
         """Publish interesting signals derived or used by this reducer."""
         return [
             self.mon_integrals,
