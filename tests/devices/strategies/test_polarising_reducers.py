@@ -9,14 +9,16 @@ from ibex_bluesky_core.devices.dae._spectra import PolarisedWavelengthBand, Wave
 from ibex_bluesky_core.devices.dae.strategies import (
     VARIANCE_ADDITION,
     Controller,
-    PolarisingReducer,
     Reducer,
     Waiter,
-    WavelengthBoundedNormalizer,
-    polarization,
     wavelength_bounded_spectra,
 )
-from ibex_bluesky_core.devices.polarisingdae import PolarisingDae
+from ibex_bluesky_core.devices.polarisingdae import (
+    PolarisingDae,
+    PolarisingReducer,
+    WavelengthBoundedNormalizer,
+    polarization,
+)
 
 
 @pytest.fixture

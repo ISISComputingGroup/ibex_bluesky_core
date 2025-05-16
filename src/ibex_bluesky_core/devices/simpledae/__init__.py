@@ -12,20 +12,56 @@ from typing_extensions import TypeVar
 
 from ibex_bluesky_core.devices.dae import Dae
 from ibex_bluesky_core.devices.dae.strategies import (
+    VARIANCE_ADDITION,
     Controller,
+    GoodFramesNormalizer,
     GoodFramesWaiter,
+    GoodUahWaiter,
+    MEventsWaiter,
     MonitorNormalizer,
+    PeriodGoodFramesNormalizer,
     PeriodGoodFramesWaiter,
     PeriodPerPointController,
+    PeriodSpecIntegralsReducer,
+    ProvidesExtraReadables,
     Reducer,
     RunPerPointController,
+    ScalarNormalizer,
+    SimpleWaiter,
+    TimeWaiter,
     Waiter,
+    tof_bounded_spectra,
+    wavelength_bounded_spectra,
 )
 from ibex_bluesky_core.utils import get_pv_prefix
 
 logger = logging.getLogger(__name__)
 
-__all__ = ["SimpleDae", "check_dae_strategies", "monitor_normalising_dae"]
+__all__ = [  # Repeated imports for backward compatability
+    "VARIANCE_ADDITION",
+    "Controller",
+    "GoodFramesNormalizer",
+    "GoodFramesWaiter",
+    "GoodUahWaiter",
+    "MEventsWaiter",
+    "MonitorNormalizer",
+    "PeriodGoodFramesNormalizer",
+    "PeriodGoodFramesWaiter",
+    "PeriodPerPointController",
+    "PeriodSpecIntegralsReducer",
+    "ProvidesExtraReadables",
+    "Reducer",
+    "RunPerPointController",
+    "ScalarNormalizer",
+    "SimpleDae",
+    "SimpleWaiter",
+    "TimeWaiter",
+    "Waiter",
+    "check_dae_strategies",
+    "monitor_normalising_dae",
+    "tof_bounded_spectra",
+    "wavelength_bounded_spectra",
+]
 
 TController_co = TypeVar("TController_co", bound="Controller", default=Controller, covariant=True)
 TWaiter_co = TypeVar("TWaiter_co", bound="Waiter", default=Waiter, covariant=True)

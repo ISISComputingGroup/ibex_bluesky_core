@@ -18,13 +18,15 @@ from ibex_bluesky_core.devices.dae.strategies import (
     GoodFramesWaiter,
     PeriodGoodFramesWaiter,
     PeriodPerPointController,
-    PolarisingReducer,
     Reducer,
     RunPerPointController,
     Waiter,
+    wavelength_bounded_spectra,
+)
+from ibex_bluesky_core.devices.polarisingdae._reducers import (
+    PolarisingReducer,
     WavelengthBoundedNormalizer,
     polarization,
-    wavelength_bounded_spectra,
 )
 from ibex_bluesky_core.utils import get_pv_prefix
 
@@ -32,6 +34,8 @@ logger = logging.getLogger(__name__)
 
 __all__ = [
     "PolarisingDae",
+    "PolarisingReducer",
+    "WavelengthBoundedNormalizer",
     "polarising_dae",
     "polarization",
 ]
