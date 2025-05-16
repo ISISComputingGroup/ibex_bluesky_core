@@ -12,12 +12,18 @@ from ophyd_async.core import (
 )
 
 from ibex_bluesky_core.devices.dae import Dae
-from ibex_bluesky_core.devices.dae.strategies._base import Waiter
+from ibex_bluesky_core.devices.dae.strategies._extra_readables import ProvidesExtraReadables
 
 logger = logging.getLogger(__name__)
 
-
 T = TypeVar("T", int, float)
+
+
+class Waiter(ProvidesExtraReadables):
+    """Waiter specifies how the dae will wait for a scan point to complete counting."""
+
+    async def wait(self, dae: Dae) -> None:
+        """Wait for the acquisition to complete."""
 
 
 class SimpleWaiter(Waiter, Generic[T], ABC):

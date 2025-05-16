@@ -10,9 +10,31 @@ from ophyd_async.core import (
 )
 
 from ibex_bluesky_core.devices.dae import BeginRunExBits, Dae, RunstateEnum
-from ibex_bluesky_core.devices.dae.strategies._base import Controller
+from ibex_bluesky_core.devices.dae.strategies._extra_readables import ProvidesExtraReadables
 
 logger = logging.getLogger(__name__)
+
+
+class Controller(ProvidesExtraReadables):
+    """Controller specifies how DAE runs should be started & stopped.
+
+    Controller specifies how DAE runs should be started & stopped.
+
+    .. py:class:: Controller:
+        :canonical: ibex_bluesky_core.devices.dae.strategies.Controller:
+    """
+
+    async def start_counting(self, dae: Dae) -> None:
+        """Start counting for a single scan point."""
+
+    async def stop_counting(self, dae: Dae) -> None:
+        """Stop counting for a single scan point."""
+
+    async def setup(self, dae: Dae) -> None:
+        """Pre-scan setup."""
+
+    async def teardown(self, dae: Dae) -> None:
+        """Post-scan teardown."""
 
 
 async def _end_or_abort_run(dae: Dae, save: bool) -> None:
