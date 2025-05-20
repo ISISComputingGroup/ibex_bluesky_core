@@ -101,7 +101,9 @@ class ReflParameterRedefine(StandardReadable):
         await asyncio.sleep(1.0)
 
 
-def refl_parameter(name: str, changing_timeout_s: float = 60.0, has_redefine=True) -> ReflParameter:
+def refl_parameter(
+    name: str, changing_timeout_s: float = 60.0, has_redefine: bool = True
+) -> ReflParameter:
     """Small wrapper around a reflectometry parameter device.
 
     This automatically applies the current instrument's PV prefix.
@@ -109,9 +111,12 @@ def refl_parameter(name: str, changing_timeout_s: float = 60.0, has_redefine=Tru
     Args:
         name: the reflectometry parameter name.
         changing_timeout_s: time to wait (seconds) for the CHANGING signal to go False after a set.
+        has_redefine: whether this parameter can be redefined.
 
     Returns a device pointing to a reflectometry parameter.
 
     """
     prefix = get_pv_prefix()
-    return ReflParameter(prefix=prefix, name=name, changing_timeout_s=changing_timeout_s, has_redefine=has_redefine)
+    return ReflParameter(
+        prefix=prefix, name=name, changing_timeout_s=changing_timeout_s, has_redefine=has_redefine
+    )

@@ -8,8 +8,8 @@ from typing import TYPE_CHECKING, Generic, TypeVar
 from ophyd_async.core import (
     Device,
     SignalR,
-    wait_for_value,
     soft_signal_rw,
+    wait_for_value,
 )
 
 from ibex_bluesky_core.devices.simpledae._strategies import Waiter
