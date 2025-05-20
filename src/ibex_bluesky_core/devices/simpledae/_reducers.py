@@ -20,24 +20,13 @@ from ophyd_async.core import (
 from scippneutron import conversion
 
 from ibex_bluesky_core.devices.dae import Dae, DaeSpectra
-from ibex_bluesky_core.devices.dae.strategies._extra_readables import ProvidesExtraReadables
+from ibex_bluesky_core.devices.simpledae._strategies import Reducer
 
 logger = logging.getLogger(__name__)
 
 
 INTENSITY_PRECISION = 6
 VARIANCE_ADDITION = 0.5
-
-
-class Reducer(ProvidesExtraReadables):
-    """Reducer specifies any post-processing which needs to be done after a scan point completes."""
-
-    async def reduce_data(self, dae: Dae) -> None:
-        """Triggers a reduction of DAE data after a scan point has been measured.
-
-        Data that should be published by this reducer should be added as soft signals, in
-        a class which both implements this protocol and derives from StandardReadable.
-        """
 
 
 async def sum_spectra(spectra: Collection[DaeSpectra]) -> sc.Variable | sc.DataArray:

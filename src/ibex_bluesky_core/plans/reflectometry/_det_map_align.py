@@ -22,7 +22,7 @@ from ibex_bluesky_core.callbacks.reflectometry import (
     DetMapHeightScanLiveDispatcher,
     LivePColorMesh,
 )
-from ibex_bluesky_core.devices.dae.strategies import (
+from ibex_bluesky_core.devices.simpledae import (
     PeriodPerPointController,
     PeriodSpecIntegralsReducer,
     Waiter,

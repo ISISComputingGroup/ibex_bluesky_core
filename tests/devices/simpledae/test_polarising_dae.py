@@ -4,7 +4,7 @@ import pytest
 import scipp as sc
 from ophyd_async.core import SignalRW, soft_signal_rw
 
-from ibex_bluesky_core.devices.polarisingdae import PolarisingDae, polarising_dae
+from ibex_bluesky_core.devices.simpledae.polarisingdae import PolarisingDae, polarising_dae
 from ibex_bluesky_core.devices.simpledae import (
     Controller,
     GoodFramesWaiter,
@@ -115,7 +115,7 @@ def test_polarising_dae_sets_up_periods_correctly(flipper: SignalRW[float]):
     total_flight_path_length = sc.scalar(value=10, unit=sc.units.m)
     save_run = False
 
-    with patch("ibex_bluesky_core.devices.polarisingdae.get_pv_prefix"):
+    with patch("ibex_bluesky_core.devices.simpledae.polarisingdae.get_pv_prefix"):
         dae = polarising_dae(
             det_pixels=det_pixels,
             frames=frames,
@@ -145,7 +145,7 @@ def test_polarising_dae_sets_up_single_period_correctly(flipper: SignalRW[float]
     total_flight_path_length = sc.scalar(value=10, unit=sc.units.m)
     save_run = False
 
-    with patch("ibex_bluesky_core.devices.polarisingdae.get_pv_prefix"):
+    with patch("ibex_bluesky_core.devices.simpledae.polarisingdae.get_pv_prefix"):
         dae = polarising_dae(
             det_pixels=det_pixels,
             frames=frames,

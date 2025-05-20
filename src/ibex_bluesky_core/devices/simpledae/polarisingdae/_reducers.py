@@ -8,9 +8,9 @@ from collections.abc import Awaitable, Callable, Collection, Sequence
 import scipp as sc
 from ophyd_async.core import Device, DeviceVector, Reference, StandardReadable
 
-from ibex_bluesky_core.devices.dae import Dae, DaeSpectra
-from ibex_bluesky_core.devices.dae._spectra import PolarisedWavelengthBand, WavelengthBand
-from ibex_bluesky_core.devices.dae.strategies import INTENSITY_PRECISION, VARIANCE_ADDITION, Reducer
+from ibex_bluesky_core.devices.dae import Dae, DaeSpectra, PolarisedWavelengthBand, WavelengthBand
+from ibex_bluesky_core.devices.simpledae._reducers import INTENSITY_PRECISION, VARIANCE_ADDITION
+from ibex_bluesky_core.devices.simpledae._strategies import Reducer
 
 logger = logging.getLogger(__name__)
 

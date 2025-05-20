@@ -5,7 +5,7 @@ from ophyd_async.core import Device, StandardReadable, soft_signal_rw
 from ophyd_async.testing import set_mock_value
 
 from ibex_bluesky_core.devices.dae import Dae, DaeCheckingSignal
-from ibex_bluesky_core.devices.dae.strategies import (
+from ibex_bluesky_core.devices.simpledae import (
     Controller,
     GoodFramesNormalizer,
     GoodFramesWaiter,

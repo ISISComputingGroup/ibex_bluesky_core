@@ -6,14 +6,14 @@ import scipp as sc
 from ophyd_async.core import DeviceVector, SignalRW, soft_signal_rw
 
 from ibex_bluesky_core.devices.dae._spectra import PolarisedWavelengthBand, WavelengthBand
-from ibex_bluesky_core.devices.dae.strategies import (
+from ibex_bluesky_core.devices.simpledae import (
     VARIANCE_ADDITION,
     Controller,
     Reducer,
     Waiter,
     wavelength_bounded_spectra,
 )
-from ibex_bluesky_core.devices.polarisingdae import (
+from ibex_bluesky_core.devices.simpledae.polarisingdae import (
     PolarisingDae,
     PolarisingReducer,
     WavelengthBoundedNormalizer,
