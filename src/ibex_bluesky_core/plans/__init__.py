@@ -12,10 +12,10 @@ from bluesky.utils import Msg
 from ophyd_async.plan_stubs import ensure_connected
 
 from ibex_bluesky_core.callbacks import ISISCallbacks
-from ibex_bluesky_core.devices.block import BlockMot
+from ibex_bluesky_core.devices.block import BlockWriteConfig, block_rw
 from ibex_bluesky_core.devices.simpledae import monitor_normalising_dae
 from ibex_bluesky_core.fitting import FitMethod
-from ibex_bluesky_core.utils import NamedReadableAndMovable, centred_pixel, get_pv_prefix
+from ibex_bluesky_core.utils import NamedReadableAndMovable, centred_pixel
 
 if TYPE_CHECKING:
     from ibex_bluesky_core.devices.simpledae import SimpleDae
@@ -169,9 +169,10 @@ def motor_scan(  # noqa: PLR0913
     save_run: bool = False,
     rel: bool = False,
 ) -> Generator[Msg, None, ISISCallbacks]:
-    """Wrap our scan() plan and create a block_mot and a DAE object.
+    """Wrap our scan() plan and create a block_rw and a DAE object.
 
-    This only works with blocks that are pointing at motor records.
+    This essentially uses the same mechanism as a waitfor_move by using the global "moving" flag
+    to determine if motors are still moving after starting a move.
     This is really just a wrapper around :func:`ibex_bluesky_core.plans.scan`
 
     Args:
@@ -192,7 +193,11 @@ def motor_scan(  # noqa: PLR0913
         an :obj:`ibex_bluesky_core.callbacks.ISISCallbacks` instance.
 
     """
-    block = BlockMot(prefix=get_pv_prefix(), block_name=block_name)
+    block = block_rw(
+        float,
+        block_name=block_name,
+        write_config=BlockWriteConfig(use_global_moving_flag=True),
+    )
     det_pixels = centred_pixel(det, pixel_range)
     dae = monitor_normalising_dae(
         det_pixels=det_pixels, frames=frames, periods=periods, save_run=save_run, monitor=mon
@@ -230,9 +235,10 @@ def motor_adaptive_scan(  # noqa: PLR0913
     save_run: bool = False,
     rel: bool = False,
 ) -> Generator[Msg, None, ISISCallbacks]:
-    """Wrap adaptive_scan() plan and create a block_mot and a DAE object.
+    """Wrap adaptive_scan() plan and create a block_rw and a DAE object.
 
-    This only works with blocks that are pointing at motor records.
+    This essentially uses the same mechanism as a waitfor_move by using the global "moving" flag
+    to determine if motors are still moving after starting a move.
     This is really just a wrapper around :func:`ibex_bluesky_core.plans.adaptive_scan`
 
     Args:
@@ -255,7 +261,11 @@ def motor_adaptive_scan(  # noqa: PLR0913
         an :obj:`ibex_bluesky_core.callbacks.ISISCallbacks` instance.
 
     """
-    block = BlockMot(prefix=get_pv_prefix(), block_name=block_name)
+    block = block_rw(
+        float,
+        block_name=block_name,
+        write_config=BlockWriteConfig(use_global_moving_flag=True),
+    )
     det_pixels = centred_pixel(det, pixel_range)
     dae = monitor_normalising_dae(
         det_pixels=det_pixels, frames=frames, periods=periods, save_run=save_run, monitor=mon
