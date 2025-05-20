@@ -18,7 +18,6 @@ class ProvidesExtraReadables:
         return []
 
 
-
 class Waiter(ProvidesExtraReadables):
     """Waiter specifies how the dae will wait for a scan point to complete counting."""
 

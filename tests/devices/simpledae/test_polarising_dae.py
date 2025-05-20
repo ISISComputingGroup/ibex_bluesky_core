@@ -4,7 +4,6 @@ import pytest
 import scipp as sc
 from ophyd_async.core import SignalRW, soft_signal_rw
 
-from ibex_bluesky_core.devices.simpledae.polarisingdae import PolarisingDae, polarising_dae
 from ibex_bluesky_core.devices.simpledae import (
     Controller,
     GoodFramesWaiter,
@@ -14,6 +13,7 @@ from ibex_bluesky_core.devices.simpledae import (
     RunPerPointController,
     Waiter,
 )
+from ibex_bluesky_core.devices.simpledae.polarisingdae import PolarisingDae, polarising_dae
 
 
 @pytest.fixture

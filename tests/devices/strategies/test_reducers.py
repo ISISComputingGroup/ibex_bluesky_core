@@ -15,10 +15,10 @@ from ibex_bluesky_core.devices.simpledae import (
     PeriodGoodFramesNormalizer,
     PeriodSpecIntegralsReducer,
     ScalarNormalizer,
+    SimpleDae,
     tof_bounded_spectra,
     wavelength_bounded_spectra,
 )
-from ibex_bluesky_core.devices.simpledae import SimpleDae
 
 
 @pytest.fixture

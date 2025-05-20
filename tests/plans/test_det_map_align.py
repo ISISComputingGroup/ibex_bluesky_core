@@ -9,9 +9,9 @@ from ophyd_async.testing import callback_on_mock_put, set_mock_value
 from ibex_bluesky_core.devices.simpledae import (
     PeriodPerPointController,
     PeriodSpecIntegralsReducer,
+    SimpleDae,
     Waiter,
 )
-from ibex_bluesky_core.devices.simpledae import SimpleDae
 from ibex_bluesky_core.plans.reflectometry import (
     angle_scan_plan,
     height_and_angle_scan_plan,

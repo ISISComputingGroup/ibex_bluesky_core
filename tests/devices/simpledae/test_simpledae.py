@@ -14,10 +14,8 @@ from ibex_bluesky_core.devices.simpledae import (
     PeriodPerPointController,
     Reducer,
     RunPerPointController,
-    Waiter,
-)
-from ibex_bluesky_core.devices.simpledae import (
     SimpleDae,
+    Waiter,
     check_dae_strategies,
     monitor_normalising_dae,
 )
