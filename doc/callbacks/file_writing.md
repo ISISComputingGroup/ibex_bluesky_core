@@ -49,7 +49,7 @@ of the scan, in `C:\instrument\var\logs\bluesky\output_files\`.
 
 Optional parameters, not shown above, include:
 - `output_dir` parameter is optional, if not input the file will by default be placed in 
-`\\isis\inst$\ndx<inst>\user\TEST\scans\<rbnumber>`. 
+`\\isis\inst$\ndx<inst>\user\bluesky_scans\<rbnumber>`. 
 - `postfix` an optional suffix to append to the end of the file name, to disambiguate scans. Default is no suffix.
 
 The data is prepended on the first event with the names and units of each logged field, and then subsequently the data 
