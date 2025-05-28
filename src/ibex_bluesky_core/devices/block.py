@@ -203,6 +203,7 @@ class BlockRw(BlockR[T], NamedMovable[T]):
         If you *explicitly* need to read the setpoint from a BlockRw, you can do so in a plan with::
 
             import bluesky.plan_stubs as bps
+
             block: BlockRw = ...
             bps.read(block.setpoint)
 
