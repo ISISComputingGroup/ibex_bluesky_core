@@ -16,11 +16,10 @@ from lmfit.model import ModelResult
 from matplotlib.axes import Axes
 from ophyd_async.plan_stubs import ensure_connected
 
-from ibex_bluesky_core.callbacks import ISISCallbacks, LiveFit
+from ibex_bluesky_core.callbacks import ISISCallbacks, LiveFit, LivePColorMesh
 from ibex_bluesky_core.callbacks.reflectometry import (
     DetMapAngleScanLiveDispatcher,
     DetMapHeightScanLiveDispatcher,
-    LivePColorMesh,
 )
 from ibex_bluesky_core.devices.simpledae import (
     PeriodPerPointController,

@@ -1,18 +1,22 @@
 """IBEX plotting callbacks."""
 
 import logging
+import threading
 from typing import Any
 
 import matplotlib
 import matplotlib.pyplot as plt
+import numpy as np
+import numpy.typing as npt
 from bluesky.callbacks import LivePlot as _DefaultLivePlot
 from bluesky.callbacks.core import get_obj_fields, make_class_safe
-from event_model import RunStop
-from event_model.documents import Event, RunStart
+from bluesky.callbacks.mpl_plotting import QtAwareCallback
+from event_model import Event, RunStart, RunStop
+from matplotlib.axes import Axes
 
 logger = logging.getLogger(__name__)
 
-__all__ = ["LivePlot", "show_plot"]
+__all__ = ["LivePColorMesh", "LivePlot", "show_plot"]
 
 
 def show_plot() -> None:
@@ -98,3 +102,73 @@ class LivePlot(_DefaultLivePlot):
         if not self.update_on_every_event:
             self.update_plot(force=True)
             show_plot()
+
+
+class LivePColorMesh(QtAwareCallback):
+    """Live PColorMesh-based Live Heatmap for reflectometry mapping-alignment."""
+
+    def __init__(
+        self,
+        *,
+        y: str,
+        x: str,
+        x_name: str,
+        x_coord: npt.NDArray[np.float64],
+        ax: Axes,
+        **kwargs: Any,  # noqa: ANN401
+    ) -> None:
+        """Create a new heatmap."""
+        super().__init__(use_teleporter=kwargs.pop("use_teleporter", None))
+        self.__setup_lock = threading.Lock()
+        self.__setup_event = threading.Event()
+        self._data: npt.NDArray[np.float64] | None = None
+        self._x: str = x
+        self._y: str = y
+        self._y_coords: list[float] = []
+        self._x_name: str = x_name
+        self._x_coords: npt.NDArray[np.float64] = x_coord
+
+        self.ax: Axes = ax
+        self.kwargs = kwargs
+
+    def start(self, doc: RunStart) -> RunStart | None:
+        """Start a new plot (clear any old data)."""
+        # The doc is not used; we just use the signal that a new run began.
+        self._data = None
+        self._y_coords = []
+
+        return super().start(doc)
+
+    def event(self, doc: Event) -> Event:
+        """Unpack data from the event and call self.update()."""
+        new_x = doc["data"][self._x]
+        new_y = doc["data"][self._y]
+
+        if self._data is None:
+            self._data = np.asarray(new_x).reshape((1, len(new_x)))
+        else:
+            self._data = np.vstack((self._data, np.asarray(new_x)))
+
+        self._y_coords.append(new_y)
+
+        self.update_plot()
+        return super().event(doc)
+
+    def update_plot(self) -> None:
+        """Redraw the heatmap."""
+        assert self._data is not None
+        assert self.ax is not None
+
+        self.ax.clear()
+        self.ax.set_xlabel(self._x_name)
+        self.ax.set_ylabel(self._y)
+        self.ax.pcolormesh(
+            self._x_coords,
+            self._y_coords,
+            self._data,
+            vmin=float(np.min(self._data)),
+            vmax=float(np.max(self._data)),
+            **self.kwargs,
+        )
+        self.ax.figure.canvas.draw_idle()  # type: ignore
+        show_plot()

@@ -2,28 +2,29 @@
 
 import os
 from collections.abc import Generator
-from pathlib import Path
 
-import bluesky.plan_stubs as bps
 import bluesky.plans as bp
+import bluesky.preprocessors as bpp
 import matplotlib
 import matplotlib.pyplot as plt
+import numpy as np
+import scipp as sc
 from bluesky.utils import Msg
 from ophyd_async.plan_stubs import ensure_connected
 
-from ibex_bluesky_core.callbacks import ISISCallbacks
+from ibex_bluesky_core.callbacks import LivePColorMesh
 from ibex_bluesky_core.devices.block import block_rw_rbv
 from ibex_bluesky_core.devices.simpledae import (
-    GoodFramesNormalizer,
-    GoodFramesWaiter,
+    DSpacingMappingReducer,
+    GoodUahWaiter,
     RunPerPointController,
     SimpleDae,
 )
-from ibex_bluesky_core.fitting import Linear
+from ibex_bluesky_core.plan_stubs import call_qt_aware
 from ibex_bluesky_core.run_engine import get_run_engine
 from ibex_bluesky_core.utils import get_pv_prefix
 
-NUM_POINTS: int = 3
+NUM_POINTS: int = 10
 
 
 def dae_scan_plan() -> Generator[Msg, None, None]:
@@ -47,11 +48,21 @@ def dae_scan_plan() -> Generator[Msg, None, None]:
     prefix = get_pv_prefix()
     block = block_rw_rbv(float, "mot")
 
-    controller = RunPerPointController(save_run=True)
-    waiter = GoodFramesWaiter(500)
-    reducer = GoodFramesNormalizer(
+    controller = RunPerPointController(save_run=False)
+    waiter = GoodUahWaiter(0.05)
+    dspacing_bin_edges = np.linspace(0.0, 5.0, num=201, dtype=np.float64)
+    dspacing_bin_centres = (dspacing_bin_edges[:-1] + dspacing_bin_edges[1:]) / 2
+
+    reducer = DSpacingMappingReducer(
         prefix=prefix,
-        detector_spectra=[i for i in range(1, 100)],
+        detectors=np.arange(1, 18000 + 1),
+        two_theta=sc.linspace(
+            dim="spec", start=0.1, stop=3.0515926535897926, num=18000, unit=sc.units.rad
+        ),
+        l_total=sc.linspace(dim="spec", start=0.05, stop=0.5, num=18000, unit=sc.units.m),
+        dspacing_bin_edges=sc.array(
+            dims=["tof"], values=dspacing_bin_edges, unit=sc.units.angstrom
+        ),
     )
 
     dae = SimpleDae(
@@ -61,44 +72,24 @@ def dae_scan_plan() -> Generator[Msg, None, None]:
         reducer=reducer,
     )
 
-    # Demo giving some signals more user-friendly names
-    controller.run_number.set_name("run number")
-    reducer.intensity.set_name("normalized counts")
-
     yield from ensure_connected(block, dae, force_reconnect=True)
 
-    icc = ISISCallbacks(
-        x=block.name,
-        y=reducer.intensity.name,
-        yerr=reducer.intensity_stddev.name,
-        fit=Linear.fit(),
-        measured_fields=[
-            controller.run_number.name,
-            reducer.det_counts.name,
-            reducer.det_counts_stddev.name,
-            dae.good_frames.name,
-        ],
-        human_readable_file_output_dir=Path("C:\\")
-        / "instrument"
-        / "var"
-        / "logs"
-        / "bluesky"
-        / "output_files",
-        live_fit_logger_output_dir=Path("C:\\")
-        / "instrument"
-        / "var"
-        / "logs"
-        / "bluesky"
-        / "fitting",
-    )
+    _, ax = yield from call_qt_aware(plt.subplots)
 
-    @icc
+    @bpp.subs_decorator(
+        [
+            LivePColorMesh(
+                y=block.name,
+                x=dae.reducer.dspacing.name,
+                x_name="d-spacing",
+                x_coord=dspacing_bin_centres,
+                ax=ax,
+                cmap="hot",
+            )
+        ]
+    )
     def _inner() -> Generator[Msg, None, None]:
-        yield from bps.mv(dae.number_of_periods, NUM_POINTS)  # type: ignore
-        # Pyright does not understand as bluesky isn't typed yet
         yield from bp.scan([dae], block, 0, 10, num=NUM_POINTS)
-        print(icc.live_fit.result.fit_report())
-        print(f"COM: {icc.peak_stats['com']}")
 
     yield from _inner()
 
