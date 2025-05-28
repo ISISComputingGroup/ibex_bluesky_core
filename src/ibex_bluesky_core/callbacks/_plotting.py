@@ -20,7 +20,7 @@ __all__ = ["LivePColorMesh", "LivePlot", "show_plot"]
 
 
 def show_plot() -> None:
-    """Call plt.show().
+    """Call :code:`plt.show()`.
 
     Play nicely with the "normal" backends too
     - only force show if we're actually using our custom backend.
@@ -92,12 +92,12 @@ class LivePlot(_DefaultLivePlot):
         self.yerr_data.append(yerr)
 
     def start(self, doc: RunStart) -> None:
-        """Process an start document (delegate to superclass, then show the plot)."""
+        """Process a start document (delegate to superclass, then show the plot)."""
         super().start(doc)
         show_plot()
 
     def stop(self, doc: RunStop) -> None:
-        """Process an start document (delegate to superclass, then show the plot)."""
+        """Process a stop document (delegate to superclass, then show the plot)."""
         super().stop(doc)
         if not self.update_on_every_event:
             self.update_plot(force=True)
@@ -105,19 +105,33 @@ class LivePlot(_DefaultLivePlot):
 
 
 class LivePColorMesh(QtAwareCallback):
-    """Live PColorMesh-based Live Heatmap for reflectometry mapping-alignment."""
+    """Live :py:obj:`PColorMesh<matplotlib.pyplot.pcolormesh>`-based heatmap."""
 
     def __init__(
         self,
         *,
         y: str,
         x: str,
-        x_name: str,
         x_coord: npt.NDArray[np.float64],
         ax: Axes,
+        x_name: str | None = None,
         **kwargs: Any,  # noqa: ANN401
     ) -> None:
-        """Create a new heatmap."""
+        """Create a new heatmap.
+
+        Args:
+            y: the name of the signal appearing along the y-axis.
+            x: the name of the signal appearing along the x-axis. This signal is
+                expected to be an array, representing rows of the heatmap.
+            x_coord: coordinates along the x-axis. This is expected to have the same length
+                as each row of the heatmap.
+            ax: a set of matplotlib axes on which to plot.
+            x_name: A display name for the x-axis. Defaults to the same as :code:`x`
+                if not provided.
+            **kwargs: Arbitrary keyword arguments are passed through to
+                :py:obj:`matplotlib.pyplot.pcolormesh`
+
+        """
         super().__init__(use_teleporter=kwargs.pop("use_teleporter", None))
         self.__setup_lock = threading.Lock()
         self.__setup_event = threading.Event()
@@ -125,7 +139,7 @@ class LivePColorMesh(QtAwareCallback):
         self._x: str = x
         self._y: str = y
         self._y_coords: list[float] = []
-        self._x_name: str = x_name
+        self._x_name: str = x if x_name is None else x_name
         self._x_coords: npt.NDArray[np.float64] = x_coord
 
         self.ax: Axes = ax
@@ -140,7 +154,7 @@ class LivePColorMesh(QtAwareCallback):
         return super().start(doc)
 
     def event(self, doc: Event) -> Event:
-        """Unpack data from the event and call self.update()."""
+        """Unpack data from the event and call :code:`self.update()`."""
         new_x = doc["data"][self._x]
         new_y = doc["data"][self._y]
 

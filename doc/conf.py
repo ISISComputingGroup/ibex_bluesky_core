@@ -71,3 +71,18 @@ html_favicon = "favicon.svg"
 
 autoclass_content = "both"
 myst_heading_anchors = 3
+autodoc_preserve_defaults = True
+
+intersphinx_mapping = {
+    "python": ("https://docs.python.org/3", None),
+    "bluesky": ("https://blueskyproject.io/bluesky/main/", None),
+    "ophyd_async": ("https://blueskyproject.io/ophyd-async/main/", None),
+    "event_model": ("https://blueskyproject.io/event-model/main/", None),
+    "scipp": ("https://scipp.github.io/", None),
+    "scippneutron": ("https://scipp.github.io/scippneutron/", None),
+    "numpy": ("https://numpy.org/doc/stable/", None),
+    "scipy": ("https://docs.scipy.org/doc/scipy/", None),
+    "matplotlib": ("https://matplotlib.org", None),
+    "lmfit": ("https://lmfit.github.io/lmfit-py/", None),
+    "typing_extensions": ("https://typing-extensions.readthedocs.io/en/latest/", None),
+}
