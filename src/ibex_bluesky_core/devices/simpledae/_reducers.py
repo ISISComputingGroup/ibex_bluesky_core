@@ -473,6 +473,10 @@ class DSpacingMappingReducer(Reducer, StandardReadable):
         )
         logger.info("starting reduction")
 
+        # Since l_total and two_theta are aligned along a "spec" dimension,
+        # the d-spacing array here is then 2-dimensional in [spec, tof]
+        # This represents the (independent) d-spacing bin boundaries for
+        # each detector pixel.
         dspacing = dspacing_from_tof(
             tof=first_spec_dataarray.coords["tof"],
             Ltotal=self._l_total,
@@ -492,7 +496,7 @@ class DSpacingMappingReducer(Reducer, StandardReadable):
         )
 
         binned_data = data.rebin({"tof": self._dspacing_bin_edges})
-        summed_data = binned_data.sum(dim="spec").to(unit=sc.units.counts, dtype="float64")
+        summed_data = binned_data.sum(dim="spec")
 
         self._dspacing_setter(summed_data.values)
         logger.info("reduction complete")
