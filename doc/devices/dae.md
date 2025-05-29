@@ -161,7 +161,7 @@ DAE signals. For example, normalizing intensities are implemented as a reducer.
 
 A reducer may produce any number of reduced signals.
 
-### GoodFramesNormalizer
+### {py:obj}`GoodFramesNormalizer<ibex_bluesky_core.devices.simpledae.GoodFramesNormalizer>`
 
 [`GoodFramesNormalizer`](ibex_bluesky_core.devices.simpledae.GoodFramesNormalizer)
 
@@ -175,7 +175,7 @@ Published signals:
 - `reducer.det_counts_stddev` - uncertainty (standard deviation) of the summed detector counts
 - `reducer.intensity_stddev` - uncertainty (standard deviation) of the normalised intensity
 
-### PeriodGoodFramesNormalizer
+### {py:obj}`PeriodGoodFramesNormalizer<ibex_bluesky_core.devices.simpledae.PeriodGoodFramesNormalizer>`
 
 [`PeriodGoodFramesNormalizer`](ibex_bluesky_core.devices.simpledae.PeriodGoodFramesNormalizer)
 
@@ -189,7 +189,7 @@ Published signals:
 - `reducer.det_counts_stddev` - uncertainty (standard deviation) of the summed detector counts
 - `reducer.intensity_stddev` - uncertainty (standard deviation) of the normalised intensity
 
-### DetectorMonitorNormalizer
+### {py:obj}`DetectorMonitorNormalizer<ibex_bluesky_core.devices.simpledae.DetectorMonitorNormalizer>`
 
 [`DetectorMonitorNormalizer`](ibex_bluesky_core.devices.simpledae.MonitorNormalizer)
 
@@ -204,7 +204,7 @@ Published signals:
 - `reducer.mon_counts_stddev` - uncertainty (standard deviation) of the summed monitor counts
 - `reducer.intensity_stddev` - uncertainty (standard deviation) of the normalised intensity
 
-### PeriodSpecIntegralsReducer
+### {py:obj}`PeriodSpecIntegralsReducer<ibex_bluesky_core.devices.simpledae.PeriodSpecIntegralsReducer>`
 
 This reducer exposes the raw integrals of the configured detector and monitor spectra, as
 numpy arrays. By itself, this reducer is not useful in a scan, but is useful for downstream
@@ -215,16 +215,56 @@ Published signals:
 - `reducer.mon_integrals` - `numpy` array of integrated counts on each configured monitor pixel.
 - `reducer.det_integrals` - `numpy` array of integrated counts on each configured detector pixel.
 
+### {py:obj}`DSpacingMappingReducer<ibex_bluesky_core.devices.simpledae.DSpacingMappingReducer>`
+
+This reducer exposes a numpy array of counts against d-spacing at each scan point.
+It requires geometry information for each configured detector pixel:
+- `l_total`: the total flight path length between source and detector
+- `two_theta`: the scattering angle
+
+:::{important}
+All configured detectors are assumed to use the same time-of-flight boundaries. The results from
+this reducer will be incorrect if this assumption is not true. In practice, detectors are almost
+always configured with the same time-channel boundaries; monitors may have a different set.
+:::
+
+The process implemented by this reducer is:
+- Read the entire spectrum-data map from the DAE.
+- Convert the time channel boundaries for each pixel into d-spacing, using
+{py:obj}`scippneutron.conversion.tof.dspacing_from_tof`, using the provided `l_total` and `two_theta`
+geometry information for each pixel.
+- Rebin all pixels into a consistent, user-specified, set of d-spacing bins.
+- Sum over all pixels to get a 1-d array of counts against d-spacing.
+
+The resulting array represents total counts that were measured by _any_ detector in the given d-spacing
+bin. These counts may be fractional due to rebinning.
+
+Published signals:
+- `reducer.dspacing` - `numpy` array of counts in each d-spacing bin.
+
 ### Time of Flight and Wavelength Bounding Spectra
 
-Scalar Normalizers (such as PeriodGoodFramesNormalizer, GoodFramesNormalizer) can be passed a
+Scalar Normalizers (such as 
+{py:obj}`PeriodGoodFramesNormalizer<ibex_bluesky_core.devices.simpledae.PeriodGoodFramesNormalizer>` or 
+{py:obj}`GoodFramesNormalizer<ibex_bluesky_core.devices.simpledae.GoodFramesNormalizer>`) can be passed a
 summing function which can optionally sum spectra between provided time of flight or wavelength bounds.
 
-[`PeriodGoodFramesNormalizer`](ibex_bluesky_core.devices.simpledae.PeriodGoodFramesNormalizer)
+Monitor Normalizers, which have both monitors and detectors, can be passed a summing function for each of
+these components independently, e.g. the detector can use time of flight while the monitor uses wavelength.
+{py:obj}`tof_bounded_spectra<ibex_bluesky_core.devices.simpledae.tof_bounded_spectra>`
+assumes that all pixels being summed share the same flight-path length. Where two separate
+instances of {py:obj}`tof_bounded_spectra<ibex_bluesky_core.devices.simpledae.tof_bounded_spectra>` are used, 
+such as in {py:obj}`DetectorMonitorNormalizer<ibex_bluesky_core.devices.simpledae.DetectorMonitorNormalizer>`, 
+these may have different flight path lengths from each other.
 
+Here is an example showing creating a scalar normalizer with time of flight bounds from 15000 to 25000 μs, 
+and summing 2 detectors, using
+{py:obj}`PeriodGoodFramesNormalizer<ibex_bluesky_core.devices.simpledae.PeriodGoodFramesNormalizer>`
+as a reducer and passing 
+{py:obj}`tof_bounded_spectra<ibex_bluesky_core.devices.simpledae.tof_bounded_spectra>`
+as the summation function:
 
-Here is an example showing creating a scalar normalizer with time of flight bounds from 15000 to 25000 μs, and summing 2 detectors:
-```
+```python
 import scipp
 
 bounds=scipp.array(dims=["tof"], values=[15000.0, 25000.0], unit=scipp.units.us)
@@ -236,14 +276,11 @@ reducer = PeriodGoodFramesNormalizer(
 )
 ```
 
-[`tof_bounded_spectra`](ibex_bluesky_core.devices.simpledae.tof_bounded_spectra)
+Here is an example with wavelength bounding, using 
+{py:obj}`wavelength_bounded_spectra<ibex_bluesky_core.devices.simpledae.wavelength_bounded_spectra>`
+used to sum the monitor component, and time of flight bounding for the detector summing spectra: 
 
-
-Monitor Normalizers, which have both a monitor as well as detector, can be passed a summing function for each of these components independently, e.g. the detector can use time of flight while the monitor uses wavelength. tof_bounded_spectra assumes that all pixels being summed share the same flight-path length. Where two separate instances of tof_bounded_spectra are used, such as in DetectorMonitorNormalizer, these may have different flight path lengths from each other.
-
-Here is an example with wavelength bounding used to sum the monitor component, and time of flight bounding for the detector summing spectra: 
-
-```
+```python
 import scipp
 
 wavelength_bounds = scipp.array(dims=["tof"], values=[0.0, 5.1], unit=scipp.units.angstrom, dtype="float64")
@@ -258,14 +295,11 @@ reducer = MonitorNormalizer(
     monitor_summer=tof_bounded_spectra(tof_bounds)
 )
 ```
-[`wavelength_bounded_spectra`](ibex_bluesky_core.devices.simpledae.wavelength_bounded_spectra)
 
-
-- In either case, the bounds are passed as a scipp array, which needs a `dims` attribute, `values` passed
+In either case, the bounds are passed as a scipp array, which needs a `dims` attribute, `values` passed
 as a list, and `units` (μs/microseconds for time of flight bounding, and angstrom for wavelength bounding)
 
-- If you don't specify either of these options, they will default to an summing over the entire spectrum.
-
+If you don't specify either of these options, they will default to summing over the entire spectrum.
 
 ## Waiters
 
