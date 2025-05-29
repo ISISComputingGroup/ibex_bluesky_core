@@ -264,11 +264,3 @@ event: 22
 event: 13
 event: 4
 ```
-
-### `LivePColorMesh`
-
-{py:obj}`LivePColorMesh<ibex_bluesky_core.callbacks.reflectometry.LivePColorMesh>`
-is the specialized heatmap plotting callback which reacts to *rows* of data at a time.
-
-This callback updates live as the scan progresses. It is otherwise very similar to the
-existing bluesky plotting callbacks.
