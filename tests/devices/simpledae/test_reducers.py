@@ -1045,9 +1045,11 @@ async def test_dspacing_reducer(simpledae: SimpleDae):
         prefix="UNITTEST:",
         detectors=np.array([1, 2]),
         dspacing_bin_edges=sc.array(
-            dims=["tof"], values=[0, 0.25, 10], unit=sc.units.angstrom, dtype="float64"
+            dims=["tof"], values=[0, 0.25, 10000000], unit=sc.units.angstrom, dtype="float64"
         ),
-        l_total=sc.array(dims=["spec"], values=[4.0, 5.0], unit=sc.units.m, dtype="float64"),
+        l_total=sc.array(
+            dims=["spec"], values=[0.00001, 1000000], unit=sc.units.m, dtype="float64"
+        ),
         two_theta=sc.array(
             dims=["spec"], values=[math.pi / 4, math.pi / 2], unit=sc.units.rad, dtype="float64"
         ),
@@ -1081,7 +1083,7 @@ async def test_dspacing_reducer(simpledae: SimpleDae):
 
     set_mock_value(reducer._first_det.counts, np.zeros(2, dtype=np.float32))
     set_mock_value(reducer._first_det.counts_size, 2)
-    set_mock_value(reducer._first_det.tof_edges, np.linspace(0, 1000, num=3, dtype=np.float32))
+    set_mock_value(reducer._first_det.tof_edges, np.linspace(1, 1000, num=3, dtype=np.float32))
     set_mock_value(reducer._first_det.tof_edges_size, 3)
     reducer._first_det.tof_edges.describe = AsyncMock(
         return_value={reducer._first_det.tof_edges.name: {"units": "us"}}
@@ -1091,7 +1093,7 @@ async def test_dspacing_reducer(simpledae: SimpleDae):
 
     np.testing.assert_almost_equal(
         await reducer.dspacing.get_value(),
-        np.array([511.3749089, 991.6250911], dtype=np.float64),
+        np.array([567 + 890, 12 + 34], dtype=np.float64),
         decimal=5,
     )
 
@@ -1107,3 +1109,29 @@ def test_dspacing_reducer_publishes_signals(simpledae: SimpleDae):
         ),
     )
     assert reducer.dspacing in reducer.additional_readable_signals(simpledae)
+
+
+def test_dspacing_reducer_bad_l_total_shape():
+    with pytest.raises(ValueError, match="l_total and detectors must have same shape"):
+        DSpacingMappingReducer(
+            prefix="",
+            detectors=np.array([1], dtype=np.int64),
+            l_total=sc.array(dims=["spec"], values=[1, 2], unit=sc.units.m, dtype="float64"),
+            two_theta=sc.array(dims=["spec"], values=[1], unit=sc.units.rad, dtype="float64"),
+            dspacing_bin_edges=sc.array(
+                dims=["tof"], values=[0, 1], unit=sc.units.angstrom, dtype="float64"
+            ),
+        )
+
+
+def test_dspacing_reducer_bad_two_theta_shape():
+    with pytest.raises(ValueError, match="two theta and detectors must have same shape"):
+        DSpacingMappingReducer(
+            prefix="",
+            detectors=np.array([1], dtype=np.int64),
+            l_total=sc.array(dims=["spec"], values=[1], unit=sc.units.m, dtype="float64"),
+            two_theta=sc.array(dims=["spec"], values=[1, 2], unit=sc.units.rad, dtype="float64"),
+            dspacing_bin_edges=sc.array(
+                dims=["tof"], values=[0, 1], unit=sc.units.angstrom, dtype="float64"
+            ),
+        )
