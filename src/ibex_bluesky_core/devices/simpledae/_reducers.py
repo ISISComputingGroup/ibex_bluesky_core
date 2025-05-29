@@ -445,6 +445,11 @@ class DSpacingMappingReducer(Reducer, StandardReadable):
         self._two_theta = two_theta
         self._dspacing_bin_edges = dspacing_bin_edges
 
+        if self._l_total.shape != self._detectors.shape:
+            raise ValueError("l_total and detectors must have same shape")
+        if self._two_theta.shape != self._detectors.shape:
+            raise ValueError("two theta and detectors must have same shape")
+
         self._first_det = DaeSpectra(
             dae_prefix=prefix + "DAE:", spectra=int(detectors[0]), period=0
         )

@@ -163,8 +163,6 @@ A reducer may produce any number of reduced signals.
 
 ### {py:obj}`GoodFramesNormalizer<ibex_bluesky_core.devices.simpledae.GoodFramesNormalizer>`
 
-[`GoodFramesNormalizer`](ibex_bluesky_core.devices.simpledae.GoodFramesNormalizer)
-
 This normalizer sums a set of user-defined detector spectra, and then divides by the number
 of good frames.
 
@@ -177,8 +175,6 @@ Published signals:
 
 ### {py:obj}`PeriodGoodFramesNormalizer<ibex_bluesky_core.devices.simpledae.PeriodGoodFramesNormalizer>`
 
-[`PeriodGoodFramesNormalizer`](ibex_bluesky_core.devices.simpledae.PeriodGoodFramesNormalizer)
-
 Equivalent to the `GoodFramesNormalizer` above, but uses good frames only from the current
 period. This should be used if a controller which counts into multiple periods is being used.
 
@@ -189,9 +185,7 @@ Published signals:
 - `reducer.det_counts_stddev` - uncertainty (standard deviation) of the summed detector counts
 - `reducer.intensity_stddev` - uncertainty (standard deviation) of the normalised intensity
 
-### {py:obj}`DetectorMonitorNormalizer<ibex_bluesky_core.devices.simpledae.DetectorMonitorNormalizer>`
-
-[`DetectorMonitorNormalizer`](ibex_bluesky_core.devices.simpledae.MonitorNormalizer)
+### {py:obj}`MonitorNormalizer<ibex_bluesky_core.devices.simpledae.MonitorNormalizer>`
 
 This normalizer sums a set of user-defined detector spectra, and then divides by the sum
 of a set of user-defined monitor spectra.
@@ -254,7 +248,7 @@ these components independently, e.g. the detector can use time of flight while t
 {py:obj}`tof_bounded_spectra<ibex_bluesky_core.devices.simpledae.tof_bounded_spectra>`
 assumes that all pixels being summed share the same flight-path length. Where two separate
 instances of {py:obj}`tof_bounded_spectra<ibex_bluesky_core.devices.simpledae.tof_bounded_spectra>` are used, 
-such as in {py:obj}`DetectorMonitorNormalizer<ibex_bluesky_core.devices.simpledae.DetectorMonitorNormalizer>`, 
+such as in {py:obj}`MonitorNormalizer<ibex_bluesky_core.devices.simpledae.MonitorNormalizer>`, 
 these may have different flight path lengths from each other.
 
 Here is an example showing creating a scalar normalizer with time of flight bounds from 15000 to 25000 μs, 
