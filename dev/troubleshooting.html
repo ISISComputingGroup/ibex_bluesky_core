@@ -1,0 +1,524 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Troubleshooting &mdash; ibex_bluesky_core 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+
+  
+    <link rel="shortcut icon" href="../_static/favicon.svg"/>
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="1. Repository structure" href="../architectural_decisions/001-repo-structure.html" />
+    <link rel="prev" title="Notes on Sphinx and addons" href="sphinx_notes.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #343131" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            ibex_bluesky_core
+              <img src="../_static/logo.svg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Tutorial</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/overview.html">Getting started</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Devices</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../devices/blocks.html">Blocks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devices/dae.html">DAE (Data Acquisition Electronics)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Callbacks</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../callbacks/docs_logging_callback.html">Document Logging Callback</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../callbacks/file_writing.html">File writing callbacks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../callbacks/plotting.html">Plotting</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Fitting</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../fitting/fitting.html">Fitting Callback</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../fitting/livefit_logger.html">Fitting Files Callback</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../fitting/standard_fits.html">Standard Fitting Models</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Plan stubs</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/external_code.html"><code class="docutils literal notranslate"><span class="pre">call_sync</span></code> (calling external code)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/matplotlib_helpers.html"><span class="xref myst"><code class="docutils literal notranslate"><span class="pre">call_qt_aware</span></code></span> (matplotlib helpers)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/redefining.html">Redefinition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/user_input.html">User input helpers</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Plans</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../plans/plans.html">General Plans</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Plans (Reflectometry)</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../plans/reflectometry/autoalign.html">Auto-alignment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plans/reflectometry/detector_mapping_alignment.html">Detector-mapping alignment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plans/reflectometry/refl_param_scan.html">Reflectometry parameter scans</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Preprocessors</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../preprocessors/rbnumberpp.html">RB Number injection preprocessor</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Developer information</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="create_a_release.html">Release Process</a></li>
+<li class="toctree-l1"><a class="reference internal" href="logging.html">Logging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="manual_system_testing.html">Manual system testing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="set_up_dev_environment.html">Local development</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sphinx_notes.html">Notes on Sphinx and addons</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Troubleshooting</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#where-is">Where is …?</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#instrument-specific-plans-devices">Instrument-specific plans &amp; devices</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#this-library-ibex-bluesky-core">This library (<code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core</span></code>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#other-bluesky-libraries-ophyd-async-bluesky">Other bluesky libraries (<code class="docutils literal notranslate"><span class="pre">ophyd_async</span></code>, <code class="docutils literal notranslate"><span class="pre">bluesky</span></code>, …)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#logs">Logs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#scientist-facing-data">Scientist-facing data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#raw-diagnostic-data">Raw diagnostic data</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#how-do-i">How do I …?</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#run-a-plan">Run a plan</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pause-stop-resume-abort-a-plan">Pause/stop/resume/abort a plan</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#get-the-result-of-a-plan">Get the result of a plan</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#connect-a-device">Connect a device</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#debug-notconnected-errors">Debug <code class="docutils literal notranslate"><span class="pre">NotConnected</span></code> errors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#change-how-set-on-a-device-behaves">Change how <code class="docutils literal notranslate"><span class="pre">set</span></code> on a device behaves</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#add-extra-sleeps-into-a-plan">Add extra sleeps into a plan</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#add-exception-handling-to-a-plan">Add exception-handling to a plan</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#debug-dae-failing-to-begin">Debug DAE failing to begin</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#debug-a-failed-fit">Debug a failed fit</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#debug-a-bad-fit">Debug a bad fit</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#debug-keyboard-interrupt-problems">Debug keyboard-interrupt problems</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#what-is-this-syntax">What is this syntax …?</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#async-def-await-asyncio"><code class="docutils literal notranslate"><span class="pre">async</span> <span class="pre">def</span></code> / <code class="docutils literal notranslate"><span class="pre">await</span></code> / <code class="docutils literal notranslate"><span class="pre">asyncio</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#yield-yield-from-generator"><code class="docutils literal notranslate"><span class="pre">yield</span></code> / <code class="docutils literal notranslate"><span class="pre">yield</span> <span class="pre">from</span></code> / <code class="docutils literal notranslate"><span class="pre">Generator</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Architectural decisions</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../architectural_decisions/001-repo-structure.html">1. Repository structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../architectural_decisions/002-use-ophyd-async.html">2. Use <code class="docutils literal notranslate"><span class="pre">ophyd-async</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../architectural_decisions/003-run-in-process.html">3. Run in-process</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../architectural_decisions/004-use-scipp.html">4. Use <code class="docutils literal notranslate"><span class="pre">scipp</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../architectural_decisions/005-variance-addition.html">5. Variance addition to counts data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../architectural_decisions/006-where-to-put-code.html">6. Where to put code</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../_api.html">API</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #343131" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">ibex_bluesky_core</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Troubleshooting</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/ISISComputingGroup/ibex_bluesky_core/blob/main/doc/dev/troubleshooting.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="troubleshooting">
+<h1>Troubleshooting<a class="headerlink" href="#troubleshooting" title="Link to this heading"></a></h1>
+<section id="where-is">
+<h2>Where is …?<a class="headerlink" href="#where-is" title="Link to this heading"></a></h2>
+<section id="instrument-specific-plans-devices">
+<h3>Instrument-specific plans &amp; devices<a class="headerlink" href="#instrument-specific-plans-devices" title="Link to this heading"></a></h3>
+<p>This is located in each instrument’s <code class="docutils literal notranslate"><span class="pre">inst</span></code> script area, with their other instrument-specific scripts.</p>
+<p><code class="docutils literal notranslate"><span class="pre">c:\Instrument\Settings\config\NDX&lt;inst&gt;\configurations\Python\inst\bluesky</span></code>.</p>
+<p>Instrument-specific bluesky plans will typically be defined in the <code class="docutils literal notranslate"><span class="pre">plans</span></code> module in the above area, and devices will
+be defined in a <code class="docutils literal notranslate"><span class="pre">devices</span></code> module.</p>
+</section>
+<section id="this-library-ibex-bluesky-core">
+<h3>This library (<code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core</span></code>)<a class="headerlink" href="#this-library-ibex-bluesky-core" title="Link to this heading"></a></h3>
+<p>In a clean installation of IBEX, <code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core</span></code> is installed as a python module via pip into the
+<a class="reference external" href="https://github.com/IsisComputingGroup/uktena">uktena</a> environment which is in <code class="docutils literal notranslate"><span class="pre">c:\instrument\apps\python3</span></code>.</p>
+<p>However, for instruments which have been testing bluesky and may have versions of <code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core</span></code> with local
+modifications, a version of <code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core</span></code> may be checked out into <code class="docutils literal notranslate"><span class="pre">c:\instrument\dev\ibex_bluesky_core</span></code> on the
+instrument, and this will have been editable-installed into the <code class="docutils literal notranslate"><span class="pre">uktena</span></code> environment.</p>
+</section>
+<section id="other-bluesky-libraries-ophyd-async-bluesky">
+<h3>Other bluesky libraries (<code class="docutils literal notranslate"><span class="pre">ophyd_async</span></code>, <code class="docutils literal notranslate"><span class="pre">bluesky</span></code>, …)<a class="headerlink" href="#other-bluesky-libraries-ophyd-async-bluesky" title="Link to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">ophyd_async</span></code> and <code class="docutils literal notranslate"><span class="pre">bluesky</span></code> are installed as python modules. via pip, into the
+<a class="reference external" href="https://github.com/IsisComputingGroup/uktena">uktena</a> environment which is in <code class="docutils literal notranslate"><span class="pre">c:\instrument\apps\python3</span></code> because
+they are specified in <code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code> of <code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core</span></code>, which itself is a dependency of <code class="docutils literal notranslate"><span class="pre">uktena</span></code>.</p>
+</section>
+<section id="logs">
+<h3>Logs<a class="headerlink" href="#logs" title="Link to this heading"></a></h3>
+<p>Log files are stored in <code class="docutils literal notranslate"><span class="pre">C:\Instrument\Var\logs\bluesky</span></code>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Older log files will be moved by the log rotation script to
+<code class="docutils literal notranslate"><span class="pre">&lt;isis</span> <span class="pre">share&gt;\inst$\Backups$\stage-deleted\ndx&lt;instrument&gt;\Instrument\Var\logs\bluesky</span></code></p>
+</div>
+<p>The default log level is <code class="docutils literal notranslate"><span class="pre">INFO</span></code> and all messages from <code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core</span></code>, <code class="docutils literal notranslate"><span class="pre">bluesky</span></code> and <code class="docutils literal notranslate"><span class="pre">ophyd_async</span></code> are captured.</p>
+<p>If you need to increase this to <code class="docutils literal notranslate"><span class="pre">DEBUG</span></code> to isolate an issue, you can do so using
+<a class="reference internal" href="../generated/ibex_bluesky_core.log.html#ibex_bluesky_core.log.set_bluesky_log_levels" title="ibex_bluesky_core.log.set_bluesky_log_levels"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ibex_bluesky_core.log.set_bluesky_log_levels</span></code></a>. See <a class="reference internal" href="logging.html"><span class="std std-doc">logging documentation</span></a> for a full example
+showing how to do this.</p>
+</section>
+<section id="scientist-facing-data">
+<h3>Scientist-facing data<a class="headerlink" href="#scientist-facing-data" title="Link to this heading"></a></h3>
+<p>Scientist-facing output files are written to <code class="docutils literal notranslate"><span class="pre">&lt;isis</span> <span class="pre">share&gt;\inst$\NDX&lt;inst&gt;\user\test\scans\&lt;current</span> <span class="pre">rb</span> <span class="pre">number&gt;</span></code> by
+default.</p>
+<p>Custom file-output paths can be specified by passing extra arguments to
+<a class="reference internal" href="../generated/ibex_bluesky_core.callbacks.html#ibex_bluesky_core.callbacks.HumanReadableFileCallback" title="ibex_bluesky_core.callbacks.HumanReadableFileCallback"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HumanReadableFileCallback</span></code></a>
+for the “human-readable” files, or
+<a class="reference internal" href="../generated/ibex_bluesky_core.callbacks.html#ibex_bluesky_core.callbacks.LiveFitLogger" title="ibex_bluesky_core.callbacks.LiveFitLogger"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LiveFitLogger</span></code></a>
+for the fit output files. These callbacks may be hidden behind
+<a class="reference internal" href="../generated/ibex_bluesky_core.callbacks.html#ibex_bluesky_core.callbacks.ISISCallbacks" title="ibex_bluesky_core.callbacks.ISISCallbacks"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ISISCallbacks</span></code></a> which also allows specifying output paths.</p>
+<p>See <a class="reference external" href="https://github.com/ISISComputingGroup/ibex_bluesky_core/blob/0.2.1/manual_system_tests/dae_scan.py#L83">dae_scan manual system test</a>
+for an example of how to configure these output paths using <a class="reference internal" href="../generated/ibex_bluesky_core.callbacks.html#ibex_bluesky_core.callbacks.ISISCallbacks" title="ibex_bluesky_core.callbacks.ISISCallbacks"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ISISCallbacks</span></code></a>.</p>
+</section>
+<section id="raw-diagnostic-data">
+<h3>Raw diagnostic data<a class="headerlink" href="#raw-diagnostic-data" title="Link to this heading"></a></h3>
+<p>Raw documents emitted by bluesky are stored in <code class="docutils literal notranslate"><span class="pre">C:\Instrument\Var\logs\bluesky\raw_documents</span></code> - these show the raw
+data emitted by bluesky scans. The filenames in this directory correspond to bluesky’s scan ID, which is printed to
+the console at the end of each scan, and is also included as metadata in the scientist-facing output files.</p>
+<p>These files are written by <a class="reference internal" href="../generated/ibex_bluesky_core.callbacks.html#ibex_bluesky_core.callbacks.DocLoggingCallback" title="ibex_bluesky_core.callbacks.DocLoggingCallback"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ibex_bluesky_core.callbacks.DocLoggingCallback</span></code></a>, which is subscribed
+to the run engine by default in <a class="reference internal" href="../generated/ibex_bluesky_core.run_engine.html#ibex_bluesky_core.run_engine.get_run_engine" title="ibex_bluesky_core.run_engine.get_run_engine"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ibex_bluesky_core.run_engine.get_run_engine</span></code></a>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Older raw documents will be moved by the log rotation script to
+<code class="docutils literal notranslate"><span class="pre">&lt;isis</span> <span class="pre">share&gt;\inst$\Backups$\stage-deleted\ndx&lt;instrument&gt;\Instrument\Var\logs\bluesky\raw_documents</span></code></p>
+</div>
+</section>
+</section>
+<hr class="docutils" />
+<section id="how-do-i">
+<h2>How do I …?<a class="headerlink" href="#how-do-i" title="Link to this heading"></a></h2>
+<section id="run-a-plan">
+<h3>Run a plan<a class="headerlink" href="#run-a-plan" title="Link to this heading"></a></h3>
+<p>To run a plan, you need to pass it to the <code class="docutils literal notranslate"><span class="pre">RE</span></code> object, which is made for you by default, as an initialisation command,
+in IBEX GUI versions later than 2025.2.</p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>For versions of the GUI earlier than 2025.2, where the run engine is not created automatically, an <code class="docutils literal notranslate"><span class="pre">RE</span></code> object can be
+made manually using</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">ibex_bluesky_core.run_engine</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_run_engine</span>
+<span class="n">RE</span> <span class="o">=</span> <span class="n">get_run_engine</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<p>For example, to run a plan, use:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">RE</span><span class="p">(</span><span class="n">some_clever_plan</span><span class="p">(</span><span class="n">which</span><span class="p">,</span> <span class="n">takes</span><span class="p">,</span> <span class="n">some</span><span class="p">,</span> <span class="n">arguments</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>Note that without the <code class="docutils literal notranslate"><span class="pre">RE(...)</span></code> call, the plan <strong>does nothing</strong>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">some_clever_plan</span><span class="p">(</span><span class="n">which</span><span class="p">,</span> <span class="n">takes</span><span class="p">,</span> <span class="n">some</span><span class="p">,</span> <span class="n">arguments</span><span class="p">)</span>
+<span class="go">&lt;generator object scan at 0x000002286311D080&gt;</span>
+</pre></div>
+</div>
+</section>
+<section id="pause-stop-resume-abort-a-plan">
+<h3>Pause/stop/resume/abort a plan<a class="headerlink" href="#pause-stop-resume-abort-a-plan" title="Link to this heading"></a></h3>
+<p>While a plan is running, a single ctrl-c will stop gracefully after the next point has finished counting. A message
+like the following will be printed:</p>
+<blockquote>
+<div><p>A ‘deferred pause’ has been requested. The RunEngine will pause at the next checkpoint.
+To pause immediately, hit Ctrl+C again in the next 10 seconds.
+Deferred pause acknowledged. Continuing to checkpoint.</p>
+</div></blockquote>
+<p>Two ctrl-c keystrokes within 10 seconds of each other will stop the plan immediately.</p>
+<p>When a plan is paused, you will get a short exception message with a summary of your options:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Pausing</span><span class="o">...</span>
+<span class="n">Traceback</span> <span class="p">(</span><span class="n">most</span> <span class="n">recent</span> <span class="n">call</span> <span class="n">last</span><span class="p">):</span>
+  <span class="n">File</span> <span class="s2">&quot;C:\Instrument\Apps\Python3\Lib\site-packages\IPython\core\interactiveshell.py&quot;</span><span class="p">,</span> <span class="n">line</span> <span class="mi">3579</span><span class="p">,</span> <span class="ow">in</span> <span class="n">run_code</span>
+    <span class="n">exec</span><span class="p">(</span><span class="n">code_obj</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_global_ns</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_ns</span><span class="p">)</span>
+  <span class="n">File</span> <span class="s2">&quot;&lt;ipython-input-27-288a69b9f38e&gt;&quot;</span><span class="p">,</span> <span class="n">line</span> <span class="mi">1</span><span class="p">,</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
+    <span class="n">RE</span><span class="p">(</span><span class="n">bps</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">999</span><span class="p">))</span>
+  <span class="n">File</span> <span class="s2">&quot;C:\Instrument\Apps\Python3\Lib\site-packages</span><span class="se">\b</span><span class="s2">luesky</span><span class="se">\r</span><span class="s2">un_engine.py&quot;</span><span class="p">,</span> <span class="n">line</span> <span class="mi">976</span><span class="p">,</span> <span class="ow">in</span> <span class="fm">__call__</span>
+    <span class="k">raise</span> <span class="n">RunEngineInterrupted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pause_msg</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="kc">None</span>
+<span class="n">bluesky</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">RunEngineInterrupted</span><span class="p">:</span> 
+<span class="n">Your</span> <span class="n">RunEngine</span> <span class="ow">is</span> <span class="n">entering</span> <span class="n">a</span> <span class="n">paused</span> <span class="n">state</span><span class="o">.</span> <span class="n">These</span> <span class="n">are</span> <span class="n">your</span> <span class="n">options</span> <span class="k">for</span> <span class="n">changing</span>
+<span class="n">the</span> <span class="n">state</span> <span class="n">of</span> <span class="n">the</span> <span class="n">RunEngine</span><span class="p">:</span>
+
+<span class="n">RE</span><span class="o">.</span><span class="n">resume</span><span class="p">()</span>    <span class="n">Resume</span> <span class="n">the</span> <span class="n">plan</span><span class="o">.</span>
+<span class="n">RE</span><span class="o">.</span><span class="n">abort</span><span class="p">()</span>     <span class="n">Perform</span> <span class="n">cleanup</span><span class="p">,</span> <span class="n">then</span> <span class="n">kill</span> <span class="n">plan</span><span class="o">.</span> <span class="n">Mark</span> <span class="n">exit_stats</span><span class="o">=</span><span class="s1">&#39;aborted&#39;</span><span class="o">.</span>
+<span class="n">RE</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>      <span class="n">Perform</span> <span class="n">cleanup</span><span class="p">,</span> <span class="n">then</span> <span class="n">kill</span> <span class="n">plan</span><span class="o">.</span> <span class="n">Mark</span> <span class="n">exit_status</span><span class="o">=</span><span class="s1">&#39;success&#39;</span><span class="o">.</span>
+<span class="n">RE</span><span class="o">.</span><span class="n">halt</span><span class="p">()</span>      <span class="n">Emergency</span> <span class="n">Stop</span><span class="p">:</span> <span class="n">Do</span> <span class="ow">not</span> <span class="n">perform</span> <span class="n">cleanup</span> <span class="o">---</span> <span class="n">just</span> <span class="n">stop</span><span class="o">.</span>
+</pre></div>
+</div>
+<p>At this point, you will be returned to an interactive shell. You must choose one of these options above before
+attempting further operations with the <code class="docutils literal notranslate"><span class="pre">RunEngine</span></code>.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">RE.resume()</span></code> - resumes the scan from the point at which it was interrupted. The plan will complete as usual.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">RE.stop()</span></code> and <code class="docutils literal notranslate"><span class="pre">RE.abort()</span></code> are functionally identical - the plan will gracefully terminate, including running any
+cleanup actions and calling registered callbacks.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">RE.halt()</span></code> tells the RunEngine to drop dead and not do <strong>anything</strong> on the way out. This includes cleanup handlers,
+which for example may return motors to sensible positions or return DAE configuration to a state in which data can be
+taken.</p></li>
+</ul>
+<p>If you are unsure exactly what state your <code class="docutils literal notranslate"><span class="pre">RunEngine</span></code> is in, <code class="docutils literal notranslate"><span class="pre">RE.state</span></code> can be used to check this. If you attempt to
+run another plan before choosing one of the options above, you will get an exception like:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Traceback</span> <span class="p">(</span><span class="n">most</span> <span class="n">recent</span> <span class="n">call</span> <span class="n">last</span><span class="p">):</span>
+  <span class="n">File</span> <span class="s2">&quot;C:\Instrument\Apps\Python3\Lib\site-packages\IPython\core\interactiveshell.py&quot;</span><span class="p">,</span> <span class="n">line</span> <span class="mi">3579</span><span class="p">,</span> <span class="ow">in</span> <span class="n">run_code</span>
+    <span class="n">exec</span><span class="p">(</span><span class="n">code_obj</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_global_ns</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_ns</span><span class="p">)</span>
+  <span class="n">File</span> <span class="s2">&quot;&lt;ipython-input-29-288a69b9f38e&gt;&quot;</span><span class="p">,</span> <span class="n">line</span> <span class="mi">1</span><span class="p">,</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
+    <span class="n">RE</span><span class="p">(</span><span class="n">bps</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">999</span><span class="p">))</span>
+  <span class="n">File</span> <span class="s2">&quot;C:\Instrument\Apps\Python3\Lib\site-packages</span><span class="se">\b</span><span class="s2">luesky</span><span class="se">\r</span><span class="s2">un_engine.py&quot;</span><span class="p">,</span> <span class="n">line</span> <span class="mi">920</span><span class="p">,</span> <span class="ow">in</span> <span class="fm">__call__</span>
+    <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The RunEngine is in a </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_state</span><span class="si">}</span><span class="s2"> state&quot;</span><span class="p">)</span>
+<span class="ne">RuntimeError</span><span class="p">:</span> <span class="n">The</span> <span class="n">RunEngine</span> <span class="ow">is</span> <span class="ow">in</span> <span class="n">a</span> <span class="n">paused</span> <span class="n">state</span>
+</pre></div>
+</div>
+<p>This means that you still need to choose how to continue from the previous interruption.</p>
+</section>
+<section id="get-the-result-of-a-plan">
+<h3>Get the result of a plan<a class="headerlink" href="#get-the-result-of-a-plan" title="Link to this heading"></a></h3>
+<p>A plan will return a <code class="docutils literal notranslate"><span class="pre">RunEngineResult</span></code> object, which has a <code class="docutils literal notranslate"><span class="pre">plan_result</span></code> attribute:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">result</span> <span class="o">=</span> <span class="n">RE</span><span class="p">(</span><span class="n">some_plan</span><span class="p">())</span>
+<span class="n">result</span><span class="o">.</span><span class="n">plan_result</span>
+</pre></div>
+</div>
+<p>If a plan was interrupted and resumed later, the result is returned by the <code class="docutils literal notranslate"><span class="pre">RE.resume()</span></code> call:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">RE</span><span class="p">(</span><span class="n">some_plan</span><span class="p">())</span>
+<span class="o">&lt;</span><span class="ne">KeyboardInterrupt</span><span class="o">&gt;</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">RE</span><span class="o">.</span><span class="n">resume</span><span class="p">()</span>
+<span class="n">result</span><span class="o">.</span><span class="n">plan_result</span>
+</pre></div>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>If the result wasn’t captured, it’s still possible to access it in an IPython interactive shell using the special
+underscore variables, for example <code class="docutils literal notranslate"><span class="pre">result</span> <span class="pre">=</span> <span class="pre">_</span></code>.</p>
+<p>This is not specific to bluesky - it’s an IPython feature where <code class="docutils literal notranslate"><span class="pre">_</span></code> is bound to the return value of the last expression,
+<code class="docutils literal notranslate"><span class="pre">__</span></code> is bound to the result of the second-to-last expression, and so on.</p>
+</div>
+<p><a class="reference external" href="https://blueskyproject.io/bluesky/main/tutorial.html#plans-in-series">Do not try to “hide” the <code class="docutils literal notranslate"><span class="pre">RunEngine</span></code> in a script/function</a>.
+The <code class="docutils literal notranslate"><span class="pre">RE(...)</span></code> call should always be typed by the user, at the terminal.</p>
+</section>
+<section id="connect-a-device">
+<h3>Connect a device<a class="headerlink" href="#connect-a-device" title="Link to this heading"></a></h3>
+<p>Bluesky plans need devices to be connected up-front. This is so that errors (such as PVs not existing) are detected
+as soon as possible, not mid-way through a scan.</p>
+<p>Top-level plan wrappers should use the <code class="docutils literal notranslate"><span class="pre">ensure_connected</span></code> plan stub from <code class="docutils literal notranslate"><span class="pre">ophyd_async</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">ophyd_async.plan_stubs</span><span class="w"> </span><span class="kn">import</span> <span class="n">ensure_connected</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">top_level_plan</span><span class="p">(</span><span class="n">dae</span><span class="p">,</span> <span class="n">block</span><span class="p">):</span>
+    <span class="k">yield from</span> <span class="n">ensure_connected</span><span class="p">(</span><span class="n">dae</span><span class="p">,</span> <span class="n">block</span><span class="p">)</span>
+    <span class="k">yield from</span> <span class="n">scan</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>If you forget to do this, you will get a stack trace containing:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ne">NotImplementedError</span><span class="p">:</span> <span class="n">No</span> <span class="n">PV</span> <span class="n">has</span> <span class="n">been</span> <span class="nb">set</span> <span class="k">as</span> <span class="n">connect</span><span class="p">()</span> <span class="n">has</span> <span class="ow">not</span> <span class="n">been</span> <span class="n">called</span>
+</pre></div>
+</div>
+</section>
+<section id="debug-notconnected-errors">
+<h3>Debug <code class="docutils literal notranslate"><span class="pre">NotConnected</span></code> errors<a class="headerlink" href="#debug-notconnected-errors" title="Link to this heading"></a></h3>
+<p>If <code class="docutils literal notranslate"><span class="pre">ophyd_async</span></code> cannot connect to a PV, you will get an error that looks like:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sample_changer2</span><span class="p">:</span> <span class="n">NotConnected</span><span class="p">:</span>
+    <span class="n">readback</span><span class="p">:</span> <span class="n">NotConnected</span><span class="p">:</span> <span class="n">ca</span><span class="p">:</span><span class="o">//</span><span class="n">TE</span><span class="p">:</span><span class="n">NDW2922</span><span class="p">:</span><span class="n">CS</span><span class="p">:</span><span class="n">SB</span><span class="p">:</span><span class="n">sample_changer2</span>
+</pre></div>
+</div>
+<p>In the first instance, check that the relevant PV exists if you get it via <code class="docutils literal notranslate"><span class="pre">caget</span></code>.</p>
+<p>If the device is a <a class="reference internal" href="../generated/ibex_bluesky_core.devices.block.html#ibex_bluesky_core.devices.block.BlockRw" title="ibex_bluesky_core.devices.block.BlockRw"><code class="xref py py-obj docutils literal notranslate"><span class="pre">block_rw</span></code></a>, but the <code class="docutils literal notranslate"><span class="pre">:SP</span></code> record does not exist,
+you may use a <code class="docutils literal notranslate"><span class="pre">block_w</span></code> instead. This will both read and write to the same PV. Similarly, if <code class="docutils literal notranslate"><span class="pre">blockname:SP:RBV</span></code> does
+not exist, a <a class="reference internal" href="../generated/ibex_bluesky_core.devices.block.html#ibex_bluesky_core.devices.block.BlockRwRbv" title="ibex_bluesky_core.devices.block.BlockRwRbv"><code class="xref py py-obj docutils literal notranslate"><span class="pre">block_rw_rbv</span></code></a> cannot be used.</p>
+<p>If the device is a <a class="reference internal" href="../generated/ibex_bluesky_core.devices.reflectometry.html#ibex_bluesky_core.devices.reflectometry.ReflParameter" title="ibex_bluesky_core.devices.reflectometry.ReflParameter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ibex_bluesky_core.devices.reflectometry.ReflParameter</span></code></a> and <code class="docutils literal notranslate"><span class="pre">redefine</span></code> fails to connect,
+pass <code class="docutils literal notranslate"><span class="pre">has_redefine=False</span></code> when constructing that parameter (this means you won’t be able to redefine the position
+of this refl parameter).</p>
+<p>If instead you get a <code class="docutils literal notranslate"><span class="pre">TypeError</span></code> that looks like:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sample_changer</span><span class="p">:</span> <span class="n">NotConnected</span><span class="p">:</span>
+    <span class="n">readback</span><span class="p">:</span> <span class="ne">TypeError</span><span class="p">:</span> <span class="n">TE</span><span class="p">:</span><span class="n">NDW2922</span><span class="p">:</span><span class="n">CS</span><span class="p">:</span><span class="n">SB</span><span class="p">:</span><span class="n">sample_changer</span> <span class="k">with</span> <span class="n">inferred</span> <span class="n">datatype</span> <span class="nb">float</span> <span class="n">cannot</span> <span class="n">be</span> <span class="n">coerced</span> <span class="n">to</span> <span class="nb">str</span>
+</pre></div>
+</div>
+<p>This is because the <strong>datatype of the underlying PV</strong> does not match the <strong>declared type in bluesky</strong>. <code class="docutils literal notranslate"><span class="pre">ophyd_async</span></code>
+will not allow you to connect a <code class="docutils literal notranslate"><span class="pre">block_r(str,</span> <span class="pre">&quot;some_block&quot;)</span></code> if <code class="docutils literal notranslate"><span class="pre">&quot;some_block&quot;</span></code> is a float-type PV. Every signal in
+<code class="docutils literal notranslate"><span class="pre">ophyd_async</span></code> is strongly typed.</p>
+<p>If you’re a developer, please ensure that you have followed the steps found on <a class="reference internal" href="manual_system_testing.html"><span class="std std-doc"><code class="docutils literal notranslate"><span class="pre">Manual</span> <span class="pre">System</span> <span class="pre">Testing</span></code></span></a></p>
+</section>
+<section id="change-how-set-on-a-device-behaves">
+<h3>Change how <code class="docutils literal notranslate"><span class="pre">set</span></code> on a device behaves<a class="headerlink" href="#change-how-set-on-a-device-behaves" title="Link to this heading"></a></h3>
+<p>For a <a class="reference internal" href="../generated/ibex_bluesky_core.devices.block.html#ibex_bluesky_core.devices.block.BlockRw" title="ibex_bluesky_core.devices.block.BlockRw"><code class="xref py py-obj docutils literal notranslate"><span class="pre">writable</span> <span class="pre">block</span></code></a>, a <code class="docutils literal notranslate"><span class="pre">write_config</span></code> argument can be specified.
+See the options on <a class="reference internal" href="../generated/ibex_bluesky_core.devices.block.html#ibex_bluesky_core.devices.block.BlockWriteConfig" title="ibex_bluesky_core.devices.block.BlockWriteConfig"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BlockWriteConfig</span></code></a> for detailed options. These are specified
+when first creating the <code class="docutils literal notranslate"><span class="pre">block</span></code> object, which is likely to be in
+<code class="docutils literal notranslate"><span class="pre">\Instrument\Settings\config\NDX&lt;inst&gt;\configurations\Python\inst\bluesky\devices.py</span></code>, or dynamically created as part
+of a wrapper plan. See <a class="reference internal" href="../devices/blocks.html"><span class="std std-doc">block documentation</span></a> for detailed documentation about how to set up block
+devices.</p>
+<p>For complex cases, where a <code class="docutils literal notranslate"><span class="pre">set</span></code> being complete depends on multiple conditions, a custom <code class="docutils literal notranslate"><span class="pre">ophyd_async</span></code> device is usually
+the cleanest way to accomplish this. These can be defined in an instrument’s <code class="docutils literal notranslate"><span class="pre">inst</span></code> scripts area if they are specific
+to one instrument, or can be promoted to <code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core</span></code> if generally useful.</p>
+</section>
+<section id="add-extra-sleeps-into-a-plan">
+<h3>Add extra sleeps into a plan<a class="headerlink" href="#add-extra-sleeps-into-a-plan" title="Link to this heading"></a></h3>
+<p>Generally you should not need to insert sleeps at the <em>plan</em> level - prefer instead to modify <em>devices</em> so that they
+accurately report when they have finished setting (including any necessary settle times, for example). Writable blocks
+have a <a class="reference internal" href="../generated/ibex_bluesky_core.devices.block.html#ibex_bluesky_core.devices.block.BlockWriteConfig" title="ibex_bluesky_core.devices.block.BlockWriteConfig"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BlockWriteConfig</span></code></a> which has a <code class="docutils literal notranslate"><span class="pre">settle_time_s</span></code>
+parameter for this purpose.</p>
+<p>If you <em>really</em> need to sleep in a plan, rather than at the device level, use <code class="docutils literal notranslate"><span class="pre">yield</span> <span class="pre">from</span> <span class="pre">bps.sleep(duration_seconds)</span></code>.
+Do <strong>not</strong> just call <code class="docutils literal notranslate"><span class="pre">time.sleep()</span></code> in a plan - this will stall the event loop and interfere with keyboard interrupts,
+for example.</p>
+</section>
+<section id="add-exception-handling-to-a-plan">
+<h3>Add exception-handling to a plan<a class="headerlink" href="#add-exception-handling-to-a-plan" title="Link to this heading"></a></h3>
+<p>In plans, because they are generators, you cannot just use <code class="docutils literal notranslate"><span class="pre">try-finally</span></code> or <code class="docutils literal notranslate"><span class="pre">try-except</span></code>.</p>
+<p>Instead, bluesky provides wrappers that implement error handling:
+<a class="reference external" href="https://blueskyproject.io/bluesky/main/generated/bluesky.preprocessors.contingency_wrapper.html#bluesky.preprocessors.contingency_wrapper"><code class="docutils literal notranslate"><span class="pre">finalize_wrapper</span></code></a>
+and
+<a class="reference external" href="https://blueskyproject.io/bluesky/main/generated/bluesky.preprocessors.finalize_wrapper.html#bluesky.preprocessors.finalize_wrapper"><code class="docutils literal notranslate"><span class="pre">contingency_wrapper</span></code></a>.</p>
+</section>
+<section id="debug-dae-failing-to-begin">
+<h3>Debug DAE failing to begin<a class="headerlink" href="#debug-dae-failing-to-begin" title="Link to this heading"></a></h3>
+<p>Check the DAE can begin a run without using bluesky.</p>
+<p>If you are counting using periods, and using the spectrum-data map, this imposes a limit of <span class="math notranslate nohighlight">\(5000000\)</span> on number of
+<code class="docutils literal notranslate"><span class="pre">periods</span> <span class="pre">*</span> <span class="pre">(spectra+1)</span> <span class="pre">*</span> <span class="pre">(time</span> <span class="pre">channels+1)</span></code>. This means that scans with high numbers of points may fail, where those
+with fewer points will work.</p>
+</section>
+<section id="debug-a-failed-fit">
+<h3>Debug a failed fit<a class="headerlink" href="#debug-a-failed-fit" title="Link to this heading"></a></h3>
+<p>Fitting will only ever start after at least as many points have been collected, as there are free parameters in the
+fitting model. For example, a guassian fit will not be attempted with less than 4 data points. This can occur if a
+scan is interrupted early, for example.</p>
+<p>Fits can also fail if the data is particularly poor.</p>
+</section>
+<section id="debug-a-bad-fit">
+<h3>Debug a bad fit<a class="headerlink" href="#debug-a-bad-fit" title="Link to this heading"></a></h3>
+<p>Consider whether you can use a different fitting model. Some models are more prone to getting stuck in local minima than
+others.</p>
+<p>For peak-like data, <code class="docutils literal notranslate"><span class="pre">&quot;com&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;max&quot;</span></code> from bluesky’s
+<a class="reference external" href="https://blueskyproject.io/bluesky/main/callbacks.html#peakstats"><code class="docutils literal notranslate"><span class="pre">PeakStats</span> <span class="pre">callback</span></code></a> can robustly give <em>an</em> answer,
+although often this will not be as good as a full fit and may not always be appropriate.</p>
+</section>
+<section id="debug-keyboard-interrupt-problems">
+<h3>Debug keyboard-interrupt problems<a class="headerlink" href="#debug-keyboard-interrupt-problems" title="Link to this heading"></a></h3>
+<p>If a double ctrl-c does nothing, this is probably because the event loop is stalled - which is likely the  result of a
+plan or device doing I/O or other synchronous operations directly, rather than via <code class="docutils literal notranslate"><span class="pre">asyncio</span></code> or <code class="docutils literal notranslate"><span class="pre">yield</span> <span class="pre">from</span></code>.</p>
+<p>Find the offending function and replace it with it’s bluesky-native equivalent. Python’s <code class="docutils literal notranslate"><span class="pre">asyncio</span></code> module has a debug
+mode which warns on long-running tasks - this can help identify the offending call.</p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="what-is-this-syntax">
+<h2>What is this syntax …?<a class="headerlink" href="#what-is-this-syntax" title="Link to this heading"></a></h2>
+<section id="async-def-await-asyncio">
+<h3><code class="docutils literal notranslate"><span class="pre">async</span> <span class="pre">def</span></code> / <code class="docutils literal notranslate"><span class="pre">await</span></code> / <code class="docutils literal notranslate"><span class="pre">asyncio</span></code><a class="headerlink" href="#async-def-await-asyncio" title="Link to this heading"></a></h3>
+<p>Functions declared as <code class="docutils literal notranslate"><span class="pre">async</span> <span class="pre">def</span></code> are <a class="reference external" href="https://docs.python.org/3/library/asyncio-task.html#">python <strong>coroutines</strong></a>.</p>
+<p>In a bluesky context, if you see an <code class="docutils literal notranslate"><span class="pre">async</span> <span class="pre">def</span></code> function, it is likely that you are looking at either
+an <code class="docutils literal notranslate"><span class="pre">ophyd_async</span></code> device class, or a <code class="docutils literal notranslate"><span class="pre">RunEngine</span></code> message handler.</p>
+<p>In order to get the result of a coroutine, it needs to be <code class="docutils literal notranslate"><span class="pre">await</span></code>ed:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">foo</span><span class="p">():</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">some_coroutine</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>In an <code class="docutils literal notranslate"><span class="pre">async</span> <span class="pre">def</span></code> function, do not perform blocking operations. For example, always use <code class="docutils literal notranslate"><span class="pre">await</span> <span class="pre">asyncio.sleep()</span></code>,
+and not <code class="docutils literal notranslate"><span class="pre">time.sleep()</span></code>. Similarly, do not use synchronous functions which perform I/O from a coroutine (e.g. calling
+<code class="docutils literal notranslate"><span class="pre">genie</span></code> APIs) - use the <code class="docutils literal notranslate"><span class="pre">async</span></code> APIs provided by <code class="docutils literal notranslate"><span class="pre">ophyd_async</span></code> instead.</p>
+<p>As a general rule of thumb, any function that could reasonably take more than a few tens of milliseconds, should not be
+called directly from a coroutine.</p>
+</section>
+<section id="yield-yield-from-generator">
+<h3><code class="docutils literal notranslate"><span class="pre">yield</span></code> / <code class="docutils literal notranslate"><span class="pre">yield</span> <span class="pre">from</span></code> / <code class="docutils literal notranslate"><span class="pre">Generator</span></code><a class="headerlink" href="#yield-yield-from-generator" title="Link to this heading"></a></h3>
+<p>Functions containing <code class="docutils literal notranslate"><span class="pre">yield</span></code> and/or <code class="docutils literal notranslate"><span class="pre">yield</span> <span class="pre">from</span></code> are <a class="reference external" href="https://wiki.python.org/moin/Generators">python <strong>generators</strong></a>.</p>
+<p>If you see <code class="docutils literal notranslate"><span class="pre">yield</span> <span class="pre">from</span></code> in a function, you are likely to be looking at a
+<a class="reference external" href="https://blueskyproject.io/bluesky/main/plans.html#">bluesky plan</a>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">yield</span> <span class="pre">from</span></code> is the syntax used to delegate to subplans:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">some_plan</span><span class="p">():</span>
+    <span class="k">yield from</span> <span class="n">move</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+    <span class="k">yield from</span> <span class="n">scan</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Will perform an initial move followed by a scan.</p>
+<p>Return values from plans can be captured:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">plan_that_returns</span><span class="p">():</span>
+    <span class="k">yield from</span> <span class="n">something</span><span class="p">()</span>
+    <span class="k">return</span> <span class="s2">&quot;hello, world&quot;</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">plan</span><span class="p">():</span>
+    <span class="n">returned_value</span> <span class="o">=</span> <span class="k">yield from</span> <span class="n">plan_that_returns</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Like <code class="docutils literal notranslate"><span class="pre">coroutines</span></code> above, long-running functions or functions which perform I/O should not be used in plans. Doing so
+can stall the <code class="docutils literal notranslate"><span class="pre">RunEngine</span></code>’s internal event loop, break keyboard-interrupts, and break rewindability. Use bluesky-native
+functionality instead - for example:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://blueskyproject.io/bluesky/main/generated/bluesky.plan_stubs.sleep.html#bluesky.plan_stubs.sleep"><code class="docutils literal notranslate"><span class="pre">yield</span> <span class="pre">from</span> <span class="pre">bps.sleep()</span></code></a> instead of <code class="docutils literal notranslate"><span class="pre">time.sleep()</span></code></p></li>
+<li><p><a class="reference external" href="https://blueskyproject.io/bluesky/main/generated/bluesky.plan_stubs.mv.html#bluesky.plan_stubs.mv"><code class="docutils literal notranslate"><span class="pre">yield</span> <span class="pre">from</span> <span class="pre">bps.mv(block_object,</span> <span class="pre">value)</span></code></a> instead of <code class="docutils literal notranslate"><span class="pre">g.cset(block_name,</span> <span class="pre">value)</span></code></p></li>
+<li><p><a class="reference external" href="https://blueskyproject.io/bluesky/main/generated/bluesky.plan_stubs.rd.html#bluesky.plan_stubs.rd"><code class="docutils literal notranslate"><span class="pre">value</span> <span class="pre">=</span> <span class="pre">yield</span> <span class="pre">from</span> <span class="pre">bps.rd(block_object)</span></code></a> instead of <code class="docutils literal notranslate"><span class="pre">value</span> <span class="pre">=</span> <span class="pre">g.cget(block_name)[&quot;value&quot;]</span></code></p></li>
+</ul>
+<p>If you must call an external function which may be long running or do I/O from a plan, review
+<a class="reference internal" href="../plan_stubs/external_code.html"><span class="doc std std-doc">call_sync</span></a>.</p>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="sphinx_notes.html" class="btn btn-neutral float-left" title="Notes on Sphinx and addons" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../architectural_decisions/001-repo-structure.html" class="btn btn-neutral float-right" title="1. Repository structure" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
