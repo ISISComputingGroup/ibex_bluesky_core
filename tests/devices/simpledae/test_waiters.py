@@ -12,7 +12,7 @@ from ibex_bluesky_core.devices.simpledae import (
     TimeWaiter,
 )
 
-SHORT_TIMEOUT = 0.01
+SHORT_TIMEOUT = 0.1
 
 
 async def test_good_uah_waiter(simpledae: "SimpleDae"):

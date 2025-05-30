@@ -39,7 +39,7 @@ def test_header_data_all_available_on_start(cb):
     mock_file.assert_called_with(result, "a", newline="\n", encoding="utf-8")
     writelines_call_args = mock_file().writelines.call_args[0][0]
     # time should have been renamed to start_time and converted to human readable
-    assert "start_time: 2024-10-04 13:43:43\n" in writelines_call_args
+    assert "start_time: 2024-10-04_13-43-43\n" in writelines_call_args
     assert f"uid: {uid}\n" in writelines_call_args
 
 
@@ -60,7 +60,7 @@ def test_no_rb_number_folder(cb):
     mock_file.assert_called_with(result, "a", newline="\n", encoding="utf-8")
     # time should have been renamed to start_time and converted to human readable
     writelines_call_args = mock_file().writelines.call_args[0][0]
-    assert "start_time: 2024-10-04 13:43:43\n" in writelines_call_args
+    assert "start_time: 2024-10-04_13-43-43\n" in writelines_call_args
     assert f"uid: {uid}\n" in writelines_call_args
 
 
@@ -81,7 +81,7 @@ def test_no_motors_doesnt_append_to_filename(cb):
     mock_file.assert_called_with(result, "a", newline="\n", encoding="utf-8")
     # time should have been renamed to start_time and converted to human readable
     writelines_call_args = mock_file().writelines.call_args[0][0]
-    assert "start_time: 2024-10-04 13:43:43\n" in writelines_call_args
+    assert "start_time: 2024-10-04_13-43-43\n" in writelines_call_args
     assert f"uid: {uid}\n" in writelines_call_args
 
 

@@ -4,17 +4,20 @@ from collections.abc import Generator
 from typing import TYPE_CHECKING, Any
 
 import bluesky.plans as bp
+import matplotlib.pyplot as plt
 from bluesky import plan_stubs as bps
 from bluesky.plan_stubs import trigger_and_read
 from bluesky.preprocessors import run_decorator
 from bluesky.protocols import NamedMovable, Readable
 from bluesky.utils import Msg
+from matplotlib.axes import Axes
 from ophyd_async.plan_stubs import ensure_connected
 
 from ibex_bluesky_core.callbacks import ISISCallbacks
 from ibex_bluesky_core.devices.block import BlockWriteConfig, block_rw
 from ibex_bluesky_core.devices.simpledae import monitor_normalising_dae
 from ibex_bluesky_core.fitting import FitMethod
+from ibex_bluesky_core.plan_stubs import call_qt_aware
 from ibex_bluesky_core.utils import NamedReadableAndMovable, centred_pixel
 
 if TYPE_CHECKING:
@@ -51,9 +54,12 @@ def scan(  # noqa: PLR0913
     """
     yield from ensure_connected(dae, block)  # type: ignore
 
+    yield from call_qt_aware(plt.close, "all")
+    _, ax = yield from call_qt_aware(plt.subplots)
+
     yield from bps.mv(dae.number_of_periods, num if periods else 1)
 
-    icc = _set_up_fields_and_icc(block, dae, model, periods, save_run)
+    icc = _set_up_fields_and_icc(block, dae, model, periods, save_run, ax)
 
     @icc
     def _inner() -> Generator[Msg, None, None]:
@@ -74,6 +80,7 @@ def _set_up_fields_and_icc(
     model: FitMethod | None,
     periods: bool,
     save_run: bool,
+    ax: Axes,
 ) -> ISISCallbacks:
     fields = [block.name]
     if periods:
@@ -86,6 +93,7 @@ def _set_up_fields_and_icc(
         x=block.name,
         measured_fields=fields,
         fit=model,
+        ax=ax,
     )
     return icc
 
@@ -127,9 +135,12 @@ def adaptive_scan(  # noqa: PLR0913, PLR0917
     """
     yield from ensure_connected(dae, block)  # type: ignore
 
+    yield from call_qt_aware(plt.close, "all")
+    _, ax = yield from call_qt_aware(plt.subplots)
+
     yield from bps.mv(dae.number_of_periods, 100)
 
-    icc = _set_up_fields_and_icc(block, dae, model, periods, save_run)
+    icc = _set_up_fields_and_icc(block, dae, model, periods, save_run, ax)
 
     @icc
     def _inner() -> Generator[Msg, None, None]:
