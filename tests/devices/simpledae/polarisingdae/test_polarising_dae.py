@@ -103,7 +103,7 @@ async def test_polarisingdae_calls_reducer_on_trigger(
     mock_reducer_down.reduce_data.assert_called_once_with(mock_dae)
 
 
-def test_polarising_dae_sets_up_periods_correctly(flipper: SignalRW[float]):
+async def test_polarising_dae_sets_up_periods_correctly(flipper: SignalRW[float]):
     """Test that the DAE is correctly configured for period-per-point operation."""
     det_pixels = [1, 2, 3]
     frames = 200
@@ -129,11 +129,12 @@ def test_polarising_dae_sets_up_periods_correctly(flipper: SignalRW[float]):
         )
 
     assert isinstance(dae.waiter, PeriodGoodFramesWaiter)
-    assert dae.waiter._value == frames
+    value = await dae.waiter.finish_wait_at.get_value()
+    assert value == frames
     assert isinstance(dae.controller, PeriodPerPointController)
 
 
-def test_polarising_dae_sets_up_single_period_correctly(flipper: SignalRW[float]):
+async def test_polarising_dae_sets_up_single_period_correctly(flipper: SignalRW[float]):
     """Test that the DAE is correctly configured for run-per-point operation."""
     det_pixels = [1, 2, 3]
     frames = 200
@@ -159,7 +160,8 @@ def test_polarising_dae_sets_up_single_period_correctly(flipper: SignalRW[float]
         )
 
     assert isinstance(dae.waiter, GoodFramesWaiter)
-    assert dae.waiter._value == frames
+    value = await dae.waiter.finish_wait_at.get_value()
+    assert value == frames
     assert isinstance(dae.controller, RunPerPointController)
 
 
