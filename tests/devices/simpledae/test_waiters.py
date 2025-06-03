@@ -1,14 +1,14 @@
 import asyncio
 
 import pytest
-from ophyd_async.core import set_mock_value
+from ophyd_async.testing import set_mock_value
 
-from ibex_bluesky_core.devices.simpledae import SimpleDae
-from ibex_bluesky_core.devices.simpledae.waiters import (
+from ibex_bluesky_core.devices.simpledae import (
     GoodFramesWaiter,
     GoodUahWaiter,
     MEventsWaiter,
     PeriodGoodFramesWaiter,
+    SimpleDae,
     TimeWaiter,
 )
 

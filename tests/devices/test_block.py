@@ -1,13 +1,13 @@
 # pyright: reportMissingParameterType=false
-
 import asyncio
 import sys
+from contextlib import nullcontext
 from unittest.mock import ANY, MagicMock, call, patch
 
 import bluesky.plan_stubs as bps
 import bluesky.plans as bp
 import pytest
-from ophyd_async.core import get_mock_put, set_mock_value
+from ophyd_async.testing import get_mock_put, set_mock_value
 
 from ibex_bluesky_core.devices.block import (
     GLOBAL_MOVING_FLAG_PRE_WAIT,
@@ -20,6 +20,7 @@ from ibex_bluesky_core.devices.block import (
     block_r,
     block_rw,
     block_rw_rbv,
+    block_w,
 )
 from tests.conftest import MOCK_PREFIX
 
@@ -73,13 +74,20 @@ def test_block_naming(rw_rbv_block):
 def test_mot_block_naming(mot_block):
     assert mot_block.name == "mot_block"
     assert mot_block.user_readback.name == "mot_block"
-    assert mot_block.user_setpoint.name == ("mot_block-user_setpoint")
+    assert mot_block.user_setpoint.name == "mot_block-user_setpoint"
 
 
 def test_block_signal_monitors_correct_pv(rw_rbv_block):
     assert rw_rbv_block.readback.source.endswith("UNITTEST:MOCK:CS:SB:float_block")
     assert rw_rbv_block.setpoint.source.endswith("UNITTEST:MOCK:CS:SB:float_block:SP")
     assert rw_rbv_block.setpoint_readback.source.endswith("UNITTEST:MOCK:CS:SB:float_block:SP:RBV")
+
+
+def test_block_rw_with_weird_sp_sets_sp_suffix_correctly():
+    weird_sp_suffix = ":SP123"
+    block = BlockRw(float, MOCK_PREFIX, "block", sp_suffix=weird_sp_suffix)
+    assert block.readback.source.endswith("UNITTEST:MOCK:CS:SB:block")
+    assert block.setpoint.source.endswith("UNITTEST:MOCK:CS:SB:block:SP123")
 
 
 def test_mot_block_monitors_correct_pv(mot_block):
@@ -244,6 +252,7 @@ async def test_block_without_use_global_moving_flag_does_not_refer_to_global_mov
     [
         (block_r, (float, "some_block")),
         (block_rw, (float, "some_block")),
+        (block_w, (float, "some_block")),
         (block_rw_rbv, (float, "some_block")),
         (block_mot, ("some_block",)),
     ],
@@ -253,6 +262,16 @@ def test_block_utility_function(func, args):
         mock_get_prefix.return_value = MOCK_PREFIX
         block = func(*args)
         assert block.name == "some_block"
+
+
+def test_block_w_has_same_source_for_setpoint_and_readback():
+    with patch("ibex_bluesky_core.devices.block.get_pv_prefix") as mock_get_prefix:
+        mock_get_prefix.return_value = MOCK_PREFIX
+        pv_addr = "TESTING123"
+        block = block_w(float, pv_addr)
+        assert (
+            block.setpoint.source == block.readback.source == f"ca://{MOCK_PREFIX}CS:SB:{pv_addr}"
+        )
 
 
 async def test_runcontrol_read_and_describe(readable_block):
@@ -328,3 +347,26 @@ def test_block_reprs():
     assert repr(BlockRw(float, block_name="bar", prefix="")) == "BlockRw(name=bar)"
     assert repr(BlockRwRbv(float, block_name="baz", prefix="")) == "BlockRwRbv(name=baz)"
     assert repr(BlockMot(block_name="qux", prefix="")) == "BlockMot(name=qux)"
+
+
+async def test_block_mot_set(mot_block):
+    set_mock_value(mot_block.user_setpoint, 10)
+    set_mock_value(mot_block.velocity, 10)
+    await mot_block.set(20)
+    get_mock_put(mot_block.user_setpoint).assert_called_once_with(20, wait=True)
+
+
+@pytest.mark.parametrize("timeout_is_error", [True, False])
+async def test_block_failing_write(timeout_is_error):
+    block = await _block_with_write_config(BlockWriteConfig(timeout_is_error=timeout_is_error))
+
+    get_mock_put(block.setpoint).side_effect = aio_timeout_error
+
+    with pytest.raises(aio_timeout_error) if timeout_is_error else nullcontext():
+        await block.set(1)
+
+
+async def test_block_failing_write_with_default_write_config(writable_block):
+    get_mock_put(writable_block.setpoint).side_effect = aio_timeout_error
+    with pytest.raises(aio_timeout_error):
+        await writable_block.set(1)

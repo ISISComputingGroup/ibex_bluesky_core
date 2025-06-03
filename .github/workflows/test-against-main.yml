@@ -1,4 +1,4 @@
-name: test-against-main
+name: future-dependency-compatibility-test
 on:
   schedule:
     - cron: "0 0 * * *"
@@ -6,6 +6,7 @@ jobs:
   tests:
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         version: ['3.11', "3.12"]
     steps:
@@ -19,10 +20,14 @@ jobs:
         run: pip install --upgrade --force-reinstall git+https://github.com/bluesky/bluesky.git@main git+https://github.com/bluesky/ophyd-async.git@main
       - name: run ruff
         run: python -m ruff check
+        if: always()
       - name: run pyright
         run: python -m pyright
+        if: always()
       - name: run pytest
         run: python -m pytest
+        if: always()
+
   results:
     if: ${{ always() }}
     runs-on: ubuntu-latest

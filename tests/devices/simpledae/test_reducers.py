@@ -1,21 +1,25 @@
 # pyright: reportMissingParameterType=false
 import math
+import re
 from unittest.mock import AsyncMock
 
+import numpy as np
 import pytest
 import scipp as sc
-from ophyd_async.core import set_mock_value
+from ophyd_async.testing import get_mock_put, set_mock_value
 
-from ibex_bluesky_core.devices.simpledae import SimpleDae
-from ibex_bluesky_core.devices.simpledae.reducers import (
+from ibex_bluesky_core.devices.simpledae import (
+    VARIANCE_ADDITION,
     GoodFramesNormalizer,
     MonitorNormalizer,
     PeriodGoodFramesNormalizer,
+    PeriodSpecIntegralsReducer,
     ScalarNormalizer,
-    polarization,
+    SimpleDae,
     tof_bounded_spectra,
     wavelength_bounded_spectra,
 )
+from ibex_bluesky_core.devices.simpledae._reducers import polarization
 
 
 @pytest.fixture
@@ -255,6 +259,7 @@ def spectra_bins_easy_to_test() -> sc.DataArray:
         data=sc.Variable(
             dims=["tof"],
             values=[1000.0, 2000.0, 3000.0, 2000.0, 1000.0],
+            variances=[1000.0, 2000.0, 3000.0, 2000.0, 1000.0],
             unit=sc.units.counts,
             dtype="float64",
         ),
@@ -272,6 +277,7 @@ def spectra_bins_tof_convert_to_wavelength_easy() -> sc.DataArray:
         data=sc.Variable(
             dims=["tof"],
             values=[1000.0, 2000.0, 3000.0, 2000.0, 1000.0],
+            variances=[1000.0, 2000.0, 3000.0, 2000.0, 1000.0],
             unit=sc.units.counts,
             dtype="float64",
         ),
@@ -292,6 +298,7 @@ def spectra_bins_tof_convert_to_wavelength_easy_copy() -> sc.DataArray:
         data=sc.Variable(
             dims=["tof"],
             values=[1000.0, 2000.0, 3000.0, 2000.0, 1000.0],
+            variances=[1000.0, 2000.0, 3000.0, 2000.0, 1000.0],
             unit=sc.units.counts,
             dtype="float64",
         ),
@@ -360,13 +367,23 @@ async def test_period_good_frames_normalizer(
 
     period_good_frames_reducer.detectors[1].read_spectrum_dataarray = AsyncMock(
         return_value=sc.DataArray(
-            data=sc.Variable(dims=["tof"], values=[1000.0, 2000.0, 3000.0], unit=sc.units.counts),
+            data=sc.Variable(
+                dims=["tof"],
+                values=[1000.0, 2000.0, 3000.0],
+                variances=[1000.0, 2000.0, 3000.0],
+                unit=sc.units.counts,
+            ),
             coords={"tof": sc.array(dims=["tof"], values=[0, 1, 2, 3])},
         )
     )
     period_good_frames_reducer.detectors[2].read_spectrum_dataarray = AsyncMock(
         return_value=sc.DataArray(
-            data=sc.Variable(dims=["tof"], values=[4000.0, 5000.0, 6000.0], unit=sc.units.counts),
+            data=sc.Variable(
+                dims=["tof"],
+                values=[4000.0, 5000.0, 6000.0],
+                variances=[1000.0, 2000.0, 3000.0],
+                unit=sc.units.counts,
+            ),
             coords={"tof": sc.array(dims=["tof"], values=[0, 1, 2, 3])},
         )
     )
@@ -394,6 +411,7 @@ async def test_period_good_frames_normalizer_uncertainties(
                 values=[1000.0, 2000.0, 3000.0],
                 variances=[1000.0, 2000.0, 3000.0],
                 unit=sc.units.counts,
+                dtype="float64",
             ),
             coords={"tof": sc.array(dims=["tof"], values=[0, 1, 2, 3])},
         )
@@ -405,6 +423,7 @@ async def test_period_good_frames_normalizer_uncertainties(
                 values=[4000.0, 5000.0, 6000.0],
                 variances=[4000.0, 5000.0, 6000.0],
                 unit=sc.units.counts,
+                dtype="float64",
             ),
             coords={
                 "tof": sc.array(
@@ -419,8 +438,10 @@ async def test_period_good_frames_normalizer_uncertainties(
     det_counts_stddev = await period_good_frames_reducer.det_counts_stddev.get_value()
     intensity_stddev = await period_good_frames_reducer.intensity_stddev.get_value()
 
-    assert det_counts_stddev == math.sqrt(21000)
-    assert intensity_stddev == pytest.approx(math.sqrt((21000 + (123**2 / 21000)) / 123**2), 1e-4)
+    assert det_counts_stddev == math.sqrt(21000 + VARIANCE_ADDITION)
+    assert intensity_stddev == pytest.approx(
+        math.sqrt((21000 + VARIANCE_ADDITION) / (123**2)), 1e-4
+    )
 
 
 async def test_period_good_frames_normalizer_zero_counts(
@@ -457,13 +478,11 @@ async def test_period_good_frames_normalizer_zero_counts(
         )
     )
 
-    await period_good_frames_reducer.reduce_data(simpledae)
-
-    det_counts_stddev = await period_good_frames_reducer.det_counts_stddev.get_value()
-    intensity_stddev = await period_good_frames_reducer.intensity_stddev.get_value()
-
-    assert det_counts_stddev == 0
-    assert intensity_stddev == 0
+    with pytest.raises(
+        ValueError,
+        match=re.escape("Cannot normalize; denominator is zero. Check beamline configuration."),
+    ):
+        await period_good_frames_reducer.reduce_data(simpledae)
 
 
 async def test_scalar_normalizer_tof_bounded_zero_to_one_half(
@@ -541,13 +560,23 @@ async def test_monitor_normalizer(
 ):  # 1, 1
     monitor_normalizer.detectors[1].read_spectrum_dataarray = AsyncMock(
         return_value=sc.DataArray(
-            data=sc.Variable(dims=["tof"], values=[1000.0, 2000.0, 3000.0], unit=sc.units.counts),
+            data=sc.Variable(
+                dims=["tof"],
+                values=[1000.0, 2000.0, 3000.0],
+                variances=[1000.0, 2000.0, 3000.0],
+                unit=sc.units.counts,
+            ),
             coords={"tof": sc.array(dims=["tof"], values=[0, 1, 2, 3])},
         )
     )
     monitor_normalizer.monitors[2].read_spectrum_dataarray = AsyncMock(
         return_value=sc.DataArray(
-            data=sc.Variable(dims=["tof"], values=[4000.0, 5000.0, 6000.0], unit=sc.units.counts),
+            data=sc.Variable(
+                dims=["tof"],
+                values=[4000.0, 5000.0, 6000.0],
+                variances=[4000.0, 5000.0, 6000.0],
+                unit=sc.units.counts,
+            ),
             coords={"tof": sc.array(dims=["tof"], values=[0, 1, 2, 3])},
         )
     )
@@ -589,15 +618,11 @@ async def test_monitor_normalizer_zero_counts(
         )
     )
 
-    await monitor_normalizer.reduce_data(simpledae)
-
-    det_counts_stddev = await monitor_normalizer.det_counts_stddev.get_value()
-    mon_counts_stddev = await monitor_normalizer.mon_counts_stddev.get_value()
-    intensity_stddev = await monitor_normalizer.intensity_stddev.get_value()
-
-    assert det_counts_stddev == 0
-    assert mon_counts_stddev == 0
-    assert intensity_stddev == 0
+    with pytest.raises(
+        ValueError,
+        match=re.escape("Cannot normalize; got zero monitor counts. Check beamline configuration."),
+    ):
+        await monitor_normalizer.reduce_data(simpledae)
 
 
 async def test_monitor_normalizer_uncertainties(
@@ -632,9 +657,11 @@ async def test_monitor_normalizer_uncertainties(
     mon_counts_stddev = await monitor_normalizer.mon_counts_stddev.get_value()
     intensity_stddev = await monitor_normalizer.intensity_stddev.get_value()
 
-    assert det_counts_stddev == math.sqrt(6000)
+    assert det_counts_stddev == math.sqrt(6000 + VARIANCE_ADDITION)
     assert mon_counts_stddev == math.sqrt(15000)
-    assert intensity_stddev == pytest.approx(math.sqrt((6000 + (6000**2 / 15000)) / 15000**2), 1e-4)
+    assert intensity_stddev == pytest.approx(
+        (6000 / 15000) * math.sqrt((6000.5 / 6000**2) + (15000 / 15000**2)), 1e-8
+    )
 
 
 def test_monitor_normalizer_publishes_raw_and_normalized_counts(
@@ -657,7 +684,7 @@ def test_monitor_normalizer_publishes_raw_and_normalized_count_uncertainties(
     assert monitor_normalizer.mon_counts_stddev in readables
 
 
-async def test_monitor_normalizer_det_sum_normal_mon_sum_tof_bound_(  # 1, 2
+async def test_monitor_normalizer_det_sum_normal_mon_sum_tof_bound(  # 1, 2
     simpledae: SimpleDae,
     monitor_normalizer_zero_to_one_half_det_norm_mon_tof: MonitorNormalizer,
     spectra_bins_easy_to_test: sc.DataArray,
@@ -1015,4 +1042,76 @@ def test_polarization_arrays_of_different_sizes():
         polarization(var_a, var_b)
 
 
-# test cases uncert = 0
+@pytest.mark.parametrize(
+    ("current_period", "mon_integrals", "det_integrals"),
+    [
+        (1, np.array([6], dtype=np.int32), np.array([15, 24, 0], dtype=np.int32)),
+        (2, np.array([66], dtype=np.int32), np.array([165, 264, 0], dtype=np.int32)),
+    ],
+)
+async def test_period_spec_integrals_reducer(
+    simpledae: SimpleDae, current_period, mon_integrals, det_integrals
+):
+    reducer = PeriodSpecIntegralsReducer(
+        monitors=np.array([1]),
+        detectors=np.array([2, 3, 4]),
+    )
+    await reducer.connect()
+
+    set_mock_value(simpledae.number_of_periods.signal, 2)
+    set_mock_value(simpledae.num_spectra, 4)
+    set_mock_value(simpledae.num_time_channels, 3)
+
+    set_mock_value(simpledae.period_num, current_period)
+
+    set_mock_value(simpledae.raw_spec_data_nord, 2 * (3 + 1) * (4 + 1))
+    set_mock_value(
+        simpledae.raw_spec_data,
+        np.array(
+            [
+                # Period 1
+                [
+                    # Note: every time channel starts with the "junk" time bin zero.
+                    # Spectrum 0 (junk data spectrum)
+                    [987654321, 9999999, 8888888, 7777777],
+                    # Spectrum 1
+                    [987654321, 1, 2, 3],
+                    # Spectrum 2
+                    [987654321, 4, 5, 6],
+                    # Spectrum 3
+                    [987654321, 7, 8, 9],
+                    # Spectrum 4
+                    [987654321, 0, 0, 0],
+                ],
+                # Period 2
+                [
+                    # Spectrum 0 (junk data spectrum)
+                    [987654321, 9999999, 8888888, 7777777],
+                    # Spectrum 1
+                    [987654321, 11, 22, 33],
+                    # Spectrum 2
+                    [987654321, 44, 55, 66],
+                    # Spectrum 3
+                    [987654321, 77, 88, 99],
+                    # Spectrum 4
+                    [987654321, 0, 0, 0],
+                ],
+            ]
+        ),
+    )
+
+    await reducer.reduce_data(simpledae)
+
+    get_mock_put(simpledae.raw_spec_data_proc).assert_called_with(1, wait=True)
+
+    np.testing.assert_equal(await reducer.mon_integrals.get_value(), mon_integrals)
+    np.testing.assert_equal(await reducer.det_integrals.get_value(), det_integrals)
+
+
+def test_period_spec_integrals_reducer_publishes_signals(simpledae: SimpleDae):
+    reducer = PeriodSpecIntegralsReducer(detectors=np.array([]), monitors=np.array([]))
+    assert reducer.mon_integrals in reducer.additional_readable_signals(simpledae)
+    assert reducer.det_integrals in reducer.additional_readable_signals(simpledae)
+
+    np.testing.assert_equal(reducer.detectors, np.array([]))
+    np.testing.assert_equal(reducer.monitors, np.array([]))

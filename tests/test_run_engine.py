@@ -11,6 +11,7 @@ from bluesky.run_engine import RunEngineResult
 from bluesky.utils import Msg, RequestAbort, RunEngineInterrupted
 
 from ibex_bluesky_core.run_engine import _DuringTask, get_run_engine
+from ibex_bluesky_core.version import version
 
 
 def test_run_engine_is_singleton():
@@ -82,3 +83,7 @@ def test_during_task_does_wait_with_small_timeout():
 
     event.wait.assert_called_with(0.1)
     assert event.wait.call_count == 2
+
+
+def test_runengine_has_version_number_as_metadata(RE):
+    assert RE.md["versions"]["ibex_bluesky_core"] == version

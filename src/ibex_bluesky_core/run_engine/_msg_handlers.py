@@ -41,7 +41,8 @@ async def call_sync_handler(msg: Msg) -> Any:  # noqa: ANN401
             logger.error("Running '%s' failed with %s: %s", func.__name__, e.__class__.__name__, e)
             exc = e
         finally:
-            loop.call_soon_threadsafe(done_event.set)
+            if not loop.is_closed():  # pragma: no cover
+                loop.call_soon_threadsafe(done_event.set)
 
     logger.info(
         "Spawning thread to run '%s' with args=(%s), kwargs=(%s)",
@@ -99,7 +100,7 @@ async def call_sync_handler(msg: Msg) -> Any:  # noqa: ANN401
 
 
 async def call_qt_aware_handler(msg: Msg) -> Any:  # noqa: ANN401
-    """Handle ibex_bluesky_core.plan_stubs.call_sync."""
+    """Handle ibex_bluesky_core.plan_stubs.call_qt_aware."""
     func = msg.obj
     done_event = Event()
     result: Any = None
@@ -120,6 +121,9 @@ async def call_qt_aware_handler(msg: Msg) -> Any:  # noqa: ANN401
                     msg.kwargs,
                 )
                 result = func(*msg.args, **msg.kwargs)
+                import matplotlib.pyplot as plt  # noqa: PLC0415
+
+                plt.show()
                 logger.debug("Running '%s' (Qt) successful", func.__name__)
             except BaseException as e:
                 logger.error(

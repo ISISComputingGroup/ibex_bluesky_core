@@ -18,12 +18,12 @@ def test_run_engine_logs_all_documents(RE):
         yield from bps.open_run()
         yield from bps.close_run()
 
-    with patch("ibex_bluesky_core.callbacks.document_logger.open", m):
+    with patch("ibex_bluesky_core.callbacks._document_logger.open", m):
         result: RunEngineResult = RE(basic_plan())
         filepath = log_location / f"{result.run_start_uids[0]}.log"
 
     for i in range(2):
-        assert m.call_args_list[i].args == (filepath, "a")
+        assert m.call_args_list[i].args == (filepath, "ab")
         # Checks that the file is opened 2 times, for open and then stop
 
     handle = m()

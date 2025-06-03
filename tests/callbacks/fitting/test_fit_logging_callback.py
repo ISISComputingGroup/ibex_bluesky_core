@@ -9,9 +9,8 @@ from bluesky.plans import scan
 from ophyd_async.core import soft_signal_rw
 
 from ibex_bluesky_core import run_engine
-from ibex_bluesky_core.callbacks.fitting import FitMethod, LiveFit
-from ibex_bluesky_core.callbacks.fitting.fitting_utils import Linear
-from ibex_bluesky_core.callbacks.fitting.livefit_logger import LiveFitLogger
+from ibex_bluesky_core.callbacks import LiveFit, LiveFitLogger
+from ibex_bluesky_core.fitting import FitMethod, Linear
 
 time = 1728049423.5860472
 
@@ -28,21 +27,25 @@ def test_after_fitting_callback_writes_to_file_successfully_no_y_uncertainty(
 
     lf = LiveFit(Linear.fit(), y="invariant", x="motor", update_every=50)
     lfl = LiveFitLogger(lf, y="invariant", x="motor", postfix=postfix, output_dir=filepath)
-    with patch("ibex_bluesky_core.callbacks.fitting.livefit_logger.open", m):
+    with (
+        patch("ibex_bluesky_core.callbacks._fitting.open", m),
+        patch("ibex_bluesky_core.callbacks._fitting.os.makedirs"),
+    ):
         with patch("time.time", MagicMock(return_value=time)):
             RE(scan([invariant], mot, -1, 1, 3), [lf, lfl], rb_number="0")
 
     assert m.call_args_list[0].args == (
-        filepath / "0" / f"{node()}_motor_invariant_2024-10-04_14-43-43Z{postfix}.csv",
+        filepath / "0" / f"{node()}_motor_invariant_2024-10-04_13-43-43Z{postfix}.txt",
         "w",
     )  # type: ignore
 
     handle = m()
+    rows_writelines = next(i.args[0] for i in handle.writelines.call_args_list)
     rows = [i.args[0] for i in handle.write.call_args_list]
 
     # Check that it starts writing to the file in the expected way
 
-    assert f"    Model({Linear.__name__}  [{Linear.equation}])" + os.linesep in rows
+    assert f"    Model({Linear.__name__}  [{Linear.equation}])" + os.linesep in rows_writelines
     assert "x,y,modelled y\r\n" in rows
 
 
@@ -58,12 +61,15 @@ def test_fitting_callback_handles_no_rb_number_save(
 
     lf = LiveFit(Linear.fit(), y="invariant", x="motor", update_every=50)
     lfl = LiveFitLogger(lf, y="invariant", x="motor", postfix=postfix, output_dir=filepath)
-    with patch("ibex_bluesky_core.callbacks.fitting.livefit_logger.open", m):
+    with (
+        patch("ibex_bluesky_core.callbacks._fitting.open", m),
+        patch("ibex_bluesky_core.callbacks._fitting.os.makedirs"),
+    ):
         with patch("time.time", MagicMock(return_value=time)):
             RE(scan([invariant], mot, -1, 1, 3), [lf, lfl])
 
     assert m.call_args_list[0].args == (
-        filepath / "Unknown RB" / f"{node()}_motor_invariant_2024-10-04_14-43-43Z{postfix}.csv",
+        filepath / "Unknown RB" / f"{node()}_motor_invariant_2024-10-04_13-43-43Z{postfix}.txt",
         "w",
     )  # type: ignore
 
@@ -84,21 +90,25 @@ def test_after_fitting_callback_writes_to_file_successfully_with_y_uncertainty(
         lf, y="invariant", x="motor", postfix=postfix, output_dir=filepath, yerr="uncertainty"
     )
 
-    with patch("ibex_bluesky_core.callbacks.fitting.livefit_logger.open", m):
+    with (
+        patch("ibex_bluesky_core.callbacks._fitting.open", m),
+        patch("ibex_bluesky_core.callbacks._fitting.os.makedirs"),
+    ):
         with patch("time.time", MagicMock(return_value=time)):
             RE(scan([invariant, uncertainty], mot, -1, 1, 3), [lf, lfl], rb_number="0")
 
     assert m.call_args_list[0].args == (
-        filepath / "0" / f"{node()}_motor_invariant_2024-10-04_14-43-43Z{postfix}.csv",
+        filepath / "0" / f"{node()}_motor_invariant_2024-10-04_13-43-43Z{postfix}.txt",
         "w",
     )  # type: ignore
 
     handle = m()
     rows = [i.args[0] for i in handle.write.call_args_list]
+    rows_writelines = next(i.args[0] for i in handle.writelines.call_args_list)
 
     # Check that it starts writing to the file in the expected way
 
-    assert f"    Model({Linear.__name__}  [{Linear.equation}])" + os.linesep in rows
+    assert f"    Model({Linear.__name__}  [{Linear.equation}])" + os.linesep in rows_writelines
     assert "x,y,y uncertainty,modelled y\r\n" in rows
 
 
@@ -117,7 +127,10 @@ def test_file_not_written_if_no_fitting_result(RE: run_engine.RunEngine):
     lf = LiveFit(method, y="invariant", x="motor")
     lfl = LiveFitLogger(lf, y="invariant", x="motor", postfix=postfix, output_dir=filepath)
 
-    with patch("ibex_bluesky_core.callbacks.fitting.livefit_logger.open", m):
+    with (
+        patch("ibex_bluesky_core.callbacks._fitting.open", m),
+        patch("ibex_bluesky_core.callbacks._fitting.os.makedirs"),
+    ):
         RE(scan([invariant], mot, -1, 1, 3), [lf, lfl], rb_number="0")
 
     assert not m.called
