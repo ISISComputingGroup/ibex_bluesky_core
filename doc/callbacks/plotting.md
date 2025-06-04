@@ -61,3 +61,31 @@ The `plot_callback` object can then be subscribed to the run engine, using eithe
 
 By subsequently re-using the same `ax` object in later scans, rather than creating a new 
 `ax` object for each scan, two scans can be "overplotted" with each other for comparison.
+
+
+## Saving plots to PNG files
+
+`ibex_bluesky_core` provides a [`PlotPNGSaver`](ibex_bluesky_core.callbacks.PlotPNGSaver) callback to save plots on a run stop to PNG files, which by saves them to the default output file location unless a filepath is explicitly given.
+
+This is enabled by default in the [`ISISCallbacks`](ibex_bluesky_core.callbacks.ISISCallbacks) callbacks collection. 
+
+Using the above example (i.e. without the `ISISCallbacks` helper) it can be used like so: 
+
+```python
+from pathlib import Path
+import matplotlib.pyplot as plt
+from ibex_bluesky_core.callbacks import LivePlot, PlotPNGSaver
+from ibex_bluesky_core.plan_stubs import call_qt_aware
+
+def plan():
+    # Create a new figure to plot onto.
+    yield from call_qt_aware(plt.figure)
+    # Make a new set of axes on that figure
+    ax = yield from call_qt_aware(plt.gca)
+    # Set the y-scale to logarithmic
+    yield from call_qt_aware(ax.set_yscale, "log")
+    # Use the above axes in a LivePlot callback
+    plot_callback = LivePlot(y="y_variable", x="x_variable", ax=ax, yerr="yerr_variable")
+    # Add a PNG saving callback
+    png_callback = PlotPNGSaver(y="y_variable", x="x_variable", ax=ax, output_dir=Path("C://", "Some", "Custom", "Directory"), postfix="test123")
+```
