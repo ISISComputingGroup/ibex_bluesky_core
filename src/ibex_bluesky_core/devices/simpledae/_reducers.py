@@ -124,7 +124,7 @@ def wavelength_bounded_spectra(
     return sum_spectra_with_wavelength
 
 
-def polarization(a: sc.Variable, b: sc.Variable) -> sc.Variable:
+def polarization(a: sc.Variable | sc.DataArray, b: sc.Variable | sc.DataArray) -> sc.Variable | sc.DataArray:
     """Calculate polarization value and propagate uncertainties.
 
     This function computes the polarization given by the formula (a-b)/(a+b)
