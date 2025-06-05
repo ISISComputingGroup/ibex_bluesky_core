@@ -1,18 +1,29 @@
 """IBEX plotting callbacks."""
 
 import logging
+import os
+from pathlib import Path
 from typing import Any
 
 import matplotlib
 import matplotlib.pyplot as plt
 from bluesky.callbacks import LivePlot as _DefaultLivePlot
 from bluesky.callbacks.core import get_obj_fields, make_class_safe
+from bluesky.callbacks.mpl_plotting import QtAwareCallback
 from event_model import RunStop
 from event_model.documents import Event, RunStart
+from matplotlib.axes import Axes
+
+from ibex_bluesky_core.callbacks._utils import (
+    _get_rb_num,
+    format_time,
+    get_default_output_path,
+    get_instrument,
+)
 
 logger = logging.getLogger(__name__)
 
-__all__ = ["LivePlot", "show_plot"]
+__all__ = ["LivePlot", "PlotPNGSaver", "show_plot"]
 
 
 def show_plot() -> None:
@@ -98,3 +109,53 @@ class LivePlot(_DefaultLivePlot):
         if not self.update_on_every_event:
             self.update_plot(force=True)
             show_plot()
+
+
+class PlotPNGSaver(QtAwareCallback):
+    """Save plots to PNG files on a run end."""
+
+    def __init__(
+        self,
+        x: str,
+        y: str,
+        ax: Axes,
+        postfix: str,
+        output_dir: str | os.PathLike[str] | None,
+    ) -> None:
+        """Initialise the PlotPNGSaver callback.
+
+        Args:
+            x: The name of the signal for x.
+            y: The name of the signal for y.
+            ax: The subplot to save to a file.
+            postfix: The file postfix.
+            output_dir: The output directory for PNGs.
+
+        """
+        super().__init__()
+        self.x = x
+        self.y = y
+        self.ax = ax
+        self.postfix = postfix
+        self.output_dir = Path(output_dir or get_default_output_path())
+        self.filename = None
+
+    def start(self, doc: RunStart) -> None:
+        self.filename = (
+            self.output_dir
+            / f"{_get_rb_num(doc)}"
+            / f"{get_instrument()}_{self.x}_{self.y}_{format_time(doc)}Z{self.postfix}.png"
+        )
+
+    def stop(self, doc: RunStop) -> None:
+        """Write the current plot to a PNG file.
+
+        Args:
+            doc: The stop document.
+
+        """
+        if self.filename is None:
+            raise ValueError("No filename specified for plot PNG")
+
+        self.filename.parent.mkdir(parents=True, exist_ok=True)
+        self.ax.figure.savefig(self.filename, format="png")  # pyright: ignore [reportAttributeAccessIssue]
