@@ -281,6 +281,11 @@ $ \frac{\delta}{\delta a}\Big(\frac{a - b}{a + b}) = \frac{2b}{(a+b)^2} $
 $ \frac{\delta}{\delta b}\Big(\frac{a - b}{a + b}) = -\frac{2a}{(a+b)^2} $
 
 
+Which then means the variances computed by this helper function are:
+
+$ Variance = (\frac{\delta}{\delta a}^2 * variance_a) + (\frac{\delta}{\delta b}^2 * variance_b)  $ 
+
+
 The polarization funtion provided will calculate the polarization between two values, A and B, which 
 have different definitions based on the instrument context.
 
