@@ -6,9 +6,7 @@ from typing import TYPE_CHECKING, Any
 import bluesky.plans as bp
 import matplotlib.pyplot as plt
 from bluesky import plan_stubs as bps
-from bluesky.plan_stubs import trigger_and_read
-from bluesky.preprocessors import run_decorator
-from bluesky.protocols import NamedMovable, Readable
+from bluesky.protocols import NamedMovable
 from bluesky.utils import Msg
 from matplotlib.axes import Axes
 from ophyd_async.plan_stubs import ensure_connected
@@ -17,13 +15,20 @@ from ibex_bluesky_core.callbacks import ISISCallbacks
 from ibex_bluesky_core.devices.block import BlockWriteConfig, block_rw
 from ibex_bluesky_core.devices.simpledae import monitor_normalising_dae
 from ibex_bluesky_core.fitting import FitMethod
-from ibex_bluesky_core.plan_stubs import call_qt_aware
+from ibex_bluesky_core.plan_stubs import call_qt_aware, polling_plan
 from ibex_bluesky_core.utils import NamedReadableAndMovable, centred_pixel
 
 if TYPE_CHECKING:
     from ibex_bluesky_core.devices.simpledae import SimpleDae
 
-__all__ = ["adaptive_scan", "motor_adaptive_scan", "motor_scan", "polling_plan", "scan"]
+__all__ = [
+    "NamedReadableAndMovable",
+    "adaptive_scan",
+    "motor_adaptive_scan",
+    "motor_scan",
+    "polling_plan",
+    "scan",
+]
 
 
 def scan(  # noqa: PLR0913
@@ -296,45 +301,3 @@ def motor_adaptive_scan(  # noqa: PLR0913
             rel=rel,
         )
     )
-
-
-@run_decorator(md={})
-def polling_plan(
-    motor: NamedReadableAndMovable, readable: Readable[Any], destination: float
-) -> Generator[Msg, None, None]:
-    """Move to a destination but drop updates from readable if motor position has not changed.
-
-    Args:
-        motor: the motor to move.
-        readable: the readable to read updates from, but drop if motor has not moved.
-        destination: the destination position.
-
-    Returns:
-        None
-
-    If we just used bp.scan() with a readable that updates more frequently than a motor can
-    register that it has moved, we would have lots of updates with the same motor position,
-    which may not be helpful.
-
-    """
-    yield from bps.checkpoint()
-    yield from bps.create()
-    reading = yield from bps.read(motor)
-    yield from bps.read(readable)
-    yield from bps.save()
-
-    # start the ramp
-    status = yield from bps.abs_set(motor, destination, wait=False)
-    while not status.done:
-        yield from bps.create()
-        new_reading = yield from bps.read(motor)
-        yield from bps.read(readable)
-
-        if new_reading[motor.name]["value"] == reading[motor.name]["value"]:
-            yield from bps.drop()
-        else:
-            reading = new_reading
-            yield from bps.save()
-
-    # take a 'post' data point
-    yield from trigger_and_read([motor, readable])
