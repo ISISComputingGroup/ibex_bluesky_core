@@ -131,8 +131,8 @@ def polarization(a: sc.Variable | sc.DataArray, b: sc.Variable | sc.DataArray) -
     and propagates the uncertainties associated with a and b.
 
     Args:
-        a: scipp Variable
-        b: scipp Variable
+        a: scipp Variable or DataArray
+        b: scipp Variable or DataArray
 
     Returns:
         polarization_value: This quantity is calculated as (a-b)/(a+b)
