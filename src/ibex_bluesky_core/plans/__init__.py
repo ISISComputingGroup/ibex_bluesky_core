@@ -139,11 +139,12 @@ def adaptive_scan(  # noqa: PLR0913, PLR0917
 
     """
     yield from ensure_connected(dae, block)  # type: ignore
+    if periods:
+        max_periods = yield from bps.rd(dae.max_periods)
+        yield from bps.mv(dae.number_of_periods, max_periods)
 
     yield from call_qt_aware(plt.close, "all")
     _, ax = yield from call_qt_aware(plt.subplots)
-
-    yield from bps.mv(dae.number_of_periods, 100)
 
     icc = _set_up_fields_and_icc(block, dae, model, periods, save_run, ax)
 
