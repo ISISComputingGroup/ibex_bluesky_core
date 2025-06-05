@@ -153,7 +153,7 @@ def test_redefine_motor(RE):
 async def test_redefine_refl_parameter(RE):
     param = ReflParameter(prefix="", name="some_refl_parameter", changing_timeout_s=60)
     await param.connect(mock=True)
-    set_mock_value(param.redefine.manager_mode, NoYesChoice.YES)
+    set_mock_value(param.redefine.manager_mode, NoYesChoice.YES)  # pyright: ignore [reportOptionalMemberAccess]
 
     RE(redefine_refl_parameter(param, 42.0))
 
