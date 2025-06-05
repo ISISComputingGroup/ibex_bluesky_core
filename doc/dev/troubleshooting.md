@@ -43,7 +43,7 @@ showing how to do this.
 
 ### Scientist-facing data
 
-Scientist-facing output files are written to `<isis share>\inst$\NDX<inst>\user\test\scans\<current rb number>` by 
+Scientist-facing output files are written to `<isis share>\inst$\NDX<inst>\user\bluesky_scans\<current rb number>` by 
 default.
 
 Custom file-output paths can be specified by passing extra arguments to 
