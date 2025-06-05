@@ -240,6 +240,8 @@ This is because the **datatype of the underlying PV** does not match the **decla
 will not allow you to connect a `block_r(str, "some_block")` if `"some_block"` is a float-type PV. Every signal in
 `ophyd_async` is strongly typed.
 
+If you're a developer, please ensure that you have followed the steps found on [`Manual System Testing`](/dev/manual_system_testing.md)
+
 ### Change how `set` on a device behaves
 
 For a {py:obj}`writable block<ibex_bluesky_core.devices.block.BlockRw>`, a `write_config` argument can be specified. 
