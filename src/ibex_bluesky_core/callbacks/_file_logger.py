@@ -3,9 +3,7 @@
 import csv
 import logging
 import os
-from datetime import datetime
 from pathlib import Path
-from zoneinfo import ZoneInfo
 
 from bluesky.callbacks import CallbackBase
 from event_model.documents.event import Event
@@ -20,13 +18,13 @@ from ibex_bluesky_core.callbacks._utils import (
     MOTORS,
     NAME,
     PRECISION,
-    RB,
     SEQ_NUM,
     START_TIME,
     TIME,
     UID,
     UNITS,
-    UNKNOWN_RB,
+    _get_rb_num,
+    format_time,
     get_default_output_path,
     get_instrument,
 )
@@ -68,23 +66,19 @@ class HumanReadableFileCallback(CallbackBase):
         self.output_dir.mkdir(parents=True, exist_ok=True)
         self.current_start_document = doc[UID]
 
-        datetime_obj = datetime.fromtimestamp(doc[TIME])
-        title_format_datetime = datetime_obj.astimezone(ZoneInfo("UTC")).strftime(
-            "%Y-%m-%d_%H-%M-%S"
-        )
-        rb_num = doc.get(RB, UNKNOWN_RB)
+        rb_num = _get_rb_num(doc)
 
         # motors is a tuple, we need to convert to a list to join the two below
         motors = list(doc.get(MOTORS, []))
+
+        formatted_time = format_time(doc)
 
         self.filename = (
             self.output_dir
             / f"{rb_num}"
             / f"{get_instrument()}{'_' + '_'.join(motors) if motors else ''}_"
-            f"{title_format_datetime}Z{self.postfix}.txt"
+            f"{formatted_time}Z{self.postfix}.txt"
         )
-        if rb_num == UNKNOWN_RB:
-            logger.warning('No RB number found, saving to "%s"', UNKNOWN_RB)
         assert self.filename is not None
         logger.info("starting new file %s", self.filename)
 
@@ -93,7 +87,6 @@ class HumanReadableFileCallback(CallbackBase):
         ]
         header_data = {k: v for k, v in doc.items() if k not in exclude_list}
 
-        formatted_time = datetime_obj.astimezone(ZoneInfo("UTC")).strftime("%Y-%m-%d %H:%M:%S")
         header_data[START_TIME] = formatted_time
 
         # make sure the parent directory exists, create it if not
