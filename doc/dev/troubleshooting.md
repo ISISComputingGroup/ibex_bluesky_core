@@ -43,7 +43,7 @@ showing how to do this.
 
 ### Scientist-facing data
 
-Scientist-facing output files are written to `<isis share>\inst$\NDX<inst>\user\test\scans\<current rb number>` by 
+Scientist-facing output files are written to `<isis share>\inst$\NDX<inst>\user\bluesky_scans\<current rb number>` by 
 default.
 
 Custom file-output paths can be specified by passing extra arguments to 
@@ -239,6 +239,8 @@ sample_changer: NotConnected:
 This is because the **datatype of the underlying PV** does not match the **declared type in bluesky**. `ophyd_async`
 will not allow you to connect a `block_r(str, "some_block")` if `"some_block"` is a float-type PV. Every signal in
 `ophyd_async` is strongly typed.
+
+If you're a developer, please ensure that you have followed the steps found on [`Manual System Testing`](/dev/manual_system_testing.md)
 
 ### Change how `set` on a device behaves
 
