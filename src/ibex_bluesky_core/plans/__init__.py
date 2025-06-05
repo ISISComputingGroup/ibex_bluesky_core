@@ -21,7 +21,14 @@ from ibex_bluesky_core.utils import NamedReadableAndMovable, centred_pixel
 if TYPE_CHECKING:
     from ibex_bluesky_core.devices.simpledae import SimpleDae
 
-__all__ = ["adaptive_scan", "motor_adaptive_scan", "motor_scan", "polling_plan", "scan"]
+__all__ = [
+    "NamedReadableAndMovable",
+    "adaptive_scan",
+    "motor_adaptive_scan",
+    "motor_scan",
+    "polling_plan",
+    "scan",
+]
 
 
 def scan(  # noqa: PLR0913
