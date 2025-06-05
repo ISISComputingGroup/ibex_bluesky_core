@@ -1,12 +1,12 @@
 # Plotting
 
 Bluesky has good integration with `matplotlib` for data visualization, and data from scans 
-may be easily plotted using the [`LivePlot`](ibex_bluesky_core.callbacks.LivePlot)  callback.
+may be easily plotted using the {py:obj}(ibex_bluesky_core.callbacks.LivePlot)  callback.
 
 `ibex_bluesky_core` provides a thin wrapper over bluesky's default `LivePlot` callback,
 which ensures that plots are promptly displayed in IBEX.
 
-In order to use the wrapper, import [`LivePlot`](ibex_bluesky_core.callbacks.LivePlot) from [`ibex_bluesky_core`](ibex_bluesky_core) rather than 
+In order to use the wrapper, import {py:obj}(ibex_bluesky_core.callbacks.LivePlot) from [`ibex_bluesky_core`](ibex_bluesky_core) rather than 
 `bluesky` directly:
 ```
 from ibex_bluesky_core.callbacks.plotting import LivePlot
@@ -14,13 +14,13 @@ from ibex_bluesky_core.callbacks.plotting import LivePlot
 
 ## Configuration
 
-A range of configuration options for [`LivePlot`](ibex_bluesky_core.callbacks.LivePlot) are available - see the 
+A range of configuration options for {py:obj}(ibex_bluesky_core.callbacks.LivePlot) are available - see the 
 [bluesky `LivePlot` documentation](https://blueskyproject.io/bluesky/main/callbacks.html#bluesky.callbacks.mpl_plotting.LivePlot)
 for more details about available options.
 
-The [`LivePlot`](ibex_bluesky_core.callbacks.LivePlot) object allows an arbitrary set of matplotlib `Axes` to be passed in, onto
+The {py:obj}(ibex_bluesky_core.callbacks.LivePlot) object allows an arbitrary set of matplotlib `Axes` to be passed in, onto
 which it will plot. This can be used to configure properties which are not directly exposed 
-on the [`LivePlot`](ibex_bluesky_core.callbacks.LivePlot) object, for example log-scaled axes.
+on the {py:obj}(ibex_bluesky_core.callbacks.LivePlot) object, for example log-scaled axes.
 
 See the [matplotlib `Axes` documentation](https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html) 
 for a full range of options on how to configure an `Axes` object.
@@ -50,7 +50,7 @@ See [docs for `call_qt_aware`](../plan_stubs/matplotlib_helpers.md) for a descri
 `yield from call_qt_aware` rather than calling `matplotlib` functions directly.
 ```
 
-By providing a signal name to the `yerr` argument you can pass uncertainties to [`LivePlot`](ibex_bluesky_core.callbacks.LivePlot), by not providing anything for this argument means that no errorbars will be drawn. Errorbars are drawn after each point collected, displaying their standard deviation- uncertainty data is collected from Bluesky event documents and errorbars are updated after every new point added.
+By providing a signal name to the `yerr` argument you can pass uncertainties to {py:obj}(ibex_bluesky_core.callbacks.LivePlot), by not providing anything for this argument means that no errorbars will be drawn. Errorbars are drawn after each point collected, displaying their standard deviation- uncertainty data is collected from Bluesky event documents and errorbars are updated after every new point added.
 
 The `plot_callback` object can then be subscribed to the run engine, using either:
 - An explicit callback when calling the run engine: `RE(some_plan(), plot_callback)`
@@ -65,9 +65,9 @@ By subsequently re-using the same `ax` object in later scans, rather than creati
 
 ## Saving plots to PNG files
 
-`ibex_bluesky_core` provides a [`PlotPNGSaver`](ibex_bluesky_core.callbacks.PlotPNGSaver) callback to save plots on a run stop to PNG files, which by saves them to the default output file location unless a filepath is explicitly given.
+`ibex_bluesky_core` provides a {py:obj}(ibex_bluesky_core.callbacks.PlotPNGSaver) callback to save plots on a run stop to PNG files, which by saves them to the default output file location unless a filepath is explicitly given.
 
-This is enabled by default in the [`ISISCallbacks`](ibex_bluesky_core.callbacks.ISISCallbacks) callbacks collection. 
+This is enabled by default in the {py:obj}(ibex_bluesky_core.callbacks.ISISCallbacks) callbacks collection. 
 
 Using the above example (i.e. without the `ISISCallbacks` helper) it can be used like so: 
 
