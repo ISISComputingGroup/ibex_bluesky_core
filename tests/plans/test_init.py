@@ -5,7 +5,7 @@ import pytest
 from bluesky.preprocessors import run_decorator
 from ophyd_async.plan_stubs import ensure_connected
 from ophyd_async.sim import SimMotor
-from ophyd_async.testing import callback_on_mock_put, set_mock_value
+from ophyd_async.testing import callback_on_mock_put, get_mock_put, set_mock_value
 
 from ibex_bluesky_core.devices.block import BlockMot, BlockR, BlockRw
 from ibex_bluesky_core.devices.simpledae import (
@@ -136,6 +136,29 @@ def test_scan_does_relative_scan_when_relative_true(RE, dae, block):
     assert start == bp_scan.call_args[0][2]
     assert stop == bp_scan.call_args[0][3]
     assert count == bp_scan.call_args[1]["num"]
+
+
+def test_adaptive_scan_with_periods_sets_max_periods(RE, dae, block):
+    expected = 50
+    set_mock_value(dae.max_periods, expected)
+    with (
+        patch("ibex_bluesky_core.plans.bp.adaptive_scan"),
+        patch("ibex_bluesky_core.plans.ensure_connected"),
+    ):
+        RE(
+            adaptive_scan(
+                dae,
+                block,
+                1,
+                2,
+                3,
+                4,
+                5,
+                periods=True,
+                model=Gaussian().fit(),
+            )
+        )
+    get_mock_put(dae.number_of_periods.signal).assert_called_with(expected, wait=True)
 
 
 def test_adaptive_scan_does_normal_scan_when_relative_false(RE, dae, block):
