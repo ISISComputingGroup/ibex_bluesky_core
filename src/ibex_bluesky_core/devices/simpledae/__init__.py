@@ -43,7 +43,7 @@ from ibex_bluesky_core.utils import get_pv_prefix
 
 logger = logging.getLogger(__name__)
 
-__all__ = [
+__all__ = [  # Repeated imports for backward compatability
     "VARIANCE_ADDITION",
     "Controller",
     "GoodFramesNormalizer",
@@ -69,9 +69,9 @@ __all__ = [
     "wavelength_bounded_spectra",
 ]
 
-TController_co = TypeVar("TController_co", bound="Controller", default="Controller", covariant=True)
-TWaiter_co = TypeVar("TWaiter_co", bound="Waiter", default="Waiter", covariant=True)
-TReducer_co = TypeVar("TReducer_co", bound="Reducer", default="Reducer", covariant=True)
+TController_co = TypeVar("TController_co", bound="Controller", default=Controller, covariant=True)
+TWaiter_co = TypeVar("TWaiter_co", bound="Waiter", default=Waiter, covariant=True)
+TReducer_co = TypeVar("TReducer_co", bound="Reducer", default=Reducer, covariant=True)
 
 
 class SimpleDae(Dae, Triggerable, AsyncStageable, Generic[TController_co, TWaiter_co, TReducer_co]):
