@@ -269,8 +269,17 @@ as a list, and `units` (μs/microseconds for time of flight bounding, and angstr
 
 ### Polarization/Asymmetry
 
-Polarization refers to the property of transverse waves which specifies the geometrical orientation of the 
-oscillations. 
+ibex_bluesky_core provides a helper method,
+{py:obj}ibex_bluesky_core.devices.simpledae.reducers.polarization, for calculating the quantity (a-b)/(a+b). This quantity is used, for example, in neutron polarization measurements, and in calculating asymmetry for muon measurements.
+
+For this expression, scipp's default uncertainty propagation rules cannot be used as the uncertainties on (a-b) are correlated with those of (a+b) in the division step - but scipp assumes uncorrelated data. This helper method calculates the uncertainties following linear error propagation theory, using the partial derivatives of the above expression.
+
+The partial derivatives are:
+
+$ \frac{\delta}{\delta a}\Big(\frac{a - b}{a + b}) = \frac{2b}{(a+b)^2} $
+
+$ \frac{\delta}{\delta b}\Big(\frac{a - b}{a + b}) = -\frac{2a}{(a+b)^2} $
+
 
 The polarization funtion provided will calculate the polarization between two values, A and B, which 
 have different definitions based on the instrument context.
