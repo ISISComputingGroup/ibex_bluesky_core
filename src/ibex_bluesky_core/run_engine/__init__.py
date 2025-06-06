@@ -160,7 +160,13 @@ def run_plan(
     RE = get_run_engine()
 
     if not _RUN_PLAN_LOCK.acquire(blocking=False):
-        raise RuntimeError("reentrant run_plan call attempted; this cannot be supported")
+        raise RuntimeError(
+            "reentrant run_plan call attempted; this cannot be supported.\n"
+            "It is a programming error to attempt to run a plan using run_plan "
+            "from within a plan.\n"
+            "To call a sub plan from within an outer plan, "
+            "use 'yield from subplan(...)' instead.\n"
+        )
     try:
         if RE.state != "idle":
             raise RuntimeError(
