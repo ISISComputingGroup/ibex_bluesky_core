@@ -185,8 +185,9 @@ This is not specific to bluesky - it's an IPython feature where `_` is bound to 
 `__` is bound to the result of the second-to-last expression, and so on.
 ```
 
-[Do not try to "hide" the `RunEngine` in a script/function](https://blueskyproject.io/bluesky/main/tutorial.html#plans-in-series).
-The `RE(...)` call should always be typed by the user, at the terminal.
+[It is not advised to "hide" the `RunEngine` in a script/function](https://blueskyproject.io/bluesky/main/tutorial.html#plans-in-series).
+The `RE(...)` call should be typed by the user, at the terminal. If you *really* need to run a plan as part of a
+larger script, see {py:obj}`ibex_bluesky_core.run_engine.run_plan`.
 
 ### Connect a device
 
