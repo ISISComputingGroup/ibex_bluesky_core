@@ -81,6 +81,9 @@ bluesky-native functionality - i.e. plans using `yield from`.
 
 Carefully review [calling external code](../plan_stubs/external_code.md) if you do need to call 
 external code in a plan.
+
+If, on the other hand, you need to run a plan as part of a larger script, see
+{py:obj}`ibex_bluesky_core.run_engine.run_plan`.
 ```
 
 For more details about plan stubs (plan fragments like `mv` and `read`), see 
