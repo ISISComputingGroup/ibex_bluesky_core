@@ -8,6 +8,7 @@ from typing import TYPE_CHECKING, Generic, TypeVar
 from ophyd_async.core import (
     Device,
     SignalR,
+    soft_signal_rw,
     wait_for_value,
 )
 
@@ -32,13 +33,14 @@ class SimpleWaiter(Waiter, Generic[T], ABC):
             value: the value to wait for
 
         """
-        self._value: T = value
+        self.finish_wait_at = soft_signal_rw(float, value)
 
     async def wait(self, dae: "SimpleDae") -> None:
         """Wait for signal to reach the user-specified value."""
         signal = self.get_signal(dae)
         logger.info("starting wait for signal %s", signal.source)
-        await wait_for_value(signal, lambda v: v >= self._value, timeout=None)
+        value = await self.finish_wait_at.get_value()
+        await wait_for_value(signal, lambda v: v >= value, timeout=None)
         logger.info("completed wait for signal %s", signal.source)
 
     def additional_readable_signals(self, dae: "SimpleDae") -> list[Device]:
