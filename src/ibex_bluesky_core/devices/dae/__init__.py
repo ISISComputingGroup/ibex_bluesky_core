@@ -230,6 +230,15 @@ class Dae(StandardReadable):
     ) -> npt.NDArray[np.int32]:
         """Get a correctly-shaped spectrum-data array.
 
+        This array will have shape (num_spectra, num_time_channels).
+
+        If detectors is a slice or an array, the number of detectors will be
+        given by that slice or array. If detectors is None, all detectors,
+        including the "junk" detector 0, will be included.
+
+        The number of spectra will be determined by the current DAE TCB
+        settings. The returned array will not include the "junk" time-channel 0.
+
         Args:
             dae: The SimpleDae instance
             detectors: a numpy array or slice describing detectors to get data from.
