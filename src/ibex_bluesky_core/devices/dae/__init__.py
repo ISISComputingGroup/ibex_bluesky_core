@@ -1,7 +1,10 @@
 """Utilities for the DAE device - mostly XML helpers."""
 
+import asyncio
 from typing import Generic, TypeVar
 
+import numpy as np
+import numpy.typing as npt
 from bluesky.protocols import Movable
 from numpy import int32
 from ophyd_async.core import (
@@ -207,3 +210,63 @@ class Dae(StandardReadable):
     def __repr__(self) -> str:
         """Get string representation of this class for debugging."""
         return f"{self.__class__.__name__}(name={self.name}, prefix={self._prefix})"
+
+    async def _trigger_and_get_raw_specdata(self) -> npt.NDArray[np.int32]:
+        """Get a raw, 1-dimensional, spectrum-data array.
+
+        This array includes all periods, all spectra (including the "junk" spectrum 0), and all
+        time channels (including the "junk" time-channel 0).
+        """
+        await self.controls.update_run.trigger()
+        await self.raw_spec_data_proc.set(1, wait=True)
+        (raw_data, nord) = await asyncio.gather(
+            self.raw_spec_data.get_value(),
+            self.raw_spec_data_nord.get_value(),
+        )
+        return raw_data[:nord]
+
+    async def trigger_and_get_specdata(
+        self,
+        detectors: npt.NDArray[np.int32 | np.int64] | slice | None = None,
+    ) -> npt.NDArray[np.int32]:
+        """Get a correctly-shaped spectrum-data array.
+
+        This array will have shape (num_spectra, num_time_channels).
+
+        If detectors is a slice or an array, the number of detectors will be
+        given by that slice or array. If detectors is None, all detectors,
+        including the "junk" detector 0, will be included.
+
+        The number of spectra will be determined by the current DAE TCB
+        settings. The returned array will not include the "junk" time-channel 0.
+
+        Args:
+            dae: The SimpleDae instance
+            detectors: a numpy array or slice describing detectors to get data from.
+                Default is all detectors.
+                Pass np.array([1]) to select detector 1.
+
+        """
+        if detectors is None:
+            detectors = slice(None)
+
+        (
+            raw_data,
+            num_periods,
+            num_spectra,
+            num_time_channels,
+            period,
+        ) = await asyncio.gather(
+            self._trigger_and_get_raw_specdata(),
+            self.number_of_periods.signal.get_value(),
+            self.num_spectra.get_value(),
+            self.num_time_channels.get_value(),
+            self.period_num.get_value(),
+        )
+
+        # Raw data includes time channel 0, which contains "junk" data.
+        # It gets unconditionally chopped out.
+        # Spectrum 0 is also present.
+        # This is left so that passing detectors=[1] selects spectrum 1.
+        data = raw_data.reshape((num_periods, num_spectra + 1, num_time_channels + 1))
+        return data[period - 1, detectors, 1:]
