@@ -1,0 +1,480 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ibex_bluesky_core.plans &mdash; ibex_bluesky_core 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+
+  
+    <link rel="shortcut icon" href="../../_static/favicon.svg"/>
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #343131" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            ibex_bluesky_core
+              <img src="../../_static/logo.svg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Tutorial</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial/overview.html">Getting started</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Devices</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../devices/blocks.html">Blocks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devices/dae.html">DAE (Data Acquisition Electronics)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Callbacks</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../callbacks/docs_logging_callback.html">Document Logging Callback</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../callbacks/file_writing.html">File writing callbacks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../callbacks/plotting.html">Plotting</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Fitting</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../fitting/fitting.html">Fitting Callback</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../fitting/livefit_logger.html">Fitting Files Callback</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../fitting/standard_fits.html">Standard Fitting Models</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Plan stubs</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../plan_stubs/external_code.html"><code class="docutils literal notranslate"><span class="pre">call_sync</span></code> (calling external code)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../plan_stubs/matplotlib_helpers.html"><span class="xref myst"><code class="docutils literal notranslate"><span class="pre">call_qt_aware</span></code></span> (matplotlib helpers)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../plan_stubs/polling.html">Continuous polling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../plan_stubs/redefining.html">Redefinition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../plan_stubs/user_input.html">User input helpers</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Plans</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../plans/plans.html">General Plans</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Plans (Reflectometry)</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../plans/reflectometry/autoalign.html">Auto-alignment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../plans/reflectometry/detector_mapping_alignment.html">Detector-mapping alignment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../plans/reflectometry/refl_param_scan.html">Reflectometry parameter scans</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Preprocessors</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../preprocessors/rbnumberpp.html">RB Number injection preprocessor</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Developer information</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../dev/create_a_release.html">Release Process</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../dev/logging.html">Logging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../dev/manual_system_testing.html">Manual system testing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../dev/set_up_dev_environment.html">Local development</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../dev/sphinx_notes.html">Notes on Sphinx and addons</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../dev/troubleshooting.html">Troubleshooting</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Architectural decisions</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../architectural_decisions/001-repo-structure.html">1. Repository structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../architectural_decisions/002-use-ophyd-async.html">2. Use <code class="docutils literal notranslate"><span class="pre">ophyd-async</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../architectural_decisions/003-run-in-process.html">3. Run in-process</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../architectural_decisions/004-use-scipp.html">4. Use <code class="docutils literal notranslate"><span class="pre">scipp</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../architectural_decisions/005-variance-addition.html">5. Variance addition to counts data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../architectural_decisions/006-where-to-put-code.html">6. Where to put code</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../_api.html">API</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #343131" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">ibex_bluesky_core</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">ibex_bluesky_core.plans</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for ibex_bluesky_core.plans</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Generic plans.&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Generator</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">bluesky.plans</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">bp</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">bluesky</span><span class="w"> </span><span class="kn">import</span> <span class="n">plan_stubs</span> <span class="k">as</span> <span class="n">bps</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">bluesky.protocols</span><span class="w"> </span><span class="kn">import</span> <span class="n">NamedMovable</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">bluesky.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">Msg</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib.axes</span><span class="w"> </span><span class="kn">import</span> <span class="n">Axes</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ophyd_async.plan_stubs</span><span class="w"> </span><span class="kn">import</span> <span class="n">ensure_connected</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibex_bluesky_core.callbacks</span><span class="w"> </span><span class="kn">import</span> <span class="n">ISISCallbacks</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibex_bluesky_core.devices.block</span><span class="w"> </span><span class="kn">import</span> <span class="n">BlockWriteConfig</span><span class="p">,</span> <span class="n">block_rw</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibex_bluesky_core.devices.simpledae</span><span class="w"> </span><span class="kn">import</span> <span class="n">monitor_normalising_dae</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibex_bluesky_core.fitting</span><span class="w"> </span><span class="kn">import</span> <span class="n">FitMethod</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibex_bluesky_core.plan_stubs</span><span class="w"> </span><span class="kn">import</span> <span class="n">call_qt_aware</span><span class="p">,</span> <span class="n">polling_plan</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibex_bluesky_core.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">NamedReadableAndMovable</span><span class="p">,</span> <span class="n">centred_pixel</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">ibex_bluesky_core.devices.simpledae</span><span class="w"> </span><span class="kn">import</span> <span class="n">SimpleDae</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;NamedReadableAndMovable&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;adaptive_scan&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;motor_adaptive_scan&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;motor_scan&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;polling_plan&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;scan&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+
+
+<div class="viewcode-block" id="scan">
+<a class="viewcode-back" href="../../generated/ibex_bluesky_core.plans.html#ibex_bluesky_core.plans.scan">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">scan</span><span class="p">(</span>  <span class="c1"># noqa: PLR0913</span>
+    <span class="n">dae</span><span class="p">:</span> <span class="s2">&quot;SimpleDae&quot;</span><span class="p">,</span>
+    <span class="n">block</span><span class="p">:</span> <span class="n">NamedMovable</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span>
+    <span class="n">start</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">stop</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">num</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">model</span><span class="p">:</span> <span class="n">FitMethod</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">periods</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">save_run</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">rel</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="n">Msg</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">ISISCallbacks</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Scan the DAE against a Movable.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        dae: the simple DAE object to use.</span>
+<span class="sd">        block: a movable to move during the scan.</span>
+<span class="sd">        start: the starting position.</span>
+<span class="sd">        stop: the final position.</span>
+<span class="sd">        num: the number of points to make.</span>
+<span class="sd">        model: the fit method to use.</span>
+<span class="sd">        periods: whether or not to use software periods.</span>
+<span class="sd">        save_run: whether or not to save run.</span>
+<span class="sd">        rel: whether or not to scan around the current position or use absolute positions.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">yield from</span> <span class="n">ensure_connected</span><span class="p">(</span><span class="n">dae</span><span class="p">,</span> <span class="n">block</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+
+    <span class="k">yield from</span> <span class="n">call_qt_aware</span><span class="p">(</span><span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">,</span> <span class="s2">&quot;all&quot;</span><span class="p">)</span>
+    <span class="n">_</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="k">yield from</span> <span class="n">call_qt_aware</span><span class="p">(</span><span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">)</span>
+
+    <span class="k">yield from</span> <span class="n">bps</span><span class="o">.</span><span class="n">mv</span><span class="p">(</span><span class="n">dae</span><span class="o">.</span><span class="n">number_of_periods</span><span class="p">,</span> <span class="n">num</span> <span class="k">if</span> <span class="n">periods</span> <span class="k">else</span> <span class="mi">1</span><span class="p">)</span>
+
+    <span class="n">icc</span> <span class="o">=</span> <span class="n">_set_up_fields_and_icc</span><span class="p">(</span><span class="n">block</span><span class="p">,</span> <span class="n">dae</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">periods</span><span class="p">,</span> <span class="n">save_run</span><span class="p">,</span> <span class="n">ax</span><span class="p">)</span>
+
+    <span class="nd">@icc</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_inner</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="n">Msg</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="n">rel</span><span class="p">:</span>
+            <span class="n">plan</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">rel_scan</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">plan</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">scan</span>
+        <span class="k">yield from</span> <span class="n">plan</span><span class="p">([</span><span class="n">dae</span><span class="p">],</span> <span class="n">block</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">num</span><span class="o">=</span><span class="n">num</span><span class="p">)</span>
+
+    <span class="k">yield from</span> <span class="n">_inner</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">icc</span></div>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_set_up_fields_and_icc</span><span class="p">(</span>
+    <span class="n">block</span><span class="p">:</span> <span class="n">NamedMovable</span><span class="p">[</span><span class="n">Any</span><span class="p">],</span>
+    <span class="n">dae</span><span class="p">:</span> <span class="s2">&quot;SimpleDae&quot;</span><span class="p">,</span>
+    <span class="n">model</span><span class="p">:</span> <span class="n">FitMethod</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">periods</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+    <span class="n">save_run</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+    <span class="n">ax</span><span class="p">:</span> <span class="n">Axes</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ISISCallbacks</span><span class="p">:</span>
+    <span class="n">fields</span> <span class="o">=</span> <span class="p">[</span><span class="n">block</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">periods</span><span class="p">:</span>
+        <span class="n">fields</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dae</span><span class="o">.</span><span class="n">period_num</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+    <span class="k">elif</span> <span class="n">save_run</span><span class="p">:</span>
+        <span class="n">fields</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dae</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">run_number</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+    <span class="n">icc</span> <span class="o">=</span> <span class="n">ISISCallbacks</span><span class="p">(</span>
+        <span class="n">y</span><span class="o">=</span><span class="n">dae</span><span class="o">.</span><span class="n">reducer</span><span class="o">.</span><span class="n">intensity</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>  <span class="c1"># type: ignore</span>
+        <span class="n">yerr</span><span class="o">=</span><span class="n">dae</span><span class="o">.</span><span class="n">reducer</span><span class="o">.</span><span class="n">intensity_stddev</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>  <span class="c1"># type: ignore</span>
+        <span class="n">x</span><span class="o">=</span><span class="n">block</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+        <span class="n">measured_fields</span><span class="o">=</span><span class="n">fields</span><span class="p">,</span>
+        <span class="n">fit</span><span class="o">=</span><span class="n">model</span><span class="p">,</span>
+        <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">icc</span>
+
+
+<div class="viewcode-block" id="adaptive_scan">
+<a class="viewcode-back" href="../../generated/ibex_bluesky_core.plans.html#ibex_bluesky_core.plans.adaptive_scan">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">adaptive_scan</span><span class="p">(</span>  <span class="c1"># noqa: PLR0913, PLR0917</span>
+    <span class="n">dae</span><span class="p">:</span> <span class="s2">&quot;SimpleDae&quot;</span><span class="p">,</span>
+    <span class="n">block</span><span class="p">:</span> <span class="n">NamedMovable</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span>
+    <span class="n">start</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">stop</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">min_step</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">max_step</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">target_delta</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">model</span><span class="p">:</span> <span class="n">FitMethod</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">periods</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">save_run</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">rel</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="n">Msg</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">ISISCallbacks</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Scan the DAE against a block using an adaptive scan.</span>
+
+<span class="sd">    This will scan coarsely until target_delta occurs, then it will go back and perform finer scans.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        dae: the simple DAE object to use.</span>
+<span class="sd">        block: a movable to move during the scan.</span>
+<span class="sd">        start: the starting position of the block.</span>
+<span class="sd">        stop: the final position of the block.</span>
+<span class="sd">        min_step: smallest step for fine regions.</span>
+<span class="sd">        max_step: largest step for coarse regions.</span>
+<span class="sd">        target_delta: desired fractional change in detector signal between steps</span>
+<span class="sd">        model: the fit method to use.</span>
+<span class="sd">        periods: whether or not to use software periods.</span>
+<span class="sd">        save_run: whether or not to save run.</span>
+<span class="sd">        rel: whether or not to scan around the current position or use absolute positions.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        an :obj:`ibex_bluesky_core.callbacks.ISISCallbacks` instance.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">yield from</span> <span class="n">ensure_connected</span><span class="p">(</span><span class="n">dae</span><span class="p">,</span> <span class="n">block</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+    <span class="k">if</span> <span class="n">periods</span><span class="p">:</span>
+        <span class="n">max_periods</span> <span class="o">=</span> <span class="k">yield from</span> <span class="n">bps</span><span class="o">.</span><span class="n">rd</span><span class="p">(</span><span class="n">dae</span><span class="o">.</span><span class="n">max_periods</span><span class="p">)</span>
+        <span class="k">yield from</span> <span class="n">bps</span><span class="o">.</span><span class="n">mv</span><span class="p">(</span><span class="n">dae</span><span class="o">.</span><span class="n">number_of_periods</span><span class="p">,</span> <span class="n">max_periods</span><span class="p">)</span>
+
+    <span class="k">yield from</span> <span class="n">call_qt_aware</span><span class="p">(</span><span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">,</span> <span class="s2">&quot;all&quot;</span><span class="p">)</span>
+    <span class="n">_</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="k">yield from</span> <span class="n">call_qt_aware</span><span class="p">(</span><span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">)</span>
+
+    <span class="n">icc</span> <span class="o">=</span> <span class="n">_set_up_fields_and_icc</span><span class="p">(</span><span class="n">block</span><span class="p">,</span> <span class="n">dae</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">periods</span><span class="p">,</span> <span class="n">save_run</span><span class="p">,</span> <span class="n">ax</span><span class="p">)</span>
+
+    <span class="nd">@icc</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_inner</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="n">Msg</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="n">rel</span><span class="p">:</span>
+            <span class="n">plan</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">rel_adaptive_scan</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">plan</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">adaptive_scan</span>
+        <span class="k">yield from</span> <span class="n">plan</span><span class="p">(</span>
+            <span class="n">detectors</span><span class="o">=</span><span class="p">[</span><span class="n">dae</span><span class="p">],</span>
+            <span class="n">target_field</span><span class="o">=</span><span class="n">dae</span><span class="o">.</span><span class="n">reducer</span><span class="o">.</span><span class="n">intensity</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>  <span class="c1"># type: ignore</span>
+            <span class="n">motor</span><span class="o">=</span><span class="n">block</span><span class="p">,</span>
+            <span class="n">start</span><span class="o">=</span><span class="n">start</span><span class="p">,</span>
+            <span class="n">stop</span><span class="o">=</span><span class="n">stop</span><span class="p">,</span>
+            <span class="n">min_step</span><span class="o">=</span><span class="n">min_step</span><span class="p">,</span>
+            <span class="n">max_step</span><span class="o">=</span><span class="n">max_step</span><span class="p">,</span>
+            <span class="n">target_delta</span><span class="o">=</span><span class="n">target_delta</span><span class="p">,</span>
+            <span class="n">backstep</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="p">)</span>  <span class="c1"># type: ignore</span>
+
+    <span class="k">yield from</span> <span class="n">_inner</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">icc</span></div>
+
+
+
+<div class="viewcode-block" id="motor_scan">
+<a class="viewcode-back" href="../../generated/ibex_bluesky_core.plans.html#ibex_bluesky_core.plans.motor_scan">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">motor_scan</span><span class="p">(</span>  <span class="c1"># noqa: PLR0913</span>
+    <span class="n">block_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">start</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">stop</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">num</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">frames</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">det</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">mon</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">model</span><span class="p">:</span> <span class="n">FitMethod</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">pixel_range</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="n">periods</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">save_run</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">rel</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="n">Msg</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">ISISCallbacks</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Wrap our scan() plan and create a block_rw and a DAE object.</span>
+
+<span class="sd">    This essentially uses the same mechanism as a waitfor_move by using the global &quot;moving&quot; flag</span>
+<span class="sd">    to determine if motors are still moving after starting a move.</span>
+<span class="sd">    This is really just a wrapper around :func:`ibex_bluesky_core.plans.scan`</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        block_name: the name of the block to scan.</span>
+<span class="sd">        start: the starting position of the block.</span>
+<span class="sd">        stop: the final position of the block.</span>
+<span class="sd">        num: the number of points to make.</span>
+<span class="sd">        frames: the number of frames to wait for when scanning.</span>
+<span class="sd">        det: the detector number.</span>
+<span class="sd">        mon: the monitor number.</span>
+<span class="sd">        pixel_range: the range of pixels to scan over, using `det` as a centred pixel.</span>
+<span class="sd">        model: the fit method to use.</span>
+<span class="sd">        periods: whether or not to use software periods.</span>
+<span class="sd">        save_run: whether or not to save run.</span>
+<span class="sd">        rel: whether or not to scan around the current position or use absolute positions.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        an :obj:`ibex_bluesky_core.callbacks.ISISCallbacks` instance.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">block</span> <span class="o">=</span> <span class="n">block_rw</span><span class="p">(</span>
+        <span class="nb">float</span><span class="p">,</span>
+        <span class="n">block_name</span><span class="o">=</span><span class="n">block_name</span><span class="p">,</span>
+        <span class="n">write_config</span><span class="o">=</span><span class="n">BlockWriteConfig</span><span class="p">(</span><span class="n">use_global_moving_flag</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">det_pixels</span> <span class="o">=</span> <span class="n">centred_pixel</span><span class="p">(</span><span class="n">det</span><span class="p">,</span> <span class="n">pixel_range</span><span class="p">)</span>
+    <span class="n">dae</span> <span class="o">=</span> <span class="n">monitor_normalising_dae</span><span class="p">(</span>
+        <span class="n">det_pixels</span><span class="o">=</span><span class="n">det_pixels</span><span class="p">,</span> <span class="n">frames</span><span class="o">=</span><span class="n">frames</span><span class="p">,</span> <span class="n">periods</span><span class="o">=</span><span class="n">periods</span><span class="p">,</span> <span class="n">save_run</span><span class="o">=</span><span class="n">save_run</span><span class="p">,</span> <span class="n">monitor</span><span class="o">=</span><span class="n">mon</span>
+    <span class="p">)</span>
+
+    <span class="k">return</span> <span class="p">(</span>
+        <span class="k">yield from</span> <span class="n">scan</span><span class="p">(</span>
+            <span class="n">dae</span><span class="o">=</span><span class="n">dae</span><span class="p">,</span>
+            <span class="n">block</span><span class="o">=</span><span class="n">block</span><span class="p">,</span>
+            <span class="n">start</span><span class="o">=</span><span class="n">start</span><span class="p">,</span>
+            <span class="n">stop</span><span class="o">=</span><span class="n">stop</span><span class="p">,</span>
+            <span class="n">num</span><span class="o">=</span><span class="n">num</span><span class="p">,</span>
+            <span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span>
+            <span class="n">save_run</span><span class="o">=</span><span class="n">save_run</span><span class="p">,</span>
+            <span class="n">periods</span><span class="o">=</span><span class="n">periods</span><span class="p">,</span>
+            <span class="n">rel</span><span class="o">=</span><span class="n">rel</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="motor_adaptive_scan">
+<a class="viewcode-back" href="../../generated/ibex_bluesky_core.plans.html#ibex_bluesky_core.plans.motor_adaptive_scan">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">motor_adaptive_scan</span><span class="p">(</span>  <span class="c1"># noqa: PLR0913</span>
+    <span class="n">block_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">start</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">stop</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">min_step</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">max_step</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">target_delta</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">frames</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">det</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">mon</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">model</span><span class="p">:</span> <span class="n">FitMethod</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">pixel_range</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="n">periods</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">save_run</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">rel</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="n">Msg</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">ISISCallbacks</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Wrap adaptive_scan() plan and create a block_rw and a DAE object.</span>
+
+<span class="sd">    This essentially uses the same mechanism as a waitfor_move by using the global &quot;moving&quot; flag</span>
+<span class="sd">    to determine if motors are still moving after starting a move.</span>
+<span class="sd">    This is really just a wrapper around :func:`ibex_bluesky_core.plans.adaptive_scan`</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        block_name: the name of the block to scan.</span>
+<span class="sd">        start: the starting position of the block.</span>
+<span class="sd">        stop: the final position of the block.</span>
+<span class="sd">        min_step: smallest step for fine regions.</span>
+<span class="sd">        max_step: largest step for coarse regions.</span>
+<span class="sd">        target_delta: desired fractional change in detector signal between steps.</span>
+<span class="sd">        frames: the number of frames to wait for when scanning.</span>
+<span class="sd">        det: the detector number.</span>
+<span class="sd">        mon: the monitor number.</span>
+<span class="sd">        pixel_range: the range of pixels to scan over, using `det` as a centred pixel.</span>
+<span class="sd">        model: the fit method to use.</span>
+<span class="sd">        periods: whether or not to use software periods.</span>
+<span class="sd">        save_run: whether or not to save run.</span>
+<span class="sd">        rel: whether or not to scan around the current position or use absolute positions.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        an :obj:`ibex_bluesky_core.callbacks.ISISCallbacks` instance.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">block</span> <span class="o">=</span> <span class="n">block_rw</span><span class="p">(</span>
+        <span class="nb">float</span><span class="p">,</span>
+        <span class="n">block_name</span><span class="o">=</span><span class="n">block_name</span><span class="p">,</span>
+        <span class="n">write_config</span><span class="o">=</span><span class="n">BlockWriteConfig</span><span class="p">(</span><span class="n">use_global_moving_flag</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">det_pixels</span> <span class="o">=</span> <span class="n">centred_pixel</span><span class="p">(</span><span class="n">det</span><span class="p">,</span> <span class="n">pixel_range</span><span class="p">)</span>
+    <span class="n">dae</span> <span class="o">=</span> <span class="n">monitor_normalising_dae</span><span class="p">(</span>
+        <span class="n">det_pixels</span><span class="o">=</span><span class="n">det_pixels</span><span class="p">,</span> <span class="n">frames</span><span class="o">=</span><span class="n">frames</span><span class="p">,</span> <span class="n">periods</span><span class="o">=</span><span class="n">periods</span><span class="p">,</span> <span class="n">save_run</span><span class="o">=</span><span class="n">save_run</span><span class="p">,</span> <span class="n">monitor</span><span class="o">=</span><span class="n">mon</span>
+    <span class="p">)</span>
+
+    <span class="k">return</span> <span class="p">(</span>
+        <span class="k">yield from</span> <span class="n">adaptive_scan</span><span class="p">(</span>
+            <span class="n">dae</span><span class="o">=</span><span class="n">dae</span><span class="p">,</span>
+            <span class="n">block</span><span class="o">=</span><span class="n">block</span><span class="p">,</span>
+            <span class="n">start</span><span class="o">=</span><span class="n">start</span><span class="p">,</span>
+            <span class="n">stop</span><span class="o">=</span><span class="n">stop</span><span class="p">,</span>
+            <span class="n">min_step</span><span class="o">=</span><span class="n">min_step</span><span class="p">,</span>
+            <span class="n">max_step</span><span class="o">=</span><span class="n">max_step</span><span class="p">,</span>
+            <span class="n">target_delta</span><span class="o">=</span><span class="n">target_delta</span><span class="p">,</span>
+            <span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span>
+            <span class="n">save_run</span><span class="o">=</span><span class="n">save_run</span><span class="p">,</span>
+            <span class="n">rel</span><span class="o">=</span><span class="n">rel</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="p">)</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
