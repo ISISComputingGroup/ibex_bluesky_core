@@ -365,6 +365,7 @@ class ChainedLiveFit(CallbackBase):
                     init_guess = livefit.result.params
 
         from ibex_bluesky_core.callbacks import show_plot  # noqa: PLC0415
+
         show_plot()
 
         return doc
