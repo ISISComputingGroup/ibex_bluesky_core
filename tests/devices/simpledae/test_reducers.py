@@ -20,7 +20,7 @@ from ibex_bluesky_core.devices.simpledae import (
     tof_bounded_spectra,
     wavelength_bounded_spectra,
 )
-from ibex_bluesky_core.devices.simpledae._reducers import polarization, DSpacingMappingReducer
+from ibex_bluesky_core.devices.simpledae._reducers import DSpacingMappingReducer, polarization
 
 
 @pytest.fixture
