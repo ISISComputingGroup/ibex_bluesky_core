@@ -20,7 +20,7 @@ from ibex_bluesky_core.callbacks._document_logger import DocLoggingCallback
 from ibex_bluesky_core.callbacks._file_logger import (
     HumanReadableFileCallback,
 )
-from ibex_bluesky_core.callbacks._fitting import LiveFit, LiveFitLogger
+from ibex_bluesky_core.callbacks._fitting import ChainedLiveFit, LiveFit, LiveFitLogger
 from ibex_bluesky_core.callbacks._plotting import LivePColorMesh, LivePlot, PlotPNGSaver, show_plot
 from ibex_bluesky_core.callbacks._utils import get_default_output_path
 from ibex_bluesky_core.fitting import FitMethod
@@ -32,6 +32,7 @@ logger = logging.getLogger(__name__)
 
 
 __all__ = [
+    "ChainedLiveFit",
     "DocLoggingCallback",
     "HumanReadableFileCallback",
     "ISISCallbacks",

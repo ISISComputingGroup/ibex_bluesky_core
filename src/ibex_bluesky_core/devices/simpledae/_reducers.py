@@ -5,7 +5,6 @@ import logging
 import math
 from abc import ABC, abstractmethod
 from collections.abc import Awaitable, Callable, Collection, Sequence
-from typing import TYPE_CHECKING
 
 import numpy as np
 import numpy.typing as npt
@@ -21,13 +20,10 @@ from ophyd_async.core import (
 from scippneutron import conversion
 from scippneutron.conversion.tof import dspacing_from_tof
 
-from ibex_bluesky_core.devices.dae import DaeSpectra
+from ibex_bluesky_core.devices.dae import Dae, DaeSpectra
 from ibex_bluesky_core.devices.simpledae._strategies import Reducer
 
 logger = logging.getLogger(__name__)
-
-if TYPE_CHECKING:
-    from ibex_bluesky_core.devices.simpledae import SimpleDae
 
 
 INTENSITY_PRECISION = 6
@@ -168,10 +164,10 @@ class ScalarNormalizer(Reducer, StandardReadable, ABC):
         super().__init__(name="")
 
     @abstractmethod
-    def denominator(self, dae: "SimpleDae") -> SignalR[int] | SignalR[float]:
+    def denominator(self, dae: Dae) -> SignalR[int] | SignalR[float]:
         """Get the normalization denominator, which is assumed to be a scalar signal."""
 
-    async def reduce_data(self, dae: "SimpleDae") -> None:
+    async def reduce_data(self, dae: Dae) -> None:
         """Apply the normalization."""
         logger.info("starting reduction")
         summed_counts, denominator = await asyncio.gather(
@@ -195,7 +191,7 @@ class ScalarNormalizer(Reducer, StandardReadable, ABC):
 
         logger.info("reduction complete")
 
-    def additional_readable_signals(self, dae: "SimpleDae") -> list[Device]:
+    def additional_readable_signals(self, dae: Dae) -> list[Device]:
         """Publish interesting signals derived or used by this reducer."""
         return [
             self.det_counts,
@@ -209,7 +205,7 @@ class ScalarNormalizer(Reducer, StandardReadable, ABC):
 class PeriodGoodFramesNormalizer(ScalarNormalizer):
     """Sum a set of user-specified spectra, then normalize by period good frames."""
 
-    def denominator(self, dae: "SimpleDae") -> SignalR[int]:
+    def denominator(self, dae: Dae) -> SignalR[int]:
         """Get normalization denominator (period good frames)."""
         return dae.period.good_frames
 
@@ -217,7 +213,7 @@ class PeriodGoodFramesNormalizer(ScalarNormalizer):
 class GoodFramesNormalizer(ScalarNormalizer):
     """Sum a set of user-specified spectra, then normalize by total good frames."""
 
-    def denominator(self, dae: "SimpleDae") -> SignalR[int]:
+    def denominator(self, dae: Dae) -> SignalR[int]:
         """Get normalization denominator (total good frames)."""
         return dae.good_frames
 
@@ -279,7 +275,7 @@ class MonitorNormalizer(Reducer, StandardReadable):
 
         super().__init__(name="")
 
-    async def reduce_data(self, dae: "SimpleDae") -> None:
+    async def reduce_data(self, dae: Dae) -> None:
         """Apply the normalization."""
         logger.info("starting reduction")
         detector_counts, monitor_counts = await asyncio.gather(
@@ -308,7 +304,7 @@ class MonitorNormalizer(Reducer, StandardReadable):
 
         logger.info("reduction complete")
 
-    def additional_readable_signals(self, dae: "SimpleDae") -> list[Device]:
+    def additional_readable_signals(self, dae: Dae) -> list[Device]:
         """Publish interesting signals derived or used by this reducer."""
         return [
             self.det_counts,
@@ -369,7 +365,16 @@ class PeriodSpecIntegralsReducer(Reducer, StandardReadable):
         """Get the monitors used by this reducer."""
         return self._monitors
 
-    async def reduce_data(self, dae: "SimpleDae") -> None:
+    async def _trigger_and_get_specdata(self, dae: Dae) -> npt.NDArray[np.int32]:
+        await dae.controls.update_run.trigger()
+        await dae.raw_spec_data_proc.set(1, wait=True)
+        (raw_data, nord) = await asyncio.gather(
+            dae.raw_spec_data.get_value(),
+            dae.raw_spec_data_nord.get_value(),
+        )
+        return raw_data[:nord]
+
+    async def reduce_data(self, dae: Dae) -> None:
         """Expose detector & monitor integrals.
 
         After this method returns, it is valid to read from det_integrals and
@@ -397,7 +402,7 @@ class PeriodSpecIntegralsReducer(Reducer, StandardReadable):
 
         logger.info("reduction complete")
 
-    def additional_readable_signals(self, dae: "SimpleDae") -> list[Device]:
+    def additional_readable_signals(self, dae: Dae) -> list[Device]:
         """Publish interesting signals derived or used by this reducer."""
         return [
             self.mon_integrals,
@@ -475,7 +480,7 @@ class DSpacingMappingReducer(Reducer, StandardReadable):
 
         super().__init__(name="")
 
-    async def reduce_data(self, dae: "SimpleDae") -> None:
+    async def reduce_data(self, dae: Dae) -> None:
         """Expose calculated d-spacing.
 
         This will be in units of counts, which may be fractional due to rebinning.
@@ -521,6 +526,6 @@ class DSpacingMappingReducer(Reducer, StandardReadable):
         self._dspacing_setter(summed_data.values)
         logger.info("reduction complete")
 
-    def additional_readable_signals(self, dae: "SimpleDae") -> list[Device]:
+    def additional_readable_signals(self, dae: Dae) -> list[Device]:
         """Publish interesting signals derived or used by this reducer."""
         return [self.dspacing]
