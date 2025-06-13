@@ -25,7 +25,7 @@ Examples of devices and where we would put them under this model:
 
 ### `ibex_bluesky_core` devices
 - `BlockRw` and `SimpleDae`: `ibex_bluesky_core` as it's completely general / useful to all beamlines
-- `ReflParameter`: in `ibex_bluesky_core.devices.reflectrometry` because it's useful across all reflectometers
+- `ReflParameter`: in `ibex_bluesky_core.devices.reflectometry` because it's useful across all reflectometers
 - `Danfysik`: Try to push down "special" logic (i.e. polarity switching) into the IOC so that a standard `block_rw` works. Otherwise put in `ibex_bluesky_core.devices`
 
 ### `inst` scripts area devices

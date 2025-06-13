@@ -40,8 +40,6 @@ These take "devices" so you can pass your own DAE object and a movable/readable 
 
 [`adaptive_scan`](ibex_bluesky_core.plans.adaptive_scan) - this is for an adaptive/relative-adaptive scan.
 
-[`polling_plan`](ibex_bluesky_core.plans.polling_plan) - this is used for moving a motor and dropping updates from a "readable" if no motor updates are provided. An example of this is a laser reading which updates much more quickly than a motor might register it's moved, so the laser readings are not really useful information.
-
 An example of using one of these could be: 
 
 ```python
