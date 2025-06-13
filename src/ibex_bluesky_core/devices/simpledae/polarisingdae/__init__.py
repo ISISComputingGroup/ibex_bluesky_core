@@ -247,4 +247,5 @@ def polarising_dae(  # noqa: PLR0913, PLR0917
         flipper=flipper,
         flipper_states=flipper_states,
     )
+
     return dae

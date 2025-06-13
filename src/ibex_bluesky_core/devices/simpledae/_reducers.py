@@ -110,12 +110,9 @@ def wavelength_bounded_spectra(
         summed_counts = sc.scalar(value=0, unit=sc.units.counts, dtype="float64")
         for spec in asyncio.as_completed([s.read_spectrum_dataarray() for s in spectra]):
             wavelength_bounded_spectra = await spec
-            print(wavelength_bounded_spectra)
-            print(total_flight_path_length)
             wavelength_coord = conversion.tof.wavelength_from_tof(
                 tof=wavelength_bounded_spectra.coords["tof"], Ltotal=total_flight_path_length
             )
-            print(wavelength_coord)
             wavelength_bounded_spectra.coords["tof"] = wavelength_coord
             summed_counts += wavelength_bounded_spectra.rebin({"tof": bounds}).sum()
         return summed_counts

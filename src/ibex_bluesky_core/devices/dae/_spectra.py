@@ -135,6 +135,7 @@ class WavelengthBand(StandardReadable):
     def __init__(self, *, name: str = "") -> None:
         self.det_counts, self._det_counts_setter = soft_signal_r_and_setter(float, 0.0)
         self.mon_counts, self._mon_counts_setter = soft_signal_r_and_setter(float, 0.0)
+
         self.intensity, self._intensity_setter = soft_signal_r_and_setter(float, 0.0)
         self.det_counts_stddev, self._det_counts_stddev_setter = soft_signal_r_and_setter(
             float, 0.0
@@ -172,18 +173,19 @@ class PolarisedWavelengthBand(StandardReadable):
     """Subdevice that holds polarisation info for two wavelength bands."""
 
     def __init__(self, *, name: str = "", intensity_precision: int = 6) -> None:
-        self.polarisation, self._polarisation_setter = soft_signal_r_and_setter(
-            float, 0.0, precision=intensity_precision
-        )
-        self.polarisation_stddev, self._polarisation_stddev_setter = soft_signal_r_and_setter(
-            float, 0.0, precision=intensity_precision
-        )
-        self.polarisation_ratio, self._polarisation_ratio_setter = soft_signal_r_and_setter(
-            float, 0.0, precision=intensity_precision
-        )
-        self.polarisation_ratio_stddev, self._polarisation_ratio_stddev_setter = (
-            soft_signal_r_and_setter(float, 0.0, precision=intensity_precision)
-        )
+        with self.add_children_as_readables():
+            self.polarisation, self._polarisation_setter = soft_signal_r_and_setter(
+                float, 0.0, precision=intensity_precision
+            )
+            self.polarisation_stddev, self._polarisation_stddev_setter = soft_signal_r_and_setter(
+                float, 0.0, precision=intensity_precision
+            )
+            self.polarisation_ratio, self._polarisation_ratio_setter = soft_signal_r_and_setter(
+                float, 0.0, precision=intensity_precision
+            )
+            self.polarisation_ratio_stddev, self._polarisation_ratio_stddev_setter = (
+                soft_signal_r_and_setter(float, 0.0, precision=intensity_precision)
+            )
 
         self.polarisation.set_name("polarisation")
         self.polarisation_stddev.set_name("polarisation_stddev")
