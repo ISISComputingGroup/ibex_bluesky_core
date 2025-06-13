@@ -37,10 +37,14 @@ VARIANCE_ADDITION = 0.5
 async def sum_spectra(spectra: Collection[DaeSpectra]) -> sc.Variable | sc.DataArray:
     """Read and sum a number of spectra from the DAE.
 
-    Returns a scipp scalar, which has .value and .variance properties for accessing the sum
-    and variance respectively of the summed counts.
+    Args:
+        spectra: a Collection type object of DAE spectra :py:obj:`DaeSpectra`
 
-    More info on scipp scalars can be found here: https://scipp.github.io/generated/functions/scipp.scalar.html
+    Returns:
+        scipp :external+scipp:py:obj:`Variable <scipp.Variable>`
+        or :external+scipp:py:obj:`DataArray <scipp.DataArray>` describing
+        the sum of the provided spectra.
+
     """
     logger.info("Summing %d spectra using scipp", len(spectra))
     summed_counts = sc.scalar(value=0, unit=sc.units.counts, dtype="float64")
@@ -59,9 +63,9 @@ def tof_bounded_spectra(
         bounds: A scipp :external+scipp:py:obj:`array <scipp.array>` of size 2, no variances, unit
             of us, where the second element must be larger than the first.
 
-
     :rtype:
         scipp :external+scipp:py:obj:`scalar <scipp.scalar>`
+
     Returns a scipp :external+scipp:py:obj:`scalar <scipp.scalar>`, which has .value and .variance
     properties for accessing the sum and variance respectively of the summed counts.
 
@@ -145,17 +149,17 @@ def polarization(
         b: scipp :external+scipp:py:obj:`Variable <scipp.Variable>`
             or :external+scipp:py:obj:`DataArray <scipp.DataArray>`
 
-    :return:
-        polarization_value: (a - b) / (a + b)
-
-    :rtype:
-        scipp :external+scipp:py:obj:`Variable <scipp.Variable>`
+    Returns:
+        polarization, ``(a - b) / (a + b)``, as a scipp
+        :external+scipp:py:obj:`Variable <scipp.Variable>`
         or :external+scipp:py:obj:`DataArray <scipp.DataArray>`
 
     On SANS instruments e.g. LARMOR, A and B correspond to intensity in different DAE
     periods (before/after switching a flipper) and the output is interpreted as a neutron
     polarization ratio.
-    On reflectometry instruments e.g. POLREF, the situation is the same as on LARMOR
+
+    On reflectometry instruments e.g. POLREF, the situation is the same as on LARMOR.
+
     On muon instruments, A and B correspond to measuring from forward/backward detector
     banks, and the output is interpreted as a muon asymmetry.
 
