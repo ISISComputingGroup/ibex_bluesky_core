@@ -318,7 +318,7 @@ class DampedOsc(Fit):
                 "center": lmfit.Parameter("center", peak),
                 "amp": lmfit.Parameter("amp", np.max(y)),
                 "freq": lmfit.Parameter("freq", np.pi / np.abs(peak - valley)),
-                "width": lmfit.Parameter("width", max(x) - min(x)),
+                "width": lmfit.Parameter("width", np.max(x) - np.min(x)),
             }
 
             return init_guess
@@ -429,8 +429,8 @@ class ERF(Fit):
         ) -> dict[str, lmfit.Parameter]:
             init_guess = {
                 "cen": lmfit.Parameter("cen", np.mean(x)),
-                "stretch": lmfit.Parameter("stretch", (max(x) - min(x)) / 2),
-                "scale": lmfit.Parameter("scale", (max(y) - min(y)) / 2),
+                "stretch": lmfit.Parameter("stretch", (np.max(x) - np.min(x)) / 2),
+                "scale": lmfit.Parameter("scale", (np.max(y) - np.min(y)) / 2),
                 "background": lmfit.Parameter("background", np.mean(y)),
             }
 
@@ -466,8 +466,8 @@ class ERFC(Fit):
         ) -> dict[str, lmfit.Parameter]:
             init_guess = {
                 "cen": lmfit.Parameter("cen", np.mean(x)),
-                "stretch": lmfit.Parameter("stretch", (max(x) - min(x)) / 2),
-                "scale": lmfit.Parameter("scale", (max(y) - min(y)) / 2),
+                "stretch": lmfit.Parameter("stretch", (np.max(x) - np.min(x)) / 2),
+                "scale": lmfit.Parameter("scale", (np.max(y) - np.min(y)) / 2),
                 "background": lmfit.Parameter("background", np.min(y)),
             }
 

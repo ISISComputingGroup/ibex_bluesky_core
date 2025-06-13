@@ -4,9 +4,7 @@ import csv
 import logging
 import os
 import warnings
-from datetime import datetime
 from pathlib import Path
-from zoneinfo import ZoneInfo
 
 import numpy as np
 from bluesky.callbacks import CallbackBase
@@ -16,10 +14,9 @@ from event_model import Event, RunStart, RunStop
 
 from ibex_bluesky_core.callbacks._utils import (
     DATA,
-    RB,
-    TIME,
     UID,
-    UNKNOWN_RB,
+    _get_rb_num,
+    format_time,
     get_default_output_path,
     get_instrument,
 )
@@ -149,7 +146,7 @@ class LiveFitLogger(CallbackBase):
 
         self.livefit = livefit
         self.postfix = postfix
-        self.output_dir = Path(output_dir or get_default_output_path() / "fitting")
+        self.output_dir = Path(output_dir or get_default_output_path())
         self.current_start_document: str | None = None
 
         self.x = x
@@ -167,16 +164,13 @@ class LiveFitLogger(CallbackBase):
             doc (RunStart): The start bluesky document.
 
         """
-        datetime_obj = datetime.fromtimestamp(doc[TIME])
-        title_format_datetime = datetime_obj.astimezone(ZoneInfo("UTC")).strftime(
-            "%Y-%m-%d_%H-%M-%S"
-        )
+        title_format_datetime = format_time(doc)
         self.output_dir.mkdir(parents=True, exist_ok=True)
         self.current_start_document = doc[UID]
         file = f"{get_instrument()}_{self.x}_{self.y}_{title_format_datetime}Z{self.postfix}.txt"
-        rb_num = doc.get(RB, UNKNOWN_RB)
-        if rb_num == UNKNOWN_RB:
-            logger.warning('No RB number found, will save to "%s"', UNKNOWN_RB)
+
+        rb_num = _get_rb_num(doc)
+
         self.filename = self.output_dir / f"{rb_num}" / file
 
     def event(self, doc: Event) -> Event:

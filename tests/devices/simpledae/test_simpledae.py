@@ -117,7 +117,7 @@ async def test_simpledae_publishes_interesting_signals_in_read():
     assert len(reading) == 2
 
 
-def test_monitor_normalising_dae_sets_up_periods_correctly():
+async def test_monitor_normalising_dae_sets_up_periods_correctly():
     det_pixels = [1, 2, 3]
     frames = 200
     monitor = 20
@@ -128,11 +128,11 @@ def test_monitor_normalising_dae_sets_up_periods_correctly():
         )
 
     assert isinstance(dae.waiter, PeriodGoodFramesWaiter)
-    assert dae.waiter._value == frames
+    assert await dae.waiter.finish_wait_at.get_value() == frames
     assert isinstance(dae.controller, PeriodPerPointController)
 
 
-def test_monitor_normalising_dae_sets_up_single_period_correctly():
+async def test_monitor_normalising_dae_sets_up_single_period_correctly():
     det_pixels = [2, 3, 4]
     frames = 400
     monitor = 20
@@ -143,7 +143,7 @@ def test_monitor_normalising_dae_sets_up_single_period_correctly():
         )
 
     assert isinstance(dae.waiter, GoodFramesWaiter)
-    assert dae.waiter._value == frames
+    assert await dae.waiter.finish_wait_at.get_value() == frames
     assert isinstance(dae.controller, RunPerPointController)
 
 

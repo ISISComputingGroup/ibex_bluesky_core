@@ -32,6 +32,10 @@ set "EPICS_CA_AUTO_ADDR_LIST=NO"
 set IBEX_BLUESKY_CORE_LOGS=c:\instrument\var\bluesky\tmp
 set IBEX_BLUESKY_CORE_OUTPUT=c:\instrument\var\bluesky\tmp
 ```
+- Checking the prerequisites:
+
+Ensure that any prerequisites are met before running the selected test. These can be located within the .py file.
+
 - Run the test using:
 ```
 python c:\instrument\dev\ibex_bluesky_core\manual_system_tests\the_test.py

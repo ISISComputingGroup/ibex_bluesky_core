@@ -20,7 +20,7 @@ from ibex_bluesky_core.devices.simpledae import (
     tof_bounded_spectra,
     wavelength_bounded_spectra,
 )
-from ibex_bluesky_core.devices.simpledae._reducers import polarization
+from ibex_bluesky_core.devices.simpledae._reducers import polarization, DSpacingMappingReducer
 
 
 @pytest.fixture
@@ -1126,3 +1126,100 @@ def test_period_spec_integrals_reducer_publishes_signals(simpledae: SimpleDae):
 
     np.testing.assert_equal(reducer.detectors, np.array([]))
     np.testing.assert_equal(reducer.monitors, np.array([]))
+
+
+async def test_dspacing_reducer(simpledae: SimpleDae):
+    reducer = DSpacingMappingReducer(
+        prefix="UNITTEST:",
+        detectors=np.array([1, 2]),
+        dspacing_bin_edges=sc.array(
+            dims=["tof"], values=[0, 0.25, 10000000], unit=sc.units.angstrom, dtype="float64"
+        ),
+        l_total=sc.array(
+            dims=["spec"], values=[0.00001, 1000000], unit=sc.units.m, dtype="float64"
+        ),
+        two_theta=sc.array(
+            dims=["spec"], values=[math.pi / 4, math.pi / 2], unit=sc.units.rad, dtype="float64"
+        ),
+    )
+    await reducer.connect(mock=True)
+
+    set_mock_value(simpledae.number_of_periods.signal, 1)
+    set_mock_value(simpledae.num_spectra, 2)
+    set_mock_value(simpledae.num_time_channels, 2)
+
+    set_mock_value(simpledae.period_num, 1)
+
+    set_mock_value(simpledae.raw_spec_data_nord, (3 + 1) * (4 + 1))
+    set_mock_value(
+        simpledae.raw_spec_data,
+        np.array(
+            [
+                # Period 1
+                [
+                    # Note: every time channel starts with the "junk" time bin zero.
+                    # Spectrum 0 (junk data spectrum)
+                    [987654321, 987654321, 987654321],
+                    # Spectrum 1
+                    [987654321, 12, 34],
+                    # Spectrum 2
+                    [987654321, 567, 890],
+                ],
+            ]
+        ),
+    )
+
+    set_mock_value(reducer._first_det.counts, np.zeros(2, dtype=np.float32))
+    set_mock_value(reducer._first_det.counts_size, 2)
+    set_mock_value(reducer._first_det.tof_edges, np.linspace(1, 1000, num=3, dtype=np.float32))
+    set_mock_value(reducer._first_det.tof_edges_size, 3)
+    reducer._first_det.tof_edges.describe = AsyncMock(
+        return_value={reducer._first_det.tof_edges.name: {"units": "us"}}
+    )
+
+    await reducer.reduce_data(simpledae)
+
+    np.testing.assert_almost_equal(
+        await reducer.dspacing.get_value(),
+        np.array([567 + 890, 12 + 34], dtype=np.float64),
+        decimal=5,
+    )
+
+
+def test_dspacing_reducer_publishes_signals(simpledae: SimpleDae):
+    reducer = DSpacingMappingReducer(
+        prefix="",
+        detectors=np.array([1], dtype=np.int64),
+        l_total=sc.array(dims=["spec"], values=[1], unit=sc.units.m, dtype="float64"),
+        two_theta=sc.array(dims=["spec"], values=[1], unit=sc.units.rad, dtype="float64"),
+        dspacing_bin_edges=sc.array(
+            dims=["tof"], values=[0, 0.5, 1], unit=sc.units.angstrom, dtype="float64"
+        ),
+    )
+    assert reducer.dspacing in reducer.additional_readable_signals(simpledae)
+
+
+def test_dspacing_reducer_bad_l_total_shape():
+    with pytest.raises(ValueError, match="l_total and detectors must have same shape"):
+        DSpacingMappingReducer(
+            prefix="",
+            detectors=np.array([1], dtype=np.int64),
+            l_total=sc.array(dims=["spec"], values=[1, 2], unit=sc.units.m, dtype="float64"),
+            two_theta=sc.array(dims=["spec"], values=[1], unit=sc.units.rad, dtype="float64"),
+            dspacing_bin_edges=sc.array(
+                dims=["tof"], values=[0, 1], unit=sc.units.angstrom, dtype="float64"
+            ),
+        )
+
+
+def test_dspacing_reducer_bad_two_theta_shape():
+    with pytest.raises(ValueError, match="two theta and detectors must have same shape"):
+        DSpacingMappingReducer(
+            prefix="",
+            detectors=np.array([1], dtype=np.int64),
+            l_total=sc.array(dims=["spec"], values=[1], unit=sc.units.m, dtype="float64"),
+            two_theta=sc.array(dims=["spec"], values=[1, 2], unit=sc.units.rad, dtype="float64"),
+            dspacing_bin_edges=sc.array(
+                dims=["tof"], values=[0, 1], unit=sc.units.angstrom, dtype="float64"
+            ),
+        )
