@@ -8,8 +8,9 @@ import pytest
 from bluesky.utils import Msg
 from ophyd_async.epics.motor import UseSetMode
 from ophyd_async.plan_stubs import ensure_connected
-from ophyd_async.testing import get_mock_put
+from ophyd_async.testing import get_mock_put, set_mock_value
 
+from ibex_bluesky_core.devices import NoYesChoice
 from ibex_bluesky_core.devices.block import BlockMot
 from ibex_bluesky_core.devices.reflectometry import ReflParameter
 from ibex_bluesky_core.plan_stubs import (
@@ -152,6 +153,7 @@ def test_redefine_motor(RE):
 async def test_redefine_refl_parameter(RE):
     param = ReflParameter(prefix="", name="some_refl_parameter", changing_timeout_s=60)
     await param.connect(mock=True)
+    set_mock_value(param.redefine.manager_mode, NoYesChoice.YES)  # pyright: ignore [reportOptionalMemberAccess]
 
     RE(redefine_refl_parameter(param, 42.0))
 

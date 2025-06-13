@@ -17,6 +17,7 @@ from ibex_bluesky_core.devices.simpledae._controllers import (
 )
 from ibex_bluesky_core.devices.simpledae._reducers import (
     VARIANCE_ADDITION,
+    DSpacingMappingReducer,
     GoodFramesNormalizer,
     MonitorNormalizer,
     PeriodGoodFramesNormalizer,
@@ -46,6 +47,7 @@ logger = logging.getLogger(__name__)
 __all__ = [  # Repeated imports for backward compatability
     "VARIANCE_ADDITION",
     "Controller",
+    "DSpacingMappingReducer",
     "GoodFramesNormalizer",
     "GoodFramesWaiter",
     "GoodUahWaiter",
