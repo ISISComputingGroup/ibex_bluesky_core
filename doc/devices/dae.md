@@ -270,7 +270,7 @@ as a list, and `units` (μs/microseconds for time of flight bounding, and angstr
 ### Polarization/Asymmetry
 
 ibex_bluesky_core provides a helper method,
-{py:obj}ibex_bluesky_core.devices.simpledae.reducers.polarization, for calculating the quantity (a-b)/(a+b). This quantity is used, for example, in neutron polarization measurements, and in calculating asymmetry for muon measurements.
+{py:obj}`ibex_bluesky_core.devices.simpledae.polarization`, for calculating the quantity (a-b)/(a+b). This quantity is used, for example, in neutron polarization measurements, and in calculating asymmetry for muon measurements.
 
 For this expression, scipp's default uncertainty propagation rules cannot be used as the uncertainties on (a-b) are correlated with those of (a+b) in the division step - but scipp assumes uncorrelated data. This helper method calculates the uncertainties following linear error propagation theory, using the partial derivatives of the above expression.
 
@@ -300,7 +300,7 @@ Similar to LARMOR, A and B represent intensities before and after flipper switch
 Muon Instruments
 A and B refer to Measurements from different detector banks.
 
-{py:obj}`ibex_bluesky_core.devices.simpledae.reducers.polarization`
+[`polarization`](ibex_bluesky_core.devices.simpledae.polarization)
 
 ## Waiters
 

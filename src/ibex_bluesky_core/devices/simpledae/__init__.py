@@ -24,6 +24,7 @@ from ibex_bluesky_core.devices.simpledae._reducers import (
     ScalarNormalizer,
     tof_bounded_spectra,
     wavelength_bounded_spectra,
+    polarization
 )
 from ibex_bluesky_core.devices.simpledae._strategies import (
     Controller,
@@ -67,6 +68,7 @@ __all__ = [
     "monitor_normalising_dae",
     "tof_bounded_spectra",
     "wavelength_bounded_spectra",
+    "polarization"
 ]
 
 TController_co = TypeVar("TController_co", bound="Controller", default="Controller", covariant=True)
