@@ -4,19 +4,18 @@ import csv
 import logging
 import os
 import warnings
-from pathlib import Path
 from itertools import zip_longest
-from typing import Callable, Optional
+from pathlib import Path
 
-from lmfit import Parameter
-from numpy import typing as npt
-from matplotlib.axes import Axes
 import lmfit
 import numpy as np
 from bluesky.callbacks import CallbackBase, LiveFitPlot
 from bluesky.callbacks import LiveFit as _DefaultLiveFit
 from bluesky.callbacks.core import make_class_safe
-from event_model import Event, RunStart, RunStop, EventDescriptor
+from event_model import Event, EventDescriptor, RunStart, RunStop
+from lmfit import Parameter
+from matplotlib.axes import Axes
+from numpy import typing as npt
 
 from ibex_bluesky_core.callbacks._utils import (
     DATA,
@@ -30,7 +29,7 @@ from ibex_bluesky_core.fitting import FitMethod
 
 logger = logging.getLogger(__name__)
 
-__all__ = ["LiveFit", "LiveFitLogger"]
+__all__ = ["ChainedLiveFit", "LiveFit", "LiveFitLogger"]
 
 
 @make_class_safe(logger=logger)  # pyright: ignore (pyright doesn't understand this decorator)
@@ -90,19 +89,17 @@ class LiveFit(_DefaultLiveFit):
         if self.yerr is not None:
             self.weight_data.append(weight)
 
-
-    def _can_fit(self) -> bool:
+    def can_fit(self) -> bool:
         """Check if enough data points have been collected to fit."""
         n = len(self.model.param_names)
         return len(self.ydata) >= n
 
-
     def update_fit(self) -> None:
-        """Use the provided guess function with the most recent x and y values after every update"""
-
-        if not self._can_fit():
+        """Use the guess function with the most recent x and y values after every update."""
+        if not self.can_fit():
             warnings.warn(
-                f"LiveFitPlot cannot update fit until there are at least {len(self.model.param_names)} data points",
+                f"""LiveFitPlot cannot update fit until there are at least
+                {len(self.model.param_names)} data points""",
                 stacklevel=1,
             )
         else:
@@ -259,10 +256,11 @@ class LiveFitLogger(CallbackBase):
 
 
 class ChainedLiveFit(CallbackBase):
-    """Processes multiple LiveFits sequentially, using each fit's results to inform the next, with optional plotting.
+    """Processes multiple LiveFits, each fit's results informs the next, with optional plotting.
 
-    This callback handles a sequence of LiveFit instances where the parameters from each completed fit
-    serve as the initial guess for the subsequent fit. Optional plotting is built in using LivePlotLib.
+    This callback handles a sequence of LiveFit instances where the parameters from each
+    completed fit serve as the initial guess for the subsequent fit. Optional plotting
+    is built in using LivePlotLib.
     """
 
     def __init__(
@@ -272,7 +270,7 @@ class ChainedLiveFit(CallbackBase):
         x: str,
         *,
         yerr: list[str] | None = None,
-        ax: list[Axes] | None = None
+        ax: list[Axes] | None = None,
     ) -> None:
         """Initialise ChainedLiveFit with multiple LiveFits.
 
@@ -282,6 +280,7 @@ class ChainedLiveFit(CallbackBase):
             x: x-axis variable name
             yerr: Optional list of error values corresponding to y variables
             ax: A list of axes to plot fits on to. Creates LiveFitPlot instances.
+
         """
         super().__init__()
 
@@ -292,17 +291,20 @@ class ChainedLiveFit(CallbackBase):
 
         self._liveplots = [
             LiveFitPlot(livefit=livefit, ax=axis)
-            for livefit, axis in zip(self._livefits, ax or [])
+            for livefit, axis in zip(self._livefits, ax or [], strict=False)
         ]
 
-    def _process_doc(self, doc: RunStart | Event | RunStop | EventDescriptor, method_name: str) -> None:
+    def _process_doc(
+        self, doc: RunStart | Event | RunStop | EventDescriptor, method_name: str
+    ) -> None:
         """Process a document for either LivePlots or LiveFits.
 
         Args:
             doc: document to process
             method_name: Name of the method to call ('start', 'descriptor', 'event', or 'stop')
+
         """
-        callbacks = self._liveplots if self._liveplots else self._livefits
+        callbacks = self._liveplots or self._livefits
         for callback in callbacks:
             getattr(callback, method_name)(doc)
 
@@ -311,22 +313,25 @@ class ChainedLiveFit(CallbackBase):
 
         Args:
             doc: RunStart document
+
         """
-        self._process_doc(doc, 'start')
+        self._process_doc(doc, "start")
 
     def descriptor(self, doc: EventDescriptor) -> None:
         """Process descriptor document for all callbacks.
 
         Args:
             doc: EventDescriptor document.
-        """
-        self._process_doc(doc, 'descriptor')
 
-    def event(self, doc: Event) -> None:
+        """
+        self._process_doc(doc, "descriptor")
+
+    def event(self, doc: Event) -> Event:
         """Process event document for all callbacks.
 
         Args:
             doc: Event document
+
         """
         init_guess = {}
 
@@ -335,11 +340,16 @@ class ChainedLiveFit(CallbackBase):
             try:
                 if init_guess:
                     # Use previous fit results as initial guess for next fit
-                    guess_func: Callable[
-                        [npt.NDArray[np.float64], npt.NDArray[np.float64]], dict[str, lmfit.Parameter]
-                    ] = lambda a, b: {name: Parameter(name, value.value) for name, value in init_guess.items()}
-                    # Using value.value means that paramater uncertainty is not carried over between fits
+                    def guess_func(
+                        a: npt.NDArray[np.float64], b: npt.NDArray[np.float64]
+                    ) -> dict[str, lmfit.Parameter]:
+                        return {
+                            name: Parameter(name, value.value)
+                            for name, value in init_guess.items()  # noqa: B023
+                        }
 
+                    # Using value.value means that paramater uncertainty
+                    # is not carried over between fits
                     livefit.method.guess = guess_func
 
                 if self._liveplots:
@@ -350,18 +360,20 @@ class ChainedLiveFit(CallbackBase):
             finally:
                 livefit.method.guess = rem_guess
 
-                if livefit._can_fit():
+                if livefit.can_fit():
                     assert livefit.result is not None
                     init_guess = livefit.result.params
 
-        from ibex_bluesky_core.callbacks import show_plot
+        from ibex_bluesky_core.callbacks import show_plot  # noqa: PLC0415
         show_plot()
 
+        return doc
 
     def stop(self, doc: RunStop) -> None:
         """Process stop document and update fitting parameters.
 
         Args:
             doc: RunStop document
+
         """
-        self._process_doc(doc, 'stop')
+        self._process_doc(doc, "stop")

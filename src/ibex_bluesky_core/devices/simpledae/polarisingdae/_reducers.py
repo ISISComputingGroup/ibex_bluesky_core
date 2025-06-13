@@ -113,7 +113,8 @@ class WavelengthBoundedNormalizer(Reducer, StandardReadable):
 
             if monitor_counts_sc.value == 0.0:
                 raise ValueError(
-                    f"Cannot normalize; got zero monitor counts in wavelength band {i}. Check beamline configuration."
+                    f"""Cannot normalize; got zero monitor counts in wavelength band {i}.
+                     Check beamline configuration."""
                 )
 
             # See doc\architectural_decisions\005-variance-addition.md
