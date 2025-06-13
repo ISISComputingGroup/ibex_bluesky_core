@@ -480,7 +480,7 @@ class DSpacingMappingReducer(Reducer, StandardReadable):
 
         super().__init__(name="")
 
-    async def reduce_data(self, dae: "SimpleDae") -> None:
+    async def reduce_data(self, dae: Dae) -> None:
         """Expose calculated d-spacing.
 
         This will be in units of counts, which may be fractional due to rebinning.
@@ -526,6 +526,6 @@ class DSpacingMappingReducer(Reducer, StandardReadable):
         self._dspacing_setter(summed_data.values)
         logger.info("reduction complete")
 
-    def additional_readable_signals(self, dae: "SimpleDae") -> list[Device]:
+    def additional_readable_signals(self, dae: Dae) -> list[Device]:
         """Publish interesting signals derived or used by this reducer."""
         return [self.dspacing]
