@@ -124,7 +124,9 @@ def wavelength_bounded_spectra(
     return sum_spectra_with_wavelength
 
 
-def polarization(a: sc.Variable | sc.DataArray, b: sc.Variable | sc.DataArray) -> sc.Variable | sc.DataArray:
+def polarization(
+    a: sc.Variable | sc.DataArray, b: sc.Variable | sc.DataArray
+) -> sc.Variable | sc.DataArray:
     """Calculate polarization value and propagate uncertainties.
 
     This function computes the polarization given by the formula (a-b)/(a+b)
@@ -138,9 +140,11 @@ def polarization(a: sc.Variable | sc.DataArray, b: sc.Variable | sc.DataArray) -
         polarization_value: This quantity is calculated as (a-b)/(a+b)
 
     On SANS instruments e.g. LARMOR, A and B correspond to intensity in different DAE
-    periods (before/after switching a flipper) and the output is interpreted as a neutron polarization ratio
-    Or reflectometry instruments e.g. POLREF, the situation is the same as on LARMOR
-    On muon instruments, A and B correspond to measuring from forward/backward detector banks, and the output is interpreted as a muon asymmetry
+    periods (before/after switching a flipper) and the output is interpreted as a neutron
+    polarization ratio.
+    On reflectometry instruments e.g. POLREF, the situation is the same as on LARMOR
+    On muon instruments, A and B correspond to measuring from forward/backward detector
+    banks, and the output is interpreted as a muon asymmetry.
 
     """
     if a.unit != b.unit:
