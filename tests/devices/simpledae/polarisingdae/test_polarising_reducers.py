@@ -459,7 +459,7 @@ async def test_wavelength_bounded_normaliser_zero_counts(
 
     with pytest.raises(
         ValueError,
-        match=re.escape("Cannot normalize; got zero monitor counts. Check beamline configuration."),
+        match=re.escape("Cannot normalize; got zero monitor counts in wavelength band 0."),
     ):
         await normalizer_single.reduce_data(mock_dae)
 
