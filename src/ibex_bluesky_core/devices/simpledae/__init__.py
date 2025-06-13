@@ -23,8 +23,8 @@ from ibex_bluesky_core.devices.simpledae._reducers import (
     PeriodGoodFramesNormalizer,
     PeriodSpecIntegralsReducer,
     ScalarNormalizer,
-    sum_spectra,
     polarization,
+    sum_spectra,
     tof_bounded_spectra,
     wavelength_bounded_spectra,
 )
@@ -69,8 +69,8 @@ __all__ = [
     "Waiter",
     "check_dae_strategies",
     "monitor_normalising_dae",
-    "sum_spectra",
     "polarization",
+    "sum_spectra",
     "tof_bounded_spectra",
     "wavelength_bounded_spectra",
 ]
