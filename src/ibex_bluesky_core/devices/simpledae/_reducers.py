@@ -38,7 +38,7 @@ async def sum_spectra(spectra: Collection[DaeSpectra]) -> sc.Variable | sc.DataA
     """Read and sum a number of spectra from the DAE.
 
     Args:
-        spectra: a Collection type object of DAE spectra :py:obj:`DaeSpectra`
+        spectra: a Collection type object of DAE spectra
 
     Returns:
         scipp :external+scipp:py:obj:`Variable <scipp.Variable>`
