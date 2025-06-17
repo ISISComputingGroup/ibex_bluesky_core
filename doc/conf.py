@@ -71,7 +71,6 @@ html_favicon = "favicon.svg"
 
 autoclass_content = "both"
 myst_heading_anchors = 3
-
 autodoc_preserve_defaults = True
 
 intersphinx_mapping = {
