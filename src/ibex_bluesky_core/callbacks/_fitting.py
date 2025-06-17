@@ -361,7 +361,6 @@ class ChainedLiveFit(CallbackBase):
                 livefit.method.guess = rem_guess
 
                 if livefit.can_fit():
-
                     if livefit.result is None:
                         raise RuntimeError("LiveFit.result was None. Could not update fit.")
 
