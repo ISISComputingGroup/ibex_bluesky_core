@@ -201,3 +201,15 @@ def test_livefit_has_no_result_assert(
         with pytest.raises(RuntimeError, match=r"LiveFit.result was None. Could not update fit."):
             clf.event(mock_doc)  # pyright: ignore
             # Generic document type is not assignable
+
+
+def test_get_livefits(method: FitMethod, y_vars: list[str], x_var: str):
+    """Test that get_livefits returns the correct livefits"""
+    clf = ChainedLiveFit(method=method, y=y_vars, x=x_var)
+    assert clf.get_livefits() == clf._livefits
+
+
+def test_get_livefitplots(method: FitMethod, y_vars: list[str], x_var: str, mock_axes: list[Axes]):
+    """Test that get_livefitplots returns the correct livefitplots"""
+    clf = ChainedLiveFit(method=method, y=y_vars, x=x_var, ax=mock_axes)
+    assert clf.get_livefitplots() == clf._livefitplots

@@ -380,3 +380,11 @@ class ChainedLiveFit(CallbackBase):
 
         """
         self._process_doc(doc, "stop")
+
+    def get_livefits(self) -> list[LiveFit]:
+        """Return a list of the livefits."""
+        return self._livefits
+
+    def get_livefitplots(self) -> list[LiveFitPlot]:
+        """Return a list of the livefitplots."""
+        return self._livefitplots
