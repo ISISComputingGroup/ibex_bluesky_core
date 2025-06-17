@@ -256,7 +256,7 @@ class LiveFitLogger(CallbackBase):
 
 
 class ChainedLiveFit(CallbackBase):
-    """Processes multiple LiveFits, each fit's results informs the next, with optional plotting.
+    """Processes multiple LiveFits, each fit's results inform the next, with optional plotting.
 
     This callback handles a sequence of LiveFit instances where the parameters from each
     completed fit serve as the initial guess for the subsequent fit. Optional plotting
@@ -289,7 +289,7 @@ class ChainedLiveFit(CallbackBase):
             for y_name, yerr_name in zip_longest(y, yerr or [])
         ]
 
-        self._liveplots = [
+        self._livefitplots = [
             LiveFitPlot(livefit=livefit, ax=axis)
             for livefit, axis in zip(self._livefits, ax or [], strict=False)
         ]
@@ -304,7 +304,7 @@ class ChainedLiveFit(CallbackBase):
             method_name: Name of the method to call ('start', 'descriptor', 'event', or 'stop')
 
         """
-        callbacks = self._liveplots or self._livefits
+        callbacks = self._livefitplots or self._livefits
         for callback in callbacks:
             getattr(callback, method_name)(doc)
 
@@ -352,8 +352,8 @@ class ChainedLiveFit(CallbackBase):
                     # is not carried over between fits
                     livefit.method.guess = guess_func
 
-                if self._liveplots:
-                    self._liveplots[self._livefits.index(livefit)].event(doc)
+                if self._livefitplots:
+                    self._livefitplots[self._livefits.index(livefit)].event(doc)
                 else:
                     livefit.event(doc)
 
@@ -361,7 +361,10 @@ class ChainedLiveFit(CallbackBase):
                 livefit.method.guess = rem_guess
 
                 if livefit.can_fit():
-                    assert livefit.result is not None
+
+                    if livefit.result is None:
+                        raise RuntimeError("LiveFit.result was None. Could not update fit.")
+
                     init_guess = livefit.result.params
 
         from ibex_bluesky_core.callbacks import show_plot  # noqa: PLC0415
