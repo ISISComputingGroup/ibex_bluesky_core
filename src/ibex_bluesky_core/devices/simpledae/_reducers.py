@@ -365,15 +365,6 @@ class PeriodSpecIntegralsReducer(Reducer, StandardReadable):
         """Get the monitors used by this reducer."""
         return self._monitors
 
-    async def _trigger_and_get_specdata(self, dae: Dae) -> npt.NDArray[np.int32]:
-        await dae.controls.update_run.trigger()
-        await dae.raw_spec_data_proc.set(1, wait=True)
-        (raw_data, nord) = await asyncio.gather(
-            dae.raw_spec_data.get_value(),
-            dae.raw_spec_data_nord.get_value(),
-        )
-        return raw_data[:nord]
-
     async def reduce_data(self, dae: Dae) -> None:
         """Expose detector & monitor integrals.
 
