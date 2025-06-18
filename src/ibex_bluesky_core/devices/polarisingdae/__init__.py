@@ -13,6 +13,10 @@ from ophyd_async.core import (
 from typing_extensions import TypeVar
 
 from ibex_bluesky_core.devices.dae import Dae
+from ibex_bluesky_core.devices.polarisingdae._reducers import (
+    MultiWavelengthBandNormalizer,
+    PolarisationReducer,
+)
 from ibex_bluesky_core.devices.simpledae._controllers import (
     PeriodPerPointController,
     RunPerPointController,
@@ -27,21 +31,15 @@ from ibex_bluesky_core.devices.simpledae._waiters import (
     GoodFramesWaiter,
     PeriodGoodFramesWaiter,
 )
-from ibex_bluesky_core.devices.simpledae.polarisingdae._reducers import (
-    PolarisingReducer,
-    WavelengthBoundedNormalizer,
-    polarization,
-)
 from ibex_bluesky_core.utils import get_pv_prefix
 
 logger = logging.getLogger(__name__)
 
 __all__ = [
-    "PolarisingDae",
-    "PolarisingReducer",
-    "WavelengthBoundedNormalizer",
+    "DualRunDae",
+    "MultiWavelengthBandNormalizer",
+    "PolarisationReducer",
     "polarising_dae",
-    "polarization",
 ]
 
 
@@ -55,7 +53,7 @@ TReducer_co = TypeVar(
 )
 
 
-class PolarisingDae(
+class DualRunDae(
     Dae,
     Triggerable,
     AsyncStageable,
@@ -63,9 +61,8 @@ class PolarisingDae(
 ):
     """DAE with strategies for data collection, waiting, and reduction, suited for polarisation.
 
-    This class is a more complex version of SimpleDae, with a more complex set of strategies.
-    It requires a flipper device to be provided and will change the flipper between two neutron
-    states between runs.
+    This class is a more complex version of SimpleDae. It requires a flipper device to be provided
+    and will perform two runs, changing the flipper device at the start and inbetween runs.
     """
 
     def __init__(  # noqa: PLR0913
@@ -90,14 +87,11 @@ class PolarisingDae(
                 Pre-defined strategies in the ibex_bluesky_core.devices.controllers module
             waiter: A waiting strategy, defines how the DAE waits for an acquisition to be complete
                 Pre-defined strategies in the ibex_bluesky_core.devices.waiters module
-            reducer: A data reduction strategy, defines the post-processing on raw DAE data, for
-                example, polarisation. It will be triggered once after the two runs.
-            reducer_up: A data reduction strategy, defines the post-processing on raw DAE data.
-                Will trigger once after the first run is complete.
-            reducer_down: A data reduction strategy, defines the post-processing on raw DAE data.
-                Will trigger once after the second run is complete.
-            flipper: A device which can be used to change the neutron state between runs.
-            flipper_states: A tuple of two floats, the neutron states to be set between runs.
+            reducer: A data reduction strategy. It will be triggered once after the two runs.
+            reducer_up: A data reduction strategy. Triggers once after the first run completes.
+            reducer_down: A data reduction strategy. Triggers once after the second run completes.
+            flipper: A device which will be changed at the start of the first run and between runs.
+            flipper_states: A tuple of two floats, the states to set at the start and between runs.
 
         """
         self.flipper: Reference[Movable[float]] = Reference(flipper)
@@ -174,7 +168,8 @@ class PolarisingDae(
         await self.controller.teardown(self)
 
 
-def polarising_dae(  # noqa: PLR0913, PLR0917
+def polarising_dae(  # noqa: PLR0913
+    *,
     det_pixels: list[int],
     frames: int,
     flipper: Movable[float],
@@ -184,7 +179,7 @@ def polarising_dae(  # noqa: PLR0913, PLR0917
     periods: bool = True,
     monitor: int = 1,
     save_run: bool = False,
-) -> PolarisingDae:
+) -> DualRunDae:
     """Create a Polarising DAE which uses wavelength binning and calculates polarisation.
 
     This is a different version of monitor_normalising_dae, with a more complex set of strategies.
@@ -219,25 +214,25 @@ def polarising_dae(  # noqa: PLR0913, PLR0917
         for i in intervals
     ]
 
-    reducer_up = WavelengthBoundedNormalizer(
+    reducer_up = MultiWavelengthBandNormalizer(
         prefix=prefix,
         detector_spectra=det_pixels,
         monitor_spectra=[monitor],
         sum_wavelength_bands=sum_wavelength_bands,
     )
 
-    reducer_down = WavelengthBoundedNormalizer(
+    reducer_down = MultiWavelengthBandNormalizer(
         prefix=prefix,
         detector_spectra=det_pixels,
         monitor_spectra=[monitor],
         sum_wavelength_bands=sum_wavelength_bands,
     )
 
-    reducer = PolarisingReducer(
+    reducer = PolarisationReducer(
         intervals=intervals, reducer_up=reducer_up, reducer_down=reducer_down
     )
 
-    dae = PolarisingDae(
+    dae = DualRunDae(
         prefix=prefix,
         controller=controller,
         waiter=waiter,

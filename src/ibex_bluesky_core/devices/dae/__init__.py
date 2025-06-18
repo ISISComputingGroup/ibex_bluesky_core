@@ -35,8 +35,6 @@ from ibex_bluesky_core.devices.dae._period_settings import (
 from ibex_bluesky_core.devices.dae._settings import DaeSettings, DaeSettingsData, DaeTimingSource
 from ibex_bluesky_core.devices.dae._spectra import (
     DaeSpectra,
-    PolarisedWavelengthBand,
-    WavelengthBand,
 )
 from ibex_bluesky_core.devices.dae._tcb_settings import (
     DaeTCBSettings,
@@ -67,7 +65,6 @@ __all__ = [
     "DaeTimingSource",
     "PeriodSource",
     "PeriodType",
-    "PolarisedWavelengthBand",
     "RunstateEnum",
     "SinglePeriodSettings",
     "TCBCalculationMethod",
@@ -75,7 +72,6 @@ __all__ = [
     "TimeRegime",
     "TimeRegimeMode",
     "TimeRegimeRow",
-    "WavelengthBand",
 ]
 
 T = TypeVar("T", bound=SignalDatatype)

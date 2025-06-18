@@ -284,15 +284,21 @@ class ChainedLiveFit(CallbackBase):
         """
         super().__init__()
 
+        if yerr and len(y) != len(yerr):
+            raise ValueError("yerr must be the same length as y")
+
+        if ax and len(y) != len(ax):
+            raise ValueError("ax must be the same length as y")
+
         self._livefits = [
             LiveFit(method=method, y=y_name, x=x, yerr=yerr_name)
             for y_name, yerr_name in zip_longest(y, yerr or [])
-        ]
+        ]  # if yerrs then create a LiveFit with a yerr else create a LiveFit without a yerr
 
         self._livefitplots = [
             LiveFitPlot(livefit=livefit, ax=axis)
             for livefit, axis in zip(self._livefits, ax or [], strict=False)
-        ]
+        ]  # if ax then create a LiveFitPlot with ax else do not create any LiveFitPlots
 
     def _process_doc(
         self, doc: RunStart | Event | RunStop | EventDescriptor, method_name: str
@@ -343,12 +349,13 @@ class ChainedLiveFit(CallbackBase):
                     def guess_func(
                         a: npt.NDArray[np.float64], b: npt.NDArray[np.float64]
                     ) -> dict[str, lmfit.Parameter]:
+                        nonlocal init_guess
                         return {
                             name: Parameter(name, value.value)
                             for name, value in init_guess.items()  # noqa: B023
-                        }
+                        }  # ruff doesn't understand nonlocal
 
-                    # Using value.value means that paramater uncertainty
+                    # Using value.value means that parameter uncertainty
                     # is not carried over between fits
                     livefit.method.guess = guess_func
 
@@ -381,10 +388,12 @@ class ChainedLiveFit(CallbackBase):
         """
         self._process_doc(doc, "stop")
 
-    def get_livefits(self) -> list[LiveFit]:
+    @property
+    def live_fits(self) -> list[LiveFit]:
         """Return a list of the livefits."""
         return self._livefits
 
-    def get_livefitplots(self) -> list[LiveFitPlot]:
+    @property
+    def live_fit_plots(self) -> list[LiveFitPlot]:
         """Return a list of the livefitplots."""
         return self._livefitplots

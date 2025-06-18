@@ -4,6 +4,7 @@ import pytest
 import scipp as sc
 from ophyd_async.core import SignalRW, soft_signal_rw
 
+from ibex_bluesky_core.devices.polarisingdae import DualRunDae, polarising_dae
 from ibex_bluesky_core.devices.simpledae import (
     Controller,
     GoodFramesWaiter,
@@ -13,7 +14,6 @@ from ibex_bluesky_core.devices.simpledae import (
     RunPerPointController,
     Waiter,
 )
-from ibex_bluesky_core.devices.simpledae.polarisingdae import PolarisingDae, polarising_dae
 
 
 @pytest.fixture
@@ -54,8 +54,8 @@ async def mock_dae(
     mock_reducer_up: Reducer,
     mock_reducer_down: Reducer,
     flipper: SignalRW[float],
-) -> PolarisingDae:
-    mock_dae = PolarisingDae(
+) -> DualRunDae:
+    mock_dae = DualRunDae(
         prefix="unittest:mock:",
         name="polarisingdae",
         controller=mock_controller,
@@ -72,7 +72,7 @@ async def mock_dae(
 
 
 async def test_polarisingdae_calls_controller_twice_on_trigger(
-    mock_dae: PolarisingDae, mock_controller: MagicMock
+    mock_dae: DualRunDae, mock_controller: MagicMock
 ):
     """Test that the DAE controller is called twice on trigger."""
     await mock_dae.trigger()
@@ -81,7 +81,7 @@ async def test_polarisingdae_calls_controller_twice_on_trigger(
 
 
 async def test_polarisingdae_calls_waiter_twice_on_trigger(
-    mock_dae: PolarisingDae, mock_waiter: MagicMock
+    mock_dae: DualRunDae, mock_waiter: MagicMock
 ):
     """Test that the DAE waiter is called twice on trigger."""
     await mock_dae.trigger()
@@ -90,7 +90,7 @@ async def test_polarisingdae_calls_waiter_twice_on_trigger(
 
 
 async def test_polarisingdae_calls_reducer_on_trigger(
-    mock_dae: PolarisingDae,
+    mock_dae: DualRunDae,
     mock_reducer: MagicMock,
     mock_reducer_up: MagicMock,
     mock_reducer_down: MagicMock,
@@ -115,7 +115,7 @@ async def test_polarising_dae_sets_up_periods_correctly(flipper: SignalRW[float]
     total_flight_path_length = sc.scalar(value=10, unit=sc.units.m)
     save_run = False
 
-    with patch("ibex_bluesky_core.devices.simpledae.polarisingdae.get_pv_prefix"):
+    with patch("ibex_bluesky_core.devices.polarisingdae.get_pv_prefix"):
         dae = polarising_dae(
             det_pixels=det_pixels,
             frames=frames,
@@ -146,7 +146,7 @@ async def test_polarising_dae_sets_up_single_period_correctly(flipper: SignalRW[
     total_flight_path_length = sc.scalar(value=10, unit=sc.units.m)
     save_run = False
 
-    with patch("ibex_bluesky_core.devices.simpledae.polarisingdae.get_pv_prefix"):
+    with patch("ibex_bluesky_core.devices.polarisingdae.get_pv_prefix"):
         dae = polarising_dae(
             det_pixels=det_pixels,
             frames=frames,
@@ -166,7 +166,7 @@ async def test_polarising_dae_sets_up_single_period_correctly(flipper: SignalRW[
 
 
 async def test_simpledae_calls_controller_on_stage_and_unstage(
-    mock_dae: PolarisingDae, mock_controller: MagicMock
+    mock_dae: DualRunDae, mock_controller: MagicMock
 ):
     await mock_dae.stage()
     mock_controller.setup.assert_called_once_with(mock_dae)

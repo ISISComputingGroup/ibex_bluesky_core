@@ -127,19 +127,18 @@ def test_livefitplot_document_processing(
             mock_process.assert_called_once_with(mock_doc)
 
 
-@pytest.mark.parametrize("mock_axes", [None, "mock_axes"])
+@pytest.mark.parametrize("axes", [None, "mock_axes"])
 def test_first_livefit_uses_normal_guess_function(
     method: FitMethod,
     y_vars: list[str],
     x_var: str,
     mock_doc: dict[str, dict[str, int]],
-    mock_axes: str | None,
+    axes: list[Axes] | None,
     request: FixtureRequest,
 ):
     """Test that if using the first LiveFit then it will fit using its own guess function"""
-    # Checks that event is called for LiveFit and LiveFitPlot in either case
-
-    ax: list[Axes] | None = None if mock_axes is None else request.getfixturevalue(mock_axes)
+    # If axes is a string, get the actual fixture value, otherwise use None
+    ax = request.getfixturevalue(axes) if isinstance(axes, str) else axes
     clf = ChainedLiveFit(method=method, y=y_vars, x=x_var, ax=ax)
 
     with patch.object(clf._livefits[0].method, "guess") as mock_guess:
@@ -150,20 +149,20 @@ def test_first_livefit_uses_normal_guess_function(
             assert mock_guess == clf._livefits[0].method.guess
 
 
-@pytest.mark.parametrize("mock_axes", [None, "mock_axes"])
+@pytest.mark.parametrize("axes", [None, "mock_axes"])
 def test_livefit_param_passing_between_fits(
     method: FitMethod,
     y_vars: list[str],
     x_var: str,
     mock_doc: dict[str, dict[str, int]],
-    mock_axes: str | None,
+    axes: str | None,
     request: FixtureRequest,
 ):
     """Test that parameters from first fit are passed correctly to second fit's guess function."""
     # Checks that this works for LiveFit and LiveFitPlot in either case
-    ax: list[Axes] | None = None if mock_axes is None else request.getfixturevalue(mock_axes)
+    ax = request.getfixturevalue(axes) if isinstance(axes, str) else axes
     clf = ChainedLiveFit(method=method, y=y_vars, x=x_var, ax=ax)
-    callbacks = clf._livefits if mock_axes is None else clf._livefitplots
+    callbacks = clf._livefits if axes is None else clf._livefitplots
 
     # Mock first livefit's result with some parameters
     mock_params = {"param1": Parameter("param1", 1.0), "param2": Parameter("param2", 2.0)}
@@ -206,10 +205,27 @@ def test_livefit_has_no_result_assert(
 def test_get_livefits(method: FitMethod, y_vars: list[str], x_var: str):
     """Test that get_livefits returns the correct livefits"""
     clf = ChainedLiveFit(method=method, y=y_vars, x=x_var)
-    assert clf.get_livefits() == clf._livefits
+    assert clf.live_fits == clf._livefits
 
 
 def test_get_livefitplots(method: FitMethod, y_vars: list[str], x_var: str, mock_axes: list[Axes]):
     """Test that get_livefitplots returns the correct livefitplots"""
     clf = ChainedLiveFit(method=method, y=y_vars, x=x_var, ax=mock_axes)
-    assert clf.get_livefitplots() == clf._livefitplots
+    assert clf.live_fit_plots == clf._livefitplots
+
+
+def test_yerr_length_mismatch_raises_error(method: FitMethod, x_var: str):
+    """Test that a ValueError is raised when yerr list length doesn't match y list length."""
+    y_vars = ["y1", "y2"]
+    yerr_vars = ["yerr1"]
+
+    with pytest.raises(ValueError, match="yerr must be the same length as y"):
+        ChainedLiveFit(method=method, y=y_vars, x=x_var, yerr=yerr_vars)
+
+
+def test_axes_length_mismatch_raises_error(method: FitMethod, x_var: str, mock_axes: list[Axes]):
+    """Test that a ValueError is raised when axes list length doesn't match y list length."""
+    y_vars = ["y1", "y2", "y3"]
+
+    with pytest.raises(ValueError, match="ax must be the same length as y"):
+        ChainedLiveFit(method=method, y=y_vars, x=x_var, ax=mock_axes)
