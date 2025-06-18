@@ -44,7 +44,7 @@ from ibex_bluesky_core.utils import get_pv_prefix
 
 logger = logging.getLogger(__name__)
 
-__all__ = [  # Repeated imports for backward compatability
+__all__ = [
     "VARIANCE_ADDITION",
     "Controller",
     "DSpacingMappingReducer",
