@@ -314,7 +314,7 @@ Which then means the variances computed by this helper function are:
 $ Variance = (\frac{\delta}{\delta a}^2 * variance_a) + (\frac{\delta}{\delta b}^2 * variance_b)  $ 
 
 
-The polarisation funtion provided will calculate the polarization between two values, A and B, which 
+The polarisation function provided will calculate the polarisation between two values, A and B, which 
 have different definitions based on the instrument context.
 
 Instrument-Specific Interpretations

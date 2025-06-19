@@ -52,24 +52,33 @@ class NamedReadableAndMovable(Readable[Any], NamedMovable[Any], Protocol):
     """Abstract class for type checking that an object is readable, named and movable."""
 
 
-def polarisation(a: sc.Variable, b: sc.Variable) -> sc.Variable:
+def polarisation(
+    a: sc.Variable | sc.DataArray, b: sc.Variable | sc.DataArray
+) -> sc.Variable | sc.DataArray:
     """Calculate polarisation value and propagate uncertainties.
 
     This function computes the polarisation given by the formula (a-b)/(a+b)
     and propagates the uncertainties associated with a and b.
 
     Args:
-        a: scipp Variable
-        b: scipp Variable
+        a: scipp :external+scipp:py:obj:`Variable <scipp.Variable>`
+            or :external+scipp:py:obj:`DataArray <scipp.DataArray>`
+        b: scipp :external+scipp:py:obj:`Variable <scipp.Variable>`
+            or :external+scipp:py:obj:`DataArray <scipp.DataArray>`
 
     Returns:
-        polarisation_value: This quantity is calculated as (a-b)/(a+b)
+        polarisation, ``(a - b) / (a + b)``, as a scipp
+        :external+scipp:py:obj:`Variable <scipp.Variable>`
+        or :external+scipp:py:obj:`DataArray <scipp.DataArray>`
 
     On SANS instruments e.g. LARMOR, A and B correspond to intensity in different DAE
     periods (before/after switching a flipper) and the output is interpreted as a neutron
-    polarisation ratio. Or reflectometry instruments e.g. POLREF, the situation is
-    the same as on LARMOR. On muon instruments, A and B correspond to measuring from
-    forward/backward detector banks, and the output is interpreted as a muon asymmetry
+    polarisation ratio.
+
+    On reflectometry instruments e.g. POLREF, the situation is the same as on LARMOR.
+
+    On muon instruments, A and B correspond to measuring from forward/backward detector
+    banks, and the output is interpreted as a muon asymmetry.
 
     """
     if a.unit != b.unit:

@@ -131,60 +131,6 @@ def wavelength_bounded_spectra(
     return sum_spectra_with_wavelength
 
 
-def polarization(
-    a: sc.Variable | sc.DataArray, b: sc.Variable | sc.DataArray
-) -> sc.Variable | sc.DataArray:
-    """Calculate polarization value and propagate uncertainties.
-
-    This function computes the polarization given by the formula (a-b)/(a+b)
-    and propagates the uncertainties associated with a and b.
-
-    Args:
-        a: scipp :external+scipp:py:obj:`Variable <scipp.Variable>`
-            or :external+scipp:py:obj:`DataArray <scipp.DataArray>`
-        b: scipp :external+scipp:py:obj:`Variable <scipp.Variable>`
-            or :external+scipp:py:obj:`DataArray <scipp.DataArray>`
-
-    Returns:
-        polarization, ``(a - b) / (a + b)``, as a scipp
-        :external+scipp:py:obj:`Variable <scipp.Variable>`
-        or :external+scipp:py:obj:`DataArray <scipp.DataArray>`
-
-    On SANS instruments e.g. LARMOR, A and B correspond to intensity in different DAE
-    periods (before/after switching a flipper) and the output is interpreted as a neutron
-    polarization ratio.
-
-    On reflectometry instruments e.g. POLREF, the situation is the same as on LARMOR.
-
-    On muon instruments, A and B correspond to measuring from forward/backward detector
-    banks, and the output is interpreted as a muon asymmetry.
-
-    """
-    if a.unit != b.unit:
-        raise ValueError("The units of a and b are not equivalent.")
-    if a.sizes != b.sizes:
-        raise ValueError("Dimensions/shape of a and b must match.")
-
-    # This line allows for dims, units, and dtype to be handled by scipp
-    polarization_value = (a - b) / (a + b)
-
-    variances_a = a.variances
-    variances_b = b.variances
-    values_a = a.values
-    values_b = b.values
-
-    # Calculate partial derivatives
-    partial_a = 2 * values_b / (values_a + values_b) ** 2
-    partial_b = -2 * values_a / (values_a + values_b) ** 2
-
-    variance_return = (partial_a**2 * variances_a) + (partial_b**2 * variances_b)
-
-    # Propagate uncertainties
-    polarization_value.variances = variance_return
-
-    return polarization_value
-
-
 class ScalarNormalizer(Reducer, StandardReadable, ABC):
     """Sum a set of user-specified spectra, then normalize by a scalar signal."""
 
