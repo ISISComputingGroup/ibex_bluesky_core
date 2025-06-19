@@ -555,25 +555,3 @@ or wavelength bounds.
 or sums using time of flight bounds, or wavelength bounds.
 
 For both options, the default, if none is specified, is to use pre-existing bounds.
-
-### Wavelength Band Classes
-
-#### _WavelengthBand
-
-[`_WavelengthBand`](ibex_bluesky_core.devices.polarisingdae._spectra._WavelengthBand) represents a few measurements within a specific wavelength band. Has a setter method to assign values to the published signals.
-
-Additional Signals:
-- `det_counts`: Detector counts
-- `mon_counts`: Monitor counts
-- `intensity`: Normalized intensity
-- Associated uncertainty measurements for each value
-
-#### _PolarisedWavelengthBand
-
-[`_PolarisedWavelengthBand`](ibex_bluesky_core.devices.polarisingdae._spectra._PolarisedWavelengthBand) represents the polarisation information calculated using measurements taken from two `WavelengthBand` objects, one published from an "up state" `WavelengthBoundedNormalizer`
-and the other from a "down state" `WavelengthBoundedNormalizer`. Has a setter method to assign values to the published signals.
-
-Additional signals:
-- `polarisation`: The calculated polarisation value
-- `polarisation_ratio`: Ratio between up and down states
-- Associated uncertainty measurements for polarisation values

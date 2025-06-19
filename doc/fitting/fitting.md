@@ -247,11 +247,14 @@ def plan() -> Generator[Msg, None, None]:
 - You may also pass in a list of matplotlib axes, which will mean that LiveFitPlots are created per LiveFit, and it will plot the each respective fit to an axis. LiveFitPlots are not created if you do not pass `ax`.
 - Similar to the `y` parameter, you may pass signal names which correspond to uncertainty values for each independent variable.
 
-.. hint::
-  that the method for fitting is the same across all independent variables.
+```{hint}
+The method for fitting is the same across all independent variables.
+```
 
-.. note::
-  that parameter uncertainties are not carried over between fits 
+```{note}
+Parameter uncertainties are not carried over between fits 
+```
 
-.. important::
-  that if a fit fails to converge, subsequent fits will use their default guess functions
+```{important}
+If a fit fails to converge, subsequent fits will use their default guess functions
+```

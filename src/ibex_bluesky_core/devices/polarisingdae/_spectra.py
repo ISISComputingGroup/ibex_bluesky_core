@@ -4,7 +4,11 @@ __all__ = ["_PolarisedWavelengthBand", "_WavelengthBand"]
 
 
 class _WavelengthBand(StandardReadable):
-    """Subdevice for a single wavelength band."""
+    """Subdevice for a single wavelength band.
+
+    Represents a few measurements within a specific wavelength band.
+    Has a setter method to assign values to the published signals.
+    """
 
     def __init__(self, *, name: str = "") -> None:
         self.det_counts, self._det_counts_setter = soft_signal_r_and_setter(float, 0.0)
@@ -44,7 +48,14 @@ class _WavelengthBand(StandardReadable):
 
 
 class _PolarisedWavelengthBand(StandardReadable):
-    """Subdevice that holds polarisation info for two wavelength bands."""
+    """Subdevice that holds polarisation info for two wavelength bands.
+
+    Represents the polarisation information calculated using measurements
+    taken from two `WavelengthBand` objects, one published from an "up state"
+    `WavelengthBoundedNormalizer`and the other from a "down state"
+    `WavelengthBoundedNormalizer`. Has a setter method to assign values to
+    the published signals.
+    """
 
     def __init__(self, *, name: str = "", intensity_precision: int = 6) -> None:
         with self.add_children_as_readables():
