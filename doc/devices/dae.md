@@ -13,7 +13,7 @@ This means that [`SimpleDae`](ibex_bluesky_core.devices.simpledae.SimpleDae) is 
 example running using either one DAE run per scan point, or one DAE period per scan point.
 
 For complex use-cases, particularly those where the DAE may need to start and stop multiple 
-acquisitions per scan point (e.g. polarization measurements), [`SimpleDae`](ibex_bluesky_core.devices.simpledae.SimpleDae) is unlikely to be 
+acquisitions per scan point (e.g. Polarisation measurements), [`SimpleDae`](ibex_bluesky_core.devices.simpledae.SimpleDae) is unlikely to be 
 suitable; instead the [`Dae`](ibex_bluesky_core.devices.dae.Dae) class should be subclassed directly to allow for finer control.
 
 ## Example configurations
@@ -295,12 +295,12 @@ as a list, and `units` (μs/microseconds for time of flight bounding, and angstr
 
 If you don't specify either of these options, they will default to summing over the entire spectrum.
 
-### Polarization/Asymmetry
+### Polarisation/Asymmetry
 
-Polarization refers to the property of transverse waves which specifies the geometrical orientation of the 
+Polarisation refers to the property of transverse waves which specifies the geometrical orientation of the 
 oscillations. 
 
-The polarization funtion provided will calculate the polarization between two values, A and B, which 
+The Polarisation function provided will calculate the Polarisation between two values, A and B, which 
 have different definitions based on the instrument context.
 
 Instrument-Specific Interpretations
@@ -314,9 +314,9 @@ Similar to LARMOR, A and B represent intensities before and after flipper switch
 Muon Instruments
 A and B refer to Measurements from different detector banks.
 
-{py:obj}`ibex_bluesky_core.devices.simpledae.polarisingdae.polarization`
+{py:obj}`ibex_bluesky_core.utils.polarisation`
 
-See [`PolarisingDae`](#PolarisingDae) and [`PolarisingReducer`](#PolarisingReducer) for how this is integrated into DAE behaviour. 
+See [`DualRunDae`](#DualRunDae) and [`PolarisationReducer`](#PolarisationReducer) for how this is integrated into DAE behaviour. 
 
 ## Waiters
 
@@ -374,18 +374,19 @@ Does not publish any additional signals.
 
 The polarising DAE provides specialised functionality for taking data whilst taking into account the polarity of the beam.
 
-### PolarisingDae
+### DualRunDae
 
-[`PolarisingDae`](ibex_bluesky_core.devices.simpledae.polarisingdae.PolarisingDae) is a more complex version of `SimpleDae`, designed specifically for taking polarisation measurements. It requires a flipper device and uses it to flip from one neutron state to the other between runs.
+[`DualRunDae`](ibex_bluesky_core.devices.polarisingdae.DualRunDae) is a more complex version of `SimpleDae`, designed specifically for taking polarisation measurements. It requires a flipper device and uses it to flip from one neutron state to the other between runs.
 
 Key features:
 - Controls a flipper device to switch between neutron states
-- Handles two separate reduction strategies (up and down states)
-- Calculates polarisation from the two states after the two runs
+- Handles three separate reduction strategies 
+  - Up & Down Reducers, which run after each run
+  - Main reducer, which runs after everything else
 
 ### polarising_dae
 
-[`polarising_dae`](ibex_bluesky_core.devices.simpledae.polarisingdae.polarising_dae) is a helper function that creates a configured `PolarisingDae` instance with wavelength binning based normalisation and polarisation calculation capabilities.
+[`polarising_dae`](ibex_bluesky_core.devices.polarisingdae.polarising_dae) is a helper function that creates a configured `PolarisingDae` instance with wavelength binning based normalisation and polarisation calculation capabilities.
 
 The following is how you may want to use `polarising_dae`:
 ```python
@@ -405,9 +406,9 @@ dae = polarising_dae(det_pixels=[1], frames=500, flipper=flipper, flipper_states
 
 ### Polarising Reducers
 
-#### WavelengthBoundedNormalizer
+#### MultiWavelengthBandNormalizer
 
-[`WavelengthBoundedNormalizer`](ibex_bluesky_core.devices.simpledae.polarisingdae.WavelengthBoundedNormalizer) sums wavelength-bounded spectra and normalises by monitor intensity.
+[`MultiWavelengthBandNormalizer`](ibex_bluesky_core.devices.polarisingdae.MultiWavelengthBandNormalizer) sums wavelength-bounded spectra and normalises by monitor intensity.
 
 Published signals:
 - `wavelength_bands`: DeviceVector containing wavelength band measurements
@@ -418,7 +419,7 @@ Published signals:
 
 #### PolarisingReducer
 
-[`PolarisingReducer`](ibex_bluesky_core.devices.simpledae.polarisingdae.PolarisingReducer) calculates polarisation from 'spin-up' and 'spin-down' states of a polarising DAE. Uses the [`polarization`](#polarizationasymmetry) algorithm.
+[`PolarisationReducer`](ibex_bluesky_core.devices.polarisingdae.PolarisationReducer) calculates polarisation from 'spin-up' and 'spin-down' states of a polarising DAE. Uses the [`Polarisation`](#polarisationasymmetry) algorithm.
 
 Published signals:
 - `wavelength_bands`: DeviceVector containing polarisation measurements
@@ -557,9 +558,9 @@ For both options, the default, if none is specified, is to use pre-existing boun
 
 ### Wavelength Band Classes
 
-#### WavelengthBand
+#### _WavelengthBand
 
-[`WavelengthBand`](ibex_bluesky_core.devices.dae.WavelengthBand) represents a few measurements within a specific wavelength band. Has a setter method to assign values to the published signals.
+[`_WavelengthBand`](ibex_bluesky_core.devices.polarisingdae._spectra._WavelengthBand) represents a few measurements within a specific wavelength band. Has a setter method to assign values to the published signals.
 
 Additional Signals:
 - `det_counts`: Detector counts
@@ -567,9 +568,9 @@ Additional Signals:
 - `intensity`: Normalized intensity
 - Associated uncertainty measurements for each value
 
-#### PolarisedWavelengthBand
+#### _PolarisedWavelengthBand
 
-[`PolarisedWavelengthBand`](ibex_bluesky_core.devices.dae.PolarisedWavelengthBand) represents the polarisation information calculated using measurements taken from two `WavelengthBand` objects, one published from an "up state" `WavelengthBoundedNormalizer`
+[`_PolarisedWavelengthBand`](ibex_bluesky_core.devices.polarisingdae._spectra._PolarisedWavelengthBand) represents the polarisation information calculated using measurements taken from two `WavelengthBand` objects, one published from an "up state" `WavelengthBoundedNormalizer`
 and the other from a "down state" `WavelengthBoundedNormalizer`. Has a setter method to assign values to the published signals.
 
 Additional signals:

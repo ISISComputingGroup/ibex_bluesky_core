@@ -218,7 +218,7 @@ See the [standard fits](#models) list above for standard fits which require para
 
 [`ChainedLiveFit`](ibex_bluesky_core.callbacks.ChainedLiveFit) is a specialised callback that manages multiple LiveFit instances in a chain, where each fit's results inform the next fit's initial parameters. This is particularly useful when dealing with complex data sets where subsequent fits depend on the parameters obtained from previous fits.
 
-This is useful for when you need to be careful with your curve fitting due to the presence of noisy data. It allows you to fit your widest (full) wavelength band first and then using its fit parameters as the [initial guess](#Option-2:-Use-custom-fits) of the parameters for the next fit
+This is useful for when you need to be careful with your curve fitting due to the presence of noisy data. It allows you to fit your widest (full) wavelength band first and then using its fit parameters as the initial guess of the parameters for the next fit
 
 # Usage
 To show how we expect this to be used we will use the PolarisingDae and wavelength bands to highlight the need for the carry over of fitting parameters. Below shows two wavelength bands, first bigger than the second, we will fit to the data in the first and carry it over to the data in the second to improve its, otherwise worse, fit. 

@@ -9,7 +9,13 @@ import matplotlib
 import scipp as sc
 from bluesky.protocols import NamedMovable, Readable
 
-__all__ = ["NamedReadableAndMovable", "centred_pixel", "get_pv_prefix", "is_matplotlib_backend_qt"]
+__all__ = [
+    "NamedReadableAndMovable",
+    "centred_pixel",
+    "get_pv_prefix",
+    "is_matplotlib_backend_qt",
+    "polarisation",
+]
 
 
 def is_matplotlib_backend_qt() -> bool:
@@ -46,10 +52,10 @@ class NamedReadableAndMovable(Readable[Any], NamedMovable[Any], Protocol):
     """Abstract class for type checking that an object is readable, named and movable."""
 
 
-def polarization(a: sc.Variable, b: sc.Variable) -> sc.Variable:
-    """Calculate polarization value and propagate uncertainties.
+def polarisation(a: sc.Variable, b: sc.Variable) -> sc.Variable:
+    """Calculate polarisation value and propagate uncertainties.
 
-    This function computes the polarization given by the formula (a-b)/(a+b)
+    This function computes the polarisation given by the formula (a-b)/(a+b)
     and propagates the uncertainties associated with a and b.
 
     Args:
@@ -57,11 +63,11 @@ def polarization(a: sc.Variable, b: sc.Variable) -> sc.Variable:
         b: scipp Variable
 
     Returns:
-        polarization_value: This quantity is calculated as (a-b)/(a+b)
+        polarisation_value: This quantity is calculated as (a-b)/(a+b)
 
     On SANS instruments e.g. LARMOR, A and B correspond to intensity in different DAE
     periods (before/after switching a flipper) and the output is interpreted as a neutron
-    polarization ratio. Or reflectometry instruments e.g. POLREF, the situation is
+    polarisation ratio. Or reflectometry instruments e.g. POLREF, the situation is
     the same as on LARMOR. On muon instruments, A and B correspond to measuring from
     forward/backward detector banks, and the output is interpreted as a muon asymmetry
 
@@ -72,7 +78,7 @@ def polarization(a: sc.Variable, b: sc.Variable) -> sc.Variable:
         raise ValueError("Dimensions/shape of a and b must match.")
 
     # This line allows for dims, units, and dtype to be handled by scipp
-    polarization_value = (a - b) / (a + b)
+    polarisation_value = (a - b) / (a + b)
 
     variances_a = a.variances
     variances_b = b.variances
@@ -86,6 +92,6 @@ def polarization(a: sc.Variable, b: sc.Variable) -> sc.Variable:
     variance_return = (partial_a**2 * variances_a) + (partial_b**2 * variances_b)
 
     # Propagate uncertainties
-    polarization_value.variances = variance_return
+    polarisation_value.variances = variance_return
 
-    return polarization_value
+    return polarisation_value

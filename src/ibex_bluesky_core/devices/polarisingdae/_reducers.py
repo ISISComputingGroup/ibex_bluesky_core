@@ -14,9 +14,8 @@ from ibex_bluesky_core.devices.polarisingdae._spectra import (
     _PolarisedWavelengthBand,
     _WavelengthBand,
 )
-from ibex_bluesky_core.devices.simpledae._reducers import INTENSITY_PRECISION, VARIANCE_ADDITION
-from ibex_bluesky_core.devices.simpledae._strategies import Reducer
-from ibex_bluesky_core.utils import polarization
+from ibex_bluesky_core.devices.simpledae import INTENSITY_PRECISION, VARIANCE_ADDITION, Reducer
+from ibex_bluesky_core.utils import polarisation
 
 logger = logging.getLogger(__name__)
 
@@ -170,16 +169,16 @@ class PolarisationReducer(Reducer, StandardReadable):
                 value=intensity_down, variance=intensity_down_stddev, dtype=float
             )
 
-            polarisation_sc = polarization(intensity_up_sc, intensity_down_sc)
+            polarisation_sc = polarisation(intensity_up_sc, intensity_down_sc)
             polarisation_ratio_sc = intensity_up_sc / intensity_down_sc
 
-            polarisation = float(polarisation_sc.value)
+            polarisation_val = float(polarisation_sc.value)
             polarisation_ratio = float(polarisation_ratio_sc.value)
             polarisation_stddev = float(polarisation_sc.variance)
             polarisation_ratio_stddev = float(polarisation_ratio_sc.variance)
 
             wavelength_band.setter(
-                polarisation=polarisation,
+                polarisation=polarisation_val,
                 polarisation_stddev=polarisation_stddev,
                 polarisation_ratio=polarisation_ratio,
                 polarisation_ratio_stddev=polarisation_ratio_stddev,

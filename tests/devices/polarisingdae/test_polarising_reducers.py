@@ -21,7 +21,7 @@ from ibex_bluesky_core.devices.simpledae import (
     Waiter,
     wavelength_bounded_spectra,
 )
-from ibex_bluesky_core.utils import polarization
+from ibex_bluesky_core.utils import polarisation
 
 
 @pytest.fixture
@@ -219,7 +219,7 @@ async def test_dae(
     return dae
 
 
-# Polarization
+# polarisation
 @pytest.mark.parametrize(
     ("a", "b", "variance_a", "variance_b", "expected_value", "expected_uncertainty"),
     [
@@ -231,7 +231,7 @@ async def test_dae(
         (100.0, 60.0, 1.0, 2.0, 0.25, 0.0120017902310447),
     ],
 )
-def test_polarization_function_calculates_accurately(
+def test_polarisation_function_calculates_accurately(
     a: float,
     b: float,
     variance_a: float,
@@ -241,7 +241,7 @@ def test_polarization_function_calculates_accurately(
 ):
     var_a = sc.Variable(dims=[], values=a, variances=variance_a, unit="", dtype="float64")
     var_b = sc.Variable(dims=[], values=b, variances=variance_b, unit="", dtype="float64")
-    result_value = polarization(var_a, var_b)
+    result_value = polarisation(var_a, var_b)
 
     result_uncertainty = result_value.variance**0.5  # uncertainty is sqrt of variance
 
@@ -265,7 +265,7 @@ def test_polarization_function_calculates_accurately(
         # These uncertainty numbers were calculated using python's 'uncertainties' library
     ],
 )
-def test_polarization_2_arrays(
+def test_polarisation_2_arrays(
     a: float,
     b: float,
     variances_a: float,
@@ -276,7 +276,7 @@ def test_polarization_2_arrays(
     var_a = sc.Variable(dims=["x"], values=a, variances=variances_a, unit="")
     var_b = sc.Variable(dims=["x"], values=b, variances=variances_b, unit="")
 
-    result_value = polarization(var_a, var_b)
+    result_value = polarisation(var_a, var_b)
 
     result_uncertainties = (result_value.variances) ** 0.5
 
@@ -285,25 +285,25 @@ def test_polarization_2_arrays(
 
 
 # test that units don't match
-def test_polarization_units_mismatch():
+def test_polarisation_units_mismatch():
     var_a = sc.Variable(dims=["x"], values=[1], variances=[0.1], unit="m", dtype="float64")
     var_b = sc.Variable(dims=["x"], values=[1], variances=[0.1], unit="u", dtype="float64")
 
     with pytest.raises(
         expected_exception=ValueError, match=r"The units of a and b are not equivalent."
     ):
-        polarization(var_a, var_b)
+        polarisation(var_a, var_b)
 
 
 # test that arrays are of unmatching sizes
-def test_polarization_arrays_of_different_sizes():
+def test_polarisation_arrays_of_different_sizes():
     var_a = sc.Variable(dims=["x"], values=[1, 2], variances=[0.1, 0.1], unit="m", dtype="float64")
     var_b = sc.Variable(dims=["x"], values=[1], variances=[0.1], unit="m", dtype="float64")
 
     with pytest.raises(
         expected_exception=ValueError, match=r"Dimensions/shape of a and b must match."
     ):
-        polarization(var_a, var_b)
+        polarisation(var_a, var_b)
 
 
 def test_wavelength_bounded_normalizer_publishes_wavelength_bands(
@@ -525,7 +525,7 @@ async def test_polarising_reducer(
                 value=case["down_intensity"], variance=case["down_stddev"], dtype=float
             )
 
-            expected_polarisation = polarization(intensity_up, intensity_down)
+            expected_polarisation = polarisation(intensity_up, intensity_down)
             expected_ratio = intensity_up / intensity_down
 
             # Verify setter was called with correct values
