@@ -297,10 +297,24 @@ If you don't specify either of these options, they will default to summing over 
 
 ### Polarisation/Asymmetry
 
-Polarisation refers to the property of transverse waves which specifies the geometrical orientation of the 
-oscillations. 
+ibex_bluesky_core provides a helper method,
+{py:obj}`ibex_bluesky_core.utils.polarisation`, for calculating the quantity (a-b)/(a+b). This quantity is used, for example, in neutron polarisation measurements, and in calculating asymmetry for muon measurements.
 
-The Polarisation function provided will calculate the Polarisation between two values, A and B, which 
+For this expression, scipp's default uncertainty propagation rules cannot be used as the uncertainties on (a-b) are correlated with those of (a+b) in the division step - but scipp assumes uncorrelated data. This helper method calculates the uncertainties following linear error propagation theory, using the partial derivatives of the above expression.
+
+The partial derivatives are:
+
+$ \frac{\delta}{\delta a}\Big(\frac{a - b}{a + b}) = \frac{2b}{(a+b)^2} $
+
+$ \frac{\delta}{\delta b}\Big(\frac{a - b}{a + b}) = -\frac{2a}{(a+b)^2} $
+
+
+Which then means the variances computed by this helper function are:
+
+$ Variance = (\frac{\delta}{\delta a}^2 * variance_a) + (\frac{\delta}{\delta b}^2 * variance_b)  $ 
+
+
+The polarisation funtion provided will calculate the polarization between two values, A and B, which 
 have different definitions based on the instrument context.
 
 Instrument-Specific Interpretations
@@ -316,7 +330,7 @@ A and B refer to Measurements from different detector banks.
 
 {py:obj}`ibex_bluesky_core.utils.polarisation`
 
-See [`DualRunDae`](#DualRunDae) and [`PolarisationReducer`](#PolarisationReducer) for how this is integrated into DAE behaviour. 
+See [`PolarisationReducer`](#PolarisationReducer) for how this is integrated into DAE behaviour. 
 
 ## Waiters
 

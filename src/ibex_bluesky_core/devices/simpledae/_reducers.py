@@ -33,10 +33,14 @@ VARIANCE_ADDITION = 0.5
 async def sum_spectra(spectra: Collection[DaeSpectra]) -> sc.Variable | sc.DataArray:
     """Read and sum a number of spectra from the DAE.
 
-    Returns a scipp scalar, which has .value and .variance properties for accessing the sum
-    and variance respectively of the summed counts.
+    Args:
+        spectra: a Collection type object of DAE spectra
 
-    More info on scipp scalars can be found here: https://scipp.github.io/generated/functions/scipp.scalar.html
+    Returns:
+        scipp :external+scipp:py:obj:`Variable <scipp.Variable>`
+        or :external+scipp:py:obj:`DataArray <scipp.DataArray>` describing
+        the sum of the provided spectra.
+
     """
     logger.info("Summing %d spectra using scipp", len(spectra))
     summed_counts = sc.scalar(value=0, unit=sc.units.counts, dtype="float64")
@@ -52,13 +56,14 @@ def tof_bounded_spectra(
     """Sum a set of neutron spectra between the specified time of flight bounds.
 
     Args:
-        bounds: A scipp array of size 2, no variances, unit of us,
-            where the second element must be larger than the first.
+        bounds: A scipp :external+scipp:py:obj:`array <scipp.array>` of size 2, no variances, unit
+            of us, where the second element must be larger than the first.
 
-    Returns a scipp scalar, which has .value and .variance properties for accessing the sum
-    and variance respectively of the summed counts.
+    :rtype:
+        scipp :external+scipp:py:obj:`scalar <scipp.scalar>`
 
-    More info on scipp arrays and scalars can be found here: https://scipp.github.io/generated/functions/scipp.scalar.html
+    Returns a scipp :external+scipp:py:obj:`scalar <scipp.scalar>`, which has .value and .variance
+    properties for accessing the sum and variance respectively of the summed counts.
 
     """
     bounds_value = 2
@@ -84,17 +89,22 @@ def wavelength_bounded_spectra(
     """Sum a set of neutron spectra between the specified wavelength bounds.
 
     Args:
-        bounds: A scipp array of size 2 of wavelength bounds, in units of angstrom,
-            where the second element must be larger than the first.
-        total_flight_path_length: A scipp scalar of Ltotal (total flight path length), the path
-            length from neutron source to detector or monitor, in units of meters.
+        bounds: A scipp :external+scipp:py:obj:`array <scipp.array>` of size 2 of wavelength bounds,
+            in units of angstrom, where the second element must be larger than the first.
+        total_flight_path_length: A scipp :external+scipp:py:obj:`scalar <scipp.scalar>` of Ltotal
+            (total flight path length), the path length from neutron source to detector or monitor,
+            in units of meters.
+
+    :rtype:
+        scipp :external+scipp:py:obj:`scalar <scipp.scalar>`
 
     Time of flight is converted to wavelength using scipp neutron's library function
-        `wavelength_from_tof`, more info on which can be found here:
-        https://scipp.github.io/scippneutron/generated/modules/scippneutron.conversion.tof.wavelength_from_tof.html
+    `wavelength_from_tof`, more info on which can be found here:
+    :external+scippneutron:py:obj:`wavelength_from_tof
+    <scippneutron.conversion.tof.wavelength_from_tof>`
 
-    Returns a scipp scalar, which has .value and .variance properties for accessing the sum
-    and variance respectively of the summed counts.
+    Returns a scipp :external+scipp:py:obj:`scalar <scipp.scalar>`, which has .value and .variance
+    properties for accessing the sum and variance respectively of the summed counts.
 
     """
     bounds_value = 2
@@ -119,6 +129,60 @@ def wavelength_bounded_spectra(
         return summed_counts
 
     return sum_spectra_with_wavelength
+
+
+def polarization(
+    a: sc.Variable | sc.DataArray, b: sc.Variable | sc.DataArray
+) -> sc.Variable | sc.DataArray:
+    """Calculate polarization value and propagate uncertainties.
+
+    This function computes the polarization given by the formula (a-b)/(a+b)
+    and propagates the uncertainties associated with a and b.
+
+    Args:
+        a: scipp :external+scipp:py:obj:`Variable <scipp.Variable>`
+            or :external+scipp:py:obj:`DataArray <scipp.DataArray>`
+        b: scipp :external+scipp:py:obj:`Variable <scipp.Variable>`
+            or :external+scipp:py:obj:`DataArray <scipp.DataArray>`
+
+    Returns:
+        polarization, ``(a - b) / (a + b)``, as a scipp
+        :external+scipp:py:obj:`Variable <scipp.Variable>`
+        or :external+scipp:py:obj:`DataArray <scipp.DataArray>`
+
+    On SANS instruments e.g. LARMOR, A and B correspond to intensity in different DAE
+    periods (before/after switching a flipper) and the output is interpreted as a neutron
+    polarization ratio.
+
+    On reflectometry instruments e.g. POLREF, the situation is the same as on LARMOR.
+
+    On muon instruments, A and B correspond to measuring from forward/backward detector
+    banks, and the output is interpreted as a muon asymmetry.
+
+    """
+    if a.unit != b.unit:
+        raise ValueError("The units of a and b are not equivalent.")
+    if a.sizes != b.sizes:
+        raise ValueError("Dimensions/shape of a and b must match.")
+
+    # This line allows for dims, units, and dtype to be handled by scipp
+    polarization_value = (a - b) / (a + b)
+
+    variances_a = a.variances
+    variances_b = b.variances
+    values_a = a.values
+    values_b = b.values
+
+    # Calculate partial derivatives
+    partial_a = 2 * values_b / (values_a + values_b) ** 2
+    partial_b = -2 * values_a / (values_a + values_b) ** 2
+
+    variance_return = (partial_a**2 * variances_a) + (partial_b**2 * variances_b)
+
+    # Propagate uncertainties
+    polarization_value.variances = variance_return
+
+    return polarization_value
 
 
 class ScalarNormalizer(Reducer, StandardReadable, ABC):
