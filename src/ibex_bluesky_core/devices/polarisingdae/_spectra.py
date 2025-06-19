@@ -1,6 +1,7 @@
 from ophyd_async.core import StandardReadable, soft_signal_r_and_setter
 
-__all__ = ["_WavelengthBand", "_PolarisedWavelengthBand"]
+__all__ = ["_PolarisedWavelengthBand", "_WavelengthBand"]
+
 
 class _WavelengthBand(StandardReadable):
     """Subdevice for a single wavelength band."""
