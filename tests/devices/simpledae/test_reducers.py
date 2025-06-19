@@ -982,26 +982,13 @@ def test_polarization_function_calculates_accurately(a, b, variance_a, variance_
     # 'Uncertainties' library ufloat type; a nominal value and an error value
     a_ufloat = ufloat(a, variance_a)
     b_ufloat = ufloat(b, variance_b)
-
+    
     # polarization value, i.e. (a - b) / (a + b)
     polarization_ufloat = (a_ufloat.n - b_ufloat.n) / (a_ufloat.n + b_ufloat.n)
+    polarization_scipp = polarization(a, b)
 
-    # the partial derivatives of a and b, calculated with 'uncertainties' library's ufloat type
-    partial_a = (2 * b_ufloat.n) / ((a_ufloat.n + b_ufloat.n) ** 2)
-    partial_b = (-2 * a_ufloat.n) / ((a_ufloat.n + b_ufloat.n) ** 2)
-
-    # variance calculated with 'uncertainties' library
-    variance = (partial_a**2 * a_ufloat.s) + (partial_b**2 * b_ufloat.s)
-    uncertainty = variance**0.5  # uncertainty is sqrt of variance
-
-    # Two scipp scalars, to test our polarization function
-    var_a = sc.scalar(value=a, variance=variance_a, unit="", dtype="float64")
-    var_b = sc.scalar(value=b, variance=variance_b, unit="", dtype="float64")
-    result_value = polarization(var_a, var_b)
-    result_uncertainy = (result_value.variance) ** 0.5  # uncertainty is sqrt of variance
-
-    assert result_value.value == pytest.approx(polarization_ufloat)
-    assert result_uncertainy == pytest.approx(uncertainty)
+    assert polarization_ufloat.nominal == pytest.approx(polarization_scipp)
+    assert polarization_ufloat.stddev == pytest.approx(sqrt(polarization_scipp.variance))
 
 
 # test that arrays are supported
