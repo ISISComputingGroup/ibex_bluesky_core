@@ -72,7 +72,7 @@ class DualRunDae(
         reducer_up: TReducer_co,
         reducer_down: TReducer_co,
         flipper: Movable[float],
-        flipper_states: tuple[float, float],
+        flipper_states: list[float],
     ) -> None:
         """Initialise a DAE with polarisation strategies.
 
@@ -91,7 +91,7 @@ class DualRunDae(
 
         """
         self.flipper: Reference[Movable[float]] = Reference(flipper)
-        self.flipper_states: tuple[float, float] = flipper_states
+        self.flipper_states: list[float] = flipper_states
 
         self._prefix = prefix
         self.controller: TController_co = controller
@@ -169,7 +169,7 @@ def polarising_dae(  # noqa: PLR0913
     det_pixels: list[int],
     frames: int,
     flipper: Movable[float],
-    flipper_states: tuple[float, float],
+    flipper_states: list[float],
     intervals: list[sc.Variable],
     total_flight_path_length: sc.Variable,
     periods: bool = True,

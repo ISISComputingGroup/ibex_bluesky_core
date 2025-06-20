@@ -64,7 +64,7 @@ async def mock_dae(
         reducer_up=mock_reducer_up,
         reducer_down=mock_reducer_down,
         flipper=flipper,
-        flipper_states=(0.0, 1.0),
+        flipper_states=[0.0, 1.0],
     )
 
     await mock_dae.connect(mock=True)
@@ -111,7 +111,7 @@ async def test_polarising_dae_sets_up_periods_correctly(flipper: SignalRW[float]
     intervals = [
         sc.array(dims=["tof"], values=[0, 9999999999.0], unit=sc.units.angstrom, dtype="float64")
     ]
-    flipper_states = (0.0, 1.0)
+    flipper_states = [0.0, 1.0]
     total_flight_path_length = sc.scalar(value=10, unit=sc.units.m)
     save_run = False
 
@@ -142,7 +142,7 @@ async def test_polarising_dae_sets_up_single_period_correctly(flipper: SignalRW[
     intervals = [
         sc.array(dims=["tof"], values=[0, 9999999999.0], unit=sc.units.angstrom, dtype="float64")
     ]
-    flipper_states = (0.0, 1.0)
+    flipper_states = [0.0, 1.0]
     total_flight_path_length = sc.scalar(value=10, unit=sc.units.m)
     save_run = False
 

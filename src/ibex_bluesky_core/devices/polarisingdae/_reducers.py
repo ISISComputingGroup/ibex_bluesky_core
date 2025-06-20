@@ -103,6 +103,30 @@ class MultiWavelengthBandNormalizer(Reducer, StandardReadable):
         """Publish interesting signals derived or used by this reducer."""
         return list(self._wavelength_bands.values())
 
+    @property
+    def det_counts_names(self) -> list[str]:
+        return [band.det_counts.name for band in self._wavelength_bands.values()]
+
+    @property
+    def det_counts_stddev_names(self) -> list[str]:
+        return [band.det_counts_stddev.name for band in self._wavelength_bands.values()]
+
+    @property
+    def mon_counts_names(self) -> list[str]:
+        return [band.mon_counts.name for band in self._wavelength_bands.values()]
+
+    @property
+    def mon_counts_stddev_names(self) -> list[str]:
+        return [band.mon_counts_stddev.name for band in self._wavelength_bands.values()]
+
+    @property
+    def intensity_names(self) -> list[str]:
+        return [band.intensity.name for band in self._wavelength_bands.values()]
+
+    @property
+    def intensity_stddev_names(self) -> list[str]:
+        return [band.intensity_stddev.name for band in self._wavelength_bands.values()]
+
 
 class PolarisationReducer(Reducer, StandardReadable):
     """Calculate polarisation from 'spin-up' and 'spin-down' states of a polarising DAE."""

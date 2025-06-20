@@ -182,7 +182,7 @@ async def mock_dae(
         reducer_up=mock_reducer_up,
         reducer_down=mock_reducer_down,
         flipper=flipper,
-        flipper_states=(0.0, 1.0),
+        flipper_states=[0.0, 1.0],
     )
 
     await mock_polarising_dae.connect(mock=True)
@@ -212,7 +212,7 @@ async def test_dae(
         reducer_up=normalizer_dual,
         reducer_down=normalizer_dual_alt,
         flipper=flipper,
-        flipper_states=(0.0, 1.0),
+        flipper_states=[0.0, 1.0],
     )
 
     await dae.connect(mock=True)
@@ -351,7 +351,7 @@ async def test_wavelength_bounded_normalizer(
             )
 
 
-async def test_wavelength_bounded_normaliser_zero_counts(
+async def test_mutli_wavelength_band_normalizer_zero_counts(
     mock_dae: DualRunDae, normalizer_single: MultiWavelengthBandNormalizer
 ):
     """Test that MultiWavelengthBandNormalizer handles zero counts correctly."""
@@ -378,6 +378,36 @@ async def test_wavelength_bounded_normaliser_zero_counts(
         match=re.escape("Cannot normalize; got zero monitor counts in wavelength band 0."),
     ):
         await normalizer_single.reduce_data(mock_dae)
+
+
+def test_mutli_wavelength_band_normalizer_name_properties(
+    normalizer_dual: MultiWavelengthBandNormalizer,
+):
+    """Test that the counts/intensity related name properties return correct values."""
+    # Get all the wavelength bands
+    bands = list(normalizer_dual._wavelength_bands.values())
+
+    # Test detector counts names
+    assert normalizer_dual.det_counts_names == [band.det_counts.name for band in bands]
+
+    # Test detector counts stddev names
+    assert normalizer_dual.det_counts_stddev_names == [
+        band.det_counts_stddev.name for band in bands
+    ]
+
+    # Test monitor counts names
+    assert normalizer_dual.mon_counts_names == [band.mon_counts.name for band in bands]
+
+    # Test monitor counts stddev names
+    assert normalizer_dual.mon_counts_stddev_names == [
+        band.mon_counts_stddev.name for band in bands
+    ]
+
+    # Test intensity names
+    assert normalizer_dual.intensity_names == [band.intensity.name for band in bands]
+
+    # Test intensity stddev names
+    assert normalizer_dual.intensity_stddev_names == [band.intensity_stddev.name for band in bands]
 
 
 async def test_polarising_reducer(
