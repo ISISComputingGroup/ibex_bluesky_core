@@ -72,6 +72,7 @@ def _callbacks_init(
     axis_dev_name: str,
     axes: list[Axes],
 ) -> tuple[ChainedLiveFit, list[CallbackBase]]:
+    """Initialise callbacks for echoscan_axis_ib."""
     spinecho_cb = ChainedLiveFit(
         method=model,
         y=polarisation_names,
@@ -105,7 +106,7 @@ def _callbacks_init(
     return spinecho_cb, [table_cb, hrfile_cb, *plots_cb, *lflogs_cb]
 
 
-class DAESettingsCM:
+class _DAESettingsCM:
     """Context manager for setting DAE settings."""
 
     def __init__(
@@ -180,7 +181,7 @@ def echoscan_axis_ib(
         yield from ensure_connected(flipper_dev, dae, axis_dev)
         yield from scan([dae], axis_dev, config.start, config.stop, num=config.num_points)
 
-    with DAESettingsCM(dae, config.dae_settings, config.tcb_settings):
+    with _DAESettingsCM(dae, config.dae_settings, config.tcb_settings):
         yield from _inner()
 
     # Returns the fit parameter for the last livefit in the chain
