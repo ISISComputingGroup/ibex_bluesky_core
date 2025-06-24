@@ -6,12 +6,13 @@ from dataclasses import dataclass, field
 import lmfit
 import scipp as sc
 from bluesky import plan_stubs as bps
-from bluesky.callbacks import LiveTable
+from bluesky.callbacks import CallbackBase, LiveTable
 from bluesky.plans import scan
 from bluesky.preprocessors import subs_decorator
 from bluesky.utils import Msg
 from lmfit import Parameter
 from matplotlib import pyplot as plt
+from matplotlib.axes import Axes
 from ophyd_async.plan_stubs import ensure_connected
 
 from ibex_bluesky_core.callbacks import (
@@ -28,7 +29,7 @@ from ibex_bluesky_core.devices.dae import (
     TimeRegime,
     TimeRegimeRow,
 )
-from ibex_bluesky_core.devices.polarisingdae import polarising_dae
+from ibex_bluesky_core.devices.polarisingdae import DualRunDae, polarising_dae
 from ibex_bluesky_core.fitting import DampedOsc, FitMethod
 from ibex_bluesky_core.plan_stubs import call_qt_aware
 
@@ -63,7 +64,82 @@ class AutoTuneConfig:
     param: str = "center"
 
 
-def echoscan_axis_ib(  # noqa: PLR0914
+def _callbacks_init(
+    config: EchoScanConfig,
+    model: FitMethod,
+    polarisation_names: list[str],
+    polarisation_stddev_names: list[str],
+    axis_dev_name: str,
+    axes: list[Axes],
+) -> tuple[ChainedLiveFit, list[CallbackBase]]:
+    spinecho_cb = ChainedLiveFit(
+        method=model,
+        y=polarisation_names,
+        yerr=polarisation_stddev_names,
+        x=axis_dev_name,
+        ax=list(axes),
+    )
+
+    plots_cb = [
+        LivePlot(y=polarisation_names[i], x=axis_dev_name, marker="x", linestyle="none", ax=axes[i])
+        for i in range(len(config.wavelength_bounds))
+    ]
+
+    measured_fields = [axis_dev_name, *polarisation_names, *polarisation_stddev_names]
+
+    table_cb = LiveTable(measured_fields)
+    hrfile_cb = HumanReadableFileCallback(measured_fields, output_dir=None)
+
+    lflogs_cb = [
+        LiveFitLogger(
+            livefit=spinecho_cb.live_fits[i],
+            x=axis_dev_name,
+            y=polarisation_names[i],
+            yerr=polarisation_stddev_names[i],
+            output_dir=None,
+            postfix="",
+        )
+        for i in range(len(config.wavelength_bounds))
+    ]
+
+    return spinecho_cb, [table_cb, hrfile_cb, *plots_cb, *lflogs_cb]
+
+
+class DAESettingsCM:
+    """Context manager for setting DAE settings."""
+
+    def __init__(
+        self,
+        dae: DualRunDae,
+        dae_settings: DaeSettingsData | None = None,
+        tcb_settings: DaeTCBSettingsData | None = None,
+    ) -> None:
+        """Init."""
+        self.dae_settings = dae_settings
+        self.tcb_settings = tcb_settings
+        self.dae = dae
+
+    def __enter__(self) -> Generator[Msg, None, None]:
+        """Make backups and set DAE settings."""
+        dae_settings_backup = yield from bps.wait_for([self.dae.dae_settings.locate])
+        self.dae_settings_backup_sp = dae_settings_backup["setpoint"]
+
+        tcb_settings_backup = yield from bps.wait_for([self.dae.tcb_settings.locate])
+        self.tcb_settings_backup_sp = tcb_settings_backup["setpoint"]
+
+        if self.dae_settings:
+            self.dae.dae_settings.set(self.dae_settings)
+
+        if self.tcb_settings:
+            self.dae.tcb_settings.set(self.tcb_settings)
+
+    def __exit__(self, *args: object) -> None:
+        """Restore DAE settings."""
+        self.dae.dae_settings.set(self.dae_settings_backup_sp)
+        self.dae.tcb_settings.set(self.tcb_settings_backup_sp)
+
+
+def echoscan_axis_ib(
     config: EchoScanConfig, model: FitMethod, param: str
 ) -> Generator[Msg, None, lmfit.Parameter]:
     """Technique for doing a general echo scan."""
@@ -95,61 +171,19 @@ def echoscan_axis_ib(  # noqa: PLR0914
     polarisation_names = dae.reducer.polarisation_names
     polarisation_stddev_names = dae.reducer.polarisation_stddev_names
 
-    measured_fields = [axis_dev.name, *polarisation_names, *polarisation_stddev_names]
-
-    # Callbacks
-    spinecho_cb = ChainedLiveFit(
-        method=model,
-        y=polarisation_names,
-        yerr=polarisation_stddev_names,
-        x=axis_dev.name,
-        ax=list(axes),
+    spinecho_cb, callbacks = _callbacks_init(
+        config, model, polarisation_names, polarisation_stddev_names, axis_dev.name, axes
     )
 
-    plots_cb = [
-        LivePlot(y=polarisation_names[i], x=axis_dev.name, marker="x", linestyle="none", ax=axes[i])
-        for i in range(len(config.wavelength_bounds))
-    ]
-
-    table_cb = LiveTable(measured_fields)
-    hrfile_cb = HumanReadableFileCallback(measured_fields, output_dir=None)
-
-    lflogs_cb = [
-        LiveFitLogger(
-            livefit=spinecho_cb.live_fits[i],
-            x=axis_dev.name,
-            y=polarisation_names[i],
-            yerr=polarisation_stddev_names[i],
-            output_dir=None,
-            postfix="",
-        )
-        for i in range(len(config.wavelength_bounds))
-    ]
-
-    @subs_decorator([spinecho_cb, table_cb, hrfile_cb, *plots_cb, *lflogs_cb])
+    @subs_decorator([spinecho_cb, *callbacks])
     def _inner() -> Generator[Msg, None, None]:
         yield from ensure_connected(flipper_dev, dae, axis_dev)
         yield from scan([dae], axis_dev, config.start, config.stop, num=config.num_points)
 
-    dae_settings_backup = yield from bps.wait_for([dae.dae_settings.locate])
-    dae_settings_backup_sp = dae_settings_backup["setpoint"]
-
-    tcb_settings_backup = yield from bps.wait_for([dae.tcb_settings.locate])
-    tcb_settings_backup_sp = tcb_settings_backup["setpoint"]
-
-    if config.dae_settings:
-        dae.dae_settings.set(config.dae_settings)
-
-    if config.tcb_settings:
-        dae.tcb_settings.set(config.tcb_settings)
-
-    try:
+    with DAESettingsCM(dae, config.dae_settings, config.tcb_settings):
         yield from _inner()
 
-    finally:
-        dae.dae_settings.set(dae_settings_backup_sp)
-        dae.tcb_settings.set(tcb_settings_backup_sp)
-
+    # Returns the fit parameter for the last livefit in the chain
     return spinecho_cb.live_fits[-1].result.params[param]
 
 
