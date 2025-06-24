@@ -1,7 +1,7 @@
 """An interface to the DAE for bluesky, suited for polarisation."""
 
 import logging
-from typing import Generic
+from typing import Generic, TypeAlias
 
 import scipp as sc
 from bluesky.protocols import Movable, Triggerable
@@ -38,11 +38,16 @@ __all__ = [
     "polarising_dae",
 ]
 
-
 TController_co = TypeVar("TController_co", bound="Controller", default=Controller, covariant=True)
 TWaiter_co = TypeVar("TWaiter_co", bound="Waiter", default=Waiter, covariant=True)
-TReducer_co = TypeVar(
-    "TReducer_co",
+TPReducer_co = TypeVar(
+    "TPReducer_co",
+    bound="Reducer",
+    default=Reducer,
+    covariant=True,
+)
+TMWBReducer_co = TypeVar(
+    "TMWBReducer_co",
     bound="Reducer",
     default=Reducer,
     covariant=True,
@@ -53,7 +58,7 @@ class DualRunDae(
     Dae,
     Triggerable,
     AsyncStageable,
-    Generic[TController_co, TWaiter_co, TReducer_co],
+    Generic[TController_co, TWaiter_co, TPReducer_co, TMWBReducer_co],
 ):
     """DAE with strategies for data collection, waiting, and reduction, suited for polarisation.
 
@@ -68,9 +73,9 @@ class DualRunDae(
         name: str = "DAE",
         controller: TController_co,
         waiter: TWaiter_co,
-        reducer: TReducer_co,
-        reducer_up: TReducer_co,
-        reducer_down: TReducer_co,
+        reducer: TPReducer_co,
+        reducer_up: TMWBReducer_co,
+        reducer_down: TMWBReducer_co,
         flipper: Movable[float],
         flipper_states: list[float],
     ) -> None:
@@ -96,9 +101,9 @@ class DualRunDae(
         self._prefix = prefix
         self.controller: TController_co = controller
         self.waiter: TWaiter_co = waiter
-        self.reducer_up: TReducer_co = reducer_up
-        self.reducer_down: TReducer_co = reducer_down
-        self.reducer: TReducer_co = reducer
+        self.reducer_up: TMWBReducer_co = reducer_up
+        self.reducer_down: TMWBReducer_co = reducer_down
+        self.reducer: TPReducer_co = reducer
 
         logger.info(
             """created polarisingdae with prefix=%s, controller=%s,
@@ -164,6 +169,11 @@ class DualRunDae(
         await self.controller.teardown(self)
 
 
+PolarisingDualRunDae: TypeAlias = DualRunDae[
+    Controller, Waiter, PolarisationReducer, MultiWavelengthBandNormalizer
+]
+
+
 def polarising_dae(  # noqa: PLR0913
     *,
     det_pixels: list[int],
@@ -175,7 +185,7 @@ def polarising_dae(  # noqa: PLR0913
     periods: bool = True,
     monitor: int = 1,
     save_run: bool = False,
-) -> DualRunDae:
+) -> PolarisingDualRunDae:
     """Create a Polarising DAE which uses wavelength binning and calculates polarisation.
 
     This is a different version of monitor_normalising_dae, with a more complex set of strategies.
@@ -232,9 +242,9 @@ def polarising_dae(  # noqa: PLR0913
         prefix=prefix,
         controller=controller,
         waiter=waiter,
+        reducer=reducer,
         reducer_up=reducer_up,
         reducer_down=reducer_down,
-        reducer=reducer,
         flipper=flipper,
         flipper_states=flipper_states,
     )
