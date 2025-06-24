@@ -260,7 +260,8 @@ class ChainedLiveFit(CallbackBase):
 
     This callback handles a sequence of LiveFit instances where the parameters from each
     completed fit serve as the initial guess for the subsequent fit. Optional plotting
-    is built in using LivePlotFits.
+    is built in using LivePlotFits. Note that you should not subscribe to the LiveFit/LiveFitPlot
+    callbacks directly, but rather subscribe just this callback.
     """
 
     def __init__(
