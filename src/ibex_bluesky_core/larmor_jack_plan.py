@@ -2,6 +2,7 @@
 
 from collections.abc import Generator
 from dataclasses import dataclass, field
+from pathlib import Path
 
 import lmfit
 import scipp as sc
@@ -29,9 +30,24 @@ from ibex_bluesky_core.devices.dae import (
     TimeRegime,
     TimeRegimeRow,
 )
-from ibex_bluesky_core.devices.polarisingdae import DualRunDae, polarising_dae
+from ibex_bluesky_core.devices.polarisingdae import polarising_dae
 from ibex_bluesky_core.fitting import DampedOsc, FitMethod
 from ibex_bluesky_core.plan_stubs import call_qt_aware
+
+
+def _get_detector_i(detector: int | str) -> int:
+    """Get detector index from name."""
+    if isinstance(detector, int):
+        return detector
+
+    elif detector == "alanis":
+        return 12
+
+    elif detector == "scruffy":
+        return 13
+
+    else:
+        raise ValueError("Detector not found.")
 
 
 @dataclass
@@ -47,7 +63,7 @@ class EchoScanConfig:
     )
     frames: int = 200
     flight_path_length_m: float = 10
-    detector: int = 1  # or whatever alanis is
+    detector: int | str = "alanis"
     monitor: int = 2
     flipper: str = "IN:LARMOR:SPINFLIPPER_01:FLIPSTATE"
     flipper_states: list[float] = field(default_factory=lambda: [1.0, 0.0])
@@ -89,7 +105,9 @@ def _callbacks_init(
     measured_fields = [axis_dev_name, *polarisation_names, *polarisation_stddev_names]
 
     table_cb = LiveTable(measured_fields)
-    hrfile_cb = HumanReadableFileCallback(measured_fields, output_dir=None)
+    hrfile_cb = HumanReadableFileCallback(
+        measured_fields, output_dir=Path(r"C:\temp")
+    )  # change this
 
     lflogs_cb = [
         LiveFitLogger(
@@ -97,47 +115,13 @@ def _callbacks_init(
             x=axis_dev_name,
             y=polarisation_names[i],
             yerr=polarisation_stddev_names[i],
-            output_dir=None,
-            postfix="",
+            output_dir=Path(r"C:\temp"),  # change this
+            postfix=f"_band{i}",
         )
         for i in range(len(config.wavelength_bounds))
     ]
 
     return spinecho_cb, [table_cb, hrfile_cb, *plots_cb, *lflogs_cb]
-
-
-class _DAESettingsCM:
-    """Context manager for setting DAE settings."""
-
-    def __init__(
-        self,
-        dae: DualRunDae,
-        dae_settings: DaeSettingsData | None = None,
-        tcb_settings: DaeTCBSettingsData | None = None,
-    ) -> None:
-        """Init."""
-        self.dae_settings = dae_settings
-        self.tcb_settings = tcb_settings
-        self.dae = dae
-
-    def __enter__(self) -> Generator[Msg, None, None]:
-        """Make backups and set DAE settings."""
-        dae_settings_backup = yield from bps.wait_for([self.dae.dae_settings.locate])
-        self.dae_settings_backup_sp = dae_settings_backup["setpoint"]
-
-        tcb_settings_backup = yield from bps.wait_for([self.dae.tcb_settings.locate])
-        self.tcb_settings_backup_sp = tcb_settings_backup["setpoint"]
-
-        if self.dae_settings:
-            self.dae.dae_settings.set(self.dae_settings)
-
-        if self.tcb_settings:
-            self.dae.tcb_settings.set(self.tcb_settings)
-
-    def __exit__(self, *args: object) -> None:
-        """Restore DAE settings."""
-        self.dae.dae_settings.set(self.dae_settings_backup_sp)
-        self.dae.tcb_settings.set(self.tcb_settings_backup_sp)
 
 
 def echoscan_axis_ib(
@@ -156,7 +140,7 @@ def echoscan_axis_ib(
     total_flight_path_length = sc.scalar(value=config.flight_path_length_m, unit=sc.units.m)
 
     dae = polarising_dae(
-        det_pixels=[config.detector],
+        det_pixels=[_get_detector_i(config.detector)],
         frames=config.frames,
         flipper=flipper_dev,
         flipper_states=config.flipper_states,
@@ -181,8 +165,19 @@ def echoscan_axis_ib(
         yield from ensure_connected(flipper_dev, dae, axis_dev)
         yield from scan([dae], axis_dev, config.start, config.stop, num=config.num_points)
 
-    with _DAESettingsCM(dae, config.dae_settings, config.tcb_settings):
-        yield from _inner()
+    # waiting for daniel's implementation to be able to do this
+    # as can't do a context manager
+    # Here we want to make a backup of dae and tcb settings
+    # then set new dae/tcb settings from config
+
+    # dae_settings_backup = yield from bps.wait_for([self.dae.dae_settings.locate])
+    # self.dae_settings_backup_sp = dae_settings_backup["setpoint"]
+
+    # tcb_settings_backup = yield from bps.wait_for([self.dae.tcb_settings.locate])
+    # self.tcb_settings_backup_sp = tcb_settings_backup["setpoint"]
+
+    yield from _inner()
+    # here we want to restore dae/tcb settings
 
     # Returns the fit parameter for the last livefit in the chain
     return spinecho_cb.live_fits[-1].result.params[param]
@@ -198,22 +193,23 @@ def auto_tune_ib(
     if tune_config.model is None:
         tune_config.model = DampedOsc.fit()
 
-    if scan_config.detector == 1:  # or whatever alanis is
-        dae_settings = DaeSettingsData(
-            detector_filepath=r"C:\Instrument\Settings\config\NDXLARMOR\configurations\tables\Alanis_Detector.dat",
-            spectra_filepath=r"C:\Instrument\Settings\config\NDXLARMOR\configurations\tables\spectra_scanning_Alanis.dat",
-            wiring_filepath=r"C:\Instrument\Settings\config\NDXLARMOR\configurations\tables\Alanis_Wiring_dae3.dat",
-        )
-    else:
-        dae_settings = DaeSettingsData(
-            detector_filepath=r"C:\Instrument\Settings\config\NDXLARMOR\configurations\tables\scruffy_Detector.dat",
-            spectra_filepath=r"C:\Instrument\Settings\config\NDXLARMOR\configurations\tables\spectra_scanning_scruffy.dat",
-            wiring_filepath=r"C:\Instrument\Settings\config\NDXLARMOR\configurations\tables\scruffy_Wiring_dae3.dat",
-        )
+    if scan_config.dae_settings is None:
+        if scan_config.detector == "alanis":
+            scan_config.dae_settings = DaeSettingsData(
+                detector_filepath=r"C:\Instrument\Settings\config\NDXLARMOR\configurations\tables\Alanis_Detector.dat",
+                spectra_filepath=r"C:\Instrument\Settings\config\NDXLARMOR\configurations\tables\spectra_scanning_Alanis.dat",
+                wiring_filepath=r"C:\Instrument\Settings\config\NDXLARMOR\configurations\tables\Alanis_Wiring_dae3.dat",
+            )
+        elif scan_config.detector == "scruffy":
+            scan_config.dae_settings = DaeSettingsData(
+                detector_filepath=r"C:\Instrument\Settings\config\NDXLARMOR\configurations\tables\scruffy_Detector.dat",
+                spectra_filepath=r"C:\Instrument\Settings\config\NDXLARMOR\configurations\tables\spectra_scanning_scruffy.dat",
+                wiring_filepath=r"C:\Instrument\Settings\config\NDXLARMOR\configurations\tables\scruffy_Wiring_dae3.dat",
+            )
 
-    tr0 = TimeRegime({1: TimeRegimeRow(from_=5.0, to=100000.0, steps=100.0)})
-    scan_config.tcb_settings = DaeTCBSettingsData(tcb_tables={1: tr0})
-    scan_config.dae_settings = dae_settings
+    if scan_config.tcb_settings is None:
+        tr0 = TimeRegime({1: TimeRegimeRow(from_=5.0, to=100000.0, steps=100.0)})
+        scan_config.tcb_settings = DaeTCBSettingsData(tcb_tables={1: tr0})
 
     optimal_param: Parameter = yield from echoscan_axis_ib(
         scan_config, tune_config.model, tune_config.param
