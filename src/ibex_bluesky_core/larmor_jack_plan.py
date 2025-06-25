@@ -33,6 +33,9 @@ from ibex_bluesky_core.devices.polarisingdae import polarising_dae
 from ibex_bluesky_core.fitting import DampedOsc, FitMethod
 from ibex_bluesky_core.plan_stubs import call_qt_aware
 
+ALANIS = 12
+SCRUFFY = 13
+
 
 def _get_detector_i(detector: int | str) -> int:
     """Get detector index from name."""
@@ -40,10 +43,10 @@ def _get_detector_i(detector: int | str) -> int:
         return detector
 
     elif detector == "alanis":
-        return 12
+        return ALANIS
 
     elif detector == "scruffy":
-        return 13
+        return SCRUFFY
 
     else:
         raise ValueError("Detector not found.")
@@ -105,9 +108,7 @@ def _callbacks_init(
     measured_fields = [axis_dev_name, *polarisation_names, *polarisation_stddev_names]
 
     table_cb = LiveTable(measured_fields)
-    hrfile_cb = HumanReadableFileCallback(
-        measured_fields, output_dir=None
-    )
+    hrfile_cb = HumanReadableFileCallback(measured_fields, output_dir=None)
 
     lflogs_cb = [
         LiveFitLogger(
@@ -186,14 +187,14 @@ def auto_tune_ib(
     if tune_config.model is None:
         tune_config.model = DampedOsc.fit()
 
-    if scan_config.dae_settings is None: # Only change DAE/TCB settings if not already set
-        if _get_detector_i(scan_config.detector) == 12:
+    if scan_config.dae_settings is None:  # Only change DAE/TCB settings if not already set
+        if _get_detector_i(scan_config.detector) == ALANIS:
             scan_config.dae_settings = DaeSettingsData(
                 detector_filepath=r"C:\Instrument\Settings\config\NDXLARMOR\configurations\tables\Alanis_Detector.dat",
                 spectra_filepath=r"C:\Instrument\Settings\config\NDXLARMOR\configurations\tables\spectra_scanning_Alanis.dat",
                 wiring_filepath=r"C:\Instrument\Settings\config\NDXLARMOR\configurations\tables\Alanis_Wiring_dae3.dat",
             )
-        elif _get_detector_i(scan_config.detector) == 13:
+        elif _get_detector_i(scan_config.detector) == SCRUFFY:
             scan_config.dae_settings = DaeSettingsData(
                 detector_filepath=r"C:\Instrument\Settings\config\NDXLARMOR\configurations\tables\scruffy_Detector.dat",
                 spectra_filepath=r"C:\Instrument\Settings\config\NDXLARMOR\configurations\tables\spectra_scanning_scruffy.dat",
