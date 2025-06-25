@@ -166,9 +166,9 @@ def echoscan_axis_ib(
         yield from scan([dae], axis_dev, config.start, config.stop, num=config.num_points)
 
     # waiting for daniel's implementation to be able to do this
-    # as can't do a normal context manager
     # Here we want to make a backup of dae and tcb settings
     # then set new dae/tcb settings from config
+    # e.g with_dae_tables(wiring, spectra, detector) & with_time_channels(tcbs)
     yield from _inner()
     # here we want to restore dae/tcb settings
 
