@@ -2,7 +2,6 @@
 
 from collections.abc import Generator
 from dataclasses import dataclass, field
-from pathlib import Path
 
 import lmfit
 import scipp as sc
@@ -60,6 +59,7 @@ class EchoScanConfig:
     num_points: int = 21
     wavelength_bounds: list[list[float]] = field(
         default_factory=lambda: [[222, 666], [222, 370], [370, 518], [518, 666]]
+        # change these to angstrom instead of spectrum indicies
     )
     frames: int = 200
     flight_path_length_m: float = 10
@@ -106,8 +106,8 @@ def _callbacks_init(
 
     table_cb = LiveTable(measured_fields)
     hrfile_cb = HumanReadableFileCallback(
-        measured_fields, output_dir=Path(r"C:\temp")
-    )  # change this
+        measured_fields, output_dir=None
+    )
 
     lflogs_cb = [
         LiveFitLogger(
@@ -115,7 +115,7 @@ def _callbacks_init(
             x=axis_dev_name,
             y=polarisation_names[i],
             yerr=polarisation_stddev_names[i],
-            output_dir=Path(r"C:\temp"),  # change this
+            output_dir=None,
             postfix=f"_band{i}",
         )
         for i in range(len(config.wavelength_bounds))
@@ -166,16 +166,9 @@ def echoscan_axis_ib(
         yield from scan([dae], axis_dev, config.start, config.stop, num=config.num_points)
 
     # waiting for daniel's implementation to be able to do this
-    # as can't do a context manager
+    # as can't do a normal context manager
     # Here we want to make a backup of dae and tcb settings
     # then set new dae/tcb settings from config
-
-    # dae_settings_backup = yield from bps.wait_for([self.dae.dae_settings.locate])
-    # self.dae_settings_backup_sp = dae_settings_backup["setpoint"]
-
-    # tcb_settings_backup = yield from bps.wait_for([self.dae.tcb_settings.locate])
-    # self.tcb_settings_backup_sp = tcb_settings_backup["setpoint"]
-
     yield from _inner()
     # here we want to restore dae/tcb settings
 
@@ -193,14 +186,14 @@ def auto_tune_ib(
     if tune_config.model is None:
         tune_config.model = DampedOsc.fit()
 
-    if scan_config.dae_settings is None:
-        if scan_config.detector == "alanis":
+    if scan_config.dae_settings is None: # Only change DAE/TCB settings if not already set
+        if _get_detector_i(scan_config.detector) == 12:
             scan_config.dae_settings = DaeSettingsData(
                 detector_filepath=r"C:\Instrument\Settings\config\NDXLARMOR\configurations\tables\Alanis_Detector.dat",
                 spectra_filepath=r"C:\Instrument\Settings\config\NDXLARMOR\configurations\tables\spectra_scanning_Alanis.dat",
                 wiring_filepath=r"C:\Instrument\Settings\config\NDXLARMOR\configurations\tables\Alanis_Wiring_dae3.dat",
             )
-        elif scan_config.detector == "scruffy":
+        elif _get_detector_i(scan_config.detector) == 13:
             scan_config.dae_settings = DaeSettingsData(
                 detector_filepath=r"C:\Instrument\Settings\config\NDXLARMOR\configurations\tables\scruffy_Detector.dat",
                 spectra_filepath=r"C:\Instrument\Settings\config\NDXLARMOR\configurations\tables\spectra_scanning_scruffy.dat",
@@ -208,9 +201,10 @@ def auto_tune_ib(
             )
 
     if scan_config.tcb_settings is None:
-        tr0 = TimeRegime({1: TimeRegimeRow(from_=5.0, to=100000.0, steps=100.0)})
-        scan_config.tcb_settings = DaeTCBSettingsData(tcb_tables={1: tr0})
+        tr1 = TimeRegime({1: TimeRegimeRow(from_=5.0, to=100000.0, steps=100.0)})
+        scan_config.tcb_settings = DaeTCBSettingsData(tcb_tables={1: tr1})
 
+    # Do the scan and return the parameter we're interested in
     optimal_param: Parameter = yield from echoscan_axis_ib(
         scan_config, tune_config.model, tune_config.param
     )
@@ -225,6 +219,7 @@ def auto_tune_ib(
             f"optimal param {optimal_param.stderr}"
         )
 
+    # Move the axis to the optimal value
     bps.mv(scan_config.axis, optimal_param.value)
 
     return optimal_param
