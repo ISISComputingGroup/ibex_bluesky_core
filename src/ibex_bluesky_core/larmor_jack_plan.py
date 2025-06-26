@@ -33,8 +33,10 @@ from ibex_bluesky_core.devices.polarisingdae import polarising_dae
 from ibex_bluesky_core.fitting import DampedOsc, FitMethod
 from ibex_bluesky_core.plan_stubs import call_qt_aware
 
-ALANIS = 12
-SCRUFFY = 13
+DETECTORS = {
+    "alanis": 12,
+    "scruffy": 13,
+}
 
 
 def _get_detector_i(detector: int | str) -> int:
@@ -42,11 +44,8 @@ def _get_detector_i(detector: int | str) -> int:
     if isinstance(detector, int):
         return detector
 
-    elif detector == "alanis":
-        return ALANIS
-
-    elif detector == "scruffy":
-        return SCRUFFY
+    elif detector in DETECTORS:
+        return DETECTORS[detector]
 
     else:
         raise ValueError("Detector not found.")
@@ -188,13 +187,13 @@ def auto_tune_ib(
         tune_config.model = DampedOsc.fit()
 
     if scan_config.dae_settings is None:  # Only change DAE/TCB settings if not already set
-        if _get_detector_i(scan_config.detector) == ALANIS:
+        if scan_config.detector == DETECTORS["alanis"]:
             scan_config.dae_settings = DaeSettingsData(
                 detector_filepath=r"C:\Instrument\Settings\config\NDXLARMOR\configurations\tables\Alanis_Detector.dat",
                 spectra_filepath=r"C:\Instrument\Settings\config\NDXLARMOR\configurations\tables\spectra_scanning_Alanis.dat",
                 wiring_filepath=r"C:\Instrument\Settings\config\NDXLARMOR\configurations\tables\Alanis_Wiring_dae3.dat",
             )
-        elif _get_detector_i(scan_config.detector) == SCRUFFY:
+        elif scan_config.detector == DETECTORS["scruffy"]:
             scan_config.dae_settings = DaeSettingsData(
                 detector_filepath=r"C:\Instrument\Settings\config\NDXLARMOR\configurations\tables\scruffy_Detector.dat",
                 spectra_filepath=r"C:\Instrument\Settings\config\NDXLARMOR\configurations\tables\spectra_scanning_scruffy.dat",
