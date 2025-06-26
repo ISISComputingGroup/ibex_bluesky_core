@@ -79,7 +79,7 @@ class DualRunDae(
         flipper: Movable[float],
         flipper_states: list[float],
     ) -> None:
-        """Initialise a DAE with polarisation strategies.
+        """Initialise a DualRunDae.
 
         Args:
             prefix: the PV prefix of the instrument being controlled.
