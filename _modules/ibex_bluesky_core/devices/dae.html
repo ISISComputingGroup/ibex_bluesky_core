@@ -1,0 +1,452 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ibex_bluesky_core.devices.dae &mdash; ibex_bluesky_core 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+
+  
+    <link rel="shortcut icon" href="../../../_static/favicon.svg"/>
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #343131" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            ibex_bluesky_core
+              <img src="../../../_static/logo.svg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Tutorial</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial/overview.html">Getting started</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Devices</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../devices/blocks.html">Blocks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../devices/dae.html">DAE (Data Acquisition Electronics)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Callbacks</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../callbacks/docs_logging_callback.html">Document Logging Callback</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../callbacks/file_writing.html">File writing callbacks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../callbacks/plotting.html">Plotting</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Fitting</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../fitting/fitting.html">Fitting Callback</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../fitting/livefit_logger.html">Fitting Files Callback</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../fitting/standard_fits.html">Standard Fitting Models</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Plan stubs</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../plan_stubs/external_code.html"><code class="docutils literal notranslate"><span class="pre">call_sync</span></code> (calling external code)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../plan_stubs/matplotlib_helpers.html"><span class="xref myst"><code class="docutils literal notranslate"><span class="pre">call_qt_aware</span></code></span> (matplotlib helpers)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../plan_stubs/polling.html">Continuous polling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../plan_stubs/redefining.html">Redefinition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../plan_stubs/user_input.html">User input helpers</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Plans</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../plans/plans.html">General Plans</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Plans (Reflectometry)</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../plans/reflectometry/autoalign.html">Auto-alignment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../plans/reflectometry/detector_mapping_alignment.html">Detector-mapping alignment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../plans/reflectometry/refl_param_scan.html">Reflectometry parameter scans</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Preprocessors</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../preprocessors/rbnumberpp.html">RB Number injection preprocessor</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Developer information</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../dev/create_a_release.html">Release Process</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../dev/logging.html">Logging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../dev/manual_system_testing.html">Manual system testing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../dev/set_up_dev_environment.html">Local development</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../dev/sphinx_notes.html">Notes on Sphinx and addons</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../dev/troubleshooting.html">Troubleshooting</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Architectural decisions</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../architectural_decisions/001-repo-structure.html">1. Repository structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../architectural_decisions/002-use-ophyd-async.html">2. Use <code class="docutils literal notranslate"><span class="pre">ophyd-async</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../architectural_decisions/003-run-in-process.html">3. Run in-process</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../architectural_decisions/004-use-scipp.html">4. Use <code class="docutils literal notranslate"><span class="pre">scipp</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../architectural_decisions/005-variance-addition.html">5. Variance addition to counts data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../architectural_decisions/006-where-to-put-code.html">6. Where to put code</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../_api.html">API</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #343131" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">ibex_bluesky_core</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+          <li class="breadcrumb-item"><a href="../devices.html">ibex_bluesky_core.devices</a></li>
+      <li class="breadcrumb-item active">ibex_bluesky_core.devices.dae</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for ibex_bluesky_core.devices.dae</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Utilities for the DAE device - mostly XML helpers.&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Generic</span><span class="p">,</span> <span class="n">TypeVar</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy.typing</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">npt</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">bluesky.protocols</span><span class="w"> </span><span class="kn">import</span> <span class="n">Movable</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="kn">import</span> <span class="n">int32</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ophyd_async.core</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">Array1D</span><span class="p">,</span>
+    <span class="n">AsyncStatus</span><span class="p">,</span>
+    <span class="n">SignalDatatype</span><span class="p">,</span>
+    <span class="n">SignalR</span><span class="p">,</span>
+    <span class="n">SignalRW</span><span class="p">,</span>
+    <span class="n">SignalW</span><span class="p">,</span>
+    <span class="n">StandardReadable</span><span class="p">,</span>
+    <span class="n">StandardReadableFormat</span><span class="p">,</span>
+    <span class="n">StrictEnum</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ophyd_async.epics.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">epics_signal_r</span><span class="p">,</span> <span class="n">epics_signal_rw</span><span class="p">,</span> <span class="n">epics_signal_w</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibex_bluesky_core.devices</span><span class="w"> </span><span class="kn">import</span> <span class="n">isis_epics_signal_rw</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibex_bluesky_core.devices.dae._controls</span><span class="w"> </span><span class="kn">import</span> <span class="n">BeginRunEx</span><span class="p">,</span> <span class="n">BeginRunExBits</span><span class="p">,</span> <span class="n">DaeControls</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibex_bluesky_core.devices.dae._event_mode</span><span class="w"> </span><span class="kn">import</span> <span class="n">DaeEventMode</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibex_bluesky_core.devices.dae._monitor</span><span class="w"> </span><span class="kn">import</span> <span class="n">DaeMonitor</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibex_bluesky_core.devices.dae._period</span><span class="w"> </span><span class="kn">import</span> <span class="n">DaePeriod</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibex_bluesky_core.devices.dae._period_settings</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">DaePeriodSettings</span><span class="p">,</span>
+    <span class="n">DaePeriodSettingsData</span><span class="p">,</span>
+    <span class="n">PeriodSource</span><span class="p">,</span>
+    <span class="n">PeriodType</span><span class="p">,</span>
+    <span class="n">SinglePeriodSettings</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibex_bluesky_core.devices.dae._settings</span><span class="w"> </span><span class="kn">import</span> <span class="n">DaeSettings</span><span class="p">,</span> <span class="n">DaeSettingsData</span><span class="p">,</span> <span class="n">DaeTimingSource</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibex_bluesky_core.devices.dae._spectra</span><span class="w"> </span><span class="kn">import</span> <span class="n">DaeSpectra</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibex_bluesky_core.devices.dae._tcb_settings</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">DaeTCBSettings</span><span class="p">,</span>
+    <span class="n">DaeTCBSettingsData</span><span class="p">,</span>
+    <span class="n">TCBCalculationMethod</span><span class="p">,</span>
+    <span class="n">TCBTimeUnit</span><span class="p">,</span>
+    <span class="n">TimeRegime</span><span class="p">,</span>
+    <span class="n">TimeRegimeMode</span><span class="p">,</span>
+    <span class="n">TimeRegimeRow</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;BeginRunEx&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;BeginRunExBits&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Dae&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;DaeCheckingSignal&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;DaeControls&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;DaeEventMode&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;DaeMonitor&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;DaePeriod&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;DaePeriodSettings&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;DaePeriodSettingsData&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;DaeSettings&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;DaeSettingsData&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;DaeSpectra&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;DaeTCBSettings&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;DaeTCBSettingsData&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;DaeTimingSource&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;PeriodSource&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;PeriodType&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;RunstateEnum&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;SinglePeriodSettings&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;TCBCalculationMethod&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;TCBTimeUnit&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;TimeRegime&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;TimeRegimeMode&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;TimeRegimeRow&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+
+<span class="n">T</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;T&quot;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="n">SignalDatatype</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="DaeCheckingSignal">
+<a class="viewcode-back" href="../../../generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.DaeCheckingSignal">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">DaeCheckingSignal</span><span class="p">(</span><span class="n">StandardReadable</span><span class="p">,</span> <span class="n">Movable</span><span class="p">[</span><span class="n">T</span><span class="p">],</span> <span class="n">Generic</span><span class="p">[</span><span class="n">T</span><span class="p">]):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Device that wraps a signal and checks the result of a set.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">datatype</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">T</span><span class="p">],</span> <span class="n">prefix</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Device that wraps a signal and checks the result of a set.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            datatype: The datatype of the signal.</span>
+<span class="sd">            prefix: The PV address of the signal.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">prefix</span> <span class="o">=</span> <span class="n">prefix</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_children_as_readables</span><span class="p">(</span><span class="n">StandardReadableFormat</span><span class="o">.</span><span class="n">HINTED_SIGNAL</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">signal</span> <span class="o">=</span> <span class="n">isis_epics_signal_rw</span><span class="p">(</span><span class="n">datatype</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">prefix</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="DaeCheckingSignal.set">
+<a class="viewcode-back" href="../../../generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.DaeCheckingSignal.set">[docs]</a>
+    <span class="nd">@AsyncStatus</span><span class="o">.</span><span class="n">wrap</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">set</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">T</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Check a signal when it is set. Raises if not set.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            value: the value to set.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">wait</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+        <span class="n">actual_value</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">get_value</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="o">!=</span> <span class="n">actual_value</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">OSError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Signal </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">prefix</span><span class="si">}</span><span class="s2"> could not be set to </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">, actual value was </span><span class="si">{</span><span class="n">actual_value</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="RunstateEnum">
+<a class="viewcode-back" href="../../../generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.RunstateEnum">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">RunstateEnum</span><span class="p">(</span><span class="n">StrictEnum</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The run state.&quot;&quot;&quot;</span>
+
+    <span class="n">PROCESSING</span> <span class="o">=</span> <span class="s2">&quot;PROCESSING&quot;</span>
+    <span class="n">SETUP</span> <span class="o">=</span> <span class="s2">&quot;SETUP&quot;</span>
+    <span class="n">RUNNING</span> <span class="o">=</span> <span class="s2">&quot;RUNNING&quot;</span>
+    <span class="n">PAUSED</span> <span class="o">=</span> <span class="s2">&quot;PAUSED&quot;</span>
+    <span class="n">WAITING</span> <span class="o">=</span> <span class="s2">&quot;WAITING&quot;</span>
+    <span class="n">VETOING</span> <span class="o">=</span> <span class="s2">&quot;VETOING&quot;</span>
+    <span class="n">ENDING</span> <span class="o">=</span> <span class="s2">&quot;ENDING&quot;</span>
+    <span class="n">SAVING</span> <span class="o">=</span> <span class="s2">&quot;SAVING&quot;</span>
+    <span class="n">RESUMING</span> <span class="o">=</span> <span class="s2">&quot;RESUMING&quot;</span>
+    <span class="n">PAUSING</span> <span class="o">=</span> <span class="s2">&quot;PAUSING&quot;</span>
+    <span class="n">BEGINNING</span> <span class="o">=</span> <span class="s2">&quot;BEGINNING&quot;</span>
+    <span class="n">ABORTING</span> <span class="o">=</span> <span class="s2">&quot;ABORTING&quot;</span>
+    <span class="n">UPDATING</span> <span class="o">=</span> <span class="s2">&quot;UPDATING&quot;</span>
+    <span class="n">STORING</span> <span class="o">=</span> <span class="s2">&quot;STORING&quot;</span>
+    <span class="n">CHANGING</span> <span class="o">=</span> <span class="s2">&quot;CHANGING&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a string representation of the enum value.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="Dae">
+<a class="viewcode-back" href="../../../generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.Dae">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Dae</span><span class="p">(</span><span class="n">StandardReadable</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Device representing the ISIS data acquisition electronics.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prefix</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;DAE&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a new Dae ophyd-async device.&quot;&quot;&quot;</span>
+        <span class="n">dae_prefix</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">prefix</span><span class="si">}</span><span class="s2">DAE:&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_prefix</span> <span class="o">=</span> <span class="n">prefix</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">good_uah</span><span class="p">:</span> <span class="n">SignalR</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="n">epics_signal_r</span><span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">dae_prefix</span><span class="si">}</span><span class="s2">GOODUAH&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">count_rate</span><span class="p">:</span> <span class="n">SignalR</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="n">epics_signal_r</span><span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">dae_prefix</span><span class="si">}</span><span class="s2">COUNTRATE&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">m_events</span><span class="p">:</span> <span class="n">SignalR</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="n">epics_signal_r</span><span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">dae_prefix</span><span class="si">}</span><span class="s2">MEVENTS&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sim_mode</span><span class="p">:</span> <span class="n">SignalR</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="n">epics_signal_r</span><span class="p">(</span><span class="nb">bool</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">dae_prefix</span><span class="si">}</span><span class="s2">SIM_MODE&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">neutron_proton_ratio</span><span class="p">:</span> <span class="n">SignalR</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="n">epics_signal_r</span><span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">dae_prefix</span><span class="si">}</span><span class="s2">NPRATIO&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">good_frames</span><span class="p">:</span> <span class="n">SignalR</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">epics_signal_r</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">dae_prefix</span><span class="si">}</span><span class="s2">GOODFRAMES&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">raw_frames</span><span class="p">:</span> <span class="n">SignalR</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">epics_signal_r</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">dae_prefix</span><span class="si">}</span><span class="s2">RAWFRAMES&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">total_counts</span><span class="p">:</span> <span class="n">SignalR</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">epics_signal_r</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">dae_prefix</span><span class="si">}</span><span class="s2">TOTALCOUNTS&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Beware that this increments just after a run is ended. So it is generally not correct to</span>
+        <span class="c1"># read this just after a DAE run has been ended().</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_or_next_run_number</span><span class="p">:</span> <span class="n">SignalR</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">epics_signal_r</span><span class="p">(</span>
+            <span class="nb">int</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">dae_prefix</span><span class="si">}</span><span class="s2">IRUNNUMBER&quot;</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_or_next_run_number_str</span><span class="p">:</span> <span class="n">SignalR</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">epics_signal_r</span><span class="p">(</span>
+            <span class="nb">str</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">dae_prefix</span><span class="si">}</span><span class="s2">RUNNUMBER&quot;</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">cycle_number</span><span class="p">:</span> <span class="n">SignalR</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">epics_signal_r</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">dae_prefix</span><span class="si">}</span><span class="s2">ISISCYCLE&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inst_name</span><span class="p">:</span> <span class="n">SignalR</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">epics_signal_r</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">dae_prefix</span><span class="si">}</span><span class="s2">INSTNAME&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">run_start_time</span><span class="p">:</span> <span class="n">SignalR</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">epics_signal_r</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">dae_prefix</span><span class="si">}</span><span class="s2">STARTTIME&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">run_duration</span><span class="p">:</span> <span class="n">SignalR</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">epics_signal_r</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">dae_prefix</span><span class="si">}</span><span class="s2">RUNDURATION&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_time_channels</span><span class="p">:</span> <span class="n">SignalR</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">epics_signal_r</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">dae_prefix</span><span class="si">}</span><span class="s2">NUMTIMECHANNELS&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_spectra</span><span class="p">:</span> <span class="n">SignalR</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">epics_signal_r</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">dae_prefix</span><span class="si">}</span><span class="s2">NUMSPECTRA&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">period</span> <span class="o">=</span> <span class="n">DaePeriod</span><span class="p">(</span><span class="n">dae_prefix</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">period_num</span><span class="p">:</span> <span class="n">SignalRW</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">isis_epics_signal_rw</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">dae_prefix</span><span class="si">}</span><span class="s2">PERIOD&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">number_of_periods</span><span class="p">:</span> <span class="n">DaeCheckingSignal</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">DaeCheckingSignal</span><span class="p">(</span>
+            <span class="nb">int</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">dae_prefix</span><span class="si">}</span><span class="s2">NUMPERIODS&quot;</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_periods</span><span class="p">:</span> <span class="n">SignalR</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">epics_signal_r</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">dae_prefix</span><span class="si">}</span><span class="s2">NUMPERIODS:MAX&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">dae_settings</span> <span class="o">=</span> <span class="n">DaeSettings</span><span class="p">(</span><span class="n">dae_prefix</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">period_settings</span> <span class="o">=</span> <span class="n">DaePeriodSettings</span><span class="p">(</span><span class="n">dae_prefix</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tcb_settings</span> <span class="o">=</span> <span class="n">DaeTCBSettings</span><span class="p">(</span><span class="n">dae_prefix</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">raw_spectra_integrals</span><span class="p">:</span> <span class="n">SignalR</span><span class="p">[</span><span class="n">Array1D</span><span class="p">[</span><span class="n">int32</span><span class="p">]]</span> <span class="o">=</span> <span class="n">epics_signal_r</span><span class="p">(</span>
+            <span class="n">Array1D</span><span class="p">[</span><span class="n">int32</span><span class="p">],</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">dae_prefix</span><span class="si">}</span><span class="s2">SPECINTEGRALS&quot;</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">raw_spectra_integrals_nord</span><span class="p">:</span> <span class="n">SignalR</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">epics_signal_r</span><span class="p">(</span>
+            <span class="nb">int</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">dae_prefix</span><span class="si">}</span><span class="s2">SPECINTEGRALS.NORD&quot;</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">raw_spec_data</span><span class="p">:</span> <span class="n">SignalR</span><span class="p">[</span><span class="n">Array1D</span><span class="p">[</span><span class="n">int32</span><span class="p">]]</span> <span class="o">=</span> <span class="n">epics_signal_r</span><span class="p">(</span>
+            <span class="n">Array1D</span><span class="p">[</span><span class="n">int32</span><span class="p">],</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">dae_prefix</span><span class="si">}</span><span class="s2">SPECDATA&quot;</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">raw_spec_data_proc</span><span class="p">:</span> <span class="n">SignalW</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">epics_signal_w</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">dae_prefix</span><span class="si">}</span><span class="s2">SPECDATA.PROC&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">raw_spec_data_nord</span><span class="p">:</span> <span class="n">SignalR</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">epics_signal_r</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">dae_prefix</span><span class="si">}</span><span class="s2">SPECDATA.NORD&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">monitor</span> <span class="o">=</span> <span class="n">DaeMonitor</span><span class="p">(</span><span class="n">dae_prefix</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">event_mode</span> <span class="o">=</span> <span class="n">DaeEventMode</span><span class="p">(</span><span class="n">dae_prefix</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">beam_current</span><span class="p">:</span> <span class="n">SignalR</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="n">epics_signal_r</span><span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">dae_prefix</span><span class="si">}</span><span class="s2">BEAMCURRENT&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">total_uamps</span><span class="p">:</span> <span class="n">SignalR</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="n">epics_signal_r</span><span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">dae_prefix</span><span class="si">}</span><span class="s2">TOTALUAMPS&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">run_state</span><span class="p">:</span> <span class="n">SignalR</span><span class="p">[</span><span class="n">RunstateEnum</span><span class="p">]</span> <span class="o">=</span> <span class="n">epics_signal_r</span><span class="p">(</span>
+            <span class="n">RunstateEnum</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">dae_prefix</span><span class="si">}</span><span class="s2">RUNSTATE&quot;</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">title</span><span class="p">:</span> <span class="n">SignalRW</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">isis_epics_signal_rw</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">dae_prefix</span><span class="si">}</span><span class="s2">TITLE&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">show_title_and_users</span><span class="p">:</span> <span class="n">SignalRW</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="n">epics_signal_rw</span><span class="p">(</span>
+            <span class="nb">bool</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">dae_prefix</span><span class="si">}</span><span class="s2">TITLE:DISPLAY&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">dae_prefix</span><span class="si">}</span><span class="s2">TITLE:DISPLAY&quot;</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">users</span><span class="p">:</span> <span class="n">SignalRW</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">isis_epics_signal_rw</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">dae_prefix</span><span class="si">}</span><span class="s2">_USERNAME&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rb_number</span><span class="p">:</span> <span class="n">SignalRW</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">isis_epics_signal_rw</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">dae_prefix</span><span class="si">}</span><span class="s2">_RBNUMBER&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">controls</span><span class="p">:</span> <span class="n">DaeControls</span> <span class="o">=</span> <span class="n">DaeControls</span><span class="p">(</span><span class="n">dae_prefix</span><span class="p">)</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get string representation of this class for debugging.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">(name=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">, prefix=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_prefix</span><span class="si">}</span><span class="s2">)&quot;</span>
+
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_trigger_and_get_raw_specdata</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get a raw, 1-dimensional, spectrum-data array.</span>
+
+<span class="sd">        This array includes all periods, all spectra (including the &quot;junk&quot; spectrum 0), and all</span>
+<span class="sd">        time channels (including the &quot;junk&quot; time-channel 0).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">controls</span><span class="o">.</span><span class="n">update_run</span><span class="o">.</span><span class="n">trigger</span><span class="p">()</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">raw_spec_data_proc</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">wait</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="p">(</span><span class="n">raw_data</span><span class="p">,</span> <span class="n">nord</span><span class="p">)</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">raw_spec_data</span><span class="o">.</span><span class="n">get_value</span><span class="p">(),</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">raw_spec_data_nord</span><span class="o">.</span><span class="n">get_value</span><span class="p">(),</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">raw_data</span><span class="p">[:</span><span class="n">nord</span><span class="p">]</span>
+
+<div class="viewcode-block" id="Dae.trigger_and_get_specdata">
+<a class="viewcode-back" href="../../../generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.Dae.trigger_and_get_specdata">[docs]</a>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">trigger_and_get_specdata</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">detectors</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">]</span> <span class="o">|</span> <span class="nb">slice</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get a correctly-shaped spectrum-data array.</span>
+
+<span class="sd">        This array will have shape (num_spectra, num_time_channels).</span>
+
+<span class="sd">        If detectors is a slice or an array, the number of detectors will be</span>
+<span class="sd">        given by that slice or array. If detectors is None, all detectors,</span>
+<span class="sd">        including the &quot;junk&quot; detector 0, will be included.</span>
+
+<span class="sd">        The number of spectra will be determined by the current DAE TCB</span>
+<span class="sd">        settings. The returned array will not include the &quot;junk&quot; time-channel 0.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            dae: The SimpleDae instance</span>
+<span class="sd">            detectors: a numpy array or slice describing detectors to get data from.</span>
+<span class="sd">                Default is all detectors.</span>
+<span class="sd">                Pass np.array([1]) to select detector 1.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">detectors</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">detectors</span> <span class="o">=</span> <span class="nb">slice</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+
+        <span class="p">(</span>
+            <span class="n">raw_data</span><span class="p">,</span>
+            <span class="n">num_periods</span><span class="p">,</span>
+            <span class="n">num_spectra</span><span class="p">,</span>
+            <span class="n">num_time_channels</span><span class="p">,</span>
+            <span class="n">period</span><span class="p">,</span>
+        <span class="p">)</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_trigger_and_get_raw_specdata</span><span class="p">(),</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">number_of_periods</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">get_value</span><span class="p">(),</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">num_spectra</span><span class="o">.</span><span class="n">get_value</span><span class="p">(),</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">num_time_channels</span><span class="o">.</span><span class="n">get_value</span><span class="p">(),</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">period_num</span><span class="o">.</span><span class="n">get_value</span><span class="p">(),</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Raw data includes time channel 0, which contains &quot;junk&quot; data.</span>
+        <span class="c1"># It gets unconditionally chopped out.</span>
+        <span class="c1"># Spectrum 0 is also present.</span>
+        <span class="c1"># This is left so that passing detectors=[1] selects spectrum 1.</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">raw_data</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">num_periods</span><span class="p">,</span> <span class="n">num_spectra</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">num_time_channels</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">data</span><span class="p">[</span><span class="n">period</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">detectors</span><span class="p">,</span> <span class="mi">1</span><span class="p">:]</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

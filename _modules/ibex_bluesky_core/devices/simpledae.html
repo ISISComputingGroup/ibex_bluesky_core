@@ -1,0 +1,428 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ibex_bluesky_core.devices.simpledae &mdash; ibex_bluesky_core 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+
+  
+    <link rel="shortcut icon" href="../../../_static/favicon.svg"/>
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #343131" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            ibex_bluesky_core
+              <img src="../../../_static/logo.svg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Tutorial</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial/overview.html">Getting started</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Devices</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../devices/blocks.html">Blocks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../devices/dae.html">DAE (Data Acquisition Electronics)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Callbacks</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../callbacks/docs_logging_callback.html">Document Logging Callback</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../callbacks/file_writing.html">File writing callbacks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../callbacks/plotting.html">Plotting</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Fitting</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../fitting/fitting.html">Fitting Callback</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../fitting/livefit_logger.html">Fitting Files Callback</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../fitting/standard_fits.html">Standard Fitting Models</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Plan stubs</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../plan_stubs/external_code.html"><code class="docutils literal notranslate"><span class="pre">call_sync</span></code> (calling external code)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../plan_stubs/matplotlib_helpers.html"><span class="xref myst"><code class="docutils literal notranslate"><span class="pre">call_qt_aware</span></code></span> (matplotlib helpers)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../plan_stubs/polling.html">Continuous polling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../plan_stubs/redefining.html">Redefinition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../plan_stubs/user_input.html">User input helpers</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Plans</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../plans/plans.html">General Plans</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Plans (Reflectometry)</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../plans/reflectometry/autoalign.html">Auto-alignment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../plans/reflectometry/detector_mapping_alignment.html">Detector-mapping alignment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../plans/reflectometry/refl_param_scan.html">Reflectometry parameter scans</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Preprocessors</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../preprocessors/rbnumberpp.html">RB Number injection preprocessor</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Developer information</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../dev/create_a_release.html">Release Process</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../dev/logging.html">Logging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../dev/manual_system_testing.html">Manual system testing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../dev/set_up_dev_environment.html">Local development</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../dev/sphinx_notes.html">Notes on Sphinx and addons</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../dev/troubleshooting.html">Troubleshooting</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Architectural decisions</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../architectural_decisions/001-repo-structure.html">1. Repository structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../architectural_decisions/002-use-ophyd-async.html">2. Use <code class="docutils literal notranslate"><span class="pre">ophyd-async</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../architectural_decisions/003-run-in-process.html">3. Run in-process</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../architectural_decisions/004-use-scipp.html">4. Use <code class="docutils literal notranslate"><span class="pre">scipp</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../architectural_decisions/005-variance-addition.html">5. Variance addition to counts data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../architectural_decisions/006-where-to-put-code.html">6. Where to put code</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../_api.html">API</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #343131" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">ibex_bluesky_core</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+          <li class="breadcrumb-item"><a href="../devices.html">ibex_bluesky_core.devices</a></li>
+      <li class="breadcrumb-item active">ibex_bluesky_core.devices.simpledae</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for ibex_bluesky_core.devices.simpledae</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;A simple interface to the DAE for bluesky.&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Generic</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">bluesky.protocols</span><span class="w"> </span><span class="kn">import</span> <span class="n">Triggerable</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ophyd_async.core</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">AsyncStageable</span><span class="p">,</span>
+    <span class="n">AsyncStatus</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing_extensions</span><span class="w"> </span><span class="kn">import</span> <span class="n">TypeVar</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibex_bluesky_core.devices.dae</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dae</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibex_bluesky_core.devices.simpledae._controllers</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">PeriodPerPointController</span><span class="p">,</span>
+    <span class="n">RunPerPointController</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibex_bluesky_core.devices.simpledae._reducers</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">VARIANCE_ADDITION</span><span class="p">,</span>
+    <span class="n">DSpacingMappingReducer</span><span class="p">,</span>
+    <span class="n">GoodFramesNormalizer</span><span class="p">,</span>
+    <span class="n">MonitorNormalizer</span><span class="p">,</span>
+    <span class="n">PeriodGoodFramesNormalizer</span><span class="p">,</span>
+    <span class="n">PeriodSpecIntegralsReducer</span><span class="p">,</span>
+    <span class="n">ScalarNormalizer</span><span class="p">,</span>
+    <span class="n">polarization</span><span class="p">,</span>
+    <span class="n">sum_spectra</span><span class="p">,</span>
+    <span class="n">tof_bounded_spectra</span><span class="p">,</span>
+    <span class="n">wavelength_bounded_spectra</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibex_bluesky_core.devices.simpledae._strategies</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">Controller</span><span class="p">,</span>
+    <span class="n">ProvidesExtraReadables</span><span class="p">,</span>
+    <span class="n">Reducer</span><span class="p">,</span>
+    <span class="n">Waiter</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibex_bluesky_core.devices.simpledae._waiters</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">GoodFramesWaiter</span><span class="p">,</span>
+    <span class="n">GoodUahWaiter</span><span class="p">,</span>
+    <span class="n">MEventsWaiter</span><span class="p">,</span>
+    <span class="n">PeriodGoodFramesWaiter</span><span class="p">,</span>
+    <span class="n">SimpleWaiter</span><span class="p">,</span>
+    <span class="n">TimeWaiter</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibex_bluesky_core.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_pv_prefix</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;VARIANCE_ADDITION&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Controller&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;DSpacingMappingReducer&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;GoodFramesNormalizer&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;GoodFramesWaiter&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;GoodUahWaiter&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;MEventsWaiter&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;MonitorNormalizer&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;PeriodGoodFramesNormalizer&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;PeriodGoodFramesWaiter&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;PeriodPerPointController&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;PeriodSpecIntegralsReducer&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ProvidesExtraReadables&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Reducer&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;RunPerPointController&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ScalarNormalizer&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;SimpleDae&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;SimpleWaiter&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;TimeWaiter&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Waiter&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;check_dae_strategies&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;monitor_normalising_dae&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;polarization&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;sum_spectra&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;tof_bounded_spectra&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;wavelength_bounded_spectra&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+
+<span class="n">TController_co</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;TController_co&quot;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="s2">&quot;Controller&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&quot;Controller&quot;</span><span class="p">,</span> <span class="n">covariant</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">TWaiter_co</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;TWaiter_co&quot;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="s2">&quot;Waiter&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&quot;Waiter&quot;</span><span class="p">,</span> <span class="n">covariant</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">TReducer_co</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;TReducer_co&quot;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="s2">&quot;Reducer&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&quot;Reducer&quot;</span><span class="p">,</span> <span class="n">covariant</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="SimpleDae">
+<a class="viewcode-back" href="../../../generated/ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.SimpleDae">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">SimpleDae</span><span class="p">(</span><span class="n">Dae</span><span class="p">,</span> <span class="n">Triggerable</span><span class="p">,</span> <span class="n">AsyncStageable</span><span class="p">,</span> <span class="n">Generic</span><span class="p">[</span><span class="n">TController_co</span><span class="p">,</span> <span class="n">TWaiter_co</span><span class="p">,</span> <span class="n">TReducer_co</span><span class="p">]):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Configurable DAE with pluggable strategies for data collection, waiting, and reduction.</span>
+
+<span class="sd">    This class should cover many simple DAE use-cases, but for complex use-cases a custom Dae</span>
+<span class="sd">    subclass may still be required to give maximum flexibility.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">prefix</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;DAE&quot;</span><span class="p">,</span>
+        <span class="n">controller</span><span class="p">:</span> <span class="n">TController_co</span><span class="p">,</span>
+        <span class="n">waiter</span><span class="p">:</span> <span class="n">TWaiter_co</span><span class="p">,</span>
+        <span class="n">reducer</span><span class="p">:</span> <span class="n">TReducer_co</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize a simple DAE interface.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            prefix: the PV prefix of the instrument being controlled.</span>
+<span class="sd">            name: A friendly name for this DAE object.</span>
+<span class="sd">            controller: A DAE control strategy, defines how the DAE begins and ends data acquisition</span>
+<span class="sd">                Pre-defined strategies in the ibex_bluesky_core.devices.controllers module</span>
+<span class="sd">            waiter: A waiting strategy, defines how the DAE waits for an acquisition to be complete</span>
+<span class="sd">                Pre-defined strategies in the ibex_bluesky_core.devices.waiters module</span>
+<span class="sd">            reducer: A data reduction strategy, defines the post-processing on raw DAE data, for</span>
+<span class="sd">                example normalization or unit conversion.</span>
+<span class="sd">                Pre-defined strategies in the ibex_bluesky_core.devices.reducers module</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">prefix</span> <span class="o">=</span> <span class="n">prefix</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="p">:</span> <span class="n">TController_co</span> <span class="o">=</span> <span class="n">controller</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">waiter</span><span class="p">:</span> <span class="n">TWaiter_co</span> <span class="o">=</span> <span class="n">waiter</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reducer</span><span class="p">:</span> <span class="n">TReducer_co</span> <span class="o">=</span> <span class="n">reducer</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+            <span class="s2">&quot;created simpledae with prefix=</span><span class="si">%s</span><span class="s2">, controller=</span><span class="si">%s</span><span class="s2">, waiter=</span><span class="si">%s</span><span class="s2">, reducer=</span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="n">prefix</span><span class="p">,</span>
+            <span class="n">controller</span><span class="p">,</span>
+            <span class="n">waiter</span><span class="p">,</span>
+            <span class="n">reducer</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="c1"># controller, waiter and reducer may be Devices (but don&#39;t necessarily have to be),</span>
+        <span class="c1"># so can define their own signals. Do __init__ after defining those, so that the signals</span>
+        <span class="c1"># are connected/named and usable.</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="n">prefix</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+
+        <span class="c1"># Ask each defined strategy what it&#39;s interesting signals are, and ensure those signals are</span>
+        <span class="c1"># published when the top-level SimpleDae object is read.</span>
+        <span class="n">extra_readables</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">strategy</span> <span class="ow">in</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">waiter</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">reducer</span><span class="p">]:</span>
+            <span class="n">extra_readables</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">strategy</span><span class="o">.</span><span class="n">additional_readable_signals</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;extra readables: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">extra_readables</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_readables</span><span class="p">(</span><span class="n">devices</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">extra_readables</span><span class="p">))</span>
+
+<div class="viewcode-block" id="SimpleDae.stage">
+<a class="viewcode-back" href="../../../generated/ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.SimpleDae.stage">[docs]</a>
+    <span class="nd">@AsyncStatus</span><span class="o">.</span><span class="n">wrap</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">stage</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Pre-scan setup. Delegate to the controller.&quot;&quot;&quot;</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="SimpleDae.trigger">
+<a class="viewcode-back" href="../../../generated/ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.SimpleDae.trigger">[docs]</a>
+    <span class="nd">@AsyncStatus</span><span class="o">.</span><span class="n">wrap</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">trigger</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Take a single measurement and prepare it for subsequent reading.</span>
+
+<span class="sd">        This waits for the acquisition and any defined reduction to be complete, such that</span>
+<span class="sd">        after this coroutine completes all relevant data is available via read()</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">start_counting</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">waiter</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">stop_counting</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">reducer</span><span class="o">.</span><span class="n">reduce_data</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="SimpleDae.unstage">
+<a class="viewcode-back" href="../../../generated/ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.SimpleDae.unstage">[docs]</a>
+    <span class="nd">@AsyncStatus</span><span class="o">.</span><span class="n">wrap</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">unstage</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Post-scan teardown, delegate to the controller.&quot;&quot;&quot;</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="n">teardown</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="monitor_normalising_dae">
+<a class="viewcode-back" href="../../../generated/ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.monitor_normalising_dae">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">monitor_normalising_dae</span><span class="p">(</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">det_pixels</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
+    <span class="n">frames</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">periods</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="n">monitor</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="n">save_run</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SimpleDae</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a simple DAE which normalises using a monitor and waits for frames.</span>
+
+<span class="sd">    This is really a shortcut to reduce code in plans used on the majority of instruments that</span>
+<span class="sd">    normalise using a monitor, wait for a number of frames and optionally use software periods.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        det_pixels: list of detector pixel to use for scanning.</span>
+<span class="sd">        frames: number of frames to wait for.</span>
+<span class="sd">        periods: whether or not to use software periods.</span>
+<span class="sd">        monitor: the monitor spectra number.</span>
+<span class="sd">        save_run: whether or not to save the run of the DAE.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">prefix</span> <span class="o">=</span> <span class="n">get_pv_prefix</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">periods</span><span class="p">:</span>
+        <span class="n">controller</span> <span class="o">=</span> <span class="n">PeriodPerPointController</span><span class="p">(</span><span class="n">save_run</span><span class="o">=</span><span class="n">save_run</span><span class="p">)</span>
+        <span class="n">waiter</span> <span class="o">=</span> <span class="n">PeriodGoodFramesWaiter</span><span class="p">(</span><span class="n">frames</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">controller</span> <span class="o">=</span> <span class="n">RunPerPointController</span><span class="p">(</span><span class="n">save_run</span><span class="o">=</span><span class="n">save_run</span><span class="p">)</span>
+        <span class="n">waiter</span> <span class="o">=</span> <span class="n">GoodFramesWaiter</span><span class="p">(</span><span class="n">frames</span><span class="p">)</span>
+
+    <span class="n">reducer</span> <span class="o">=</span> <span class="n">MonitorNormalizer</span><span class="p">(</span>
+        <span class="n">prefix</span><span class="o">=</span><span class="n">prefix</span><span class="p">,</span>
+        <span class="n">detector_spectra</span><span class="o">=</span><span class="n">det_pixels</span><span class="p">,</span>
+        <span class="n">monitor_spectra</span><span class="o">=</span><span class="p">[</span><span class="n">monitor</span><span class="p">],</span>
+    <span class="p">)</span>
+
+    <span class="n">dae</span> <span class="o">=</span> <span class="n">SimpleDae</span><span class="p">(</span>
+        <span class="n">prefix</span><span class="o">=</span><span class="n">prefix</span><span class="p">,</span>
+        <span class="n">controller</span><span class="o">=</span><span class="n">controller</span><span class="p">,</span>
+        <span class="n">waiter</span><span class="o">=</span><span class="n">waiter</span><span class="p">,</span>
+        <span class="n">reducer</span><span class="o">=</span><span class="n">reducer</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">dae</span><span class="o">.</span><span class="n">reducer</span><span class="o">.</span><span class="n">intensity</span><span class="o">.</span><span class="n">set_name</span><span class="p">(</span><span class="s2">&quot;intensity&quot;</span><span class="p">)</span>
+    <span class="n">dae</span><span class="o">.</span><span class="n">reducer</span><span class="o">.</span><span class="n">intensity_stddev</span><span class="o">.</span><span class="n">set_name</span><span class="p">(</span><span class="s2">&quot;intensity_stddev&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">dae</span></div>
+
+
+
+<div class="viewcode-block" id="check_dae_strategies">
+<a class="viewcode-back" href="../../../generated/ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.check_dae_strategies">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">check_dae_strategies</span><span class="p">(</span>
+    <span class="n">dae</span><span class="p">:</span> <span class="n">SimpleDae</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">expected_controller</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">Controller</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">expected_waiter</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">Waiter</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">expected_reducer</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">Reducer</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Check that the provided dae instance has appropriate controller/reducer/waiter configured.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        dae: The simpledae instance to check.</span>
+<span class="sd">        expected_controller: The expected controller type, on None to not check.</span>
+<span class="sd">        expected_waiter: The expected controller type, on None to not check.</span>
+<span class="sd">        expected_reducer: The expected controller type, on None to not check.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">expected_controller</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dae</span><span class="o">.</span><span class="n">controller</span><span class="p">,</span> <span class="n">expected_controller</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;DAE controller must be of type </span><span class="si">{</span><span class="n">expected_controller</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">, &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;got </span><span class="si">{</span><span class="n">dae</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">expected_waiter</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dae</span><span class="o">.</span><span class="n">waiter</span><span class="p">,</span> <span class="n">expected_waiter</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;DAE waiter must be of type </span><span class="si">{</span><span class="n">expected_waiter</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">, &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;got </span><span class="si">{</span><span class="n">dae</span><span class="o">.</span><span class="n">waiter</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">expected_reducer</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dae</span><span class="o">.</span><span class="n">reducer</span><span class="p">,</span> <span class="n">expected_reducer</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;DAE reducer must be of type </span><span class="si">{</span><span class="n">expected_reducer</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">, &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;got </span><span class="si">{</span><span class="n">dae</span><span class="o">.</span><span class="n">reducer</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
