@@ -222,7 +222,7 @@ from ibex_bluesky_core.callbacks import CentreOfMass
 
 ## Our CoM Algorithm
 
-Given non-continuous arrays of collected data `x` and `y`, ({py:obj}`ibex_bluesky_core.callbacks.center_of_mass`) returns the `x` value of the centre of mass.
+Given non-continuous arrays of collected data `x` and `y`, ({py:obj}`ibex_bluesky_core.callbacks.CentreOfMass`) returns the `x` value of the centre of mass.
 
 Our use cases require that our algorithm abides to the following rules:
 - Any background on data does not skew the centre of mass
