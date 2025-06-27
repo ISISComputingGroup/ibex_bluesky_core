@@ -7,7 +7,6 @@ import warnings
 from pathlib import Path
 
 import numpy as np
-import numpy.typing as npt
 from bluesky.callbacks import CallbackBase
 from bluesky.callbacks import LiveFit as _DefaultLiveFit
 from bluesky.callbacks.core import CollectThenCompute, make_class_safe
@@ -22,6 +21,7 @@ from ibex_bluesky_core.callbacks._utils import (
     get_instrument,
 )
 from ibex_bluesky_core.fitting import FitMethod
+from ibex_bluesky_core.utils import center_of_mass_of_area_under_curve
 
 logger = logging.getLogger(__name__)
 
@@ -254,43 +254,6 @@ class LiveFitLogger(CallbackBase):
         self.csvwriter.writerows(rows)
 
 
-def center_of_mass_of_area_under_curve(
-    x: npt.NDArray[np.float64], y: npt.NDArray[np.float64]
-) -> float:
-    """Compute the centre of mass of the area under a curve defined by a series of (x, y) points.
-
-    The "area under the curve" is a shape bounded by:
-    - min(y), along the bottom edge
-    - min(x), on the left-hand edge
-    - max(x), on the right-hand edge
-    - straight lines joining (x, y) data points to their nearest neighbours
-        along the x-axis, along the top edge
-    This is implemented by geometric decomposition of the shape into a series of trapezoids,
-    which are further decomposed into rectangular and triangular regions.
-    """
-    sort_indices = np.argsort(x, kind="stable")
-    x = np.take_along_axis(x, sort_indices, axis=None)
-    y = np.take_along_axis(y - np.min(y), sort_indices, axis=None)
-    widths = np.diff(x)
-
-    # Area under the curve for two adjacent points is a right trapezoid.
-    # Split that trapezoid into a rectangular region, plus a right triangle.
-    # Find area and effective X CoM for each.
-    rect_areas = widths * np.minimum(y[:-1], y[1:])
-    rect_x_com = (x[:-1] + x[1:]) / 2.0
-    triangle_areas = widths * np.abs(y[:-1] - y[1:]) / 2.0
-    triangle_x_com = np.where(
-        y[:-1] > y[1:], x[:-1] + (widths / 3.0), x[:-1] + (2.0 * widths / 3.0)
-    )
-
-    total_area = np.sum(rect_areas + triangle_areas)
-    if total_area == 0.0:
-        # If all data was flat, return central x
-        return (x[0] + x[-1]) / 2.0
-
-    return np.sum(rect_areas * rect_x_com + triangle_areas * triangle_x_com) / total_area
-
-
 class CentreOfMass(CollectThenCompute):
     """Compute centre of mass after a run finishes.
 
@@ -336,4 +299,4 @@ class CentreOfMass(CollectThenCompute):
 
         x_data = np.array(x_values, dtype=np.float64)
         y_data = np.array(y_values, dtype=np.float64)
-        self._result = center_of_mass_of_area_under_curve(x_data, y_data)
+        (self._result, _) = center_of_mass_of_area_under_curve(x_data, y_data)
