@@ -213,7 +213,7 @@ See the [standard fits](#models) list above for standard fits which require para
 
 [`CentreOfMass`](ibex_bluesky_core.callbacks.CentreOfMass) is a callback that provides functionality for calculating our definition of Centre of Mass. We calculate centre of mass from the 2D region bounded by min(y), min(x), max(x), and straight-line segments joining (x, y) data points with their nearest neighbours along the x axis.
 
-[`CentreOfMass`](ibex_bluesky_core.callbacks.CentreOfMass) has a property, `value` which stores the centre of mass value once the callback has finished.
+[`CentreOfMass`](ibex_bluesky_core.callbacks.CentreOfMass) has a property, `result` which stores the centre of mass value once the callback has finished.
 
 In order to use the callback, import `CentreOfMass` from `ibex_bluesky_core.callbacks`.
 ```py
