@@ -33,7 +33,9 @@ from ibex_bluesky_core.devices.dae._period_settings import (
     SinglePeriodSettings,
 )
 from ibex_bluesky_core.devices.dae._settings import DaeSettings, DaeSettingsData, DaeTimingSource
-from ibex_bluesky_core.devices.dae._spectra import DaeSpectra
+from ibex_bluesky_core.devices.dae._spectra import (
+    DaeSpectra,
+)
 from ibex_bluesky_core.devices.dae._tcb_settings import (
     DaeTCBSettings,
     DaeTCBSettingsData,
