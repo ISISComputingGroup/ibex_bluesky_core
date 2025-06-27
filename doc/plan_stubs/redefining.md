@@ -28,6 +28,12 @@ def my_plan():
     yield from redefine_motor(motor, 0.)
 ```
 
+By default, the {py:obj}`redefine_motor <ibex_bluesky_core.plan_stubs.redefine_motor>`
+plan stub sleeps for 1 second after redefining the motor. This avoids race conditions, where a motor is moved too soon
+after being redefined to a new position, and the redefined position has not yet been read back from the controller.
+This behaviour can be controlled with the `sleep` keyword argument to
+{py:obj}`redefine_motor <ibex_bluesky_core.plan_stubs.redefine_motor>`.
+
 ## `redefine_refl_parameter`
 
 The {py:obj}`ibex_bluesky_core.plan_stubs.redefine_refl_parameter` plan stub can be used to redefine the current
