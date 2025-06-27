@@ -63,11 +63,13 @@ def center_of_mass_of_area_under_curve(
     - min(x), on the left-hand edge
     - max(x), on the right-hand edge
     - straight lines joining (x, y) data points to their nearest neighbours
-        along the x-axis, along the top edge
+    along the x-axis, along the top edge
+
     This is implemented by geometric decomposition of the shape into a series of trapezoids,
     which are further decomposed into rectangular and triangular regions.
 
     Returns a tuple of the centre of mass and the total area under the curve.
+
     """
     sort_indices = np.argsort(x, kind="stable")
     x = np.take_along_axis(x, sort_indices, axis=None)
