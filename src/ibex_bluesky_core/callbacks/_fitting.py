@@ -292,7 +292,12 @@ def center_of_mass_of_area_under_curve(
 
 
 class CentreOfMass(CollectThenCompute):
-    """Compute centre of mass after a run finishes."""
+    """Compute centre of mass after a run finishes.
+
+    Calculates the CoM of the 2D region bounded by min(y), min(x), max(x),
+    and straight-line segments joining (x, y) data points with their nearest
+    neighbours along the x axis.
+    """
 
     def __init__(self, x: str, y: str) -> None:
         """Initialise the callback.

@@ -1,3 +1,4 @@
+# pyright: reportMissingParameterType=false
 import pytest
 
 from ibex_bluesky_core.callbacks import CentreOfMass
@@ -71,14 +72,14 @@ from ibex_bluesky_core.callbacks import CentreOfMass
         ([(0, -1), (1, 2.999999), (2, -1), (3, -1)], 1.0),
     ],
 )
-def test_compute_com(data, expected_area_under_curve_com):
+def test_compute_com(data: list[tuple[float, float]], expected_area_under_curve_com: float):
     com = CentreOfMass("x", "y")
-    com.start({})
+    com.start({})  # type: ignore
 
     for x, y in data:
-        com.event({"data": {"x": x, "y": y}})
+        com.event({"data": {"x": x, "y": y}})  # type: ignore
 
-    com.stop({})
+    com.stop({})  # type: ignore
 
     assert com.result == pytest.approx(expected_area_under_curve_com)
 
