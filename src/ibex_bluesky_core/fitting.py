@@ -687,3 +687,7 @@ class NegativeTrapezoid(Fit):
             return init_guess
 
         return guess
+
+
+    class momentumScan(Fit):
+        def model():
