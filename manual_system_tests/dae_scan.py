@@ -4,7 +4,6 @@ import os
 from collections.abc import Generator
 from pathlib import Path
 
-import bluesky.plan_stubs as bps
 import bluesky.plans as bp
 import matplotlib
 import matplotlib.pyplot as plt
