@@ -73,7 +73,7 @@ class DualRunDae(
         name: str = "DAE",
         controller: TController_co,
         waiter: TWaiter_co,
-        reducer: TPReducer_co,
+        reducer_final: TPReducer_co,
         reducer_up: TMWBReducer_co,
         reducer_down: TMWBReducer_co,
         flipper: Movable[float],
@@ -88,7 +88,7 @@ class DualRunDae(
                 Pre-defined strategies in the ibex_bluesky_core.devices.controllers module
             waiter: A waiting strategy, defines how the DAE waits for an acquisition to be complete
                 Pre-defined strategies in the ibex_bluesky_core.devices.waiters module
-            reducer: A data reduction strategy. It will be triggered once after the two runs.
+            reducer_final: A data reduction strategy. It will be triggered once after the two runs.
             reducer_up: A data reduction strategy. Triggers once after the first run completes.
             reducer_down: A data reduction strategy. Triggers once after the second run completes.
             flipper: A device which will be changed at the start of the first run and between runs.
@@ -103,7 +103,7 @@ class DualRunDae(
         self.waiter: TWaiter_co = waiter
         self.reducer_up: TMWBReducer_co = reducer_up
         self.reducer_down: TMWBReducer_co = reducer_down
-        self.reducer: TPReducer_co = reducer
+        self.reducer_final: TPReducer_co = reducer_final
 
         logger.info(
             """created polarisingdae with prefix=%s, controller=%s,
@@ -111,7 +111,7 @@ class DualRunDae(
             prefix,
             controller,
             waiter,
-            reducer,
+            reducer_final,
             reducer_up,
             reducer_down,
         )
@@ -129,7 +129,7 @@ class DualRunDae(
             self.waiter,
             self.reducer_up,
             self.reducer_down,
-            self.reducer,
+            self.reducer_final,
         ]:
             extra_readables.update(strategy.additional_readable_signals(self))
         logger.info("extra readables: %s", list(extra_readables))
@@ -161,7 +161,7 @@ class DualRunDae(
         await self.controller.stop_counting(self)
         await self.reducer_down.reduce_data(self)
 
-        await self.reducer.reduce_data(self)
+        await self.reducer_final.reduce_data(self)
 
     @AsyncStatus.wrap
     async def unstage(self) -> None:
@@ -234,7 +234,7 @@ def polarising_dae(  # noqa: PLR0913
         sum_wavelength_bands=sum_wavelength_bands,
     )
 
-    reducer = PolarisationReducer(
+    reducer_final = PolarisationReducer(
         intervals=intervals, reducer_up=reducer_up, reducer_down=reducer_down
     )
 
@@ -242,7 +242,7 @@ def polarising_dae(  # noqa: PLR0913
         prefix=prefix,
         controller=controller,
         waiter=waiter,
-        reducer=reducer,
+        reducer_final=reducer_final,
         reducer_up=reducer_up,
         reducer_down=reducer_down,
         flipper=flipper,

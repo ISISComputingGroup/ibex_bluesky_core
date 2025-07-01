@@ -21,7 +21,7 @@ from ibex_bluesky_core.devices.simpledae import (
     Waiter,
     wavelength_bounded_spectra,
 )
-from ibex_bluesky_core.utils import polarisation
+from ibex_bluesky_core.utils import calculate_polarisation
 
 
 @pytest.fixture
@@ -178,7 +178,7 @@ async def mock_dae(
         name="mock_dae",
         controller=mock_controller,
         waiter=mock_waiter,
-        reducer=mock_reducer,
+        reducer_final=mock_reducer,
         reducer_up=mock_reducer_up,
         reducer_down=mock_reducer_down,
         flipper=flipper,
@@ -208,7 +208,7 @@ async def test_dae(
         name="mock_dae",
         controller=mock_controller,
         waiter=mock_waiter,
-        reducer=polarising_reducer_dual,
+        reducer_final=polarising_reducer_dual,
         reducer_up=normalizer_dual,
         reducer_down=normalizer_dual_alt,
         flipper=flipper,
@@ -468,7 +468,7 @@ async def test_polarising_reducer(
                 value=case["down_intensity"], variance=case["down_stddev"], dtype=float
             )
 
-            expected_polarisation = polarisation(intensity_up, intensity_down)
+            expected_polarisation = calculate_polarisation(intensity_up, intensity_down)
             expected_ratio = intensity_up / intensity_down
 
             # Verify setter was called with correct values

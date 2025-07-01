@@ -60,7 +60,7 @@ async def mock_dae(
         name="polarisingdae",
         controller=mock_controller,
         waiter=mock_waiter,
-        reducer=mock_reducer,
+        reducer_final=mock_reducer,
         reducer_up=mock_reducer_up,
         reducer_down=mock_reducer_down,
         flipper=flipper,

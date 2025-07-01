@@ -6,10 +6,10 @@ import scipp as sc
 from uncertainties import ufloat, unumpy
 
 from ibex_bluesky_core.utils import (
+    calculate_polarisation,
     centred_pixel,
     get_pv_prefix,
     is_matplotlib_backend_qt,
-    polarisation,
 )
 
 
@@ -67,7 +67,7 @@ def test_polarisation_function_calculates_accurately(a, b, variance_a, variance_
     # Two scipp scalars, to test our polarisation function
     var_a = sc.scalar(value=a, variance=variance_a, unit="", dtype="float64")
     var_b = sc.scalar(value=b, variance=variance_b, unit="", dtype="float64")
-    result_value = polarisation(var_a, var_b)
+    result_value = calculate_polarisation(var_a, var_b)
     result_uncertainy = (result_value.variance) ** 0.5  # uncertainty is sqrt of variance
 
     assert result_value.value == pytest.approx(polarisation_ufloat)
@@ -93,7 +93,7 @@ def test_polarisation_2_arrays(a, b, variances_a, variances_b):
     var_a = sc.array(dims="x", values=a, variances=variances_a, unit="", dtype="float64")
     var_b = sc.array(dims="x", values=b, variances=variances_b, unit="", dtype="float64")
 
-    result_value = polarisation(var_a, var_b)
+    result_value = calculate_polarisation(var_a, var_b)
 
     result_uncertainties = (result_value.variances) ** 0.5
 
@@ -109,7 +109,7 @@ def test_polarisation_units_mismatch():
     with pytest.raises(
         expected_exception=ValueError, match=r"The units of a and b are not equivalent."
     ):
-        polarisation(var_a, var_b)
+        calculate_polarisation(var_a, var_b)
 
 
 # test that arrays are of unmatching sizes
@@ -120,4 +120,4 @@ def test_polarisation_arrays_of_different_sizes():
     with pytest.raises(
         expected_exception=ValueError, match=r"Dimensions/shape of a and b must match."
     ):
-        polarisation(var_a, var_b)
+        calculate_polarisation(var_a, var_b)

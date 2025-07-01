@@ -313,6 +313,7 @@ class ChainedLiveFit(CallbackBase):
         """
         callbacks = self._livefitplots or self._livefits
         for callback in callbacks:
+            assert hasattr(callback, method_name)
             getattr(callback, method_name)(doc)
 
     def start(self, doc: RunStart) -> None:

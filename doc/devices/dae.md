@@ -390,7 +390,7 @@ The polarising DAE provides specialised functionality for taking data whilst tak
 
 ### DualRunDae
 
-[`DualRunDae`](ibex_bluesky_core.devices.polarisingdae.DualRunDae) is a more complex version of `SimpleDae`, designed specifically for taking polarisation measurements. It requires a flipper device and uses it to flip from one neutron state to the other between runs.
+[`DualRunDae`](ibex_bluesky_core.devices.polarisingdae.DualRunDae) is a more complex version of [`SimpleDae`](ibex_bluesky_core.devices.simpledae.SimpleDae), designed specifically for taking polarisation measurements. It requires a flipper device and uses it to flip from one neutron state to the other between runs.
 
 Key features:
 - Controls a flipper device to switch between neutron states
