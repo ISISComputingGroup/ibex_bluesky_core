@@ -88,7 +88,9 @@ def call_qt_aware(
     return cast(T, (yield Msg(CALL_QT_AWARE_MSG_KEY, func, *args, **kwargs)))
 
 
-def redefine_motor(motor: Motor, position: float) -> Generator[Msg, None, None]:
+def redefine_motor(
+    motor: Motor, position: float, *, sleep: float = 1
+) -> Generator[Msg, None, None]:
     """Redefines the current positions of a motor.
 
     Note:
@@ -97,12 +99,15 @@ def redefine_motor(motor: Motor, position: float) -> Generator[Msg, None, None]:
     Args:
         motor: The motor to set a position on.
         position: The position to set.
+        sleep: An amount of time to sleep, in seconds, after redefining. Defaults to 1 second.
+            This avoids race conditions where a motor is redefined and then immediately moved.
 
     """
     logger.info("Redefining motor %s to %s", motor.name, position)
 
     def make_motor_usable() -> Generator[Msg, None, None]:
         yield from bps.abs_set(motor.set_use_switch, UseSetMode.USE)
+        yield from bps.sleep(sleep)
 
     def inner() -> Generator[Msg, None, None]:
         yield from bps.abs_set(motor.set_use_switch, UseSetMode.SET)
