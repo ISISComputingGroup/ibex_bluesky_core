@@ -4,7 +4,6 @@ import os
 from collections.abc import Generator
 from pathlib import Path
 
-import bluesky.plan_stubs as bps
 import bluesky.plans as bp
 import matplotlib
 import matplotlib.pyplot as plt
@@ -94,8 +93,6 @@ def dae_scan_plan() -> Generator[Msg, None, None]:
 
     @icc
     def _inner() -> Generator[Msg, None, None]:
-        yield from bps.mv(dae.number_of_periods, NUM_POINTS)  # type: ignore
-        # Pyright does not understand as bluesky isn't typed yet
         yield from bp.scan([dae], block, 0, 10, num=NUM_POINTS)
         print(icc.live_fit.result.fit_report())
         print(f"COM: {icc.peak_stats['com']}")
