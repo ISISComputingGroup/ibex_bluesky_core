@@ -60,14 +60,6 @@ class PeriodGoodFramesWaiter(SimpleWaiter[int]):
         return dae.period.good_frames
 
 
-class GoodFramesWaiter(SimpleWaiter[int]):
-    """Wait for good frames to reach a user-specified value."""
-
-    def get_signal(self, dae: "SimpleDae") -> SignalR[int]:
-        """Wait for good frames."""
-        return dae.good_frames
-
-
 class GoodUahWaiter(SimpleWaiter[float]):
     """Wait for good microamp-hours to reach a user-specified value."""
 
