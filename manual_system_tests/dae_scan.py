@@ -14,8 +14,8 @@ from ophyd_async.plan_stubs import ensure_connected
 from ibex_bluesky_core.callbacks import ISISCallbacks
 from ibex_bluesky_core.devices.block import block_rw_rbv
 from ibex_bluesky_core.devices.simpledae import (
-    GoodFramesNormalizer,
-    GoodFramesWaiter,
+    PeriodGoodFramesNormalizer,
+    PeriodGoodFramesWaiter,
     RunPerPointController,
     SimpleDae,
 )
@@ -48,8 +48,8 @@ def dae_scan_plan() -> Generator[Msg, None, None]:
     block = block_rw_rbv(float, "mot")
 
     controller = RunPerPointController(save_run=True)
-    waiter = GoodFramesWaiter(500)
-    reducer = GoodFramesNormalizer(
+    waiter = PeriodGoodFramesWaiter(500)
+    reducer = PeriodGoodFramesNormalizer(
         prefix=prefix,
         detector_spectra=[i for i in range(1, 100)],
     )
