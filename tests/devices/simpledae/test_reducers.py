@@ -17,6 +17,7 @@ from ibex_bluesky_core.devices.simpledae import (
     SimpleDae,
     tof_bounded_spectra,
     wavelength_bounded_spectra,
+    DSpacingMappingReducer
 )
 
 
