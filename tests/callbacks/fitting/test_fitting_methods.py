@@ -917,4 +917,52 @@ class TestMuonMomentum:
             assert x[np.argmin(out)] < x[np.argmin(out2)]
 
     class TestMuonMomentumGuess:
-        pass
+        def test_muon_momentum_guess_b(self):
+            x = np.array([0, 1, 2], dtype=np.float64)
+            y = np.array([20, 20, 10], dtype=np.float64)
+
+            out = MuonMomentum.guess()(x, y)
+
+            assert out["b"].value is not None
+            assert np.min(y) == out["b"].value
+
+        def test_muon_momentum_guess_r(self):
+            x = np.array([0, 1, 2], dtype=np.float64)
+            y = np.array([20, 20, 10], dtype=np.float64)
+
+            out = MuonMomentum.guess()(x, y)
+
+            assert out["r"].value is not None
+            assert np.max(y) - np.min(y) == out["r"].value
+
+        def test_muon_momentum_guess_w(self):
+            x = np.array([0, 1, 2], dtype=np.float64)
+            y = np.array([20, 20, 10], dtype=np.float64)
+            x1 = np.array([0, 1, 1.5], dtype=np.float64)
+
+            out = MuonMomentum.guess()(x, y)
+            out1 = MuonMomentum.guess()(x1, y)
+
+            assert out["w"].value is not None
+            assert out1["w"].value is not None
+            assert out["w"].value > out1["w"].value
+
+        def test_muon_momentum_guess_x0(self):
+            x = np.array([0, 1, 2], dtype=np.float64)
+            y = np.array([20, 20, 10], dtype=np.float64)
+            x1 = np.array([3, 4, 5], dtype=np.float64)
+
+            out = MuonMomentum.guess()(x, y)
+            out1 = MuonMomentum.guess()(x1, y)
+
+            assert out["x0"].value is not None
+            assert out1["x0"].value is not None
+            assert out1["x0"].value > out["x0"].value
+
+        def test_muon_momentum_guess_x0_noslope(self):
+            x = np.array([0, 1, 2], dtype=np.float64)
+            y = np.array([20, 20, 20], dtype=np.float64)
+
+            out = MuonMomentum.guess()(x, y)
+
+            assert out["x0"].value == 1
