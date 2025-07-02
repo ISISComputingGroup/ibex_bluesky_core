@@ -965,4 +965,4 @@ class TestMuonMomentum:
 
             out = MuonMomentum.guess()(x, y)
 
-            assert out["x0"].value == 1
+            assert out["x0"].value == x[-1]
