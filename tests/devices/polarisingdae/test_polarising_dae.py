@@ -42,7 +42,7 @@ def mock_reducer_down() -> Reducer:
 
 
 @pytest.fixture
-def flipper() -> SignalRW[float]:
+def movable() -> SignalRW[float]:
     return soft_signal_rw(float, 0.0)
 
 
@@ -53,7 +53,7 @@ async def mock_dae(
     mock_reducer: Reducer,
     mock_reducer_up: Reducer,
     mock_reducer_down: Reducer,
-    flipper: SignalRW[float],
+    movable: SignalRW[float],
 ) -> DualRunDae:
     mock_dae = DualRunDae(
         prefix="unittest:mock:",
@@ -63,8 +63,8 @@ async def mock_dae(
         reducer_final=mock_reducer,
         reducer_up=mock_reducer_up,
         reducer_down=mock_reducer_down,
-        flipper=flipper,
-        flipper_states=[0.0, 1.0],
+        movable=movable,
+        movable_states=[0.0, 1.0],
     )
 
     await mock_dae.connect(mock=True)
@@ -103,7 +103,7 @@ async def test_polarisingdae_calls_reducer_on_trigger(
     mock_reducer_down.reduce_data.assert_called_once_with(mock_dae)
 
 
-async def test_polarising_dae_sets_up_periods_correctly(flipper: SignalRW[float]):
+async def test_polarising_dae_sets_up_periods_correctly(movable: SignalRW[float]):
     """Test that the DAE is correctly configured for period-per-point operation."""
     det_pixels = [1, 2, 3]
     frames = 200
@@ -111,7 +111,7 @@ async def test_polarising_dae_sets_up_periods_correctly(flipper: SignalRW[float]
     intervals = [
         sc.array(dims=["tof"], values=[0, 9999999999.0], unit=sc.units.angstrom, dtype="float64")
     ]
-    flipper_states = [0.0, 1.0]
+    movable_states = [0.0, 1.0]
     total_flight_path_length = sc.scalar(value=10, unit=sc.units.m)
     save_run = False
 
@@ -124,8 +124,8 @@ async def test_polarising_dae_sets_up_periods_correctly(flipper: SignalRW[float]
             save_run=save_run,
             intervals=intervals,
             total_flight_path_length=total_flight_path_length,
-            flipper=flipper,
-            flipper_states=flipper_states,
+            movable=movable,
+            movable_states=movable_states,
         )
 
     assert isinstance(dae.waiter, PeriodGoodFramesWaiter)
@@ -134,7 +134,7 @@ async def test_polarising_dae_sets_up_periods_correctly(flipper: SignalRW[float]
     assert isinstance(dae.controller, PeriodPerPointController)
 
 
-async def test_polarising_dae_sets_up_single_period_correctly(flipper: SignalRW[float]):
+async def test_polarising_dae_sets_up_single_period_correctly(movable: SignalRW[float]):
     """Test that the DAE is correctly configured for run-per-point operation."""
     det_pixels = [1, 2, 3]
     frames = 200
@@ -142,7 +142,7 @@ async def test_polarising_dae_sets_up_single_period_correctly(flipper: SignalRW[
     intervals = [
         sc.array(dims=["tof"], values=[0, 9999999999.0], unit=sc.units.angstrom, dtype="float64")
     ]
-    flipper_states = [0.0, 1.0]
+    movable_states = [0.0, 1.0]
     total_flight_path_length = sc.scalar(value=10, unit=sc.units.m)
     save_run = False
 
@@ -155,8 +155,8 @@ async def test_polarising_dae_sets_up_single_period_correctly(flipper: SignalRW[
             save_run=save_run,
             intervals=intervals,
             total_flight_path_length=total_flight_path_length,
-            flipper=flipper,
-            flipper_states=flipper_states,
+            movable=movable,
+            movable_states=movable_states,
         )
 
     assert isinstance(dae.waiter, GoodFramesWaiter)

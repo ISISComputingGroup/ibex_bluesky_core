@@ -132,7 +132,7 @@ def mock_reducer_down() -> MultiWavelengthBandNormalizer:
 
 
 @pytest.fixture
-def flipper() -> SignalRW[float]:
+def movable() -> SignalRW[float]:
     return soft_signal_rw(float, 0.0)
 
 
@@ -171,7 +171,7 @@ async def mock_dae(
     mock_reducer: Reducer,
     mock_reducer_up: Reducer,
     mock_reducer_down: Reducer,
-    flipper: SignalRW[float],
+    movable: SignalRW[float],
 ) -> DualRunDae:
     mock_polarising_dae = DualRunDae(
         prefix="unittest:mock:",
@@ -181,8 +181,8 @@ async def mock_dae(
         reducer_final=mock_reducer,
         reducer_up=mock_reducer_up,
         reducer_down=mock_reducer_down,
-        flipper=flipper,
-        flipper_states=[0.0, 1.0],
+        movable=movable,
+        movable_states=[0.0, 1.0],
     )
 
     await mock_polarising_dae.connect(mock=True)
@@ -196,7 +196,7 @@ async def test_dae(
     polarising_reducer_dual: PolarisationReducer,
     normalizer_dual: MultiWavelengthBandNormalizer,
     normalizer_dual_alt: MultiWavelengthBandNormalizer,
-    flipper: SignalRW[float],
+    movable: SignalRW[float],
 ) -> DualRunDae:
     """Create a test DAE instance with proper mocks and reducers."""
     # Add additional_readable_signals method to controller and waiter mocks
@@ -211,8 +211,8 @@ async def test_dae(
         reducer_final=polarising_reducer_dual,
         reducer_up=normalizer_dual,
         reducer_down=normalizer_dual_alt,
-        flipper=flipper,
-        flipper_states=[0.0, 1.0],
+        movable=movable,
+        movable_states=[0.0, 1.0],
     )
 
     await dae.connect(mock=True)
