@@ -16,13 +16,13 @@ from ibex_bluesky_core.devices.simpledae._controllers import (
     RunPerPointController,
 )
 from ibex_bluesky_core.devices.simpledae._reducers import (
+    INTENSITY_PRECISION,
     VARIANCE_ADDITION,
     DSpacingMappingReducer,
     MonitorNormalizer,
     PeriodGoodFramesNormalizer,
     PeriodSpecIntegralsReducer,
     ScalarNormalizer,
-    polarization,
     sum_spectra,
     tof_bounded_spectra,
     wavelength_bounded_spectra,
@@ -50,6 +50,7 @@ GoodFramesNormalizer = PeriodGoodFramesNormalizer
 logger = logging.getLogger(__name__)
 
 __all__ = [
+    "INTENSITY_PRECISION",
     "VARIANCE_ADDITION",
     "Controller",
     "DSpacingMappingReducer",
@@ -72,15 +73,14 @@ __all__ = [
     "Waiter",
     "check_dae_strategies",
     "monitor_normalising_dae",
-    "polarization",
     "sum_spectra",
     "tof_bounded_spectra",
     "wavelength_bounded_spectra",
 ]
 
-TController_co = TypeVar("TController_co", bound="Controller", default="Controller", covariant=True)
-TWaiter_co = TypeVar("TWaiter_co", bound="Waiter", default="Waiter", covariant=True)
-TReducer_co = TypeVar("TReducer_co", bound="Reducer", default="Reducer", covariant=True)
+TController_co = TypeVar("TController_co", bound="Controller", default=Controller, covariant=True)
+TWaiter_co = TypeVar("TWaiter_co", bound="Waiter", default=Waiter, covariant=True)
+TReducer_co = TypeVar("TReducer_co", bound="Reducer", default=Reducer, covariant=True)
 
 
 class SimpleDae(Dae, Triggerable, AsyncStageable, Generic[TController_co, TWaiter_co, TReducer_co]):

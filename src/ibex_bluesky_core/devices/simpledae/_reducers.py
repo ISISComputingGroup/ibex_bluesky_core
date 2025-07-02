@@ -5,7 +5,6 @@ import logging
 import math
 from abc import ABC, abstractmethod
 from collections.abc import Awaitable, Callable, Collection, Sequence
-from typing import TYPE_CHECKING
 
 import numpy as np
 import numpy.typing as npt
@@ -21,13 +20,10 @@ from ophyd_async.core import (
 from scippneutron import conversion
 from scippneutron.conversion.tof import dspacing_from_tof
 
-from ibex_bluesky_core.devices.dae import DaeSpectra
+from ibex_bluesky_core.devices.dae import Dae, DaeSpectra
 from ibex_bluesky_core.devices.simpledae._strategies import Reducer
 
 logger = logging.getLogger(__name__)
-
-if TYPE_CHECKING:
-    from ibex_bluesky_core.devices.simpledae import SimpleDae
 
 
 INTENSITY_PRECISION = 6
@@ -135,60 +131,6 @@ def wavelength_bounded_spectra(
     return sum_spectra_with_wavelength
 
 
-def polarization(
-    a: sc.Variable | sc.DataArray, b: sc.Variable | sc.DataArray
-) -> sc.Variable | sc.DataArray:
-    """Calculate polarization value and propagate uncertainties.
-
-    This function computes the polarization given by the formula (a-b)/(a+b)
-    and propagates the uncertainties associated with a and b.
-
-    Args:
-        a: scipp :external+scipp:py:obj:`Variable <scipp.Variable>`
-            or :external+scipp:py:obj:`DataArray <scipp.DataArray>`
-        b: scipp :external+scipp:py:obj:`Variable <scipp.Variable>`
-            or :external+scipp:py:obj:`DataArray <scipp.DataArray>`
-
-    Returns:
-        polarization, ``(a - b) / (a + b)``, as a scipp
-        :external+scipp:py:obj:`Variable <scipp.Variable>`
-        or :external+scipp:py:obj:`DataArray <scipp.DataArray>`
-
-    On SANS instruments e.g. LARMOR, A and B correspond to intensity in different DAE
-    periods (before/after switching a flipper) and the output is interpreted as a neutron
-    polarization ratio.
-
-    On reflectometry instruments e.g. POLREF, the situation is the same as on LARMOR.
-
-    On muon instruments, A and B correspond to measuring from forward/backward detector
-    banks, and the output is interpreted as a muon asymmetry.
-
-    """
-    if a.unit != b.unit:
-        raise ValueError("The units of a and b are not equivalent.")
-    if a.sizes != b.sizes:
-        raise ValueError("Dimensions/shape of a and b must match.")
-
-    # This line allows for dims, units, and dtype to be handled by scipp
-    polarization_value = (a - b) / (a + b)
-
-    variances_a = a.variances
-    variances_b = b.variances
-    values_a = a.values
-    values_b = b.values
-
-    # Calculate partial derivatives
-    partial_a = 2 * values_b / (values_a + values_b) ** 2
-    partial_b = -2 * values_a / (values_a + values_b) ** 2
-
-    variance_return = (partial_a**2 * variances_a) + (partial_b**2 * variances_b)
-
-    # Propagate uncertainties
-    polarization_value.variances = variance_return
-
-    return polarization_value
-
-
 class ScalarNormalizer(Reducer, StandardReadable, ABC):
     """Sum a set of user-specified spectra, then normalize by a scalar signal."""
 
@@ -232,10 +174,10 @@ class ScalarNormalizer(Reducer, StandardReadable, ABC):
         super().__init__(name="")
 
     @abstractmethod
-    def denominator(self, dae: "SimpleDae") -> SignalR[int] | SignalR[float]:
+    def denominator(self, dae: Dae) -> SignalR[int] | SignalR[float]:
         """Get the normalization denominator, which is assumed to be a scalar signal."""
 
-    async def reduce_data(self, dae: "SimpleDae") -> None:
+    async def reduce_data(self, dae: Dae) -> None:
         """Apply the normalization."""
         logger.info("starting reduction")
         summed_counts, denominator = await asyncio.gather(
@@ -259,7 +201,7 @@ class ScalarNormalizer(Reducer, StandardReadable, ABC):
 
         logger.info("reduction complete")
 
-    def additional_readable_signals(self, dae: "SimpleDae") -> list[Device]:
+    def additional_readable_signals(self, dae: Dae) -> list[Device]:
         """Publish interesting signals derived or used by this reducer."""
         return [
             self.det_counts,
@@ -273,7 +215,7 @@ class ScalarNormalizer(Reducer, StandardReadable, ABC):
 class PeriodGoodFramesNormalizer(ScalarNormalizer):
     """Sum a set of user-specified spectra, then normalize by period good frames."""
 
-    def denominator(self, dae: "SimpleDae") -> SignalR[int]:
+    def denominator(self, dae: Dae) -> SignalR[int]:
         """Get normalization denominator (period good frames)."""
         return dae.period.good_frames
 
@@ -335,7 +277,7 @@ class MonitorNormalizer(Reducer, StandardReadable):
 
         super().__init__(name="")
 
-    async def reduce_data(self, dae: "SimpleDae") -> None:
+    async def reduce_data(self, dae: Dae) -> None:
         """Apply the normalization."""
         logger.info("starting reduction")
         detector_counts, monitor_counts = await asyncio.gather(
@@ -364,7 +306,7 @@ class MonitorNormalizer(Reducer, StandardReadable):
 
         logger.info("reduction complete")
 
-    def additional_readable_signals(self, dae: "SimpleDae") -> list[Device]:
+    def additional_readable_signals(self, dae: Dae) -> list[Device]:
         """Publish interesting signals derived or used by this reducer."""
         return [
             self.det_counts,
@@ -425,7 +367,7 @@ class PeriodSpecIntegralsReducer(Reducer, StandardReadable):
         """Get the monitors used by this reducer."""
         return self._monitors
 
-    async def reduce_data(self, dae: "SimpleDae") -> None:
+    async def reduce_data(self, dae: Dae) -> None:
         """Expose detector & monitor integrals.
 
         After this method returns, it is valid to read from det_integrals and
@@ -453,7 +395,7 @@ class PeriodSpecIntegralsReducer(Reducer, StandardReadable):
 
         logger.info("reduction complete")
 
-    def additional_readable_signals(self, dae: "SimpleDae") -> list[Device]:
+    def additional_readable_signals(self, dae: Dae) -> list[Device]:
         """Publish interesting signals derived or used by this reducer."""
         return [
             self.mon_integrals,
@@ -531,7 +473,7 @@ class DSpacingMappingReducer(Reducer, StandardReadable):
 
         super().__init__(name="")
 
-    async def reduce_data(self, dae: "SimpleDae") -> None:
+    async def reduce_data(self, dae: Dae) -> None:
         """Expose calculated d-spacing.
 
         This will be in units of counts, which may be fractional due to rebinning.
@@ -577,6 +519,6 @@ class DSpacingMappingReducer(Reducer, StandardReadable):
         self._dspacing_setter(summed_data.values)
         logger.info("reduction complete")
 
-    def additional_readable_signals(self, dae: "SimpleDae") -> list[Device]:
+    def additional_readable_signals(self, dae: Dae) -> list[Device]:
         """Publish interesting signals derived or used by this reducer."""
         return [self.dspacing]

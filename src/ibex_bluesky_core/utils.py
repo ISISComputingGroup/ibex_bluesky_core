@@ -6,9 +6,16 @@ import os
 from typing import Any, Protocol
 
 import matplotlib
+import scipp as sc
 from bluesky.protocols import NamedMovable, Readable
 
-__all__ = ["NamedReadableAndMovable", "centred_pixel", "get_pv_prefix", "is_matplotlib_backend_qt"]
+__all__ = [
+    "NamedReadableAndMovable",
+    "calculate_polarisation",
+    "centred_pixel",
+    "get_pv_prefix",
+    "is_matplotlib_backend_qt",
+]
 
 
 def is_matplotlib_backend_qt() -> bool:
@@ -43,3 +50,57 @@ def get_pv_prefix() -> str:
 
 class NamedReadableAndMovable(Readable[Any], NamedMovable[Any], Protocol):
     """Abstract class for type checking that an object is readable, named and movable."""
+
+
+def calculate_polarisation(
+    a: sc.Variable | sc.DataArray, b: sc.Variable | sc.DataArray
+) -> sc.Variable | sc.DataArray:
+    """Calculate polarisation value and propagate uncertainties.
+
+    This function computes the polarisation given by the formula (a-b)/(a+b)
+    and propagates the uncertainties associated with a and b.
+
+    Args:
+        a: scipp :external+scipp:py:obj:`Variable <scipp.Variable>`
+            or :external+scipp:py:obj:`DataArray <scipp.DataArray>`
+        b: scipp :external+scipp:py:obj:`Variable <scipp.Variable>`
+            or :external+scipp:py:obj:`DataArray <scipp.DataArray>`
+
+    Returns:
+        polarisation, ``(a - b) / (a + b)``, as a scipp
+        :external+scipp:py:obj:`Variable <scipp.Variable>`
+        or :external+scipp:py:obj:`DataArray <scipp.DataArray>`
+
+    On SANS instruments e.g. LARMOR, A and B correspond to intensity in different DAE
+    periods (before/after switching a flipper) and the output is interpreted as a neutron
+    polarisation ratio.
+
+    On reflectometry instruments e.g. POLREF, the situation is the same as on LARMOR.
+
+    On muon instruments, A and B correspond to measuring from forward/backward detector
+    banks, and the output is interpreted as a muon asymmetry.
+
+    """
+    if a.unit != b.unit:
+        raise ValueError("The units of a and b are not equivalent.")
+    if a.sizes != b.sizes:
+        raise ValueError("Dimensions/shape of a and b must match.")
+
+    # This line allows for dims, units, and dtype to be handled by scipp
+    polarisation_value = (a - b) / (a + b)
+
+    variances_a = a.variances
+    variances_b = b.variances
+    values_a = a.values
+    values_b = b.values
+
+    # Calculate partial derivatives
+    partial_a = 2 * values_b / (values_a + values_b) ** 2
+    partial_b = -2 * values_a / (values_a + values_b) ** 2
+
+    variance_return = (partial_a**2 * variances_a) + (partial_b**2 * variances_b)
+
+    # Propagate uncertainties
+    polarisation_value.variances = variance_return
+
+    return polarisation_value

@@ -13,7 +13,7 @@ This means that [`SimpleDae`](ibex_bluesky_core.devices.simpledae.SimpleDae) is 
 example running using either one DAE run per scan point, or one DAE period per scan point.
 
 For complex use-cases, particularly those where the DAE may need to start and stop multiple 
-acquisitions per scan point (e.g. polarization measurements), [`SimpleDae`](ibex_bluesky_core.devices.simpledae.SimpleDae) is unlikely to be 
+acquisitions per scan point (e.g. Polarisation measurements), [`SimpleDae`](ibex_bluesky_core.devices.simpledae.SimpleDae) is unlikely to be 
 suitable; instead the [`Dae`](ibex_bluesky_core.devices.dae.Dae) class should be subclassed directly to allow for finer control.
 
 ## Example configurations
@@ -285,10 +285,10 @@ as a list, and `units` (μs/microseconds for time of flight bounding, and angstr
 
 If you don't specify either of these options, they will default to summing over the entire spectrum.
 
-### Polarization/Asymmetry
+### Polarisation/Asymmetry
 
 ibex_bluesky_core provides a helper method,
-{py:obj}`ibex_bluesky_core.devices.simpledae.polarization`, for calculating the quantity (a-b)/(a+b). This quantity is used, for example, in neutron polarization measurements, and in calculating asymmetry for muon measurements.
+{py:obj}`ibex_bluesky_core.utils.calculate_polarisation`, for calculating the quantity (a-b)/(a+b). This quantity is used, for example, in neutron polarisation measurements, and in calculating asymmetry for muon measurements.
 
 For this expression, scipp's default uncertainty propagation rules cannot be used as the uncertainties on (a-b) are correlated with those of (a+b) in the division step - but scipp assumes uncorrelated data. This helper method calculates the uncertainties following linear error propagation theory, using the partial derivatives of the above expression.
 
@@ -304,7 +304,7 @@ Which then means the variances computed by this helper function are:
 $ Variance = (\frac{\delta}{\delta a}^2 * variance_a) + (\frac{\delta}{\delta b}^2 * variance_b)  $ 
 
 
-The polarization funtion provided will calculate the polarization between two values, A and B, which 
+The polarisation function provided will calculate the polarisation between two values, A and B, which 
 have different definitions based on the instrument context.
 
 Instrument-Specific Interpretations
@@ -317,6 +317,10 @@ Similar to LARMOR, A and B represent intensities before and after flipper switch
 
 Muon Instruments
 A and B refer to Measurements from different detector banks.
+
+{py:obj}`ibex_bluesky_core.utils.calculate_polarisation`
+
+See [`PolarisationReducer`](#PolarisationReducer) for how this is integrated into DAE behaviour. 
 
 ## Waiters
 
@@ -360,6 +364,63 @@ Published signals:
 Waits for a user-specified time duration, irrespective of DAE state.
 
 Does not publish any additional signals.
+
+## Polarising DAE
+
+The polarising DAE provides specialised functionality for taking data whilst taking into account the polarity of the beam.
+
+### DualRunDae
+
+[`DualRunDae`](ibex_bluesky_core.devices.polarisingdae.DualRunDae) is a more complex version of [`SimpleDae`](ibex_bluesky_core.devices.simpledae.SimpleDae), designed specifically for taking polarisation measurements. It requires a flipper device and uses it to flip from one neutron state to the other between runs.
+
+Key features:
+- Controls a flipper device to switch between neutron states
+- Handles three separate reduction strategies 
+  - Up & Down Reducers, which run after each run
+  - Main reducer, which runs after everything else
+
+### polarising_dae
+
+[`polarising_dae`](ibex_bluesky_core.devices.polarisingdae.polarising_dae) is a helper function that creates a configured `PolarisingDae` instance with wavelength binning based normalisation and polarisation calculation capabilities.
+
+The following is how you may want to use `polarising_dae`:
+```python
+import scipp
+
+flipper = block_rw(float, "alice")
+wavelength_interval = scipp.array(dims=["tof"], values=[0, 9999999999.0], unit=scipp.units.angstrom, dtype="float64") # Creates a wavelength interval of the whole sprectrum
+total_flight_path_length = sc.scalar(value=10, unit=sc.units.m)
+
+dae = polarising_dae(det_pixels=[1], frames=500, flipper=flipper, flipper_states=(0.0, 1.0), intervals=[wavelength_interval], total_flight_path_length=total_flight_path_length, monitor=2)
+```
+
+:::{note}
+  Notice how you must define what the `flipper_states` are to the polarising dae. This is so that it knows what to assign to the `flipper` device to move it to the "up state" and "down state"
+  .
+:::
+
+### Polarising Reducers
+
+#### MultiWavelengthBandNormalizer
+
+[`MultiWavelengthBandNormalizer`](ibex_bluesky_core.devices.polarisingdae.MultiWavelengthBandNormalizer) sums wavelength-bounded spectra and normalises by monitor intensity.
+
+Published signals:
+- `wavelength_bands`: DeviceVector containing wavelength band measurements
+  - `det_counts`: detector counts in the wavelength band
+  - `mon_counts`: monitor counts in the wavelength band
+  - `intensity`: normalised intensity in the wavelength band
+  - Associated uncertainty measurements for each value
+
+#### PolarisingReducer
+
+[`PolarisationReducer`](ibex_bluesky_core.devices.polarisingdae.PolarisationReducer) calculates polarisation from 'spin-up' and 'spin-down' states of a polarising DAE. Uses the [`Polarisation`](#polarisationasymmetry) algorithm.
+
+Published signals:
+- `wavelength_bands`: DeviceVector containing polarisation measurements
+  - `polarisation`: The calculated polarisation value for that wavelength band
+  - `polarisation_ratio`: Ratio between up and down states for that wavelength band
+  - Associated uncertainty measurements for each value
 
 ---
 
@@ -478,9 +539,6 @@ A [`DaeSpectra`](ibex_bluesky_core.devices.dae.DaeSpectra) object provides 3 arr
 
 The [`Dae`](ibex_bluesky_core.devices.dae) base class does not provide any spectra by default. User-level classes should specify 
 the set of spectra which they are interested in.
-
-
-
 
 Spectra can be summed between two bounds based on time of flight bounds, or wavelength bounds, for both detector and monitor normalizers.
 
