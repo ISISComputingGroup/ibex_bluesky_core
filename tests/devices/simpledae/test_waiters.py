@@ -4,7 +4,6 @@ import pytest
 from ophyd_async.testing import set_mock_value
 
 from ibex_bluesky_core.devices.simpledae import (
-    GoodFramesWaiter,
     GoodUahWaiter,
     MEventsWaiter,
     PeriodGoodFramesWaiter,
@@ -47,23 +46,6 @@ async def test_period_good_frames_waiter(simpledae: "SimpleDae"):
 
     assert waiter.additional_readable_signals(simpledae) == [simpledae.period.good_frames]
     assert waiter.get_signal(simpledae) == simpledae.period.good_frames
-
-
-async def test_good_frames_waiter(simpledae: "SimpleDae"):
-    waiter = GoodFramesWaiter(5000)
-
-    set_mock_value(simpledae.good_frames, 4999)
-
-    with pytest.raises(asyncio.TimeoutError):
-        await asyncio.wait_for(waiter.wait(simpledae), timeout=SHORT_TIMEOUT)
-
-    set_mock_value(simpledae.good_frames, 5000)
-
-    # Check this returns - will raise a timeout error if not.
-    await asyncio.wait_for(waiter.wait(simpledae), timeout=SHORT_TIMEOUT)
-
-    assert waiter.additional_readable_signals(simpledae) == [simpledae.good_frames]
-    assert waiter.get_signal(simpledae) == simpledae.good_frames
 
 
 async def test_mevents_waiter(simpledae: "SimpleDae"):
