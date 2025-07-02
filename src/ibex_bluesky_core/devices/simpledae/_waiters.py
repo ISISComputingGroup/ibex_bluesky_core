@@ -56,6 +56,7 @@ class PeriodGoodFramesWaiter(SimpleWaiter[int]):
         """Wait for period good frames."""
         return dae.period.good_frames
 
+
 class GoodUahWaiter(SimpleWaiter[float]):
     """Wait for good microamp-hours to reach a user-specified value."""
 

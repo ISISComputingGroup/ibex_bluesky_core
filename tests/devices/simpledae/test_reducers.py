@@ -10,6 +10,7 @@ from ophyd_async.testing import get_mock_put, set_mock_value
 
 from ibex_bluesky_core.devices.simpledae import (
     VARIANCE_ADDITION,
+    DSpacingMappingReducer,
     MonitorNormalizer,
     PeriodGoodFramesNormalizer,
     PeriodSpecIntegralsReducer,
@@ -17,7 +18,6 @@ from ibex_bluesky_core.devices.simpledae import (
     SimpleDae,
     tof_bounded_spectra,
     wavelength_bounded_spectra,
-    DSpacingMappingReducer
 )
 
 
