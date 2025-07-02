@@ -22,7 +22,10 @@ from ibex_bluesky_core.fitting import (
     SlitScan,
     TopHat,
     Trapezoid,
+    MuonMomentum,
 )
+
+
 
 
 class MockFit(Fit):
@@ -823,3 +826,89 @@ class TestNegativeTrapezoid:
             outp = NegativeTrapezoid.guess()(x, y)
             # check that with flat data gradient guess is 0
             assert outp["gradient"] == pytest.approx(0.0, rel=1e-2)
+
+
+@pytest.fixture
+def values() -> dict[str, float]:
+    value = {
+        "x0": 21.89,
+        "w": 0.301,
+        "r": 110,
+        "b": 3.37,
+        "p": 1.82,
+    }
+    return value
+@pytest.fixture
+def x() -> npt.NDArray[np.float64]:
+    xaxis = np.linspace(20.5, 23, 15, dtype=np.float64)
+    return xaxis
+
+@pytest.fixture
+def out(x: npt.NDArray[np.float64],values: dict[str,float]) -> npt.NDArray[np.float64]:
+    out1 = MuonMomentum.model().func(
+        x=x,
+        x0=values["x0"],
+        w=values["w"],
+        r=values["r"],
+        b=values["b"],
+        p=values["p"],
+    )
+    return out1
+
+
+class TestMuonMomentum:
+    class TestMuonMomentumModel:
+
+        def test_muon_momentum_model_w(self,out: npt.NDArray[np.float64],values: dict[str, float],x: npt.NDArray[np.float64]):
+
+            out2=MuonMomentum.model().func(
+            x=x,
+            x0=values["x0"],
+            w=values["w"]+1,
+            r=values["r"],
+            b=values["b"],
+            p=values["p"],
+            )
+
+            assert np.mean(out) < np.mean(out2)
+
+        def test_muon_momentum_model_b(self,out: npt.NDArray[np.float64],values: dict[str, float],x: npt.NDArray[np.float64]):
+
+            out2 = MuonMomentum.model().func(
+                x=x,
+                x0=values["x0"],
+                w=values["w"],
+                r=values["r"],
+                b=values["b"]+1,
+                p=values["p"],
+            )
+
+            assert np.min(out) < np.min(out2)
+
+        def test_muon_momentum_model_r(self,out: npt.NDArray[np.float64],values: dict[str, float],x: npt.NDArray[np.float64]):
+            out2 = MuonMomentum.model().func(
+                x=x,
+                x0=values["x0"],
+                w=values["w"],
+                r=values["r"]+10,
+                b=values["b"],
+                p=values["p"],
+            )
+
+            assert np.max(out) - np.min(out) < np.max(out2) - np.min(out2)
+
+        def test_muon_momentum_model_x0(self, out: npt.NDArray[np.float64], values: dict[str, float], x: npt.NDArray[np.float64]):
+            out2 = MuonMomentum.model().func(
+                x=x,
+                x0=values["x0"]+1,
+                w=values["w"],
+                r=values["r"],
+                b=values["b"],
+                p=values["p"],
+            )
+
+            assert x[np.argmax(out)]< x[np.argmax(out2)]
+            assert x[np.argmin(out)]< x[np.argmin(out2)]
+
+    class TestMuonMomentumGuess:
+        pass

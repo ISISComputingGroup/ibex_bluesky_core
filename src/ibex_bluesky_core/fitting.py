@@ -691,7 +691,7 @@ class NegativeTrapezoid(Fit):
 
 
 class MuonMomentum(Fit):
-    """Muon mementum fitting."""
+    """Muon momentum fitting."""
 
     equation = """
         y=(erfc((x-x0/w))*(r/2)+b)*((x/x0)**p)"""
