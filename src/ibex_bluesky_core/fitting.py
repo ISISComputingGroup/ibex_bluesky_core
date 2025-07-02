@@ -727,7 +727,7 @@ class MuonMomentum(Fit):
             if len(x_slope) != 0:
                 x0 = np.mean(x_slope)
             else:
-                x0 = 1  # picked as it can't be 0
+                x0 = x[-1]  # picked as it can't be 0
 
             p = 1  # Expected value, not likely to change
 
