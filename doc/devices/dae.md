@@ -23,14 +23,15 @@ suitable; instead the [`Dae`](ibex_bluesky_core.devices.dae.Dae) class should be
 ```python
 
 from ibex_bluesky_core.utils import get_pv_prefix
-from ibex_bluesky_core.devices.simpledae import SimpleDae, RunPerPointController, GoodFramesWaiter, GoodFramesNormalizer
+from ibex_bluesky_core.devices.simpledae import SimpleDae, RunPerPointController, PeriodGoodFramesWaiter, PeriodGoodFramesNormalizer
 prefix = get_pv_prefix()
 # One DAE run for each scan point, save the runs after each point.
 controller = RunPerPointController(save_run=True)
-# Wait for 500 good frames on each run
-waiter = GoodFramesWaiter(500)
+# Wait for 500 good frames on each run. 
+# Note despite using RunPerPointController here we are still using PeriodGoodFramesWaiter and PeriodGoodFramesNormalizer.
+waiter = PeriodGoodFramesWaiter(500)
 # Sum spectra 1..99 inclusive, then normalize by total good frames
-reducer = GoodFramesNormalizer(
+reducer = PeriodGoodFramesNormalizer(
   prefix=prefix,
   detector_spectra=[i for i in range(1, 100)],
 )
@@ -161,22 +162,11 @@ DAE signals. For example, normalizing intensities are implemented as a reducer.
 
 A reducer may produce any number of reduced signals.
 
-### {py:obj}`GoodFramesNormalizer<ibex_bluesky_core.devices.simpledae.GoodFramesNormalizer>`
-
-This normalizer sums a set of user-defined detector spectra, and then divides by the number
-of good frames.
-
-Published signals:
-- `simpledae.good_frames` - the number of good frames reported by the DAE
-- `reducer.det_counts` - summed detector counts for all of the user-provided spectra
-- `reducer.intensity` - normalized intensity (`det_counts / good_frames`)
-- `reducer.det_counts_stddev` - uncertainty (standard deviation) of the summed detector counts
-- `reducer.intensity_stddev` - uncertainty (standard deviation) of the normalised intensity
-
 ### {py:obj}`PeriodGoodFramesNormalizer<ibex_bluesky_core.devices.simpledae.PeriodGoodFramesNormalizer>`
 
-Equivalent to the `GoodFramesNormalizer` above, but uses good frames only from the current
-period. This should be used if a controller which counts into multiple periods is being used.
+Uses good frames only from the current period.
+This should be used if a controller which counts into multiple periods is being used OR if a
+controller counts into multiple runs.
 
 Published signals:
 - `simpledae.period.good_frames` - the number of good frames reported by the DAE
@@ -298,7 +288,7 @@ If you don't specify either of these options, they will default to summing over 
 ### Polarisation/Asymmetry
 
 ibex_bluesky_core provides a helper method,
-{py:obj}`ibex_bluesky_core.utils.polarisation`, for calculating the quantity (a-b)/(a+b). This quantity is used, for example, in neutron polarisation measurements, and in calculating asymmetry for muon measurements.
+{py:obj}`ibex_bluesky_core.utils.calculate_polarisation`, for calculating the quantity (a-b)/(a+b). This quantity is used, for example, in neutron polarisation measurements, and in calculating asymmetry for muon measurements.
 
 For this expression, scipp's default uncertainty propagation rules cannot be used as the uncertainties on (a-b) are correlated with those of (a+b) in the division step - but scipp assumes uncorrelated data. This helper method calculates the uncertainties following linear error propagation theory, using the partial derivatives of the above expression.
 
@@ -328,7 +318,7 @@ Similar to LARMOR, A and B represent intensities before and after flipper switch
 Muon Instruments
 A and B refer to Measurements from different detector banks.
 
-{py:obj}`ibex_bluesky_core.utils.polarisation`
+{py:obj}`ibex_bluesky_core.utils.calculate_polarisation`
 
 See [`PolarisationReducer`](#PolarisationReducer) for how this is integrated into DAE behaviour. 
 
@@ -349,20 +339,11 @@ Waits for a user-specified number of microamp-hours.
 Published signals:
 - `simpledae.good_uah` - actual good uAh for this run.
 
-### GoodFramesWaiter
-
-[`GoodFramesWaiter`](ibex_bluesky_core.devices.simpledae.GoodFramesWaiter)
-
-Waits for a user-specified number of good frames (in total for the entire run)
-
-Published signals:
-- `simpledae.good_frames` - actual good frames for this run.
-
 ### PeriodGoodFramesWaiter
 
 [`PeriodGoodFramesWaiter`](ibex_bluesky_core.devices.simpledae.PeriodGoodFramesWaiter)
 
-Waits for a user-specified number of good frames (in the current period)
+Waits for a user-specified number of good frames (in the current period) - this should be used even if the controller is splitting up points into separate runs.
 
 Published signals:
 - `simpledae.period.good_frames` - actual period good frames for this run.
@@ -390,7 +371,7 @@ The polarising DAE provides specialised functionality for taking data whilst tak
 
 ### DualRunDae
 
-[`DualRunDae`](ibex_bluesky_core.devices.polarisingdae.DualRunDae) is a more complex version of `SimpleDae`, designed specifically for taking polarisation measurements. It requires a flipper device and uses it to flip from one neutron state to the other between runs.
+[`DualRunDae`](ibex_bluesky_core.devices.polarisingdae.DualRunDae) is a more complex version of [`SimpleDae`](ibex_bluesky_core.devices.simpledae.SimpleDae), designed specifically for taking polarisation measurements. It requires a flipper device and uses it to flip from one neutron state to the other between runs.
 
 Key features:
 - Controls a flipper device to switch between neutron states

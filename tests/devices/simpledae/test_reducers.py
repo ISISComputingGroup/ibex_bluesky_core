@@ -11,7 +11,6 @@ from ophyd_async.testing import get_mock_put, set_mock_value
 from ibex_bluesky_core.devices.simpledae import (
     VARIANCE_ADDITION,
     DSpacingMappingReducer,
-    GoodFramesNormalizer,
     MonitorNormalizer,
     PeriodGoodFramesNormalizer,
     PeriodSpecIntegralsReducer,
@@ -25,13 +24,6 @@ from ibex_bluesky_core.devices.simpledae import (
 @pytest.fixture
 async def period_good_frames_reducer() -> PeriodGoodFramesNormalizer:
     reducer = PeriodGoodFramesNormalizer(prefix="", detector_spectra=[1, 2])
-    await reducer.connect(mock=True)
-    return reducer
-
-
-@pytest.fixture
-async def good_frames_reducer() -> GoodFramesNormalizer:
-    reducer = GoodFramesNormalizer(prefix="", detector_spectra=[1, 2])
     await reducer.connect(mock=True)
     return reducer
 
@@ -339,24 +331,13 @@ def test_period_good_frames_normalizer_publishes_period_good_frames(
     assert period_good_frames_reducer.denominator(fake_dae) == fake_dae.period.good_frames
 
 
-def test_good_frames_normalizer_publishes_good_frames(
-    good_frames_reducer: GoodFramesNormalizer,
-):
-    fake_dae: SimpleDae = FakeDae()  # type: ignore
-    readables = good_frames_reducer.additional_readable_signals(fake_dae)
-    assert fake_dae.good_uah not in readables
-    assert fake_dae.good_frames in readables
-
-    assert good_frames_reducer.denominator(fake_dae) == fake_dae.good_frames
-
-
 def test_scalar_normalizer_publishes_uncertainties(
     simpledae: SimpleDae,
-    good_frames_reducer: GoodFramesNormalizer,
+    period_good_frames_reducer: PeriodGoodFramesNormalizer,
 ):
-    readables = good_frames_reducer.additional_readable_signals(simpledae)
-    assert good_frames_reducer.intensity_stddev in readables
-    assert good_frames_reducer.det_counts_stddev in readables
+    readables = period_good_frames_reducer.additional_readable_signals(simpledae)
+    assert period_good_frames_reducer.intensity_stddev in readables
+    assert period_good_frames_reducer.det_counts_stddev in readables
 
 
 async def test_period_good_frames_normalizer(

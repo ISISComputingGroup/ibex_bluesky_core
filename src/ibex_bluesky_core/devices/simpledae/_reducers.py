@@ -220,14 +220,6 @@ class PeriodGoodFramesNormalizer(ScalarNormalizer):
         return dae.period.good_frames
 
 
-class GoodFramesNormalizer(ScalarNormalizer):
-    """Sum a set of user-specified spectra, then normalize by total good frames."""
-
-    def denominator(self, dae: Dae) -> SignalR[int]:
-        """Get normalization denominator (total good frames)."""
-        return dae.good_frames
-
-
 class MonitorNormalizer(Reducer, StandardReadable):
     """Normalize a set of user-specified detector spectra by user-specified monitor spectra."""
 

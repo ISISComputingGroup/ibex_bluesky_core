@@ -11,10 +11,10 @@ from bluesky.protocols import NamedMovable, Readable
 
 __all__ = [
     "NamedReadableAndMovable",
+    "calculate_polarisation",
     "centred_pixel",
     "get_pv_prefix",
     "is_matplotlib_backend_qt",
-    "polarisation",
 ]
 
 
@@ -52,7 +52,7 @@ class NamedReadableAndMovable(Readable[Any], NamedMovable[Any], Protocol):
     """Abstract class for type checking that an object is readable, named and movable."""
 
 
-def polarisation(
+def calculate_polarisation(
     a: sc.Variable | sc.DataArray, b: sc.Variable | sc.DataArray
 ) -> sc.Variable | sc.DataArray:
     """Calculate polarisation value and propagate uncertainties.

@@ -19,7 +19,6 @@ from ibex_bluesky_core.devices.simpledae._reducers import (
     INTENSITY_PRECISION,
     VARIANCE_ADDITION,
     DSpacingMappingReducer,
-    GoodFramesNormalizer,
     MonitorNormalizer,
     PeriodGoodFramesNormalizer,
     PeriodSpecIntegralsReducer,
@@ -35,7 +34,6 @@ from ibex_bluesky_core.devices.simpledae._strategies import (
     Waiter,
 )
 from ibex_bluesky_core.devices.simpledae._waiters import (
-    GoodFramesWaiter,
     GoodUahWaiter,
     MEventsWaiter,
     PeriodGoodFramesWaiter,
@@ -43,6 +41,11 @@ from ibex_bluesky_core.devices.simpledae._waiters import (
     TimeWaiter,
 )
 from ibex_bluesky_core.utils import get_pv_prefix
+
+# For backwards compatibility.
+# These were removed in https://github.com/ISISComputingGroup/ibex_bluesky_core/issues/136
+GoodFramesWaiter = PeriodGoodFramesWaiter
+GoodFramesNormalizer = PeriodGoodFramesNormalizer
 
 logger = logging.getLogger(__name__)
 
@@ -182,12 +185,12 @@ def monitor_normalising_dae(
     """
     prefix = get_pv_prefix()
 
+    waiter = PeriodGoodFramesWaiter(frames)
+
     if periods:
         controller = PeriodPerPointController(save_run=save_run)
-        waiter = PeriodGoodFramesWaiter(frames)
     else:
         controller = RunPerPointController(save_run=save_run)
-        waiter = GoodFramesWaiter(frames)
 
     reducer = MonitorNormalizer(
         prefix=prefix,

@@ -20,6 +20,9 @@
 
 ### Acceptance criteria
 
+- [ ] Pull request title is understandable for a user (e.g. scientist) reading the release notes. The PR title should be a short description of the change from a user perspective.
+- [ ] Pull request has appropriate labels for automatic release-notes generation
+
 *List the acceptance criteria for the PR. The aim is provide information to help the reviewer*
 
 ### Documentation

@@ -260,7 +260,8 @@ class ChainedLiveFit(CallbackBase):
 
     This callback handles a sequence of LiveFit instances where the parameters from each
     completed fit serve as the initial guess for the subsequent fit. Optional plotting
-    is built in using LivePlotFits.
+    is built in using LivePlotFits. Note that you should not subscribe to the LiveFit/LiveFitPlot
+    callbacks directly, but rather subscribe just this callback.
     """
 
     def __init__(
@@ -312,6 +313,7 @@ class ChainedLiveFit(CallbackBase):
         """
         callbacks = self._livefitplots or self._livefits
         for callback in callbacks:
+            assert hasattr(callback, method_name)
             getattr(callback, method_name)(doc)
 
     def start(self, doc: RunStart) -> None:
@@ -372,10 +374,6 @@ class ChainedLiveFit(CallbackBase):
                         raise RuntimeError("LiveFit.result was None. Could not update fit.")
 
                     init_guess = livefit.result.params
-
-        from ibex_bluesky_core.callbacks import show_plot  # noqa: PLC0415
-
-        show_plot()
 
         return doc
 
