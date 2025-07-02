@@ -76,8 +76,8 @@ class DualRunDae(
         reducer_final: TPReducer_co,
         reducer_up: TMWBReducer_co,
         reducer_down: TMWBReducer_co,
-        flipper: Movable[float],
-        flipper_states: list[float],
+        movable: Movable[float],
+        movable_states: list[float],
     ) -> None:
         """Initialise a DualRunDae.
 
@@ -91,12 +91,12 @@ class DualRunDae(
             reducer_final: A data reduction strategy. It will be triggered once after the two runs.
             reducer_up: A data reduction strategy. Triggers once after the first run completes.
             reducer_down: A data reduction strategy. Triggers once after the second run completes.
-            flipper: A device which will be changed at the start of the first run and between runs.
-            flipper_states: A tuple of two floats, the states to set at the start and between runs.
+            movable: A device which will be changed at the start of the first run and between runs.
+            movable_states: A tuple of two floats, the states to set at the start and between runs.
 
         """
-        self.flipper: Reference[Movable[float]] = Reference(flipper)
-        self.flipper_states: list[float] = flipper_states
+        self.movable: Reference[Movable[float]] = Reference(movable)
+        self.movable_states: list[float] = movable_states
 
         self._prefix = prefix
         self.controller: TController_co = controller
@@ -147,14 +147,14 @@ class DualRunDae(
         This waits for the acquisition and any defined reduction to be complete, such that
         after this coroutine completes, all relevant data is available via read()
         """
-        self.flipper().set(self.flipper_states[0])
+        self.movable().set(self.movable_states[0])
 
         await self.controller.start_counting(self)
         await self.waiter.wait(self)
         await self.controller.stop_counting(self)
         await self.reducer_up.reduce_data(self)
 
-        self.flipper().set(self.flipper_states[1])
+        self.movable().set(self.movable_states[1])
 
         await self.controller.start_counting(self)
         await self.waiter.wait(self)
@@ -178,8 +178,8 @@ def polarising_dae(  # noqa: PLR0913
     *,
     det_pixels: list[int],
     frames: int,
-    flipper: Movable[float],
-    flipper_states: list[float],
+    movable: Movable[float],
+    movable_states: list[float],
     intervals: list[sc.Variable],
     total_flight_path_length: sc.Variable,
     periods: bool = True,
@@ -189,15 +189,15 @@ def polarising_dae(  # noqa: PLR0913
     """Create a Polarising DAE which uses wavelength binning and calculates polarisation.
 
     This is a different version of monitor_normalising_dae, with a more complex set of strategies.
-    While already normalising using a monitor and waiting for frames, it requires a flipper device
-    to be provided and will change the flipper between two neutron states between runs. It uses
+    While already normalising using a monitor and waiting for frames, it requires a movable device
+    to be provided and will change the movable between two neutron states between runs. It uses
     wavelength-bounded binning, and on completion of the two runs will calculate polarisation.
 
     Args:
         det_pixels: list of detector pixel to use for scanning.
         frames: number of frames to wait for.
-        flipper: A device which can be used to change the neutron state between runs.
-        flipper_states: A tuple of two floats, the neutron states to be set between runs.
+        movable: A device which can be used to change the neutron state between runs.
+        movable_states: A tuple of two floats, the neutron states to be set between runs.
         intervals: list of wavelength intervals to use for binning.
         total_flight_path_length: total flight path length of the neutron beam
             from monitor to detector.
@@ -245,8 +245,8 @@ def polarising_dae(  # noqa: PLR0913
         reducer_final=reducer_final,
         reducer_up=reducer_up,
         reducer_down=reducer_down,
-        flipper=flipper,
-        flipper_states=flipper_states,
+        movable=movable,
+        movable_states=movable_states,
     )
 
     return dae
