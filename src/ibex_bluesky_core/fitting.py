@@ -20,12 +20,12 @@ __all__ = [
     "Gaussian",
     "Linear",
     "Lorentzian",
+    "MuonMomentum",
     "NegativeTrapezoid",
     "Polynomial",
     "SlitScan",
     "TopHat",
     "Trapezoid",
-    "momentumScan",
 ]
 
 
@@ -689,72 +689,57 @@ class NegativeTrapezoid(Fit):
 
         return guess
 
-class momentumScan(Fit):
-    """momentum scan fit"""
+
+class MuonMomentum(Fit):
+    """Muon mementum fitting."""
 
     equation = """
         y=(erfc((x-x0/w))*(r/2)+b)*((x/x0)**p)"""
+
     @classmethod
     def model(cls, *args: int) -> lmfit.Model:
         """Momentum scan model."""
+
         def model(
-                x: npt.NDArray[np.float64],
-                x0:float,
-                r:float,
-                w:float,
-                p:float,
-                b:float
-        )  -> npt.NDArray[np.float64]:
-            return (scipy.special.erfc((x-x0)/w)*(r/2)+b)*((x/x0)**p)
+            x: npt.NDArray[np.float64], x0: float, r: float, w: float, p: float, b: float
+        ) -> npt.NDArray[np.float64]:
+            return (scipy.special.erfc((x - x0) / w) * (r / 2) + b) * ((x / x0) ** p)
+
         return lmfit.Model(model, name=f"{cls.__name__}  [{cls.equation}]")
 
     @classmethod
     def guess(
-            cls, *args: int
+        cls, *args: int
     ) -> Callable[[npt.NDArray[np.float64], npt.NDArray[np.float64]], dict[str, lmfit.Parameter]]:
         """Momentum Scan Fit Guessing."""
 
         def guess(
-                x: npt.NDArray[np.float64], y: npt.NDArray[np.float64]
+            x: npt.NDArray[np.float64], y: npt.NDArray[np.float64]
         ) -> dict[str, lmfit.Parameter]:
+            min_y = np.argmin(y)
+            max_y = np.argmax(y)
 
+            b = y[min_y]
+            r = y[max_y] - b
 
-            minY=np.argmin(y)
-            maxY=np.argmax(y)
+            x_slope = x[max_y:min_y]
 
-            b = y[minY]
-            r=y[maxY]-b
-
-            xSlope = x[maxY:minY]
-
-            if len(xSlope)!=0:
-                x0=np.mean(xSlope)
+            if len(x_slope) != 0:
+                x0 = np.mean(x_slope)
             else:
-                x0=3
+                x0 = 3
 
-            p=1 #Expected value, not likely to change
+            p = 1  # Expected value, not likely to change
 
-            w=(x[-1]-x[0])/9
+            w = (x[-1] - x[0]) / 9  # 9 is a rough estimate base on testing
 
             init_guess = {
-                "b":lmfit.Parameter("b", b),
-                "r":lmfit.Parameter("r", r,min=0),
-                "x0":lmfit.Parameter("x0", x0,min=0),
-                "p":lmfit.Parameter("p", p,min=0),
-                "w":lmfit.Parameter("w", w,min=0),
+                "b": lmfit.Parameter("b", b),
+                "r": lmfit.Parameter("r", r, min=0),
+                "x0": lmfit.Parameter("x0", x0, min=0),
+                "p": lmfit.Parameter("p", p, min=0),
+                "w": lmfit.Parameter("w", w, min=0),
             }
-            
             return init_guess
+
         return guess
-
-
-
-
-
-
-
-
-
-
-
-
