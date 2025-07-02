@@ -162,6 +162,7 @@ def echoscan_axis_ib(
 
     @subs_decorator([spinecho_cb, *callbacks])
     def _inner() -> Generator[Msg, None, None]:
+        yield from call_qt_aware(plt.show)
         yield from ensure_connected(flipper_dev, dae, axis_dev)
         yield from scan([dae], axis_dev, config.start, config.stop, num=config.num_points)
 
