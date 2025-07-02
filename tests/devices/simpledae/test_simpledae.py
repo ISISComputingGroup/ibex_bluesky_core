@@ -7,8 +7,9 @@ from ophyd_async.testing import set_mock_value
 from ibex_bluesky_core.devices.dae import Dae, DaeCheckingSignal
 from ibex_bluesky_core.devices.simpledae import (
     Controller,
-    GoodFramesNormalizer,
     GoodFramesWaiter,
+    GoodUahWaiter,
+    MonitorNormalizer,
     PeriodGoodFramesNormalizer,
     PeriodGoodFramesWaiter,
     PeriodPerPointController,
@@ -181,15 +182,15 @@ def test_check_dae():
         check_dae_strategies(dae, expected_controller=RunPerPointController)
 
     with pytest.raises(
-        TypeError, match=r"DAE waiter must be of type GoodFramesWaiter, got PeriodGoodFramesWaiter"
+        TypeError, match=r"DAE waiter must be of type GoodUahWaiter, got PeriodGoodFramesWaiter"
     ):
-        check_dae_strategies(dae, expected_waiter=GoodFramesWaiter)
+        check_dae_strategies(dae, expected_waiter=GoodUahWaiter)
 
     with pytest.raises(
         TypeError,
-        match=r"DAE reducer must be of type GoodFramesNormalizer, got PeriodGoodFramesNormalizer",
+        match=r"DAE reducer must be of type MonitorNormalizer, got PeriodGoodFramesNormalizer",
     ):
-        check_dae_strategies(dae, expected_reducer=GoodFramesNormalizer)
+        check_dae_strategies(dae, expected_reducer=MonitorNormalizer)
 
     # Should not raise
     check_dae_strategies(
