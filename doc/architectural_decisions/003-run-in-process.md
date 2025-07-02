@@ -8,6 +8,7 @@ Current
 
 `bluesky` code can be run in several ways:
 - By the user at an interactive shell, directly calling the run engine in-process.
+- Underneath {py:obj}`run_plan()<ibex_bluesky_core.run_engine.run_plan>` if a plan/plan stub is to be run programmatically, which in turn calls the run engine. 
 - By a central worker process, to which the user would "submit" plans to run.
   - See DLS's `blueapi` for an example of a REST API for submitting plans to the run engine.
 

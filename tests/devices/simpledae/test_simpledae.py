@@ -4,11 +4,12 @@ import pytest
 from ophyd_async.core import Device, StandardReadable, soft_signal_rw
 from ophyd_async.testing import set_mock_value
 
-from ibex_bluesky_core.devices.dae import DaeCheckingSignal
+from ibex_bluesky_core.devices.dae import Dae, DaeCheckingSignal
 from ibex_bluesky_core.devices.simpledae import (
     Controller,
-    GoodFramesNormalizer,
     GoodFramesWaiter,
+    GoodUahWaiter,
+    MonitorNormalizer,
     PeriodGoodFramesNormalizer,
     PeriodGoodFramesWaiter,
     PeriodPerPointController,
@@ -84,16 +85,16 @@ async def test_simpledae_publishes_interesting_signals_in_read():
             self.soft_signal = soft_signal_rw(float, 0.0)
             super().__init__(name="reducer")
 
-        def additional_readable_signals(self, dae: "SimpleDae") -> list[Device]:
+        def additional_readable_signals(self, dae: Dae) -> list[Device]:
             # Signal explicitly published by this reducer rather than the DAE itself
             return [self.soft_signal]
 
     class TestController(Controller):
-        def additional_readable_signals(self, dae: "SimpleDae") -> list[Device]:
+        def additional_readable_signals(self, dae: Dae) -> list[Device]:
             return [dae.good_uah]
 
     class TestWaiter(Waiter):
-        def additional_readable_signals(self, dae: "SimpleDae") -> list[Device]:
+        def additional_readable_signals(self, dae: Dae) -> list[Device]:
             # Same signal as controller, should only be added once.
             return [dae.good_uah]
 
@@ -181,15 +182,15 @@ def test_check_dae():
         check_dae_strategies(dae, expected_controller=RunPerPointController)
 
     with pytest.raises(
-        TypeError, match=r"DAE waiter must be of type GoodFramesWaiter, got PeriodGoodFramesWaiter"
+        TypeError, match=r"DAE waiter must be of type GoodUahWaiter, got PeriodGoodFramesWaiter"
     ):
-        check_dae_strategies(dae, expected_waiter=GoodFramesWaiter)
+        check_dae_strategies(dae, expected_waiter=GoodUahWaiter)
 
     with pytest.raises(
         TypeError,
-        match=r"DAE reducer must be of type GoodFramesNormalizer, got PeriodGoodFramesNormalizer",
+        match=r"DAE reducer must be of type MonitorNormalizer, got PeriodGoodFramesNormalizer",
     ):
-        check_dae_strategies(dae, expected_reducer=GoodFramesNormalizer)
+        check_dae_strategies(dae, expected_reducer=MonitorNormalizer)
 
     # Should not raise
     check_dae_strategies(
