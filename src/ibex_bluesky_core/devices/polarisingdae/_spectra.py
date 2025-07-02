@@ -51,9 +51,9 @@ class _PolarisedWavelengthBand(StandardReadable):
     """Subdevice that holds polarisation info for two wavelength bands.
 
     Represents the polarisation information calculated using measurements
-    taken from two `WavelengthBand` objects, one published from an "up state"
-    `WavelengthBoundedNormalizer`and the other from a "down state"
-    `WavelengthBoundedNormalizer`. Has a setter method to assign values to
+    taken from two :obj:`ibex_bluesky_core.devices.polarisingdae._spectra._WavelengthBand` objects, one published from an "up state"
+    :obj:`ibex_bluesky_core.devices.polarisingdae.MultiWavelengthBandNormalizer`and the other from a "down state"
+    :obj:`ibex_bluesky_core.devices.polarisingdae.MultiWavelengthBandNormalizer. Has a setter method to assign values to
     the published signals.
     """
 
