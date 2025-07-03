@@ -474,12 +474,12 @@ class ERFC(Fit):
             ind05 = np.argmin(np.abs(y - y05))
             ind95 = np.argmin(np.abs(y - y95))
 
-            x10 = x[ind05]
-            x90 = x[ind95]
+            x05 = x[ind05]
+            x95 = x[ind95]
 
             erfc_const = 3  # The plotted erfc function where the greatest change
             # in y happens in the region -1.5 and 1.5
-            stretch = erfc_const / np.abs(x90 - x10)
+            stretch = erfc_const / np.abs(x95 - x05)
 
             init_guess = {
                 "cen": lmfit.Parameter("cen", c),
