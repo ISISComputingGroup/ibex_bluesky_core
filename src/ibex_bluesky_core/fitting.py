@@ -5,11 +5,10 @@ from collections.abc import Callable
 
 import lmfit
 import numpy as np
-import scipy
-import scipy.special
 from lmfit.models import PolynomialModel
 from numpy import polynomial as p
 from numpy import typing as npt
+from scipy.special import erf, erfc
 
 __all__ = [
     "ERF",
@@ -352,7 +351,7 @@ class SlitScan(Fit):
             else:
                 exp_seg = (
                     height_above_inflection1
-                    * scipy.special.erf(
+                    * erf(
                         gradient
                         * (np.sqrt(np.pi) / (2 * height_above_inflection1))
                         * (x - inflection0 - inflections_diff)
@@ -414,7 +413,7 @@ class ERF(Fit):
         def model(
             x: npt.NDArray[np.float64], cen: float, stretch: float, scale: float, background: float
         ) -> npt.NDArray[np.float64]:
-            return background + scale * scipy.special.erf(stretch * (x - cen))
+            return background + scale * erf(stretch * (x - cen))
 
         return lmfit.Model(model, name=f"{cls.__name__}  [{cls.equation}]")
 
@@ -451,7 +450,7 @@ class ERFC(Fit):
         def model(
             x: npt.NDArray[np.float64], cen: float, stretch: float, scale: float, background: float
         ) -> npt.NDArray[np.float64]:
-            return background + scale * scipy.special.erfc(stretch * (x - cen))
+            return background + scale * erfc(stretch * (x - cen))
 
         return lmfit.Model(model, name=f"{cls.__name__}  [{cls.equation}]")
 
@@ -464,13 +463,31 @@ class ERFC(Fit):
         def guess(
             x: npt.NDArray[np.float64], y: npt.NDArray[np.float64]
         ) -> dict[str, lmfit.Parameter]:
-            init_guess = {
-                "cen": lmfit.Parameter("cen", np.mean(x)),
-                "stretch": lmfit.Parameter("stretch", (np.max(x) - np.min(x)) / 2),
-                "scale": lmfit.Parameter("scale", (np.max(y) - np.min(y)) / 2),
-                "background": lmfit.Parameter("background", np.min(y)),
-            }
+            c = np.mean(x)
+            scale = (np.max(y) - np.min(y)) / 2
+            b = np.min(y)
 
+            dy = np.max(y) - np.min(y)
+            y05 = np.min(y) + 0.05 * dy
+            y95 = np.min(y) + 0.95 * dy
+
+            ind05 = np.argmin(np.abs(y - y05))
+            ind95 = np.argmin(np.abs(y - y95))
+
+            x10 = x[ind05]
+            x90 = x[ind95]
+
+            erfc_const = 3  # The plotted erfc function where the greatest change
+            # in y happens in the region -1.5 and 1.5
+            stretch = erfc_const / np.abs(x90 - x10)
+
+            init_guess = {
+                "cen": lmfit.Parameter("cen", c),
+                "stretch": lmfit.Parameter("stretch", stretch),
+                "scale": lmfit.Parameter("scale", scale),
+                "background": lmfit.Parameter("background", b),
+            }
+            print(c, scale, b, stretch)
             return init_guess
 
         return guess
