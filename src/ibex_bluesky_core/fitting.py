@@ -737,8 +737,8 @@ class MuonMomentum(Fit):
 
             p = 1  # Expected value, not likely to change
 
-            const = 9  # 9 is a rough estimate base on testing
-            w = (x[-1] - x[0]) / const
+            const = 3  # largest difference in erfc function is between -1.5 and 1.5
+            w = np.abs(x[index_max_y] - x[index_min_y]) / const
 
             init_guess = {
                 "b": lmfit.Parameter("b", b),
