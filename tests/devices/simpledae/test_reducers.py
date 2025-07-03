@@ -7,11 +7,10 @@ import numpy as np
 import pytest
 import scipp as sc
 from ophyd_async.testing import get_mock_put, set_mock_value
-from uncertainties import ufloat, unumpy
 
 from ibex_bluesky_core.devices.simpledae import (
     VARIANCE_ADDITION,
-    GoodFramesNormalizer,
+    DSpacingMappingReducer,
     MonitorNormalizer,
     PeriodGoodFramesNormalizer,
     PeriodSpecIntegralsReducer,
@@ -20,19 +19,11 @@ from ibex_bluesky_core.devices.simpledae import (
     tof_bounded_spectra,
     wavelength_bounded_spectra,
 )
-from ibex_bluesky_core.devices.simpledae._reducers import DSpacingMappingReducer, polarization
 
 
 @pytest.fixture
 async def period_good_frames_reducer() -> PeriodGoodFramesNormalizer:
     reducer = PeriodGoodFramesNormalizer(prefix="", detector_spectra=[1, 2])
-    await reducer.connect(mock=True)
-    return reducer
-
-
-@pytest.fixture
-async def good_frames_reducer() -> GoodFramesNormalizer:
-    reducer = GoodFramesNormalizer(prefix="", detector_spectra=[1, 2])
     await reducer.connect(mock=True)
     return reducer
 
@@ -340,24 +331,13 @@ def test_period_good_frames_normalizer_publishes_period_good_frames(
     assert period_good_frames_reducer.denominator(fake_dae) == fake_dae.period.good_frames
 
 
-def test_good_frames_normalizer_publishes_good_frames(
-    good_frames_reducer: GoodFramesNormalizer,
-):
-    fake_dae: SimpleDae = FakeDae()  # type: ignore
-    readables = good_frames_reducer.additional_readable_signals(fake_dae)
-    assert fake_dae.good_uah not in readables
-    assert fake_dae.good_frames in readables
-
-    assert good_frames_reducer.denominator(fake_dae) == fake_dae.good_frames
-
-
 def test_scalar_normalizer_publishes_uncertainties(
     simpledae: SimpleDae,
-    good_frames_reducer: GoodFramesNormalizer,
+    period_good_frames_reducer: PeriodGoodFramesNormalizer,
 ):
-    readables = good_frames_reducer.additional_readable_signals(simpledae)
-    assert good_frames_reducer.intensity_stddev in readables
-    assert good_frames_reducer.det_counts_stddev in readables
+    readables = period_good_frames_reducer.additional_readable_signals(simpledae)
+    assert period_good_frames_reducer.intensity_stddev in readables
+    assert period_good_frames_reducer.det_counts_stddev in readables
 
 
 async def test_period_good_frames_normalizer(
@@ -661,7 +641,8 @@ async def test_monitor_normalizer_uncertainties(
     assert det_counts_stddev == math.sqrt(6000 + VARIANCE_ADDITION)
     assert mon_counts_stddev == math.sqrt(15000)
     assert intensity_stddev == pytest.approx(
-        (6000 / 15000) * math.sqrt((6000.5 / 6000**2) + (15000 / 15000**2)), 1e-8
+        (6000 / 15000) * math.sqrt(((6000 + VARIANCE_ADDITION) / 6000**2) + (15000 / 15000**2)),
+        1e-8,
     )
 
 
@@ -964,93 +945,6 @@ def test_wavelength_bounded_spectra_bounds_missing_or_too_many(data: list[float]
             bounds=sc.array(dims=["tof"], values=data, unit=sc.units.us),
             total_flight_path_length=sc.scalar(value=100, unit=sc.units.m),
         )
-
-
-# Polarization
-@pytest.mark.parametrize(
-    ("a", "b", "variance_a", "variance_b"),
-    [
-        # Case 1: Symmetric case with equal uncertainties
-        (5.0, 3.0, 0.1, 0.1),
-        # Case 2: Asymmetric case with different uncertainties
-        (10.0, 6.0, 0.2, 0.3),
-        # Case 3: Case with larger values and different uncertainty magnitudes
-        (100.0, 60.0, 1.0, 2.0),
-    ],
-)
-def test_polarization_function_calculates_accurately(a, b, variance_a, variance_b):
-    # 'Uncertainties' library ufloat type; a nominal value and an error value
-    a_ufloat = ufloat(a, variance_a)
-    b_ufloat = ufloat(b, variance_b)
-
-    # polarization value, i.e. (a - b) / (a + b)
-    polarization_ufloat = (a_ufloat.n - b_ufloat.n) / (a_ufloat.n + b_ufloat.n)
-
-    # the partial derivatives of a and b, calculated with 'uncertainties' library's ufloat type
-    partial_a = (2 * b_ufloat.n) / ((a_ufloat.n + b_ufloat.n) ** 2)
-    partial_b = (-2 * a_ufloat.n) / ((a_ufloat.n + b_ufloat.n) ** 2)
-
-    # variance calculated with 'uncertainties' library
-    variance = (partial_a**2 * a_ufloat.s) + (partial_b**2 * b_ufloat.s)
-    uncertainty = variance**0.5  # uncertainty is sqrt of variance
-
-    # Two scipp scalars, to test our polarization function
-    var_a = sc.scalar(value=a, variance=variance_a, unit="", dtype="float64")
-    var_b = sc.scalar(value=b, variance=variance_b, unit="", dtype="float64")
-    result_value = polarization(var_a, var_b)
-    result_uncertainy = (result_value.variance) ** 0.5  # uncertainty is sqrt of variance
-
-    assert result_value.value == pytest.approx(polarization_ufloat)
-    assert result_uncertainy == pytest.approx(uncertainty)
-
-
-# test that arrays are supported
-@pytest.mark.parametrize(
-    ("a", "b", "variances_a", "variances_b"),
-    [
-        ([5.0, 10.0, 100.0], [3.0, 6.0, 60.0], [0.1, 0.2, 1.0], [0.1, 0.3, 2.0]),
-    ],
-)
-def test_polarization_2_arrays(a, b, variances_a, variances_b):
-    # 'Uncertainties' library ufloat type; a nominal value and an error value
-
-    a_arr = unumpy.uarray(a, [v**0.5 for v in variances_a])  # convert variances to std dev
-    b_arr = unumpy.uarray(b, [v**0.5 for v in variances_b])
-
-    # polarization value, i.e. (a - b) / (a + b)
-    polarization_ufloat = (a_arr - b_arr) / (a_arr + b_arr)
-
-    var_a = sc.array(dims="x", values=a, variances=variances_a, unit="", dtype="float64")
-    var_b = sc.array(dims="x", values=b, variances=variances_b, unit="", dtype="float64")
-
-    result_value = polarization(var_a, var_b)
-
-    result_uncertainties = (result_value.variances) ** 0.5
-
-    assert result_value.values == pytest.approx(unumpy.nominal_values(polarization_ufloat))
-    assert result_uncertainties == pytest.approx(unumpy.std_devs(polarization_ufloat))
-
-
-# test that units don't match
-def test_polarization_units_mismatch():
-    var_a = sc.scalar(value=1, variance=0.1, unit="m", dtype="float64")
-    var_b = sc.scalar(value=1, variance=0.1, unit="u", dtype="float64")
-
-    with pytest.raises(
-        expected_exception=ValueError, match=r"The units of a and b are not equivalent."
-    ):
-        polarization(var_a, var_b)
-
-
-# test that arrays are of unmatching sizes
-def test_polarization_arrays_of_different_sizes():
-    var_a = sc.array(dims=["x"], values=[1, 2], variances=[0.1, 0.1], unit="m", dtype="float64")
-    var_b = sc.array(dims=["x"], values=[1], variances=[0.1], unit="m", dtype="float64")
-
-    with pytest.raises(
-        expected_exception=ValueError, match=r"Dimensions/shape of a and b must match."
-    ):
-        polarization(var_a, var_b)
 
 
 @pytest.mark.parametrize(

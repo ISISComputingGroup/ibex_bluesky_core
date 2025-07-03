@@ -4,13 +4,18 @@ import csv
 import logging
 import os
 import warnings
+from itertools import zip_longest
 from pathlib import Path
 
+import lmfit
 import numpy as np
-from bluesky.callbacks import CallbackBase
+from bluesky.callbacks import CallbackBase, LiveFitPlot
 from bluesky.callbacks import LiveFit as _DefaultLiveFit
 from bluesky.callbacks.core import CollectThenCompute, make_class_safe
-from event_model import Event, RunStart, RunStop
+from event_model import Event, EventDescriptor, RunStart, RunStop
+from lmfit import Parameter
+from matplotlib.axes import Axes
+from numpy import typing as npt
 
 from ibex_bluesky_core.callbacks._utils import (
     DATA,
@@ -25,7 +30,7 @@ from ibex_bluesky_core.utils import center_of_mass_of_area_under_curve
 
 logger = logging.getLogger(__name__)
 
-__all__ = ["CentreOfMass", "LiveFit", "LiveFitLogger"]
+__all__ = ["CentreOfMass", "ChainedLiveFit", "LiveFit", "LiveFitLogger"]
 
 
 @make_class_safe(logger=logger)  # pyright: ignore (pyright doesn't understand this decorator)
@@ -85,20 +90,17 @@ class LiveFit(_DefaultLiveFit):
         if self.yerr is not None:
             self.weight_data.append(weight)
 
-    def update_fit(self) -> None:
-        """Use the provided guess function with the most recent x and y values after every update.
-
-        Args:
-            None
-
-        Returns:
-            None
-
-        """
+    def can_fit(self) -> bool:
+        """Check if enough data points have been collected to fit."""
         n = len(self.model.param_names)
-        if len(self.ydata) < n:
+        return len(self.ydata) >= n
+
+    def update_fit(self) -> None:
+        """Use the guess function with the most recent x and y values after every update."""
+        if not self.can_fit():
             warnings.warn(
-                f"LiveFitPlot cannot update fit until there are at least {n} data points",
+                f"""LiveFitPlot cannot update fit until there are at least
+                {len(self.model.param_names)} data points""",
                 stacklevel=1,
             )
         else:
@@ -175,7 +177,7 @@ class LiveFitLogger(CallbackBase):
         self.filename = self.output_dir / f"{rb_num}" / file
 
     def event(self, doc: Event) -> Event:
-        """Start collecting, y, x and yerr data.
+        """Start collecting, y, x, and yerr data.
 
         Args:
             doc: (Event): An event document.
@@ -300,3 +302,145 @@ class CentreOfMass(CollectThenCompute):
         x_data = np.array(x_values, dtype=np.float64)
         y_data = np.array(y_values, dtype=np.float64)
         (self._result, _) = center_of_mass_of_area_under_curve(x_data, y_data)
+
+        
+class ChainedLiveFit(CallbackBase):
+    """Processes multiple LiveFits, each fit's results inform the next, with optional plotting.
+
+    This callback handles a sequence of LiveFit instances where the parameters from each
+    completed fit serve as the initial guess for the subsequent fit. Optional plotting
+    is built in using LivePlotFits. Note that you should not subscribe to the LiveFit/LiveFitPlot
+    callbacks directly, but rather subscribe just this callback.
+    """
+
+    def __init__(
+        self,
+        method: FitMethod,
+        y: list[str],
+        x: str,
+        *,
+        yerr: list[str] | None = None,
+        ax: list[Axes] | None = None,
+    ) -> None:
+        """Initialise ChainedLiveFit with multiple LiveFits.
+
+        Args:
+            method: FitMethod instance for fitting
+            y: List of y-axis variable names
+            x: x-axis variable name
+            yerr: Optional list of error values corresponding to y variables
+            ax: A list of axes to plot fits on to. Creates LiveFitPlot instances.
+
+        """
+        super().__init__()
+
+        if yerr and len(y) != len(yerr):
+            raise ValueError("yerr must be the same length as y")
+
+        if ax and len(y) != len(ax):
+            raise ValueError("ax must be the same length as y")
+
+        self._livefits = [
+            LiveFit(method=method, y=y_name, x=x, yerr=yerr_name)
+            for y_name, yerr_name in zip_longest(y, yerr or [])
+        ]  # if yerrs then create a LiveFit with a yerr else create a LiveFit without a yerr
+
+        self._livefitplots = [
+            LiveFitPlot(livefit=livefit, ax=axis)
+            for livefit, axis in zip(self._livefits, ax or [], strict=False)
+        ]  # if ax then create a LiveFitPlot with ax else do not create any LiveFitPlots
+
+    def _process_doc(
+        self, doc: RunStart | Event | RunStop | EventDescriptor, method_name: str
+    ) -> None:
+        """Process a document for either LivePlots or LiveFits.
+
+        Args:
+            doc: document to process
+            method_name: Name of the method to call ('start', 'descriptor', 'event', or 'stop')
+
+        """
+        callbacks = self._livefitplots or self._livefits
+        for callback in callbacks:
+            assert hasattr(callback, method_name)
+            getattr(callback, method_name)(doc)
+
+    def start(self, doc: RunStart) -> None:
+        """Process start document for all callbacks.
+
+        Args:
+            doc: RunStart document
+
+        """
+        self._process_doc(doc, "start")
+
+    def descriptor(self, doc: EventDescriptor) -> None:
+        """Process descriptor document for all callbacks.
+
+        Args:
+            doc: EventDescriptor document.
+
+        """
+        self._process_doc(doc, "descriptor")
+
+    def event(self, doc: Event) -> Event:
+        """Process event document for all callbacks.
+
+        Args:
+            doc: Event document
+
+        """
+        init_guess = {}
+
+        for livefit in self._livefits:
+            rem_guess = livefit.method.guess
+            try:
+                if init_guess:
+                    # Use previous fit results as initial guess for next fit
+                    def guess_func(
+                        a: npt.NDArray[np.float64], b: npt.NDArray[np.float64]
+                    ) -> dict[str, lmfit.Parameter]:
+                        nonlocal init_guess
+                        return {
+                            name: Parameter(name, value.value)
+                            for name, value in init_guess.items()  # noqa: B023
+                        }  # ruff doesn't understand nonlocal
+
+                    # Using value.value means that parameter uncertainty
+                    # is not carried over between fits
+                    livefit.method.guess = guess_func
+
+                if self._livefitplots:
+                    self._livefitplots[self._livefits.index(livefit)].event(doc)
+                else:
+                    livefit.event(doc)
+
+            finally:
+                livefit.method.guess = rem_guess
+
+                if livefit.can_fit():
+                    if livefit.result is None:
+                        raise RuntimeError("LiveFit.result was None. Could not update fit.")
+
+                    init_guess = livefit.result.params
+
+        return doc
+
+    def stop(self, doc: RunStop) -> None:
+        """Process stop document and update fitting parameters.
+
+        Args:
+            doc: RunStop document
+
+        """
+        self._process_doc(doc, "stop")
+
+    @property
+    def live_fits(self) -> list[LiveFit]:
+        """Return a list of the livefits."""
+        return self._livefits
+
+    @property
+    def live_fit_plots(self) -> list[LiveFitPlot]:
+        """Return a list of the livefitplots."""
+        return self._livefitplots
