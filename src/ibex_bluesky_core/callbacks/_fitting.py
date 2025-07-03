@@ -303,7 +303,7 @@ class CentreOfMass(CollectThenCompute):
         y_data = np.array(y_values, dtype=np.float64)
         (self._result, _) = center_of_mass_of_area_under_curve(x_data, y_data)
 
-        
+
 class ChainedLiveFit(CallbackBase):
     """Processes multiple LiveFits, each fit's results inform the next, with optional plotting.
 

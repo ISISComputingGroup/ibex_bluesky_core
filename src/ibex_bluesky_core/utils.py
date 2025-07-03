@@ -13,8 +13,8 @@ from bluesky.protocols import NamedMovable, Readable
 
 __all__ = [
     "NamedReadableAndMovable",
-    "center_of_mass_of_area_under_curve",
     "calculate_polarisation",
+    "center_of_mass_of_area_under_curve",
     "centred_pixel",
     "get_pv_prefix",
     "is_matplotlib_backend_qt",
@@ -97,7 +97,7 @@ def center_of_mass_of_area_under_curve(
         rect_areas * rect_x_com + triangle_areas * triangle_x_com
     ) / total_area, total_area
 
-  
+
 def calculate_polarisation(
     a: sc.Variable | sc.DataArray, b: sc.Variable | sc.DataArray
 ) -> sc.Variable | sc.DataArray:
