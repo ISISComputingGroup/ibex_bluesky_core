@@ -1,3 +1,4 @@
+import typing
 import warnings
 from collections.abc import Callable
 from unittest import mock
@@ -826,27 +827,17 @@ class TestNegativeTrapezoid:
             assert outp["gradient"] == pytest.approx(0.0, rel=1e-2)
 
 
-@pytest.fixture
-def values() -> dict[str, float]:
-    value = {
+class TestMuonMomentum:
+    values: typing.ClassVar[dict[str, float]] = {
         "x0": 21.89,
         "w": 0.301,
         "r": 110,
         "b": 3.37,
         "p": 1.82,
     }
-    return value
+    x: typing.ClassVar[npt.NDArray[np.float64]] = np.linspace(20.5, 23, 15, dtype=np.float64)
 
-
-@pytest.fixture
-def x() -> npt.NDArray[np.float64]:
-    xaxis = np.linspace(20.5, 23, 15, dtype=np.float64)
-    return xaxis
-
-
-@pytest.fixture
-def out(x: npt.NDArray[np.float64], values: dict[str, float]) -> npt.NDArray[np.float64]:
-    out1 = MuonMomentum.model().func(
+    out: typing.ClassVar[npt.NDArray[np.float64]] = MuonMomentum.model().func(
         x=x,
         x0=values["x0"],
         w=values["w"],
@@ -854,67 +845,64 @@ def out(x: npt.NDArray[np.float64], values: dict[str, float]) -> npt.NDArray[np.
         b=values["b"],
         p=values["p"],
     )
-    return out1
 
-
-class TestMuonMomentum:
     class TestMuonMomentumModel:
-        def test_muon_momentum_model_w(
-            self, out: npt.NDArray[np.float64], values: dict[str, float], x: npt.NDArray[np.float64]
-        ):
+        def test_muon_momentum_model_w(self):
             out2 = MuonMomentum.model().func(
-                x=x,
-                x0=values["x0"],
-                w=values["w"] + 1,
-                r=values["r"],
-                b=values["b"],
-                p=values["p"],
+                x=TestMuonMomentum.x,
+                x0=TestMuonMomentum.values["x0"],
+                w=TestMuonMomentum.values["w"] + 1,
+                r=TestMuonMomentum.values["r"],
+                b=TestMuonMomentum.values["b"],
+                p=TestMuonMomentum.values["p"],
             )
 
-            assert np.mean(out) < np.mean(out2)
+            assert np.mean(TestMuonMomentum.out) < np.mean(out2)
 
-        def test_muon_momentum_model_b(
-            self, out: npt.NDArray[np.float64], values: dict[str, float], x: npt.NDArray[np.float64]
-        ):
+        def test_muon_momentum_model_b(self):
             out2 = MuonMomentum.model().func(
-                x=x,
-                x0=values["x0"],
-                w=values["w"],
-                r=values["r"],
-                b=values["b"] + 1,
-                p=values["p"],
+                x=TestMuonMomentum.x,
+                x0=TestMuonMomentum.values["x0"],
+                w=TestMuonMomentum.values["w"],
+                r=TestMuonMomentum.values["r"],
+                b=TestMuonMomentum.values["b"] + 1,
+                p=TestMuonMomentum.values["p"],
             )
 
-            assert np.min(out) < np.min(out2)
+            assert np.min(TestMuonMomentum.out) < np.min(out2)
 
-        def test_muon_momentum_model_r(
-            self, out: npt.NDArray[np.float64], values: dict[str, float], x: npt.NDArray[np.float64]
-        ):
+        def test_muon_momentum_model_r(self):
             out2 = MuonMomentum.model().func(
-                x=x,
-                x0=values["x0"],
-                w=values["w"],
-                r=values["r"] + 10,
-                b=values["b"],
-                p=values["p"],
+                x=TestMuonMomentum.x,
+                x0=TestMuonMomentum.values["x0"],
+                w=TestMuonMomentum.values["w"],
+                r=TestMuonMomentum.values["r"] + 10,
+                b=TestMuonMomentum.values["b"],
+                p=TestMuonMomentum.values["p"],
             )
 
-            assert np.max(out) - np.min(out) < np.max(out2) - np.min(out2)
+            assert np.max(TestMuonMomentum.out) - np.min(TestMuonMomentum.out) < np.max(
+                out2
+            ) - np.min(out2)
 
-        def test_muon_momentum_model_x0(
-            self, out: npt.NDArray[np.float64], values: dict[str, float], x: npt.NDArray[np.float64]
-        ):
+        def test_muon_momentum_model_x0(self):
             out2 = MuonMomentum.model().func(
-                x=x,
-                x0=values["x0"] + 1,
-                w=values["w"],
-                r=values["r"],
-                b=values["b"],
-                p=values["p"],
+                x=TestMuonMomentum.x,
+                x0=TestMuonMomentum.values["x0"] + 1,
+                w=TestMuonMomentum.values["w"],
+                r=TestMuonMomentum.values["r"],
+                b=TestMuonMomentum.values["b"],
+                p=TestMuonMomentum.values["p"],
             )
 
-            assert x[np.argmax(out)] < x[np.argmax(out2)]
-            assert x[np.argmin(out)] < x[np.argmin(out2)]
+            assert (
+                TestMuonMomentum.x[np.argmax(TestMuonMomentum.out)]
+                < TestMuonMomentum.x[np.argmax(out2)]
+            )
+            assert (
+                TestMuonMomentum.x[np.argmin(TestMuonMomentum.out)]
+                < TestMuonMomentum.x[np.argmin(out2)]
+            )
 
     class TestMuonMomentumGuess:
         def test_muon_momentum_guess_b(self):

@@ -716,13 +716,19 @@ class MuonMomentum(Fit):
         def guess(
             x: npt.NDArray[np.float64], y: npt.NDArray[np.float64]
         ) -> dict[str, lmfit.Parameter]:
+            index_array = np.argsort(x)
+            x = x[index_array]
+            y = y[index_array]
+
             index_min_y = np.argmin(y)
-            max_y = np.argmax(y)
+            index_max_y = np.argmax(y)
 
-            b = y[index_min_y]
-            r = y[max_y] - b
+            b = np.min(y)
+            r = np.max(y) - b
 
-            x_slope = x[max_y:index_min_y]  # Gets all x values between the maximum and minimum y
+            x_slope = x[
+                index_max_y:index_min_y
+            ]  # Gets all x values between the maximum and minimum y
 
             if len(x_slope) != 0:
                 x0 = np.mean(x_slope)
@@ -731,8 +737,8 @@ class MuonMomentum(Fit):
 
             p = 1  # Expected value, not likely to change
 
-            const = 9
-            w = (x[-1] - x[0]) / const  # 9 is a rough estimate base on testing
+            const = 9  # 9 is a rough estimate base on testing
+            w = (x[-1] - x[0]) / const
 
             init_guess = {
                 "b": lmfit.Parameter("b", b),
