@@ -226,18 +226,30 @@ This location was chosen because it mirrors the archiving setup used by neutron 
 
 Bluesky should mark files as read-only, using Windows file attributes, when it has finished writing them. This is so
 that the archiving process can unambiguously tell whether a file has finished being written. It also reduces the
-likelihood that a file is accidentally modified. 
+likelihood that a file is accidentally modified.
 
-Bluesky should generate checksums for each file it has finished writing, and insert those checksums into a windows
-alternative file stream, comparable to what is done for existing DAE data. These checksums
-can be used to check for data corruption as the files are moved to the archive, and later replicated between the
-archive servers.
+Checksums should be generated, either at the point when the data is initially generated, or by the archiving process
+just before it first copies or moves a file.
+
+We have agreed on the desire to generate checksums for data, which is already done for DAE data. These checksums are
+useful to check for data corruption, which might occur in transit, or in-place on instrument computers or archive servers.
+A number of checksumming approaches have been considered, and no approach has been chosen yet. The options discussed
+are:
+- **Use windows alternate file streams**. This is how checksums are done in existing DAE `.raw` files. It has the
+advantage that it is relatively simple to implement, but the disadvantage that they do not map nicely onto Linux file
+systems.
+- **Generate one checksum per file**, for example `file.txt` would also have an associated `file.sha1.txt` containing the
+checksum. The advantage is that this is simple to implement and platform-agnostic. The disadvantage is that it doubles
+the number of files visible in the archive area.
+- **Generate a single checksum file** containing the checksums of all bluesky data, at a higher level of granularity (for
+example by RB number or by cycle). It is currently unclear exactly how this approach would be implemented, and at what
+point these checksums would be moved to the archive.
 
 ### Moving to the ISIS archive
 
 An automated cron task will look for read-only Bluesky output files, and their associated checksums, in `c:\data` at
 regular short intervals (for example, 1 minute), and will move them to:
-- The ISIS data archive, under the `autoreduced/bluesky_scans`. The `autoreduced` folder already exists on the archive. 
+- The ISIS data archive, under `autoreduced/bluesky_scans`. The `autoreduced` folder already exists on the archive. 
 - The data cache disk on the instrument, under `c:\data\Export only\RB<rb_number\bluesky_scans`.
 
 Data on the cache disk, under `Export only`, is kept on the instrument for a short period (usually 24 hours), and then
