@@ -186,7 +186,7 @@ y = \min(g(x), \text{background})
 
 ## Muon Momentum
 
-API Reference: ['MuonMomentum'](ibex_bluesky_core.fitting.MuonMomentum)
+API Reference: [`MuonMomentum`](ibex_bluesky_core.fitting.MuonMomentum)
 
 Fits data from a momentum scan, it is designed for the specific use case of scanning over magnet current on muon instruments.
 
