@@ -211,12 +211,14 @@ The following people have been involved in discussions leading up to this ADR:
 - Jack H
 - CK (Reflectometry)
 
+This document was additionally reviewed in a regular Thursday code-review slot by the whole IBEX team.
+
 ## Decisions
 
 ### File-writing location
 
-Bluesky should write data into the `c:\data\<rb_number>\` folder during a scan. File naming itself will keep its current
-scheme (timestamped files).
+Bluesky should write data into the `c:\data\RB<rb_number>\bluesky_scans\` folder during a scan.
+File naming itself will keep its current scheme (timestamped files).
 
 This location was chosen because it mirrors the archiving setup used by neutron cameras on IMAT.
 
@@ -226,19 +228,24 @@ Bluesky should mark files as read-only, using Windows file attributes, when it h
 that the archiving process can unambiguously tell whether a file has finished being written. It also reduces the
 likelihood that a file is accidentally modified. 
 
-Bluesky should generate checksum files, for example `.sha1.txt`, for each file it has finished writing. These checksum
-files can be used to check for data corruption as the files are moved to the archive, and later replicated between the
+Bluesky should generate checksums for each file it has finished writing, and insert those checksums into a windows
+alternative file stream, comparable to what is done for existing DAE data. These checksums
+can be used to check for data corruption as the files are moved to the archive, and later replicated between the
 archive servers.
 
 ### Moving to the ISIS archive
 
 An automated cron task will look for read-only Bluesky output files, and their associated checksums, in `c:\data` at
-regular intervals, and will copy/move them to the ISIS data archive under the existing `autoreduced` folder which
-already exists in each cycle data folder on the ISIS archive. We may wish to keep scans in a `bluesky_scans` folder
-*within* the existing `autoreduced` folder.
+regular short intervals (for example, 1 minute), and will move them to:
+- The ISIS data archive, under the `autoreduced/bluesky_scans`. The `autoreduced` folder already exists on the archive. 
+- The data cache disk on the instrument, under `c:\data\Export only\RB<rb_number\bluesky_scans`.
+
+Data on the cache disk, under `Export only`, is kept on the instrument for a short period (usually 24 hours), and then
+deleted by existing processes.
 
 This is run as a cron task so that, if the network happens to be unavailable at the time when a scan ends, the copy
-process will catch up when the network becomes available again.
+process will catch up when the network becomes available again. This cron task will only move files which sit within
+a `bluesky_scans` folder, to prevent it from interfering with other non-bluesky files.
 
 Creating a new `bluesky_scans` folder alongside the existing `autoreduced` folder was considered, but was felt to be
 unachievable - it would require too much work relative to using the existing `autoreduced` folder.
