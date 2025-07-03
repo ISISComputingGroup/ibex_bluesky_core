@@ -722,7 +722,7 @@ class MuonMomentum(Fit):
             b = y[min_y]
             r = y[max_y] - b
 
-            x_slope = x[max_y:min_y] # Gets all x values between the maximum and minimum y
+            x_slope = x[max_y:min_y]  # Gets all x values between the maximum and minimum y
 
             if len(x_slope) != 0:
                 x0 = np.mean(x_slope)
