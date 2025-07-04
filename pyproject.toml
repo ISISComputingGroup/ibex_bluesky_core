@@ -63,6 +63,7 @@ doc = [
   "sphinx_rtd_theme", 
   "myst_parser",
   "sphinx-autobuild",
+  "sphinxcontrib-mermaid",
 ]
 dev = [
   "ibex_bluesky_core[doc]",
