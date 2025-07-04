@@ -426,13 +426,31 @@ class ERF(Fit):
         def guess(
             x: npt.NDArray[np.float64], y: npt.NDArray[np.float64]
         ) -> dict[str, lmfit.Parameter]:
-            init_guess = {
-                "cen": lmfit.Parameter("cen", np.mean(x)),
-                "stretch": lmfit.Parameter("stretch", (np.max(x) - np.min(x)) / 2),
-                "scale": lmfit.Parameter("scale", (np.max(y) - np.min(y)) / 2),
-                "background": lmfit.Parameter("background", np.mean(y)),
-            }
+            center = np.mean(x)
+            scale = (np.max(y) - np.min(y)) / 2
+            background = (np.max(y) - np.abs(np.min(y))) / 2
 
+            dy = np.max(y) - np.min(y)
+            y05 = np.min(y) + 0.05 * dy
+            y95 = np.min(y) + 0.95 * dy
+
+            ind05 = np.argmin(np.abs(y - y05))
+            ind95 = np.argmin(np.abs(y - y95))
+
+            x05 = x[ind05]
+            x95 = x[ind95]
+
+            erfc_const = 3  # The plotted erfc function where the greatest change
+            # in y happens in the region -1.5 and 1.5
+            stretch = erfc_const / np.abs(x05 - x95)
+
+            init_guess = {
+                "cen": lmfit.Parameter("cen", center),
+                "stretch": lmfit.Parameter("stretch", stretch),
+                "scale": lmfit.Parameter("scale", scale),
+                "background": lmfit.Parameter("background", background),
+            }
+            print(background, scale, center)
             return init_guess
 
         return guess
@@ -463,9 +481,9 @@ class ERFC(Fit):
         def guess(
             x: npt.NDArray[np.float64], y: npt.NDArray[np.float64]
         ) -> dict[str, lmfit.Parameter]:
-            c = np.mean(x)
+            center = np.mean(x)
             scale = (np.max(y) - np.min(y)) / 2
-            b = np.min(y)
+            background = np.min(y)
 
             dy = np.max(y) - np.min(y)
             y05 = np.min(y) + 0.05 * dy
@@ -482,12 +500,12 @@ class ERFC(Fit):
             stretch = erfc_const / np.abs(x95 - x05)
 
             init_guess = {
-                "cen": lmfit.Parameter("cen", c),
+                "cen": lmfit.Parameter("cen", center),
                 "stretch": lmfit.Parameter("stretch", stretch),
                 "scale": lmfit.Parameter("scale", scale),
-                "background": lmfit.Parameter("background", b),
+                "background": lmfit.Parameter("background", background),
             }
-            print(c, scale, b, stretch)
+
             return init_guess
 
         return guess
