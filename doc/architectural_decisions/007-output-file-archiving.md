@@ -2,7 +2,7 @@
 
 ## Status
 
-Draft
+Accepted
 
 ## Context
 
@@ -211,7 +211,9 @@ The following people have been involved in discussions leading up to this ADR:
 - Jack H
 - CK (Reflectometry)
 
-This document was additionally reviewed in a regular Thursday code-review slot by the whole IBEX team.
+This document was additionally reviewed:
+- In a regular Thursday code-review slot by the whole IBEX team.
+- In a regular scans library catch-up meeting, including RD (SANS), CK (Reflectometry), JL (Muons)
 
 ## Decisions
 
