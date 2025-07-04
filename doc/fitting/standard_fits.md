@@ -183,3 +183,22 @@ g(x) = \max(f(x), \text{background} - \text{height})
 ```{math}
 y = \min(g(x), \text{background})
 ```
+
+## Muon Momentum
+
+API Reference: [`MuonMomentum`](ibex_bluesky_core.fitting.MuonMomentum)
+
+Fits data from a momentum scan, it is designed for the specific use case of scanning over magnet current on muon instruments.
+
+- `x0` - The center (x) of the model
+- `w` - The horizontal stretch factor of the model
+- `R` - The amplitude of the model
+- `b` - The minimum value (y) of the model
+- `p` - Changes the gradient of the tail ends of the model
+
+``` {math}
+y = \left (\text{erfc} \mathopen{} \left(\frac{x-x_0}{w} \right) \mathclose{} \cdot \frac{R}{2} + b \right) \cdot \left (\frac{x}{x_0} \right)^p
+```
+
+![MuonMomentumModel](../_static/images_fits/muons_momentum.png)
+ 
