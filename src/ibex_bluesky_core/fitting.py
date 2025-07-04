@@ -738,7 +738,7 @@ class MuonMomentum(Fit):
         def model(
             x: npt.NDArray[np.float64], x0: float, r: float, w: float, p: float, b: float
         ) -> npt.NDArray[np.float64]:
-            return (scipy.special.erfc((x - x0) / w) * (r / 2) + b) * ((x / x0) ** p)
+            return (erfc((x - x0) / w) * (r / 2) + b) * ((x / x0) ** p)
 
         return lmfit.Model(model, name=f"{cls.__name__}  [{cls.equation}]")
 
