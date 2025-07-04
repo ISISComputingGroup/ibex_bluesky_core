@@ -19,6 +19,7 @@ __all__ = [
     "Gaussian",
     "Linear",
     "Lorentzian",
+    "MuonMomentum",
     "NegativeTrapezoid",
     "Polynomial",
     "SlitScan",
@@ -719,6 +720,68 @@ class NegativeTrapezoid(Fit):
                 "y_offset": lmfit.Parameter("y_offset", y_offset),
             }
 
+            return init_guess
+
+        return guess
+
+
+class MuonMomentum(Fit):
+    """Muon momentum fitting."""
+
+    equation = """
+        y=(erfc((x-x0/w))*(r/2)+b)*((x/x0)**p)"""
+
+    @classmethod
+    def model(cls, *args: int) -> lmfit.Model:
+        """Momentum scan model."""
+
+        def model(
+            x: npt.NDArray[np.float64], x0: float, r: float, w: float, p: float, b: float
+        ) -> npt.NDArray[np.float64]:
+            return (scipy.special.erfc((x - x0) / w) * (r / 2) + b) * ((x / x0) ** p)
+
+        return lmfit.Model(model, name=f"{cls.__name__}  [{cls.equation}]")
+
+    @classmethod
+    def guess(
+        cls, *args: int
+    ) -> Callable[[npt.NDArray[np.float64], npt.NDArray[np.float64]], dict[str, lmfit.Parameter]]:
+        """Momentum Scan Fit Guessing."""
+
+        def guess(
+            x: npt.NDArray[np.float64], y: npt.NDArray[np.float64]
+        ) -> dict[str, lmfit.Parameter]:
+            index_array = np.argsort(x)
+            x = x[index_array]
+            y = y[index_array]
+
+            index_min_y = np.argmin(y)
+            index_max_y = np.argmax(y)
+
+            b = np.min(y)
+            r = np.max(y) - b
+
+            x_slope = x[
+                index_max_y:index_min_y
+            ]  # Gets all x values between the maximum and minimum y
+
+            if len(x_slope) != 0:
+                x0 = np.mean(x_slope)
+            else:
+                x0 = x[-1]  # Picked as it can't be 0
+
+            p = 1  # Expected value, not likely to change
+
+            const = 3  # largest difference in erfc function is between -1.5 and 1.5
+            w = np.abs(x[index_max_y] - x[index_min_y]) / const
+
+            init_guess = {
+                "b": lmfit.Parameter("b", b),
+                "r": lmfit.Parameter("r", r, min=0),
+                "x0": lmfit.Parameter("x0", x0, min=0),
+                "p": lmfit.Parameter("p", p, min=0),
+                "w": lmfit.Parameter("w", w, min=0),
+            }
             return init_guess
 
         return guess
