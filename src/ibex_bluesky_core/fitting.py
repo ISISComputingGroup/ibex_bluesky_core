@@ -450,7 +450,7 @@ class ERF(Fit):
                 "scale": lmfit.Parameter("scale", scale),
                 "background": lmfit.Parameter("background", background),
             }
-            print(background, scale, center)
+
             return init_guess
 
         return guess
