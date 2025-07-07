@@ -118,17 +118,33 @@ def calculate_erf_stretch(
     tails: float = 0.1,
     pre_sorted: bool = False,
 ) -> float:
-    """Calculate the stretch factor for an erf plot.
+    """Calculate the scaling factor needed to fit an error function (erf) to data.
+
+    This function determines how much to stretch or compress a standard error function
+    by comparing the x-range in your data to the x-range of a standard erf function
+    over the same y-value interval. Specifically:
+
+    1. It finds two y-values in your data: y_front (at tails percentile) and
+       y_back (at 1-tails percentile)
+    2. Finds the corresponding x-values in your data for these y-values
+    3. Compares this x-range with the x-range between inverse erf(tails) and
+       inverse erf(1-tails) of a standard error function
+
+    The ratio between these ranges gives the stretch factor needed to scale
+    a standard erf function to match your data.
 
     Args:
-        x: The x-axis values.
-        y: The y-axis values.
-        erfc: Whether to use erfc or erf.
-        tails: The fraction either side of the data to ignore.
-        pre_sorted: Whether the x and y arrays are already sorted.
+        x: The x-axis values of your data points.
+        y: The y-axis values of your data points.
+        erfc: If True, use the complementary error function (erfc) instead of erf.
+        tails: Fraction to ignore at both ends of the y-range. Default 0.1 means
+              the function analyses between the 10th and 90th percentiles of the y-range.
+        pre_sorted: If True, assumes x and y are already sorted by x values.
 
     Returns:
-        Stretch factor for an erf plot.
+        A scaling factor that can be used to stretch (>1) or compress (<1) a standard
+        erf function to better fit the data. This is calculated as:
+        (data x-value difference) / (inverse_erf difference)
 
     """
     if not pre_sorted:
@@ -146,10 +162,10 @@ def calculate_erf_stretch(
     x_front = x[front_i]
     x_back = x[back_i]
 
-    # The plotted erf function where the greatest change happens
-    if erfc:
-        deltax = np.abs(erfcinv(2 * (1 - tails)) - erfcinv(2 * tails))
-    else:
-        deltax = np.abs(erfinv(1 - tails) - erfinv(tails))
+    deltax = (
+        np.abs(erfcinv(2 * (1 - tails)) - erfcinv(2 * tails))
+        if erfc
+        else np.abs(erfinv(1 - tails) - erfinv(tails))
+    )
 
-    return deltax / np.abs(x_front - x_back)
+    return np.abs(x_front - x_back) / deltax
