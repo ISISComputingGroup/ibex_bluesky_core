@@ -507,6 +507,8 @@ class TestERF:
 
             assert pytest.approx(outp["scale"], rel=1e-2) == 2.0
 
+            # guess here for stretch
+
 
 class TestERFC:
     class TestERFCModel:
@@ -548,6 +550,8 @@ class TestERFC:
             outp = ERFC.guess()(x, y)
 
             assert pytest.approx(outp["scale"], rel=1e-2) == 2.0
+
+            # guess here for stretch
 
 
 class TestTopHat:
@@ -924,16 +928,16 @@ class TestMuonMomentum:
             assert np.max(y) - np.min(y) == out["r"].value
 
         def test_muon_momentum_guess_w(self):
-            x = np.array([0, 1, 2], dtype=np.float64)
-            y = np.array([20, 20, 10], dtype=np.float64)
-            x1 = np.array([0, 1, 1.5], dtype=np.float64)
+            x = np.array([0, 1, 2, 3, 4], dtype=np.float64)
+            y = np.array([20, 20, 10, 5, 5], dtype=np.float64)
+            x1 = np.array([0, 0.5, 1.0, 1.5, 2.0], dtype=np.float64)
 
             out = MuonMomentum.guess()(x, y)
             out1 = MuonMomentum.guess()(x1, y)
 
             assert out["w"].value is not None
             assert out1["w"].value is not None
-            assert out["w"].value > out1["w"].value
+            assert out["w"] > out1["w"].value
 
         def test_muon_momentum_guess_x0(self):
             x = np.array([0, 1, 2], dtype=np.float64)

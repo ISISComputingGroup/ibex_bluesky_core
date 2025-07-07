@@ -6,16 +6,21 @@ import os
 from typing import Any, Protocol
 
 import matplotlib
+import numpy as np
+import numpy.typing as npt
 import scipp as sc
 from bluesky.protocols import NamedMovable, Readable
 
 __all__ = [
     "NamedReadableAndMovable",
+    "calculate_erf_stretch",
     "calculate_polarisation",
     "centred_pixel",
     "get_pv_prefix",
     "is_matplotlib_backend_qt",
 ]
+
+from scipy.special import erfcinv, erfinv
 
 
 def is_matplotlib_backend_qt() -> bool:
@@ -104,3 +109,47 @@ def calculate_polarisation(
     polarisation_value.variances = variance_return
 
     return polarisation_value
+
+
+def calculate_erf_stretch(
+    x: npt.NDArray[np.float64],
+    y: npt.NDArray[np.float64],
+    erfc: bool = False,
+    tails: float = 0.1,
+    pre_sorted: bool = False,
+) -> float:
+    """Calculate the stretch factor for an erf plot.
+
+    Args:
+        x: The x-axis values.
+        y: The y-axis values.
+        erfc: Whether to use erfc or erf.
+        tails: The fraction either side of the data to ignore.
+        pre_sorted: Whether the x and y arrays are already sorted.
+
+    Returns:
+        Stretch factor for an erf plot.
+
+    """
+    if not pre_sorted:
+        index_array = np.argsort(x)
+        x = x[index_array]
+        y = y[index_array]
+
+    dy = np.max(y) - np.min(y)
+    y_front = np.min(y) + tails * dy
+    y_back = np.min(y) + (1 - tails) * dy
+
+    front_i = np.argmin(np.abs(y - y_front))
+    back_i = np.argmin(np.abs(y - y_back))
+
+    x_front = x[front_i]
+    x_back = x[back_i]
+
+    # The plotted erf function where the greatest change happens
+    if erfc:
+        deltax = np.abs(erfcinv(2 * (1 - tails)) - erfcinv(2 * tails))
+    else:
+        deltax = np.abs(erfinv(1 - tails) - erfinv(tails))
+
+    return deltax / np.abs(x_front - x_back)

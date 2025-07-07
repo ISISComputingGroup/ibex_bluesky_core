@@ -27,6 +27,8 @@ __all__ = [
     "Trapezoid",
 ]
 
+from ibex_bluesky_core.utils import calculate_erf_stretch
+
 
 class FitMethod:
     """Tell LiveFit how to fit to a scan. Has a Model function and a Guess function.
@@ -429,21 +431,8 @@ class ERF(Fit):
         ) -> dict[str, lmfit.Parameter]:
             center = np.mean(x)
             scale = (np.max(y) - np.min(y)) / 2
-            background = (np.max(y) - np.abs(np.min(y))) / 2
-
-            dy = np.max(y) - np.min(y)
-            y05 = np.min(y) + 0.05 * dy
-            y95 = np.min(y) + 0.95 * dy
-
-            ind05 = np.argmin(np.abs(y - y05))
-            ind95 = np.argmin(np.abs(y - y95))
-
-            x05 = x[ind05]
-            x95 = x[ind95]
-
-            erfc_const = 3  # The plotted erfc function where the greatest change
-            # in y happens in the region -1.5 and 1.5
-            stretch = erfc_const / np.abs(x05 - x95)
+            background = np.min(y) + (np.max(y) - np.min(y)) / 2
+            stretch = calculate_erf_stretch(x, y)
 
             init_guess = {
                 "cen": lmfit.Parameter("cen", center),
@@ -485,20 +474,7 @@ class ERFC(Fit):
             center = np.mean(x)
             scale = (np.max(y) - np.min(y)) / 2
             background = np.min(y)
-
-            dy = np.max(y) - np.min(y)
-            y05 = np.min(y) + 0.05 * dy
-            y95 = np.min(y) + 0.95 * dy
-
-            ind05 = np.argmin(np.abs(y - y05))
-            ind95 = np.argmin(np.abs(y - y95))
-
-            x05 = x[ind05]
-            x95 = x[ind95]
-
-            erfc_const = 3  # The plotted erfc function where the greatest change
-            # in y happens in the region -1.5 and 1.5
-            stretch = erfc_const / np.abs(x95 - x05)
+            stretch = calculate_erf_stretch(x, y, True)
 
             init_guess = {
                 "cen": lmfit.Parameter("cen", center),
@@ -771,16 +747,14 @@ class MuonMomentum(Fit):
                 x0 = x[-1]  # Picked as it can't be 0
 
             p = 1  # Expected value, not likely to change
-
-            const = 3  # largest difference in erfc function is between -1.5 and 1.5
-            w = np.abs(x[index_max_y] - x[index_min_y]) / const
+            w = 1 / calculate_erf_stretch(x, y, erfc=True, pre_sorted=True)
 
             init_guess = {
                 "b": lmfit.Parameter("b", b),
                 "r": lmfit.Parameter("r", r, min=0),
-                "x0": lmfit.Parameter("x0", x0, min=0),
+                "x0": lmfit.Parameter("x0", x0, min=0.1),
                 "p": lmfit.Parameter("p", p, min=0),
-                "w": lmfit.Parameter("w", w, min=0),
+                "w": lmfit.Parameter("w", w, min=0.1),
             }
             return init_guess
 
