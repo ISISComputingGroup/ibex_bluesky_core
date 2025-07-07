@@ -6,7 +6,6 @@ from collections.abc import Callable
 import lmfit
 import numpy as np
 from lmfit.models import PolynomialModel
-from numpy import polynomial as p
 from numpy import typing as npt
 from scipy.special import erf, erfc
 
@@ -278,7 +277,7 @@ class Polynomial(Fit):
             init_guess = {}
             degree = cls._check_degree(args)
 
-            coeffs = p.polynomial.polyfit(x, y, degree)
+            coeffs = np.polynomial.polynomial.polyfit(x, y, degree)
 
             for i in range(degree + 1):
                 init_guess[f"c{i}"] = coeffs[i]
