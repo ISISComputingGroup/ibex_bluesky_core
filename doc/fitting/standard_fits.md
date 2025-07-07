@@ -100,16 +100,6 @@ API Reference: [`ERF`](ibex_bluesky_core.fitting.ERF)
 - `scale` - A vertical stretch factor for the model
 - `background` - The minimum value (y) of the model
 
-### Guess
-
-- The largest transition in y in the function erf(x) is in the region of -1.5 to 1.5 (check 1-erf(x) on Desmos)
-- When you solve the erf function by setting the components applied to erf you can form the equation stretch(x-center)=+-1.5
-- Then you can rearrange the equation to get x=c-(1.5/stretch) or x=c+(1.5/stretch)
-- Then you can consider x as the whole region where the change occur you get the formula w=(3/change in x) 
-- Taking the 95th and 5th percentile to guess the value for which the slope starts
-- Finding the closest point to both which will represent the region of the most change
-- Then you can substitute those values into the equation and get an approximation for the stretch
-
 ```{math}
 y = background + scale * erf(stretch * (x - cen))
 ```
