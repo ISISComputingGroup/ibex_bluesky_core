@@ -51,6 +51,10 @@ dependencies = [
   "scippneutron",  # neutron-specific utilities for scipp
   "typing-extensions",  # TypeVar with default-arg support
   "tzdata",  # Windows timezone support
+
+  # Transitive dependency of lmfit, but we want to pin this to avoid https://github.com/lmfit/lmfit-py/issues/999
+  # Remove this dependency here once lmfit >= 1.3.4 is released.
+  "uncertainties<3.2.3",
 ]
 
 [project.optional-dependencies]
@@ -59,6 +63,7 @@ doc = [
   "sphinx_rtd_theme", 
   "myst_parser",
   "sphinx-autobuild",
+  "sphinxcontrib-mermaid",
 ]
 dev = [
   "ibex_bluesky_core[doc]",
@@ -83,6 +88,7 @@ asyncio_mode = "auto"
 addopts = "--cov --cov-report=html -vv"
 filterwarnings = [
     'ignore:FigureCanvasAgg is non-interactive, and thus cannot be shown:UserWarning',
+    'error:Using UFloat objects with std_dev==0 may give unexpected results.:UserWarning',
 ]
 
 [tool.pytest_env]
