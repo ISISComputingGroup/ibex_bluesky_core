@@ -564,8 +564,8 @@ class TestERFC:
             x1 = np.array([-4.0, -2.0, 0.0, 2.0, 4.0], dtype=np.float64)
             y = np.array([6.0, 5.0, 3.0, 1.0, 0.0], dtype=np.float64)
 
-            outp = ERF.guess()(x, y)
-            outp1 = ERF.guess()(x1, y)
+            outp = ERFC.guess()(x, y)
+            outp1 = ERFC.guess()(x1, y)
 
             assert outp1["stretch"] > outp["stretch"]
 
