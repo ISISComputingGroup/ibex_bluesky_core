@@ -809,9 +809,9 @@ class MuonMomentum(Fit):
             init_guess = {
                 "b": lmfit.Parameter("b", b),
                 "r": lmfit.Parameter("r", r, min=0),
-                "x0": lmfit.Parameter("x0", x0, min=0.1),
+                "x0": lmfit.Parameter("x0", x0, min=0),
                 "p": lmfit.Parameter("p", p, min=0),
-                "w": lmfit.Parameter("w", w, min=0.1),
+                "w": lmfit.Parameter("w", w, min=0),
             }
             return init_guess
 
