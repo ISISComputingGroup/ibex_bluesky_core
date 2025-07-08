@@ -83,6 +83,7 @@ Due to an implementation detail of {py:obj}`matplotlib.pyplot.pcolormesh`,
 the plot will only appear once at least *two* rows of data have been collected.
 :::
 
+{#plot_png_saver}
 ## Saving plots to PNG files
 
 `ibex_bluesky_core` provides a {py:obj}`PlotPNGSaver<ibex_bluesky_core.callbacks.PlotPNGSaver>` callback to save plots on a run stop to PNG files, which by saves them to the default output file location unless a filepath is explicitly given.

@@ -29,7 +29,7 @@ nitpick_ignore_regex = [
     ("py:obj", r"^.*\.T.*_co$"),
 ]
 
-myst_enable_extensions = ["dollarmath", "strikethrough", "colon_fence"]
+myst_enable_extensions = ["dollarmath", "strikethrough", "colon_fence", "attrs_block"]
 suppress_warnings = ["myst.strikethrough"]
 
 extensions = [
@@ -43,7 +43,10 @@ extensions = [
     "sphinx.ext.intersphinx",
     # Add links to source code in API docs
     "sphinx.ext.viewcode",
+    # Mermaid diagrams
+    "sphinxcontrib.mermaid",
 ]
+mermaid_d3_zoom = True
 napoleon_google_docstring = True
 napoleon_numpy_docstring = False
 
@@ -70,7 +73,7 @@ html_theme_options = {
 html_favicon = "favicon.svg"
 
 autoclass_content = "both"
-myst_heading_anchors = 3
+myst_heading_anchors = 7
 autodoc_preserve_defaults = True
 
 intersphinx_mapping = {
