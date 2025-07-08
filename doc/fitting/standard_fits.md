@@ -19,7 +19,7 @@ API Reference: [`Polynomial`](ibex_bluesky_core.fitting.Polynomial)
 
 For a polynomial degree `n`:
 ```{math}
-y = c_{n}x^n + c_{n-1}x^n-1 + ... + c_1 * x^1 + c_0 
+y = c_{n}x^n + c_{n-1}x^{n-1} + ... + c_1 * x^1 + c_0 
 ```
 
 ## Gaussian
@@ -166,7 +166,7 @@ y = \min(g(x), \text{background} + \text{height})
 
 API Reference: [`NegativeTrapezoid`](ibex_bluesky_core.fitting.NegativeTrapezoid)
 
-This model is the same shape as the trapezoid described above, but with a negative height.s
+This model is the same shape as the trapezoid described above, but with a negative height.
 
 - `cen` - The centre (x) of the model
 - `gradient` - How steep the edges of the trapezoid are
