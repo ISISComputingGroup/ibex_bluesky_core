@@ -5,11 +5,9 @@ from collections.abc import Callable
 
 import lmfit
 import numpy as np
-import scipy
-import scipy.special
 from lmfit.models import PolynomialModel
-from numpy import polynomial as p
 from numpy import typing as npt
+from scipy.special import erf, erfc, erfcinv, erfinv
 
 __all__ = [
     "ERF",
@@ -279,7 +277,7 @@ class Polynomial(Fit):
             init_guess = {}
             degree = cls._check_degree(args)
 
-            coeffs = p.polynomial.polyfit(x, y, degree)
+            coeffs = np.polynomial.polynomial.polyfit(x, y, degree)
 
             for i in range(degree + 1):
                 init_guess[f"c{i}"] = coeffs[i]
@@ -355,7 +353,7 @@ class SlitScan(Fit):
             else:
                 exp_seg = (
                     height_above_inflection1
-                    * scipy.special.erf(
+                    * erf(
                         gradient
                         * (np.sqrt(np.pi) / (2 * height_above_inflection1))
                         * (x - inflection0 - inflections_diff)
@@ -405,6 +403,66 @@ class SlitScan(Fit):
         return guess
 
 
+def _calculate_erf_stretch(
+    x: npt.NDArray[np.float64],
+    y: npt.NDArray[np.float64],
+    erfc: bool = False,
+    tails: float = 0.1,
+    pre_sorted: bool = False,
+) -> float:
+    """Calculate the scaling factor needed to fit an error function (erf) to data.
+
+    This function determines how much to stretch or compress a standard error function
+    by comparing the x-range in your data to the x-range of a standard erf function
+    over the same y-value interval. Specifically:
+
+    1. It finds two y-values in your data: y_front (at tails percentile) and
+       y_back (at 1-tails percentile)
+    2. Finds the corresponding x-values in your data for these y-values
+    3. Compares this x-range with the x-range between inverse erf(tails) and
+       inverse erf(1-tails) of a standard error function
+
+    The ratio between these ranges gives the stretch factor needed to scale
+    a standard erf function to match your data.
+
+    Args:
+        x: The x-axis values of your data points.
+        y: The y-axis values of your data points.
+        erfc: If True, use the complementary error function (erfc) instead of erf.
+        tails: Fraction to ignore at both ends of the y-range. Default 0.1 means
+              the function analyses between the 10th and 90th percentiles of the y-range.
+        pre_sorted: If True, assumes x and y are already sorted by x values.
+
+    Returns:
+        A scaling factor that can be used to stretch (>1) or compress (<1) a standard
+        erf function to better fit the data. This is calculated as:
+        (data x-value difference) / (inverse_erf difference)
+
+    """
+    if not pre_sorted:
+        index_array = np.argsort(x)
+        x = x[index_array]
+        y = y[index_array]
+
+    dy = np.max(y) - np.min(y)
+    y_front = np.min(y) + tails * dy
+    y_back = np.min(y) + (1 - tails) * dy
+
+    front_i = np.argmin(np.abs(y - y_front))
+    back_i = np.argmin(np.abs(y - y_back))
+
+    x_front = x[front_i]
+    x_back = x[back_i]
+
+    deltax = (
+        np.abs(erfcinv(2 * (1 - tails)) - erfcinv(2 * tails))
+        if erfc
+        else np.abs(erfinv(1 - tails) - erfinv(tails))
+    )
+
+    return np.abs(x_front - x_back) / deltax
+
+
 class ERF(Fit):
     """Error Function Fitting."""
 
@@ -417,7 +475,7 @@ class ERF(Fit):
         def model(
             x: npt.NDArray[np.float64], cen: float, stretch: float, scale: float, background: float
         ) -> npt.NDArray[np.float64]:
-            return background + scale * scipy.special.erf(stretch * (x - cen))
+            return background + scale * erf(stretch * (x - cen))
 
         return lmfit.Model(model, name=f"{cls.__name__}  [{cls.equation}]")
 
@@ -430,11 +488,16 @@ class ERF(Fit):
         def guess(
             x: npt.NDArray[np.float64], y: npt.NDArray[np.float64]
         ) -> dict[str, lmfit.Parameter]:
+            center = np.mean(x)
+            scale = (np.max(y) - np.min(y)) / 2
+            background = np.min(y) + (np.max(y) - np.min(y)) / 2
+            stretch = _calculate_erf_stretch(x, y)
+
             init_guess = {
-                "cen": lmfit.Parameter("cen", np.mean(x)),
-                "stretch": lmfit.Parameter("stretch", (np.max(x) - np.min(x)) / 2),
-                "scale": lmfit.Parameter("scale", (np.max(y) - np.min(y)) / 2),
-                "background": lmfit.Parameter("background", np.mean(y)),
+                "cen": lmfit.Parameter("cen", center),
+                "stretch": lmfit.Parameter("stretch", stretch),
+                "scale": lmfit.Parameter("scale", scale),
+                "background": lmfit.Parameter("background", background),
             }
 
             return init_guess
@@ -454,7 +517,7 @@ class ERFC(Fit):
         def model(
             x: npt.NDArray[np.float64], cen: float, stretch: float, scale: float, background: float
         ) -> npt.NDArray[np.float64]:
-            return background + scale * scipy.special.erfc(stretch * (x - cen))
+            return background + scale * erfc(stretch * (x - cen))
 
         return lmfit.Model(model, name=f"{cls.__name__}  [{cls.equation}]")
 
@@ -467,11 +530,16 @@ class ERFC(Fit):
         def guess(
             x: npt.NDArray[np.float64], y: npt.NDArray[np.float64]
         ) -> dict[str, lmfit.Parameter]:
+            center = np.mean(x)
+            scale = (np.max(y) - np.min(y)) / 2
+            background = np.min(y)
+            stretch = _calculate_erf_stretch(x, y, True)
+
             init_guess = {
-                "cen": lmfit.Parameter("cen", np.mean(x)),
-                "stretch": lmfit.Parameter("stretch", (np.max(x) - np.min(x)) / 2),
-                "scale": lmfit.Parameter("scale", (np.max(y) - np.min(y)) / 2),
-                "background": lmfit.Parameter("background", np.min(y)),
+                "cen": lmfit.Parameter("cen", center),
+                "stretch": lmfit.Parameter("stretch", stretch),
+                "scale": lmfit.Parameter("scale", scale),
+                "background": lmfit.Parameter("background", background),
             }
 
             return init_guess
@@ -667,7 +735,7 @@ class MuonMomentum(Fit):
         def model(
             x: npt.NDArray[np.float64], x0: float, r: float, w: float, p: float, b: float
         ) -> npt.NDArray[np.float64]:
-            return (scipy.special.erfc((x - x0) / w) * (r / 2) + b) * ((x / x0) ** p)
+            return (erfc((x - x0) / w) * (r / 2) + b) * ((x / x0) ** p)
 
         return lmfit.Model(model, name=f"{cls.__name__}  [{cls.equation}]")
 
@@ -700,9 +768,7 @@ class MuonMomentum(Fit):
                 x0 = x[-1]  # Picked as it can't be 0
 
             p = 1  # Expected value, not likely to change
-
-            const = 3  # largest difference in erfc function is between -1.5 and 1.5
-            w = np.abs(x[index_max_y] - x[index_min_y]) / const
+            w = 1 / _calculate_erf_stretch(x, y, erfc=True, pre_sorted=True)
 
             init_guess = {
                 "b": lmfit.Parameter("b", b),
