@@ -53,32 +53,59 @@ class NamedReadableAndMovable(Readable[Any], NamedMovable[Any], Protocol):
 
 
 def calculate_polarisation(
-    a: sc.Variable | sc.DataArray, b: sc.Variable | sc.DataArray
+    a: sc.Variable | sc.DataArray,
+    b: sc.Variable | sc.DataArray,
+    alpha: float = 1.0,
 ) -> sc.Variable | sc.DataArray:
-    """Calculate polarisation value and propagate uncertainties.
+    r"""Calculate polarisation or asymmetry, propagating uncertainties.
 
-    This function computes the polarisation given by the formula (a-b)/(a+b)
-    and propagates the uncertainties associated with a and b.
+    The value returned by this function is:
+
+    .. math::
+
+        f(a, b, \alpha) = \frac{a - \alpha b}{a + \alpha b}
+
+    Where :math:`a` and :math:`b` are the two input scipp
+    :external+scipp:py:obj:`variables <scipp.Variable>`, which may have corresponding
+    variances, and :math:`\alpha` is an optional scalar (float). If :math:`\alpha` is
+    not provided, it defaults to 1.
+
+    The variances are propagated using the partial derivatives of :math:`f` with
+    respect to :math:`a` and :math:`b`:
+
+    .. math::
+
+        \frac{\partial f}{\partial a} = \frac{2 b \alpha}{(a + b \alpha)^2}
+
+        \frac{\partial f}{\partial b} = \frac{-2 a \alpha}{(a + b \alpha)^2}
+
+        \sigma_f^2 = (\frac{\partial f}{\partial a})^2 \sigma_a^2
+            + (\frac{\partial f}{\partial b})^2 \sigma_b^2
+
+    .. note::
+
+        :math:`\alpha` is a scalar constant and is assumed not to have a variance.
+
+    On SANS instruments (e.g. LARMOR) and reflectometry instruments (e.g. POLREF),
+    :math:`a` and :math:`b` correspond to intensity in different DAE periods
+    (before/after switching a flipper) and the output is interpreted as a neutron
+    polarisation ratio. :math:`\alpha` is fixed at 1.
+
+    On muon instruments, :math:`a` and :math:`b` correspond to measuring from
+    forward/backward detector banks, and the output is interpreted as a muon asymmetry.
+    :math:`\alpha` will not necessarily be 1.
 
     Args:
         a: scipp :external+scipp:py:obj:`Variable <scipp.Variable>`
             or :external+scipp:py:obj:`DataArray <scipp.DataArray>`
         b: scipp :external+scipp:py:obj:`Variable <scipp.Variable>`
             or :external+scipp:py:obj:`DataArray <scipp.DataArray>`
+        alpha: Optional scalar, defaults to 1.
 
     Returns:
-        polarisation, ``(a - b) / (a + b)``, as a scipp
+        Polarisation or asymmetry as a scipp
         :external+scipp:py:obj:`Variable <scipp.Variable>`
         or :external+scipp:py:obj:`DataArray <scipp.DataArray>`
-
-    On SANS instruments e.g. LARMOR, A and B correspond to intensity in different DAE
-    periods (before/after switching a flipper) and the output is interpreted as a neutron
-    polarisation ratio.
-
-    On reflectometry instruments e.g. POLREF, the situation is the same as on LARMOR.
-
-    On muon instruments, A and B correspond to measuring from forward/backward detector
-    banks, and the output is interpreted as a muon asymmetry.
 
     """
     if a.unit != b.unit:
@@ -86,21 +113,14 @@ def calculate_polarisation(
     if a.sizes != b.sizes:
         raise ValueError("Dimensions/shape of a and b must match.")
 
-    # This line allows for dims, units, and dtype to be handled by scipp
-    polarisation_value = (a - b) / (a + b)
-
-    variances_a = a.variances
-    variances_b = b.variances
-    values_a = a.values
-    values_b = b.values
+    # Allows dims, units, and dtype to be handled by scipp
+    polarisation = (a - alpha * b) / (a + alpha * b)
 
     # Calculate partial derivatives
-    partial_a = 2 * values_b / (values_a + values_b) ** 2
-    partial_b = -2 * values_a / (values_a + values_b) ** 2
-
-    variance_return = (partial_a**2 * variances_a) + (partial_b**2 * variances_b)
+    partial_a = 2 * b.values * alpha / (a.values + b.values * alpha) ** 2
+    partial_b = -2 * a.values * alpha / (a.values + b.values * alpha) ** 2
 
     # Propagate uncertainties
-    polarisation_value.variances = variance_return
+    polarisation.variances = (partial_a**2 * a.variances) + (partial_b**2 * b.variances)
 
-    return polarisation_value
+    return polarisation
