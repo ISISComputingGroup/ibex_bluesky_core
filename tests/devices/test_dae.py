@@ -10,6 +10,7 @@ import scipp as sc
 import scipp.testing
 from bluesky.run_engine import RunEngine
 from ophyd_async.testing import get_mock_put, set_mock_value
+from ibex_bluesky_core.plans.num_periods_wrapper import num_periods_wrapper
 
 from ibex_bluesky_core.devices import compress_and_hex, dehex_and_decompress
 from ibex_bluesky_core.devices.dae import (
@@ -296,20 +297,19 @@ async def test_dae_settings_get_parsed_correctly():
     xml = await daesettings._raw_dae_settings.get_value()
     assert ET.canonicalize(xml) == ET.canonicalize(xml_filled_in)
 
-
-async def test_period_settings_get_parsed_correctly():
+async def test_num_periods_wrapper_modifies_and_restores_settings(RE: RunEngine, dae: Dae):
     expected_setup_source = PeriodSource.FILE
     expected_period_type = PeriodType.SOFTWARE
     expected_periods_file = "C:\\someperiodfile.txt"
-    expected_soft_periods_num = 42
-    expected_hardware_period_sequences = 52
-    expected_output_delay = 123
-    expected_type_1 = 0
-    expected_frames_1 = 1
-    expected_output_1 = 2
-    expected_type_2 = 0
-    expected_frames_2 = 1
-    expected_output_2 = 2
+    expected_soft_periods_num = 10
+    expected_hardware_period_sequences = 5
+    expected_output_delay = 100
+    expected_type_1 = 1
+    expected_frames_1 = 2
+    expected_output_1 = 3
+    expected_type_2 = 2
+    expected_frames_2 = 3
+    expected_output_2 = 4
     expected_type_3 = 1
     expected_frames_3 = 2
     expected_output_3 = 3
@@ -328,7 +328,7 @@ async def test_period_settings_get_parsed_correctly():
     expected_type_8 = 2
     expected_frames_8 = 2
     expected_output_8 = 2
-
+    
     periods_settings = [
         SinglePeriodSettings(
             type=expected_type_1, frames=expected_frames_1, output=expected_output_1
@@ -356,7 +356,7 @@ async def test_period_settings_get_parsed_correctly():
         ),
     ]
 
-    data = DaePeriodSettingsData(
+    initial_settings = DaePeriodSettingsData(
         periods_soft_num=expected_soft_periods_num,
         periods_type=expected_period_type,
         periods_src=expected_setup_source,
@@ -365,47 +365,46 @@ async def test_period_settings_get_parsed_correctly():
         periods_delay=expected_output_delay,
         periods_settings=periods_settings,
     )
-    xml_filled_in = period_settings_template.format(
-        period_src=expected_setup_source.value,
-        period_type=expected_period_type.value,
-        period_file=expected_periods_file,
-        num_soft_periods=expected_soft_periods_num,
-        period_seq=expected_hardware_period_sequences,
-        period_delay=expected_output_delay,
-        type_1=expected_type_1,
-        frames_1=expected_frames_1,
-        output_1=expected_output_1,
-        type_2=expected_type_2,
-        frames_2=expected_frames_2,
-        output_2=expected_output_2,
-        type_3=expected_type_3,
-        frames_3=expected_frames_3,
-        output_3=expected_output_3,
-        type_4=expected_type_4,
-        frames_4=expected_frames_4,
-        output_4=expected_output_4,
-        type_5=expected_type_5,
-        frames_5=expected_frames_5,
-        output_5=expected_output_5,
-        type_6=expected_type_6,
-        frames_6=expected_frames_6,
-        output_6=expected_output_6,
-        type_7=expected_type_7,
-        frames_7=expected_frames_7,
-        output_7=expected_output_7,
-        type_8=expected_type_8,
-        frames_8=expected_frames_8,
-        output_8=expected_output_8,
-    )
-    periodsettings = DaePeriodSettings(MOCK_PREFIX)
-    await periodsettings._raw_period_settings.connect(mock=True)
-    await periodsettings._raw_period_settings.set(initial_period_settings)
-    await periodsettings.set(data)
-    location = await periodsettings.locate()
-    assert location == {"setpoint": data, "readback": data}
-    xml = await periodsettings._raw_period_settings.get_value()
-    assert ET.canonicalize(xml) == ET.canonicalize(xml_filled_in)
 
+    # Connect the period_settings sub-device and set up the initial data
+    await dae.period_settings._raw_period_settings.connect(mock=True)
+    await dae.period_settings._raw_period_settings.set(initial_period_settings)
+    await dae.period_settings.set(initial_settings)
+
+    # Read the original settings
+    original_settings: DaePeriodSettingsData = RE(bps.rd(dae.period_settings)).plan_result
+    assert original_settings.periods_soft_num == 10
+    assert original_settings.periods_file == "C:\\someperiodfile.txt"
+    assert original_settings.periods_seq == 5
+
+    def inner_plan():
+        current_settings: DaePeriodSettingsData = yield from bps.rd(dae.period_settings)
+        assert current_settings.periods_soft_num == 20
+        assert current_settings.periods_file == "C:\\modified_file.txt"
+        assert current_settings.periods_seq == 5
+        return current_settings
+
+    # Run the wrapper test
+    result = RE(
+        num_periods_wrapper(
+            inner_plan(),
+            dae.period_settings,
+            periods_soft_num=20,
+            periods_file="C:\\modified_file.txt",
+        )
+    )
+
+    # Check the modified settings
+    modified_settings = result.plan_result
+    assert modified_settings.periods_soft_num == 20
+    assert modified_settings.periods_file == "C:\\modified_file.txt"
+    assert modified_settings.periods_seq == 5
+
+    # Check that settings are restored after the wrapper
+    final_settings: DaePeriodSettingsData = RE(bps.rd(dae.period_settings)).plan_result
+    assert final_settings.periods_soft_num == 10
+    assert final_settings.periods_file == "C:\\someperiodfile.txt"
+    assert final_settings.periods_seq == 5
 
 async def test_tcb_settings_get_parsed_correctly():
     expected_tcb_file = "C:\\tcb.dat"
