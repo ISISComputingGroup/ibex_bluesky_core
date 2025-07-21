@@ -22,6 +22,17 @@ from ibex_bluesky_core.utils import calculate_polarisation
 logger = logging.getLogger(__name__)
 
 
+def damped_oscillator(
+        t: NDArray,
+        B: float,  # noqa: N803
+        A_0: float,  # noqa: N803
+        omega_0: float,
+        phi_0: float,
+        lambda_0: float,
+) -> NDArray:
+    return B + A_0 * np.cos(omega_0 * t + phi_0) * np.exp(-t * lambda_0)
+
+
 class MuonAsymmetryReducer(Reducer, StandardReadable):
     r"""DAE reducer which exposes a computed asymmetry quantity.
 
@@ -129,17 +140,7 @@ class MuonAsymmetryReducer(Reducer, StandardReadable):
         return da
 
     def _fit_data(self, asymmetry: sc.DataArray) -> ModelResult | None:
-        def f(
-            t: NDArray,
-            B: float,  # noqa: N803
-            A_0: float,  # noqa: N803
-            omega_0: float,
-            phi_0: float,
-            lambda_0: float,
-        ) -> NDArray:
-            return B + A_0 * np.cos(omega_0 * t + phi_0) * np.exp(-t * lambda_0)
-
-        model = Model(f)
+        model = Model(damped_oscillator)
 
         bin_edges = asymmetry.coords["tof"].to(unit=sc.units.ns, dtype="float64").values
         bin_centers = (bin_edges[:-1] + bin_edges[1:]) / 2

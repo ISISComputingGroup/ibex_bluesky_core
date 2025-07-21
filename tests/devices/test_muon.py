@@ -5,7 +5,7 @@ import pytest
 import scipp as sc
 import scipp.testing
 
-from ibex_bluesky_core.devices.muon import MuonAsymmetryReducer
+from ibex_bluesky_core.devices.muon import MuonAsymmetryReducer, damped_oscillator
 from ibex_bluesky_core.devices.simpledae import MEventsWaiter, PeriodPerPointController, SimpleDae
 
 
@@ -120,3 +120,56 @@ async def test_asymmetry_reducer(simpledae):
 
     assert await simpledae.reducer.B.get_value() == pytest.approx(0.0, abs=1e-8)
     assert await simpledae.reducer.A_0.get_value() == pytest.approx(0.0, abs=1e-8)
+
+
+async def test_asymmetry_reducer_real_data():
+    reducer = MuonAsymmetryReducer(
+        forward_detectors=np.array([1]),
+        backward_detectors=np.array([2]),
+        time_bin_edges=sc.linspace("tof", 0, 5, num=20, unit=sc.units.ns, dtype="float64"),
+        prefix="UNITTEST:",
+    )
+
+    dae = SimpleDae(
+        prefix="UNITTEST:",
+        reducer=reducer,
+        waiter=MEventsWaiter(5000),
+        controller=PeriodPerPointController(save_run=False),
+    )
+    await dae.connect(mock=True)
+
+    dae.trigger_and_get_specdata = AsyncMock(return_value=None)
+    dae.reducer._first_det.read_spectrum_dataarray = AsyncMock(return_value=None)
+
+    B = 0.1
+    A_0 = 1
+    omega_0 = 0.1
+    phi_0 = 0
+    lambda_0 = 0.001
+
+    x = np.array(np.linspace(0.5, 19.5, 20))
+    y = damped_oscillator(x, B, A_0, omega_0, phi_0, lambda_0)
+
+    with patch(
+        "ibex_bluesky_core.devices.muon.MuonAsymmetryReducer._calculate_asymmetry",
+    ) as calculate_asymmetry_mock:
+        calculate_asymmetry_mock.return_value = sc.DataArray(
+            data=sc.Variable(
+                dims=["tof"],
+                values=y,
+                variances=[1]*20,
+                unit=sc.units.counts,
+                dtype="float64",
+            ),
+            coords={
+                "tof": sc.linspace("tof", start=0, stop=20, num=21, unit=sc.units.ns, dtype="float64")
+            },
+        )
+
+        await dae.reducer.reduce_data(dae)
+
+    assert await dae.reducer.B.get_value() == pytest.approx(B, abs=1e-3)
+    assert await dae.reducer.A_0.get_value() == pytest.approx(A_0, abs=1e-3)
+    assert await dae.reducer.omega_0.get_value() == pytest.approx(omega_0, abs=1e-3)
+    assert await dae.reducer.phi_0.get_value() == pytest.approx(phi_0, abs=1e-3)
+    assert await dae.reducer.lambda_0.get_value() == pytest.approx(lambda_0, abs=1e-3)

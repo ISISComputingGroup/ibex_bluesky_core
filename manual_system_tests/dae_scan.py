@@ -2,23 +2,22 @@
 
 import os
 from collections.abc import Generator
-from pathlib import Path
 
 import bluesky.plans as bp
 import matplotlib
 import matplotlib.pyplot as plt
+import numpy as np
+import scipp as sc
 from bluesky.utils import Msg
 from ophyd_async.plan_stubs import ensure_connected
 
-from ibex_bluesky_core.callbacks import ISISCallbacks
 from ibex_bluesky_core.devices.block import block_rw_rbv
+from ibex_bluesky_core.devices.muon import MuonAsymmetryReducer
 from ibex_bluesky_core.devices.simpledae import (
-    PeriodGoodFramesNormalizer,
     PeriodGoodFramesWaiter,
     RunPerPointController,
     SimpleDae,
 )
-from ibex_bluesky_core.fitting import Linear
 from ibex_bluesky_core.run_engine import get_run_engine
 from ibex_bluesky_core.utils import get_pv_prefix
 
@@ -48,9 +47,14 @@ def dae_scan_plan() -> Generator[Msg, None, None]:
 
     controller = RunPerPointController(save_run=True)
     waiter = PeriodGoodFramesWaiter(500)
-    reducer = PeriodGoodFramesNormalizer(
+    reducer = MuonAsymmetryReducer(
         prefix=prefix,
-        detector_spectra=[i for i in range(1, 100)],
+        forward_detectors=np.array([1, 2, 3, 4]),
+        backward_detectors=np.array([5, 6, 7, 8]),
+        time_bin_edges=sc.linspace(
+            start=180, stop=200, num=100, unit=sc.units.us, dtype="float64", dim="tof"
+        ),
+        alpha=1.0,
     )
 
     dae = SimpleDae(
@@ -62,40 +66,11 @@ def dae_scan_plan() -> Generator[Msg, None, None]:
 
     # Demo giving some signals more user-friendly names
     controller.run_number.set_name("run number")
-    reducer.intensity.set_name("normalized counts")
 
     yield from ensure_connected(block, dae, force_reconnect=True)
 
-    icc = ISISCallbacks(
-        x=block.name,
-        y=reducer.intensity.name,
-        yerr=reducer.intensity_stddev.name,
-        fit=Linear.fit(),
-        measured_fields=[
-            controller.run_number.name,
-            reducer.det_counts.name,
-            reducer.det_counts_stddev.name,
-            dae.good_frames.name,
-        ],
-        human_readable_file_output_dir=Path("C:\\")
-        / "instrument"
-        / "var"
-        / "logs"
-        / "bluesky"
-        / "output_files",
-        live_fit_logger_output_dir=Path("C:\\")
-        / "instrument"
-        / "var"
-        / "logs"
-        / "bluesky"
-        / "fitting",
-    )
-
-    @icc
     def _inner() -> Generator[Msg, None, None]:
         yield from bp.scan([dae], block, 0, 10, num=NUM_POINTS)
-        print(icc.live_fit.result.fit_report())
-        print(f"COM: {icc.peak_stats['com']}")
 
     yield from _inner()
 
