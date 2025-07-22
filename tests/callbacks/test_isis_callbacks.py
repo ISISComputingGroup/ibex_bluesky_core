@@ -7,6 +7,7 @@ from bluesky.callbacks import LiveFitPlot, LiveTable
 from bluesky.callbacks.fitting import LiveFit, PeakStats
 
 from ibex_bluesky_core.callbacks import (
+    CentreOfMass,
     HumanReadableFileCallback,
     ISISCallbacks,
     LiveFitLogger,
@@ -28,6 +29,20 @@ def test_peak_stats_without_peak_stats_callback_raises():
             add_peak_stats=False,
             show_fit_on_plot=False,
         ).peak_stats
+
+
+def test_GIVEN_centre_of_mass_callback_not_added_WHEN_getting_com_from_isiscallbacks_THEN_raises():
+    with pytest.raises(
+        ValueError,
+        match=r"centre of mass was not added as a callback.",
+    ):
+        _ = ISISCallbacks(
+            x="X_signal",
+            y="Y_signal",
+            yerr="Y_error",
+            add_centre_of_mass=False,
+            show_fit_on_plot=False,
+        ).com
 
 
 def test_live_fit_without_live_fit_callback_raises():
@@ -116,10 +131,29 @@ def test_add_peakstats_then_get_peakstats_property_returns_peakstats():
         add_plot_cb=False,
         show_fit_on_plot=False,
         add_peak_stats=True,
+        add_centre_of_mass=False,
         add_human_readable_file_cb=False,
     )
 
     assert isinstance(icc.peak_stats, PeakStats)
+
+
+def test_add_centre_of_mass_then_get_com_property_returns_centreofmass():
+    x = "X_signal"
+    y = "Y_signal"
+
+    icc = ISISCallbacks(
+        x=x,
+        y=y,
+        add_table_cb=False,
+        add_plot_cb=False,
+        show_fit_on_plot=False,
+        add_peak_stats=False,
+        add_centre_of_mass=True,
+        add_human_readable_file_cb=False,
+    )
+
+    assert isinstance(icc.com, CentreOfMass)
 
 
 def test_add_livefitplot_without_plot_then_plot_is_set_up_regardless():
