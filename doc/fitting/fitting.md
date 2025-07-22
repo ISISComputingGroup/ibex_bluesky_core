@@ -2,7 +2,7 @@
 
 Similar to [`LivePlot`](../callbacks/plotting.md), [`ibex_bluesky_core`](ibex_bluesky_core) provides a thin wrapper around Bluesky's [`LiveFit`](ibex_bluesky_core.callbacks.LiveFit) class, enhancing it with additional functionality to better support real-time data fitting. This wrapper not only offers a wide selection of models to fit your data on, but also introduces guess generation for fit parameters. As new data points are acquired, the wrapper refines these guesses dynamically, improving the accuracy of the fit with each additional piece of data, allowing for more efficient and adaptive real-time fitting workflows.
 
-In order to use the wrapper, import[`LiveFit`](ibex_bluesky_core.callbacks.LiveFit) from [`ibex_bluesky_core`](ibex_bluesky_core) rather than 
+In order to use the wrapper, import [`LiveFit`](ibex_bluesky_core.callbacks.LiveFit) from [`ibex_bluesky_core`](ibex_bluesky_core) rather than 
 `bluesky` directly:
 ```py
 from ibex_bluesky_core.callbacks.fitting import LiveFit
