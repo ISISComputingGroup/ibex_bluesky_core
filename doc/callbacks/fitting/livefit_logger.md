@@ -1,4 +1,5 @@
-# Fitting Files Callback
+# Saving fit results to file (`LiveFitLogger`)
+
 ## Fitting Files
 
 The callback ([`LiveFitLogger`](ibex_bluesky_core.callbacks.LiveFitLogger)) exists to write all fitting metrics from [`LiveFit`](ibex_bluesky_core.callbacks.LiveFit) to file. These are designed to be human readable files rather than machine readable.
@@ -8,7 +9,7 @@ This callback provides you with useful metrics such as `R-squared` and `chi-squa
 ### Example
 An example of using this could be: 
 
-```{code} python
+```python
 def some_plan() -> Generator[Msg, None, None]:
     ... # Set up prefix, reducers, controllers etc. here
 
