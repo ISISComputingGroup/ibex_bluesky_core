@@ -31,7 +31,7 @@ def test_peak_stats_without_peak_stats_callback_raises():
         ).peak_stats
 
 
-def test_centre_of_mass_centre_of_mass_callback_raises():
+def test_GIVEN_centre_of_mass_callback_not_added_WHEN_getting_com_from_isiscallbacks_THEN_raises():
     with pytest.raises(
         ValueError,
         match=r"centre of mass was not added as a callback.",

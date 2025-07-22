@@ -16,12 +16,14 @@ from bluesky.utils import Msg, make_decorator
 from event_model import RunStart
 from matplotlib.axes import Axes
 
+from ibex_bluesky_core.callbacks._centre_of_mass import (
+    CentreOfMass,
+)
 from ibex_bluesky_core.callbacks._document_logger import DocLoggingCallback
 from ibex_bluesky_core.callbacks._file_logger import (
     HumanReadableFileCallback,
 )
 from ibex_bluesky_core.callbacks._fitting import (
-    CentreOfMass,
     ChainedLiveFit,
     LiveFit,
     LiveFitLogger,

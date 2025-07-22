@@ -94,7 +94,7 @@ def test_error_thrown_if_no_x_data_in_event():
         }
     )
 
-    with pytest.raises(OSError, match=r"motor is not in event document."):
+    with pytest.raises(ValueError, match=r"motor is not in event document."):
         com.compute()
 
 
@@ -108,5 +108,5 @@ def test_error_thrown_if_no_y_data_in_event():
         }
     )
 
-    with pytest.raises(OSError, match=r"invariant is not in event document."):
+    with pytest.raises(ValueError, match=r"invariant is not in event document."):
         com.compute()
