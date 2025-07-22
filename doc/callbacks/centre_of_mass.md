@@ -1,13 +1,8 @@
 # Centre of Mass
 
-[`CentreOfMass`](ibex_bluesky_core.callbacks.CentreOfMass) is a callback that provides functionality for calculating our definition of Centre of Mass. We calculate centre of mass from the 2D region bounded by min(y), min(x), max(x), and straight-line segments joining (x, y) data points with their nearest neighbours along the x axis.
+{py:obj}`ibex_bluesky_core.callbacks.CentreOfMass` is a callback that provides functionality for calculating our definition of Centre of Mass. We calculate centre of mass from the 2D region bounded by min(y), min(x), max(x), and straight-line segments joining (x, y) data points with their nearest neighbours along the x axis.
 
-[`CentreOfMass`](ibex_bluesky_core.callbacks.CentreOfMass) has a property, `result` which stores the centre of mass value once the callback has finished.
-
-In order to use the callback, import `CentreOfMass` from `ibex_bluesky_core.callbacks`.
-```py
-from ibex_bluesky_core.callbacks import CentreOfMass
-```
+{py:obj}`ibex_bluesky_core.callbacks.CentreOfMass` has a property, {py:obj}`result <ibex_bluesky_core.callbacks.CentreOfMass.result>`, which stores the centre of mass value once the callback has finished.
 
 ## Our CoM Algorithm
 
@@ -18,7 +13,9 @@ Our use cases require that our algorithm abides to the following rules:
 - The order in which data is received does not skew the centre of mass
 - Should support non-constant point spacing without skewing the centre of mass
 
-*Note that this is designed for only **positive** peaks.*
+```{note}
+Note that this is designed for only **positive** peaks.
+```
 
 ### Step-by-step
 
@@ -30,4 +27,4 @@ Our use cases require that our algorithm abides to the following rules:
 com_x = \frac{\sum_{}^{}x * y * \text{weight}}{\sum_{}^{}y * \text{weight}}
 ```
 
-[`CentreOfMass`](ibex_bluesky_core.callbacks.CentreOfMass) can be used from our callbacks collection. See [ISISCallbacks](ibex_bluesky_core.callbacks.ISISCallbacks).
+{py:obj}`ibex_bluesky_core.callbacks.CentreOfMass` can be used from our callbacks collection. See {doc}`isiscallbacks`.

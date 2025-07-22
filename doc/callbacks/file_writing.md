@@ -56,3 +56,22 @@ The data is prepended on the first event with the names and units of each logged
 for each scan separated by a newline. All of this is separated by commas, though the metadata is not.
 
 The file also contains metadata such as the bluesky version, plan type, and rb number.
+
+## Fit outputs
+
+See {ref}`livefit_logger`
+
+## Plot PNGs
+
+See {ref}`plot_png_saver`
+
+
+## Bluesky Event documents
+
+```{note}
+This callback is added automatically and is not intended to be user-facing - it is primarily for developer diagnostics.
+```
+
+The [`DocLoggingCallback`](ibex_bluesky_core.callbacks.DocLoggingCallback) is a callback that the BlueSky RunEngine subscribes to unconditionally. After receiving each document, if they share the same start document (in the same run) then it will write them to the same file. These logs are stored under `C:/instrument/var/logs/bluesky/raw_documents` and are handled by the log rotation.
+
+Each document is stored in a JSON format so can be both machine and human readable. It is in the format `{"type": name, "document": document}` whereby `name` is the type of the document, e.g start, stop, event, descriptor and the `document` is the [document from BlueSky in JSON format](https://blueskyproject.io/bluesky/main/documents.html). As these files are produced per BlueSky run, these will be useful for debugging.

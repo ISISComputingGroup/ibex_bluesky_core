@@ -1,3 +1,4 @@
+{#livefit_logger}
 # Saving fit results to file (`LiveFitLogger`)
 
 ## Fitting Files

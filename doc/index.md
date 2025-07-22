@@ -46,15 +46,20 @@ devices/*
 :caption: Callbacks
 :glob:
 
-callbacks/*
+callbacks/isiscallbacks
+callbacks/fitting
+callbacks/centre_of_mass
+callbacks/plotting
+callbacks/file_writing
 ```
 
 ```{toctree}
 :maxdepth: 2
-:caption: Fitting
+:caption: Plans
 :glob:
 
-fitting/*
+plans/plans
+plans/reflectometry
 ```
 
 ```{toctree}
@@ -67,48 +72,17 @@ plan_stubs/*
 
 ```{toctree}
 :maxdepth: 2
-:caption: Plans
-:glob:
-
-plans/*
-```
-
-```{toctree}
-:maxdepth: 2
-:caption: Plans (Reflectometry)
-:glob:
-
-plans/reflectometry/*
-```
-
-```{toctree}
-:maxdepth: 2
 :caption: Preprocessors
 :glob:
 
 preprocessors/*
 ```
-
-```{toctree}
-:maxdepth: 2
-:caption: Developer information
-:glob:
-
-dev/*
-```
-   
+ 
 ```{toctree}
 :titlesonly:
-:caption: Architectural decisions
-:glob:
-:maxdepth: 1
-
-architectural_decisions/*
-```
-
-```{toctree}
-:titlesonly:
-:caption: API reference
+:caption: Reference
 
 _api
+architectural_decisions
+developer_information
 ```
