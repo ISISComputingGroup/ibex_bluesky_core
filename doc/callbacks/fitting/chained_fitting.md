@@ -1,4 +1,4 @@
-## Chained Fitting (`ChainedLiveFit`)
+# Chained Fitting (`ChainedLiveFit`)
 
 [`ChainedLiveFit`](ibex_bluesky_core.callbacks.ChainedLiveFit) is a specialised callback that manages multiple LiveFit instances in a chain, where each fit's results inform the next fit's initial parameters. This is particularly useful when dealing with complex data sets where subsequent fits depend on the parameters obtained from previous fits.
 

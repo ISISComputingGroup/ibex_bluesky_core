@@ -15,8 +15,8 @@ abstraction library, which allows bluesky to communicate with an underlying cont
 
 `ibex_bluesky_core` provides:
 
-- Central configuration for core bluesky classes, such as the `RunEngine`.
-- `RunEngine` Callbacks customized for use at ISIS: file writing, plotting, fitting, ...
+- Central configuration for core bluesky classes, such as the {external+bluesky:py:obj}`RunEngine <bluesky.run_engine.RunEngine>`.
+- {external+bluesky:py:obj}`RunEngine <bluesky.run_engine.RunEngine>` Callbacks customized for use at ISIS: file writing, plotting, fitting, ...
 - Central implementations of ISIS device classes using `ophyd-async`: Blocks, DAE, ...
 - Bluesky or scanning-related utilities which are useful across multiple beamlines.
 
@@ -68,14 +68,6 @@ plans/reflectometry
 :glob:
 
 plan_stubs/*
-```
-
-```{toctree}
-:maxdepth: 2
-:caption: Preprocessors
-:glob:
-
-preprocessors/*
 ```
  
 ```{toctree}
