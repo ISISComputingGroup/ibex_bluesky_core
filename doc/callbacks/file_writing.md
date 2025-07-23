@@ -3,7 +3,7 @@
 
 A callback ([`HumanReadableFileCallback`](ibex_bluesky_core.callbacks.HumanReadableFileCallback))  exists to write all documents to a separate human-readable file which contains the specified fields. 
 
-This callback will add units and honour precision for each field as well as add some metadata ie. the `uid` of each scan as well as the RB number, which is injected using the {doc}`/preprocessors/rbnumberpp`
+This callback will add units and honour precision for each field as well as add some metadata ie. the `uid` of each scan as well as the RB number, which is injected using the {doc}`/dev/rbnumberpp`
 
 ### Example
 An example of using this could be: 
@@ -65,7 +65,7 @@ See {ref}`livefit_logger`
 
 See {ref}`plot_png_saver`
 
-
+{#event_doc_cb}
 ## Bluesky Event documents
 
 ```{note}

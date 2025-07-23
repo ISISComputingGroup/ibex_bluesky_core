@@ -8,10 +8,10 @@ Accepted
 
 Our bluesky implementation contains bluesky callbacks which produce scientist-facing output files, for example:
 - [Human-readable scan result files](/callbacks/file_writing): {py:obj}`HumanReadableFileCallback <ibex_bluesky_core.callbacks.HumanReadableFileCallback>`
-- [Fitting results](/fitting/livefit_logger): {py:obj}`LiveFitLogger <ibex_bluesky_core.callbacks.LiveFitLogger>`
+- [Fitting results](/callbacks/fitting/livefit_logger): {py:obj}`LiveFitLogger <ibex_bluesky_core.callbacks.LiveFitLogger>`
 - [Plot PNGs](#plot_png_saver): {py:obj}`PlotPNGSaver <ibex_bluesky_core.callbacks.PlotPNGSaver>`
 
-In addition, we have a [developer-facing callback for diagnostics](/callbacks/docs_logging_callback), 
+In addition, we have a {ref}`developer-facing callback for diagnostics <event_doc_cb>`, 
 {py:obj}`DocLoggingCallback <ibex_bluesky_core.callbacks.DocLoggingCallback>`.
 
 The above callbacks produce files on disk in response to a bluesky scan. These files contain valuable data and so we

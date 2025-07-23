@@ -148,7 +148,7 @@ Callbacks are bluesky's mechanism for listening to data from a scan. Some exampl
 are:
 - [File writing](../callbacks/file_writing.md)
 - [Plotting](../callbacks/plotting.md)
-- [Fitting](../fitting/fitting.md)
+- [Fitting](/callbacks/fitting/fitting.md)
 - [Live Tables](https://blueskyproject.io/bluesky/main/callbacks.html#livetable)
 
 It is possible to use callbacks manually, when executing a plan:
@@ -200,7 +200,7 @@ For more information on callbacks, see
 **Callbacks**
 - [Bluesky callbacks](https://blueskyproject.io/bluesky/main/callbacks.html)
 - {py:obj}`ibex_bluesky_core.callbacks`
-- [Fitting callbacks](../fitting/fitting.md)
+- [Fitting callbacks](/callbacks/fitting/fitting.md)
 
 **Full Examples**
 - [Manual system tests](https://github.com/ISISComputingGroup/ibex_bluesky_core/tree/main/manual_system_tests) (full, 

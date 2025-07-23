@@ -1,6 +1,6 @@
 # Fitting (`LiveFit`)
 
-Similar to [`LivePlot`](../callbacks/plotting.md), [`ibex_bluesky_core`](ibex_bluesky_core) provides a thin wrapper around Bluesky's [`LiveFit`](ibex_bluesky_core.callbacks.LiveFit) class, enhancing it with additional functionality to better support real-time data fitting. This wrapper not only offers a wide selection of models to fit your data on, but also introduces guess generation for fit parameters. As new data points are acquired, the wrapper refines these guesses dynamically, improving the accuracy of the fit with each additional piece of data, allowing for more efficient and adaptive real-time fitting workflows.
+Similar to [`LivePlot`](/callbacks/plotting.md), [`ibex_bluesky_core`](ibex_bluesky_core) provides a thin wrapper around Bluesky's [`LiveFit`](ibex_bluesky_core.callbacks.LiveFit) class, enhancing it with additional functionality to better support real-time data fitting. This wrapper not only offers a wide selection of models to fit your data on, but also introduces guess generation for fit parameters. As new data points are acquired, the wrapper refines these guesses dynamically, improving the accuracy of the fit with each additional piece of data, allowing for more efficient and adaptive real-time fitting workflows.
 
 In order to use the wrapper, import[`LiveFit`](ibex_bluesky_core.callbacks.LiveFit from [`ibex_bluesky_core`](ibex_bluesky_core) rather than 
 `bluesky` directly:
@@ -37,7 +37,7 @@ fit_plot_callback = LiveFitPlot(fit_callback, ax=ax, color="r")
 
 Using the `yerr` argument allows you to pass uncertainties via a signal to LiveFit, so that the "weight" of each point influences the fit produced. By not providing a signal name you choose not to use uncertainties/weighting in the fitting calculation. Each weight is computed as `1/(standard deviation at point)` and is taken into account to determine how much a point affects the overall fit of the data. Same as the rest of [`LiveFit`](ibex_bluesky_core.callbacks.LiveFit), the fit will be updated after every new point collected now taking into account the weights of each point. Uncertainty data is collected from Bluesky event documents after each new point.
 
-The `plot_callback` and `fit_plot_callback` objects can then be subscribed to the `RunEngine`, using the same methods as described in [`LivePlot`](../callbacks/plotting.md). See the following example using `@subs_decorator`:
+The `plot_callback` and `fit_plot_callback` objects can then be subscribed to the `RunEngine`, using the same methods as described in [`LivePlot`](/callbacks/plotting.md). See the following example using `@subs_decorator`:
 
 ```py
 @subs_decorator(
