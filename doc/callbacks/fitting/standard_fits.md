@@ -1,3 +1,4 @@
+{#standard_fitting_models}
 # Standard Fitting Models
 
 ## Linear

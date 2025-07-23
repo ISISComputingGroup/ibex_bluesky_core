@@ -100,6 +100,8 @@ class ISISCallbacks:
         - LiveFitPlot
 
         - LivePlot
+        
+        - CentreOfMass
 
         Results can be accessed from the `live_fit` and `peak_stats` properties.
 

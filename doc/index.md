@@ -21,17 +21,13 @@ abstraction library, which allows bluesky to communicate with an underlying cont
 - Bluesky or scanning-related utilities which are useful across multiple beamlines.
 
 
-## Getting started
-
 ```{toctree}
 :maxdepth: 2
-:caption: Tutorial
+:caption: Getting started
 :glob:
 
 tutorial/overview.md
 ```
-
-## Reference documentation
 
 ```{toctree}
 :maxdepth: 2
