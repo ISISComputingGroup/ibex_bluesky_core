@@ -8,6 +8,7 @@ from typing import Any, Protocol
 import matplotlib
 import scipp as sc
 from bluesky.protocols import NamedMovable, Readable
+from matplotlib.pylab import TypeVar
 
 __all__ = [
     "NamedReadableAndMovable",
@@ -16,6 +17,8 @@ __all__ = [
     "get_pv_prefix",
     "is_matplotlib_backend_qt",
 ]
+
+T = TypeVar('T', sc.Variable, sc.DataArray)
 
 
 def is_matplotlib_backend_qt() -> bool:
@@ -53,10 +56,10 @@ class NamedReadableAndMovable(Readable[Any], NamedMovable[Any], Protocol):
 
 
 def calculate_polarisation(
-    a: sc.Variable | sc.DataArray,
-    b: sc.Variable | sc.DataArray,
+    a: T,
+    b: T,
     alpha: float = 1.0,
-) -> sc.Variable | sc.DataArray:
+) -> T:
     r"""Calculate polarisation or asymmetry, propagating uncertainties.
 
     The value returned by this function is:

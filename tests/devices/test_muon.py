@@ -1,3 +1,4 @@
+# pyright: reportMissingParameterType=false
 from unittest.mock import AsyncMock, patch
 
 import numpy as np
@@ -141,8 +142,8 @@ async def test_asymmetry_reducer_real_data():
     dae.trigger_and_get_specdata = AsyncMock(return_value=None)
     dae.reducer._first_det.read_spectrum_dataarray = AsyncMock(return_value=None)
 
-    B = 0.1
-    A_0 = 1
+    B = 0.1  # noqa: N806
+    A_0 = 1  # noqa: N806
     omega_0 = 0.1
     phi_0 = 0
     lambda_0 = 0.001
@@ -157,12 +158,19 @@ async def test_asymmetry_reducer_real_data():
             data=sc.Variable(
                 dims=["tof"],
                 values=y,
-                variances=[1]*20,
+                variances=[1] * 20,
                 unit=sc.units.counts,
                 dtype="float64",
             ),
             coords={
-                "tof": sc.linspace("tof", start=0, stop=20, num=21, unit=sc.units.ns, dtype="float64")
+                "tof": sc.linspace(
+                    "tof",
+                    start=0,
+                    stop=20,
+                    num=21,
+                    unit=sc.units.ns,
+                    dtype="float64",
+                )
             },
         )
 

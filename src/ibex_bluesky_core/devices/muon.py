@@ -23,13 +23,14 @@ logger = logging.getLogger(__name__)
 
 
 def damped_oscillator(
-        t: NDArray,
+        t: NDArray[np.floating],
         B: float,  # noqa: N803
         A_0: float,  # noqa: N803
         omega_0: float,
         phi_0: float,
         lambda_0: float,
-) -> NDArray:
+) -> NDArray[np.float64]:
+    r"""Equation for damped oscillations."""
     return B + A_0 * np.cos(omega_0 * t + phi_0) * np.exp(-t * lambda_0)
 
 
@@ -68,8 +69,8 @@ class MuonAsymmetryReducer(Reducer, StandardReadable):
         self,
         *,
         prefix: str,
-        forward_detectors: npt.NDArray[np.int64],
-        backward_detectors: npt.NDArray[np.int64],
+        forward_detectors: npt.NDArray[np.int32],
+        backward_detectors: npt.NDArray[np.int32],
         alpha: float = 1.0,
         time_bin_edges: sc.Variable | None = None,
     ) -> None:
@@ -119,7 +120,7 @@ class MuonAsymmetryReducer(Reducer, StandardReadable):
 
         super().__init__(name="")
 
-    def _rebin_and_sum(self, counts: NDArray, time_coord: sc.Variable) -> sc.DataArray:
+    def _rebin_and_sum(self, counts: NDArray[np.int32], time_coord: sc.Variable) -> sc.DataArray:
         da = sc.DataArray(
             data=sc.array(
                 dims=["spec", "tof"],
@@ -160,7 +161,7 @@ class MuonAsymmetryReducer(Reducer, StandardReadable):
         return result
 
     def _calculate_asymmetry(
-        self, current_period_data: NDArray, first_spec_dataarray: sc.DataArray
+        self, current_period_data: NDArray[np.int32], first_spec_dataarray: sc.DataArray
     ) -> sc.DataArray:
         forward = self._rebin_and_sum(
             current_period_data[self._forward_detectors, :], first_spec_dataarray.coords["tof"]
