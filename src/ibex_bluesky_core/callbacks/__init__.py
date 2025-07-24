@@ -103,7 +103,7 @@ class ISISCallbacks:
 
         - CentreOfMass
 
-        Results can be accessed from the `live_fit` and `peak_stats` properties.
+        Results can be accessed from the `live_fit`, `com` and `peak_stats` properties.
 
         This is to be used as a member and then as a decorator if results are needed ie::
 
