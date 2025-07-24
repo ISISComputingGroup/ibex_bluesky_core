@@ -20,7 +20,6 @@ __all__ = [
 
 T = TypeVar('T', sc.Variable, sc.DataArray)
 
-
 def is_matplotlib_backend_qt() -> bool:
     """Return True if matplotlib is using a qt backend."""
     return "qt" in matplotlib.get_backend().lower()

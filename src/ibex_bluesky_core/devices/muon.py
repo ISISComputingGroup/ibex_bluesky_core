@@ -6,8 +6,9 @@ import logging
 import numpy as np
 import numpy.typing as npt
 import scipp as sc
-from lmfit import Model, Parameter
+from lmfit import Model, Parameter, Parameters
 from lmfit.model import ModelResult
+from typing import Sequence
 from numpy.typing import NDArray
 from ophyd_async.core import (
     Device,
@@ -32,6 +33,21 @@ def damped_oscillator(
 ) -> NDArray[np.float64]:
     r"""Equation for damped oscillations."""
     return B + A_0 * np.cos(omega_0 * t + phi_0) * np.exp(-t * lambda_0)
+
+def damped_oscillator_multiple(
+        t: NDArray[np.floating],
+        B: float,  # noqa: N803
+        A_0: float,  # noqa: N803
+        omega_0: float,
+        phi_0: float,
+        lambda_0: float,
+        A_1: float,  # noqa: N803
+        omega_1: float,
+        phi_1: float,
+        lambda_1: float,
+) -> NDArray[np.float64]:
+    r"""Equation for damped oscillations."""
+    return B + A_0 * np.cos(omega_0 * t + phi_0) * np.exp(-t * lambda_0) + A_1 * np.cos(omega_1 * t + phi_1) * np.exp(-t * lambda_1)
 
 
 class MuonAsymmetryReducer(Reducer, StandardReadable):
@@ -73,6 +89,8 @@ class MuonAsymmetryReducer(Reducer, StandardReadable):
         backward_detectors: npt.NDArray[np.int32],
         alpha: float = 1.0,
         time_bin_edges: sc.Variable | None = None,
+        model: Model,
+        fit_parameters: dict[str, Parameters],
     ) -> None:
         """Create a new Muon asymmetry reducer.
 
@@ -97,26 +115,29 @@ class MuonAsymmetryReducer(Reducer, StandardReadable):
         self._forward_detectors = forward_detectors
         self._backward_detectors = backward_detectors
         self._alpha = alpha
+        self._model = model
         self._time_bin_edges = time_bin_edges
 
         self._first_det = DaeSpectra(
             dae_prefix=prefix + "DAE:", spectra=int(forward_detectors[0]), period=0
         )
+        #ask for independent variables which should be a single T
 
-        self.B, self._B_setter = soft_signal_r_and_setter(float, 0.0)
-        self.B_err, self._B_err_setter = soft_signal_r_and_setter(float, 0.0)
+        self._fit_parameters = fit_parameters
+        self._parameter_setters = {}
 
-        self.A_0, self._A_0_setter = soft_signal_r_and_setter(float, 0.0)
-        self.A_0_err, self._A_0_err_setter = soft_signal_r_and_setter(float, 0.0)
+        if set(fit_parameters.keys()) != set(model.param_names):
+            raise ValueError(f"Missing parameters") #todo
+        
+        for param in model.param_names:
+            signal, setter = soft_signal_r_and_setter(float, 0.0)
+            setattr(self, param, signal)
+            self._parameter_setters[param] = setter
 
-        self.omega_0, self._omega_0_setter = soft_signal_r_and_setter(float, 0.0)
-        self.omega_0_err, self._omega_0_err_setter = soft_signal_r_and_setter(float, 0.0)
-
-        self.phi_0, self._phi_0_setter = soft_signal_r_and_setter(float, 0.0)
-        self.phi_0_err, self._phi_0_err_setter = soft_signal_r_and_setter(float, 0.0)
-
-        self.lambda_0, self._lambda_0_setter = soft_signal_r_and_setter(float, 0.0)
-        self.lambda_0_err, self._lambda_0_err_setter = soft_signal_r_and_setter(float, 0.0)
+            error_signal, error_setter = soft_signal_r_and_setter(float, 0.0)
+            error_attr_name = f"{param}_err"
+            setattr(self, error_attr_name, error_signal)
+            self._parameter_setters[error_attr_name] = error_setter
 
         super().__init__(name="")
 
@@ -141,20 +162,14 @@ class MuonAsymmetryReducer(Reducer, StandardReadable):
         return da
 
     def _fit_data(self, asymmetry: sc.DataArray) -> ModelResult | None:
-        model = Model(damped_oscillator)
-
         bin_edges = asymmetry.coords["tof"].to(unit=sc.units.ns, dtype="float64").values
         bin_centers = (bin_edges[:-1] + bin_edges[1:]) / 2
 
-        result = model.fit(
+        result = self._model.fit(
             asymmetry.values,
             t=bin_centers,
             weights=1.0 / (asymmetry.variances**0.5),
-            B=Parameter("B", value=0.0),
-            A_0=Parameter("A_0", value=1, min=0),
-            omega_0=Parameter("omega_0", value=0.1),
-            phi_0=Parameter("phi_0", value=0),
-            lambda_0=Parameter("lambda_0", value=0.0),
+            params = self._fit_parameters,
             nan_policy="omit",
         )
 
