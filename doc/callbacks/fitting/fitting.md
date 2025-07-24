@@ -1,6 +1,6 @@
-# Fitting Callbacks
+# Fitting (`LiveFit`)
 
-Similar to [`LivePlot`](../callbacks/plotting.md), [`ibex_bluesky_core`](ibex_bluesky_core) provides a thin wrapper around Bluesky's [`LiveFit`](ibex_bluesky_core.callbacks.LiveFit) class, enhancing it with additional functionality to better support real-time data fitting. This wrapper not only offers a wide selection of models to fit your data on, but also introduces guess generation for fit parameters. As new data points are acquired, the wrapper refines these guesses dynamically, improving the accuracy of the fit with each additional piece of data, allowing for more efficient and adaptive real-time fitting workflows.
+Similar to [`LivePlot`](/callbacks/plotting.md), [`ibex_bluesky_core`](ibex_bluesky_core) provides a thin wrapper around Bluesky's [`LiveFit`](ibex_bluesky_core.callbacks.LiveFit) class, enhancing it with additional functionality to better support real-time data fitting. This wrapper not only offers a wide selection of models to fit your data on, but also introduces guess generation for fit parameters. As new data points are acquired, the wrapper refines these guesses dynamically, improving the accuracy of the fit with each additional piece of data, allowing for more efficient and adaptive real-time fitting workflows.
 
 In order to use the wrapper, import[`LiveFit`](ibex_bluesky_core.callbacks.LiveFit from [`ibex_bluesky_core`](ibex_bluesky_core) rather than 
 `bluesky` directly:
@@ -37,7 +37,7 @@ fit_plot_callback = LiveFitPlot(fit_callback, ax=ax, color="r")
 
 Using the `yerr` argument allows you to pass uncertainties via a signal to LiveFit, so that the "weight" of each point influences the fit produced. By not providing a signal name you choose not to use uncertainties/weighting in the fitting calculation. Each weight is computed as `1/(standard deviation at point)` and is taken into account to determine how much a point affects the overall fit of the data. Same as the rest of [`LiveFit`](ibex_bluesky_core.callbacks.LiveFit), the fit will be updated after every new point collected now taking into account the weights of each point. Uncertainty data is collected from Bluesky event documents after each new point.
 
-The `plot_callback` and `fit_plot_callback` objects can then be subscribed to the `RunEngine`, using the same methods as described in [`LivePlot`](../callbacks/plotting.md). See the following example using `@subs_decorator`:
+The `plot_callback` and `fit_plot_callback` objects can then be subscribed to the `RunEngine`, using the same methods as described in [`LivePlot`](/callbacks/plotting.md). See the following example using `@subs_decorator`:
 
 ```py
 @subs_decorator(
@@ -213,52 +213,3 @@ fit_method = FitMethod(Polynomial.model(3), different_guess) # If using a custom
 lf = LiveFit(fit_method, ...)
 ```
 See the [standard fits](#models) list above for standard fits which require parameters. It gets more complicated if you want to define your own custom model or guess which you want to pass parameters to. You will have to define a function that takes these parameters and returns the model / guess function with the subsituted values.
-
-## Chained Fitting
-
-[`ChainedLiveFit`](ibex_bluesky_core.callbacks.ChainedLiveFit) is a specialised callback that manages multiple LiveFit instances in a chain, where each fit's results inform the next fit's initial parameters. This is particularly useful when dealing with complex data sets where subsequent fits depend on the parameters obtained from previous fits.
-
-This is useful for when you need to be careful with your curve fitting due to the presence of noisy data. It allows you to fit your widest (full) wavelength band first and then using its fit parameters as the initial guess of the parameters for the next fit
-
-# Usage
-To show how we expect this to be used we will use the PolarisingDae and wavelength bands to highlight the need for the carry over of fitting parameters. Below shows two wavelength bands, first bigger than the second, we will fit to the data in the first and carry it over to the data in the second to improve its, otherwise worse, fit.
-
-```python
-# Needed for PolarisingDae
-flipper = block_rw(float, "flipper")
-total_flight_path_length = sc.scalar(value=10, unit=sc.units.m)
-
-x_axis = block_rw(float, "x_axis", write_config=BlockWriteConfig(settle_time_s=0.5))
-wavelength_band_0 = sc.array(dims=["tof"], values=[0, 9999999999.0], unit=sc.units.angstrom, dtype="float64")
-wavelength_band_1 = sc.array(dims=["tof"], values=[0.0, 0.07], unit=sc.units.angstrom, dtype="float64")
-
-dae = polarising_dae(det_pixels=[1], frames=50, flipper=flipper, flipper_states=(0.0, 1.0),
-                     intervals=[wavelength_band_0, wavelength_band_1],
-                     total_flight_path_length=total_flight_path_length, monitor=2)
-
-
-def plan() -> Generator[Msg, None, None]:
-  fig, (ax1, ax2) = yield from call_qt_aware(plt.subplots, 2)
-  chained_fit = ChainedLiveFit(method=Linear.fit(), y=[dae.reducer.wavelength_bands[0].calculate_polarisation.name,
-                                                       dae.reducer.wavelength_bands[1].calculate_polarisation.name],
-                               x=bob.name, ax=[ax1, ax2])
-
-  # Subscribe chained_fit to RE and run do a scan for example
-  # chained_fit.get_livefits()[-1].result will give you the fitting results for the last wavelength band
-```
-
-- You are expected to pass in the list of signal names for each independent variable to `y` in order of how you want the subsequent fitting to go.
-- You may also pass in a list of matplotlib axes, which will mean that LiveFitPlots are created per LiveFit, and it will plot the each respective fit to an axis. LiveFitPlots are not created if you do not pass `ax`.
-- Similar to the `y` parameter, you may pass signal names which correspond to uncertainty values for each independent variable.
-
-```{hint}
-The method for fitting is the same across all independent variables.
-```
-
-```{note}
-Parameter uncertainties are not carried over between fits 
-```
-
-```{important}
-If a fit fails to converge, subsequent fits will use their default guess functions
-```
