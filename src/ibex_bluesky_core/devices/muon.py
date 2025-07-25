@@ -31,7 +31,7 @@ def damped_oscillator(
         phi_0: float,
         lambda_0: float,
 ) -> NDArray[np.float64]:
-    r"""Equation for damped oscillations."""
+    r"""Equation for a damped oscillations with an offset (B)."""
     return B + A_0 * np.cos(omega_0 * t + phi_0) * np.exp(-t * lambda_0)
 
 def damped_oscillator_multiple(
@@ -46,7 +46,7 @@ def damped_oscillator_multiple(
         phi_1: float,
         lambda_1: float,
 ) -> NDArray[np.float64]:
-    r"""Equation for damped oscillations."""
+    r"""Equation for multiple component damped oscillations with an offset (B)"""
     return B + A_0 * np.cos(omega_0 * t + phi_0) * np.exp(-t * lambda_0) + A_1 * np.cos(omega_1 * t + phi_1) * np.exp(-t * lambda_1)
 
 
@@ -125,19 +125,22 @@ class MuonAsymmetryReducer(Reducer, StandardReadable):
 
         self._fit_parameters = fit_parameters
         self._parameter_setters = {}
-
-        if set(fit_parameters.keys()) != set(model.param_names):
-            raise ValueError(f"Missing parameters") #todo
+        
+        missing = set(model.param_names) - set(fit_parameters.keys())
+        if missing:     
+            raise ValueError(f"Missing parameters: {missing}") 
         
         for param in model.param_names:
             signal, setter = soft_signal_r_and_setter(float, 0.0)
             setattr(self, param, signal)
             self._parameter_setters[param] = setter
+            setattr(self, f"_{param}_setter", setter)
 
             error_signal, error_setter = soft_signal_r_and_setter(float, 0.0)
             error_attr_name = f"{param}_err"
             setattr(self, error_attr_name, error_signal)
             self._parameter_setters[error_attr_name] = error_setter
+            setattr(self, f"_{error_attr_name}_setter", setter)
 
         super().__init__(name="")
 
@@ -210,18 +213,22 @@ class MuonAsymmetryReducer(Reducer, StandardReadable):
                 "Check beamline setup."
             )
 
-        self._B_setter(fit_result.params["B"].value)
-        self._B_err_setter(fit_result.params["B"].stderr)
-        self._A_0_setter(fit_result.params["A_0"].value)
-        self._A_0_err_setter(fit_result.params["A_0"].stderr)
-        self._omega_0_setter(fit_result.params["omega_0"].value)
-        self._omega_0_err_setter(fit_result.params["omega_0"].stderr)
-        self._phi_0_setter(fit_result.params["phi_0"].value)
-        self._phi_0_err_setter(fit_result.params["phi_0"].stderr)
-        self._lambda_0_setter(fit_result.params["lambda_0"].value)
-        self._lambda_0_err_setter(fit_result.params["lambda_0"].stderr)
+        for param in self._parameter_setters:
+            result = fit_result.params[param]
+
+            self._parameter_setters[param](result.value)
+            self._parameter_setters[f"{param}_err"](result.stderr)
+        
         logger.info("reduction complete")
 
     def additional_readable_signals(self, dae: Dae) -> list[Device]:
         """Publish interesting signals derived or used by this reducer."""
-        return [self.B]
+
+        signal_values = []
+        signal_errors = []
+
+        for param in self._model.param_names:
+            signal_values.append(getattr(self, param))
+            signal_errors.append(getattr(self, param))
+     
+        return signal_values + signal_errors

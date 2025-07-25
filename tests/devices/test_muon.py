@@ -129,6 +129,8 @@ async def test_asymmetry_reducer_real_data():
         backward_detectors=np.array([2]),
         time_bin_edges=sc.linspace("tof", 0, 5, num=20, unit=sc.units.ns, dtype="float64"),
         prefix="UNITTEST:",
+        model=,
+        fit_parameters=,
     )
 
     dae = SimpleDae(
