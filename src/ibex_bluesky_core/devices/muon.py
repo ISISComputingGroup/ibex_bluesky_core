@@ -36,7 +36,7 @@ def damped_oscillator(
     return B + A_0 * np.cos(omega_0 * t + phi_0) * np.exp(-t * lambda_0)
 
 
-def damped_oscillator_multiple(  # noqa: PLR0913 PLR0917 (model is just this complex)
+def double_damped_oscillator(  # noqa: PLR0913 PLR0917 (model is just this complex)
     t: NDArray[np.floating],
     B: float,  # noqa: N803
     A_0: float,  # noqa: N803
