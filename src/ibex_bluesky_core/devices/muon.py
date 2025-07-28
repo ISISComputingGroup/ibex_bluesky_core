@@ -100,7 +100,8 @@ class MuonAsymmetryReducer(Reducer, StandardReadable):
         """Create a new Muon asymmetry reducer.
 
         Args:
-            prefix: PV prefix for the :py:obj:`SimpleDae`.
+            prefix: PV prefix for the
+                :py:obj:`SimpleDae <ibex_bluesky_core.devices.simpledae.SimpleDae>`.
             forward_detectors: numpy :external+numpy:py:obj:`array <numpy.array>` of detector
                 spectra to select for forward-scattering.
                 For example, ``np.array([1, 2, 3])`` selects spectra 1-3 inclusive.
@@ -115,9 +116,9 @@ class MuonAsymmetryReducer(Reducer, StandardReadable):
                 This must be bin edge coordinates, aligned along a scipp dimension label of
                 "tof", have a unit of time, for example nanoseconds and must be strictly ascending.
                 Use :py:obj:`None` to not apply any rebinning to the data.
-            model: :external:py:obj:`Model <lmfit.Model>` object describing the model to fit to
+            model: :external:py:obj:`lmfit.model.Model` object describing the model to fit to
                 the muon data.
-            fit_parameters: :external:py:obj:`lmfit.Parameters <lmfit.Parameters>` object describing
+            fit_parameters: :external:py:obj:`lmfit.parameter.Parameters` object describing
                 the initial parameters (and contraints) for each fit parameter.
 
         """
