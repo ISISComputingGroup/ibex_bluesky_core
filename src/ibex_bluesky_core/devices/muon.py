@@ -90,8 +90,11 @@ class MuonAsymmetryReducer(Reducer, StandardReadable):
     backward-scattering detector counts against time. This results in an array of
     asymmetry (:math:`a`) against time.
 
-    Finally, the array of asymmetry against time (:math:`t`) is fitted with one of the
-    following models:
+    Finally, the array of asymmetry (:math:`a`) against time (:math:`t`, in nanoseconds)
+    is fitted using a user-specified model - for example, one of the two models below
+    (which are implemented by
+    :py:obj:`damped_oscillator <ibex_bluesky_core.devices.muon.damped_oscillator>` and
+    :py:obj:`double_damped_oscillator <ibex_bluesky_core.devices.muon.double_damped_oscillator>`).
 
     .. math::
 
@@ -100,7 +103,57 @@ class MuonAsymmetryReducer(Reducer, StandardReadable):
         a = B + A_0 cos({ω_0} {t} + {φ_0}) e^{-λ_0 t} + A_1 cos({ω_1} {t} + {φ_1}) e^{-λ_1 t}
 
     The resulting fit parameters, along with their uncertainties, are exposed as
-    signals from this reducer.
+    signals from this reducer. For example, for a model like:
+
+    .. code-block:: python
+
+        def my_model(t, m, c):
+            return m * t + c
+
+        model = lmfit.Model(my_model)
+
+    The exposed signals will include ``m``, ``m_err``, ``c``, and ``c_err``.
+
+    .. note::
+
+        The independent variable must be called `t` (time).
+
+    An example setup showing how to fit a linear model to asymmetry using this
+    reducer is:
+
+    .. code-block:: python
+
+        def linear(t, m, c):
+            return m * t + c
+
+        # lmfit Parameters describing initial guesses and fitting constraints
+        parameters = lmfit.Parameters()
+        parameters.add("m", 0)
+        parameters.add("c", 0, min=0, max=1000)
+
+        controller = RunPerPointController(save_run=True)
+        waiter = PeriodGoodFramesWaiter(500)
+        reducer = MuonAsymmetryReducer(
+            prefix=prefix,
+            # Selects spectra 1-4 for forwards-scattering, spectra 5-8 for backwards-scattering
+            forward_detectors=np.array([1, 2, 3, 4]),
+            backward_detectors=np.array([5, 6, 7, 8]),
+            # Optional: rebin the muon data to these time bins before fitting.
+            time_bin_edges=sc.linspace(
+                start=0, stop=200, num=100, unit=sc.units.ns, dtype="float64", dim="tof"
+            ),
+            # Scalar multiplier applied to backwards detectors in asymmetry calculation.
+            alpha=1.0,
+            model=lmfit.Model(linear),
+            fit_parameters=parameters,
+        )
+
+        dae = SimpleDae(
+            prefix=prefix,
+            controller=controller,
+            waiter=waiter,
+            reducer=reducer,
+        )
 
     """
 
@@ -132,10 +185,10 @@ class MuonAsymmetryReducer(Reducer, StandardReadable):
             time_bin_edges: Optional scipp :external+scipp:py:obj:`Variable <scipp.Variable>`
                 describing bin-edges for rebinning the data before fitting.
                 This must be bin edge coordinates, aligned along a scipp dimension label of
-                "tof", have a unit of time, for example nanoseconds and must be strictly ascending.
+                "tof", have a unit of time, for example nanoseconds, and must be strictly ascending.
                 Use :py:obj:`None` to not apply any rebinning to the data.
             model: :external:py:obj:`lmfit.model.Model` object describing the model to fit to
-                the muon data.
+                the muon data. The independent variable must be :math:`t` (time, in nanoseconds).
             fit_parameters: :external:py:obj:`lmfit.parameter.Parameters` object describing
                 the initial parameters (and contraints) for each fit parameter.
 

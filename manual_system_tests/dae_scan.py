@@ -4,6 +4,7 @@ import os
 from collections.abc import Generator
 
 import bluesky.plans as bp
+import lmfit
 import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
@@ -45,6 +46,11 @@ def dae_scan_plan() -> Generator[Msg, None, None]:
     prefix = get_pv_prefix()
     block = block_rw_rbv(float, "mot")
 
+    model = lmfit.Model(lambda t, m, c: m * t + c)
+    parameters = lmfit.Parameters()
+    parameters.add("m", 0)
+    parameters.add("c", 0)
+
     controller = RunPerPointController(save_run=True)
     waiter = PeriodGoodFramesWaiter(500)
     reducer = MuonAsymmetryReducer(
@@ -55,6 +61,8 @@ def dae_scan_plan() -> Generator[Msg, None, None]:
             start=180, stop=200, num=100, unit=sc.units.us, dtype="float64", dim="tof"
         ),
         alpha=1.0,
+        model=model,
+        fit_parameters=parameters,
     )
 
     dae = SimpleDae(
