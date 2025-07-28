@@ -1,13 +1,40 @@
 # pyright: reportMissingParameterType=false
 from unittest.mock import AsyncMock, patch
 
+import lmfit
 import numpy as np
 import pytest
 import scipp as sc
 import scipp.testing
 
-from ibex_bluesky_core.devices.muon import MuonAsymmetryReducer, damped_oscillator
+from ibex_bluesky_core.devices.muon import (
+    MuonAsymmetryReducer,
+    damped_oscillator,
+    damped_oscillator_multiple,
+)
 from ibex_bluesky_core.devices.simpledae import MEventsWaiter, PeriodPerPointController, SimpleDae
+
+damped_oscillator_model = lmfit.Model(damped_oscillator)
+
+damped_oscillator_params = lmfit.Parameters()
+damped_oscillator_params.add("B", 0.0)
+damped_oscillator_params.add("A_0", 0.1, min=0)
+damped_oscillator_params.add("omega_0", 0.1, min=0)
+damped_oscillator_params.add("phi_0", 0.0)
+damped_oscillator_params.add("lambda_0", 0.001)
+
+multi_damped_oscillator_model = lmfit.Model(damped_oscillator_multiple)
+
+multi_damped_oscillator_params = lmfit.Parameters()
+multi_damped_oscillator_params.add("B", 0.0)
+multi_damped_oscillator_params.add("A_0", 0.1, min=0)
+multi_damped_oscillator_params.add("omega_0", 0.1, min=0)
+multi_damped_oscillator_params.add("phi_0", 0.0)
+multi_damped_oscillator_params.add("lambda_0", 0.001)
+multi_damped_oscillator_params.add("A_1", 0.1, min=0)
+multi_damped_oscillator_params.add("omega_1", 0.1, min=0)
+multi_damped_oscillator_params.add("phi_1", 0.0)
+multi_damped_oscillator_params.add("lambda_1", 0.001)
 
 
 @pytest.fixture
@@ -16,6 +43,8 @@ def asymmetry_reducer():
         forward_detectors=np.array([1]),
         backward_detectors=np.array([2]),
         prefix="UNITTEST:",
+        model=damped_oscillator_model,
+        fit_parameters=damped_oscillator_params,
     )
 
 
@@ -26,11 +55,24 @@ def rebinning_asymmetry_reducer():
         backward_detectors=np.array([2]),
         time_bin_edges=sc.linspace("tof", 0, 5, num=6, unit=sc.units.ns, dtype="float64"),
         prefix="UNITTEST:",
+        model=damped_oscillator_model,
+        fit_parameters=damped_oscillator_params,
     )
 
 
 @pytest.fixture
-async def simpledae(rebinning_asymmetry_reducer):
+def multi_damped_oscillator_asymmetry_reducer():
+    return MuonAsymmetryReducer(
+        forward_detectors=np.array([1]),
+        backward_detectors=np.array([2]),
+        prefix="UNITTEST:",
+        model=multi_damped_oscillator_model,
+        fit_parameters=multi_damped_oscillator_params,
+    )
+
+
+@pytest.fixture
+async def simpledae_single_oscillator(rebinning_asymmetry_reducer):
     dae = SimpleDae(
         prefix="UNITTEST:",
         reducer=rebinning_asymmetry_reducer,
@@ -41,10 +83,64 @@ async def simpledae(rebinning_asymmetry_reducer):
     return dae
 
 
-def test_asymmetry_reducer_readable_signals(simpledae, rebinning_asymmetry_reducer):
-    assert rebinning_asymmetry_reducer.additional_readable_signals(simpledae) == [
-        simpledae.reducer.B
-    ]
+@pytest.fixture
+async def simpledae_multi_oscillator(multi_damped_oscillator_asymmetry_reducer):
+    dae = SimpleDae(
+        prefix="UNITTEST:",
+        reducer=multi_damped_oscillator_asymmetry_reducer,
+        waiter=MEventsWaiter(5000),
+        controller=PeriodPerPointController(save_run=False),
+    )
+    await dae.connect(mock=True)
+    return dae
+
+
+def test_asymmetry_reducer_readable_signals_single_oscillator(
+    simpledae_single_oscillator, rebinning_asymmetry_reducer
+):
+    assert set(
+        rebinning_asymmetry_reducer.additional_readable_signals(simpledae_single_oscillator)
+    ) == {
+        simpledae_single_oscillator.reducer.B,
+        simpledae_single_oscillator.reducer.B_err,
+        simpledae_single_oscillator.reducer.A_0,
+        simpledae_single_oscillator.reducer.A_0_err,
+        simpledae_single_oscillator.reducer.omega_0,
+        simpledae_single_oscillator.reducer.omega_0_err,
+        simpledae_single_oscillator.reducer.phi_0,
+        simpledae_single_oscillator.reducer.phi_0_err,
+        simpledae_single_oscillator.reducer.lambda_0,
+        simpledae_single_oscillator.reducer.lambda_0_err,
+    }
+
+
+def test_asymmetry_reducer_readable_signals_multiple_oscillator(
+    simpledae_multi_oscillator, multi_damped_oscillator_asymmetry_reducer
+):
+    assert set(
+        multi_damped_oscillator_asymmetry_reducer.additional_readable_signals(
+            simpledae_multi_oscillator
+        )
+    ) == {
+        simpledae_multi_oscillator.reducer.B,
+        simpledae_multi_oscillator.reducer.B_err,
+        simpledae_multi_oscillator.reducer.A_0,
+        simpledae_multi_oscillator.reducer.A_0_err,
+        simpledae_multi_oscillator.reducer.omega_0,
+        simpledae_multi_oscillator.reducer.omega_0_err,
+        simpledae_multi_oscillator.reducer.phi_0,
+        simpledae_multi_oscillator.reducer.phi_0_err,
+        simpledae_multi_oscillator.reducer.lambda_0,
+        simpledae_multi_oscillator.reducer.lambda_0_err,
+        simpledae_multi_oscillator.reducer.A_1,
+        simpledae_multi_oscillator.reducer.A_1_err,
+        simpledae_multi_oscillator.reducer.omega_1,
+        simpledae_multi_oscillator.reducer.omega_1_err,
+        simpledae_multi_oscillator.reducer.phi_1,
+        simpledae_multi_oscillator.reducer.phi_1_err,
+        simpledae_multi_oscillator.reducer.lambda_1,
+        simpledae_multi_oscillator.reducer.lambda_1_err,
+    }
 
 
 def test_rebin_and_sum(rebinning_asymmetry_reducer):
@@ -97,9 +193,11 @@ def test_rebin_and_sum_with_no_rebinning(asymmetry_reducer):
     scipp.testing.assert_allclose(result.coords["tof"], time)
 
 
-async def test_asymmetry_reducer(simpledae):
-    simpledae.trigger_and_get_specdata = AsyncMock(return_value=None)
-    simpledae.reducer._first_det.read_spectrum_dataarray = AsyncMock(return_value=None)
+async def test_asymmetry_reducer(simpledae_single_oscillator):
+    simpledae_single_oscillator.trigger_and_get_specdata = AsyncMock(return_value=None)
+    simpledae_single_oscillator.reducer._first_det.read_spectrum_dataarray = AsyncMock(
+        return_value=None
+    )
 
     with patch(
         "ibex_bluesky_core.devices.muon.MuonAsymmetryReducer._calculate_asymmetry",
@@ -117,10 +215,10 @@ async def test_asymmetry_reducer(simpledae):
             },
         )
 
-        await simpledae.reducer.reduce_data(simpledae)
+        await simpledae_single_oscillator.reducer.reduce_data(simpledae_single_oscillator)
 
-    assert await simpledae.reducer.B.get_value() == pytest.approx(0.0, abs=1e-8)
-    assert await simpledae.reducer.A_0.get_value() == pytest.approx(0.0, abs=1e-8)
+    assert await simpledae_single_oscillator.reducer.B.get_value() == pytest.approx(0.0, abs=1e-8)
+    assert await simpledae_single_oscillator.reducer.A_0.get_value() == pytest.approx(0.0, abs=1e-8)
 
 
 async def test_asymmetry_reducer_real_data():
@@ -129,8 +227,8 @@ async def test_asymmetry_reducer_real_data():
         backward_detectors=np.array([2]),
         time_bin_edges=sc.linspace("tof", 0, 5, num=20, unit=sc.units.ns, dtype="float64"),
         prefix="UNITTEST:",
-        model=,
-        fit_parameters=,
+        model=damped_oscillator_model,
+        fit_parameters=damped_oscillator_params,
     )
 
     dae = SimpleDae(

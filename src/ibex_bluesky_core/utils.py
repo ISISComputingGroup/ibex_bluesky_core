@@ -3,12 +3,11 @@
 from __future__ import annotations
 
 import os
-from typing import Any, Protocol
+from typing import Any, Protocol, TypeVar
 
 import matplotlib
 import scipp as sc
 from bluesky.protocols import NamedMovable, Readable
-from matplotlib.pylab import TypeVar
 
 __all__ = [
     "NamedReadableAndMovable",
@@ -18,7 +17,8 @@ __all__ = [
     "is_matplotlib_backend_qt",
 ]
 
-T = TypeVar('T', sc.Variable, sc.DataArray)
+T = TypeVar("T", sc.Variable, sc.DataArray)
+
 
 def is_matplotlib_backend_qt() -> bool:
     """Return True if matplotlib is using a qt backend."""

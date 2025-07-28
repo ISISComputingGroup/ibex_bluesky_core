@@ -3,12 +3,12 @@
 import asyncio
 import logging
 
+import lmfit
 import numpy as np
 import numpy.typing as npt
 import scipp as sc
-from lmfit import Model, Parameter, Parameters
+from lmfit import Model
 from lmfit.model import ModelResult
-from typing import Sequence
 from numpy.typing import NDArray
 from ophyd_async.core import (
     Device,
@@ -24,30 +24,35 @@ logger = logging.getLogger(__name__)
 
 
 def damped_oscillator(
-        t: NDArray[np.floating],
-        B: float,  # noqa: N803
-        A_0: float,  # noqa: N803
-        omega_0: float,
-        phi_0: float,
-        lambda_0: float,
+    t: NDArray[np.floating],
+    B: float,  # noqa: N803
+    A_0: float,  # noqa: N803
+    omega_0: float,
+    phi_0: float,
+    lambda_0: float,
 ) -> NDArray[np.float64]:
     r"""Equation for a damped oscillations with an offset (B)."""
     return B + A_0 * np.cos(omega_0 * t + phi_0) * np.exp(-t * lambda_0)
 
-def damped_oscillator_multiple(
-        t: NDArray[np.floating],
-        B: float,  # noqa: N803
-        A_0: float,  # noqa: N803
-        omega_0: float,
-        phi_0: float,
-        lambda_0: float,
-        A_1: float,  # noqa: N803
-        omega_1: float,
-        phi_1: float,
-        lambda_1: float,
+
+def damped_oscillator_multiple(  # noqa: PLR0913 PLR0917 (model is just this complex)
+    t: NDArray[np.floating],
+    B: float,  # noqa: N803
+    A_0: float,  # noqa: N803
+    omega_0: float,
+    phi_0: float,
+    lambda_0: float,
+    A_1: float,  # noqa: N803
+    omega_1: float,
+    phi_1: float,
+    lambda_1: float,
 ) -> NDArray[np.float64]:
-    r"""Equation for multiple component damped oscillations with an offset (B)"""
-    return B + A_0 * np.cos(omega_0 * t + phi_0) * np.exp(-t * lambda_0) + A_1 * np.cos(omega_1 * t + phi_1) * np.exp(-t * lambda_1)
+    r"""Equation for multiple component damped oscillations with an offset (B)."""
+    return (
+        B
+        + A_0 * np.cos(omega_0 * t + phi_0) * np.exp(-t * lambda_0)
+        + A_1 * np.cos(omega_1 * t + phi_1) * np.exp(-t * lambda_1)
+    )
 
 
 class MuonAsymmetryReducer(Reducer, StandardReadable):
@@ -81,7 +86,7 @@ class MuonAsymmetryReducer(Reducer, StandardReadable):
 
     """
 
-    def __init__(
+    def __init__(  # noqa: PLR0913 (complex function, mitigated by kw-only arguments)
         self,
         *,
         prefix: str,
@@ -90,7 +95,7 @@ class MuonAsymmetryReducer(Reducer, StandardReadable):
         alpha: float = 1.0,
         time_bin_edges: sc.Variable | None = None,
         model: Model,
-        fit_parameters: dict[str, Parameters],
+        fit_parameters: lmfit.Parameters,
     ) -> None:
         """Create a new Muon asymmetry reducer.
 
@@ -110,6 +115,10 @@ class MuonAsymmetryReducer(Reducer, StandardReadable):
                 This must be bin edge coordinates, aligned along a scipp dimension label of
                 "tof", have a unit of time, for example nanoseconds and must be strictly ascending.
                 Use :py:obj:`None` to not apply any rebinning to the data.
+            model: :external:py:obj:`Model <lmfit.Model>` object describing the model to fit to
+                the muon data.
+            fit_parameters: :external:py:obj:`lmfit.Parameters <lmfit.Parameters>` object describing
+                the initial parameters (and contraints) for each fit parameter.
 
         """
         self._forward_detectors = forward_detectors
@@ -121,26 +130,24 @@ class MuonAsymmetryReducer(Reducer, StandardReadable):
         self._first_det = DaeSpectra(
             dae_prefix=prefix + "DAE:", spectra=int(forward_detectors[0]), period=0
         )
-        #ask for independent variables which should be a single T
+        # ask for independent variables which should be a single T
 
         self._fit_parameters = fit_parameters
         self._parameter_setters = {}
-        
+        self._parameter_error_setters = {}
+
         missing = set(model.param_names) - set(fit_parameters.keys())
-        if missing:     
-            raise ValueError(f"Missing parameters: {missing}") 
-        
+        if missing:
+            raise ValueError(f"Missing parameters: {missing}")
+
         for param in model.param_names:
             signal, setter = soft_signal_r_and_setter(float, 0.0)
             setattr(self, param, signal)
             self._parameter_setters[param] = setter
-            setattr(self, f"_{param}_setter", setter)
 
             error_signal, error_setter = soft_signal_r_and_setter(float, 0.0)
-            error_attr_name = f"{param}_err"
-            setattr(self, error_attr_name, error_signal)
-            self._parameter_setters[error_attr_name] = error_setter
-            setattr(self, f"_{error_attr_name}_setter", setter)
+            setattr(self, f"{param}_err", error_signal)
+            self._parameter_error_setters[param] = error_setter
 
         super().__init__(name="")
 
@@ -172,7 +179,7 @@ class MuonAsymmetryReducer(Reducer, StandardReadable):
             asymmetry.values,
             t=bin_centers,
             weights=1.0 / (asymmetry.variances**0.5),
-            params = self._fit_parameters,
+            params=self._fit_parameters,
             nan_policy="omit",
         )
 
@@ -217,18 +224,17 @@ class MuonAsymmetryReducer(Reducer, StandardReadable):
             result = fit_result.params[param]
 
             self._parameter_setters[param](result.value)
-            self._parameter_setters[f"{param}_err"](result.stderr)
-        
+            self._parameter_error_setters[param](result.stderr)
+
         logger.info("reduction complete")
 
     def additional_readable_signals(self, dae: Dae) -> list[Device]:
         """Publish interesting signals derived or used by this reducer."""
-
         signal_values = []
         signal_errors = []
 
         for param in self._model.param_names:
             signal_values.append(getattr(self, param))
-            signal_errors.append(getattr(self, param))
-     
+            signal_errors.append(getattr(self, f"{param}_err"))
+
         return signal_values + signal_errors
