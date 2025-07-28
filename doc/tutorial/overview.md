@@ -148,7 +148,7 @@ Callbacks are bluesky's mechanism for listening to data from a scan. Some exampl
 are:
 - [File writing](../callbacks/file_writing.md)
 - [Plotting](../callbacks/plotting.md)
-- [Fitting](../fitting/fitting.md)
+- [Fitting](/callbacks/fitting/fitting.md)
 - [Live Tables](https://blueskyproject.io/bluesky/main/callbacks.html#livetable)
 
 It is possible to use callbacks manually, when executing a plan:
@@ -185,7 +185,7 @@ def my_plan(det_block_name: str, mot_block_name: str, start: float, stop: float,
 The above will show a `LiveTable`[`ibex_bluesky_core`](ibex_bluesky_core) by default, any time `my_plan` is executed. The same mechanism can
 be used for example to always configure a particular scan with plots and a fit with a specific type.
 
-As this is fairly common functionality for most plans, we have created a "standard callbacks" collection which should suit the needs of most plans. This includes the ability to fit, plot, add human-readable file output and show a live table of scanned fields. See {py:obj}`ibex_bluesky_core.callbacks.ISISCallbacks` for API reference on how to use this.
+As this is fairly common functionality for most plans, we have created a "standard callbacks" collection which should suit the needs of most plans. This includes the ability to fit, plot, add human-readable file output and show a live table of scanned fields. See {ref}`icc` on how to use this.
 
 For more information on callbacks, see
 [bluesky callbacks documentation](https://blueskyproject.io/bluesky/main/callbacks.html).
@@ -200,7 +200,7 @@ For more information on callbacks, see
 **Callbacks**
 - [Bluesky callbacks](https://blueskyproject.io/bluesky/main/callbacks.html)
 - {py:obj}`ibex_bluesky_core.callbacks`
-- [Fitting callbacks](../fitting/fitting.md)
+- [Fitting callbacks](/callbacks/fitting/fitting.md)
 
 **Full Examples**
 - [Manual system tests](https://github.com/ISISComputingGroup/ibex_bluesky_core/tree/main/manual_system_tests) (full, 
