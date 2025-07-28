@@ -2,6 +2,7 @@
 
 import asyncio
 import logging
+import typing
 
 import lmfit
 import numpy as np
@@ -239,3 +240,6 @@ class MuonAsymmetryReducer(Reducer, StandardReadable):
             signal_errors.append(getattr(self, f"{param}_err"))
 
         return signal_values + signal_errors
+
+    # As we have dynamic attributes, tell pyright that __getattr__ may return any type.
+    __getattr__: typing.Callable[[str], typing.Any]
