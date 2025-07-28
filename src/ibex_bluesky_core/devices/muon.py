@@ -23,6 +23,12 @@ from ibex_bluesky_core.utils import calculate_polarisation
 
 logger = logging.getLogger(__name__)
 
+__all__ = [
+    "MuonAsymmetryReducer",
+    "damped_oscillator",
+    "double_damped_oscillator",
+]
+
 
 def damped_oscillator(
     t: NDArray[np.floating],
@@ -31,8 +37,13 @@ def damped_oscillator(
     omega_0: float,
     phi_0: float,
     lambda_0: float,
-) -> NDArray[np.float64]:
-    r"""Equation for a damped oscillations with an offset (B)."""
+) -> NDArray[np.floating]:
+    r"""Equation for a damped oscillator with an offset, as a function of time :math:`t`.
+
+    .. math::
+
+        B + A_0 \cos(\omega_0 t + \phi_0) e^{-\lambda_0 t}
+    """
     return B + A_0 * np.cos(omega_0 * t + phi_0) * np.exp(-t * lambda_0)
 
 
@@ -47,8 +58,14 @@ def double_damped_oscillator(  # noqa: PLR0913 PLR0917 (model is just this compl
     omega_1: float,
     phi_1: float,
     lambda_1: float,
-) -> NDArray[np.float64]:
-    r"""Equation for multiple component damped oscillations with an offset (B)."""
+) -> NDArray[np.floating]:
+    r"""Equation for two damped oscillators with an offset, as a function of time :math:`t`.
+
+    .. math::
+
+        B + A_0 \cos(\omega_0 t + \phi_0) e^{-\lambda_0 t}
+            + A_1 \cos(\omega_1 t + \phi_1) e^{-\lambda_1 t}
+    """
     return (
         B
         + A_0 * np.cos(omega_0 * t + phi_0) * np.exp(-t * lambda_0)
@@ -57,7 +74,7 @@ def double_damped_oscillator(  # noqa: PLR0913 PLR0917 (model is just this compl
 
 
 class MuonAsymmetryReducer(Reducer, StandardReadable):
-    r"""DAE reducer which exposes a computed asymmetry quantity.
+    r"""DAE reducer which exposes a fitted asymmetry quantity.
 
     This reducer takes two lists of detectors; a forward scattering set of detectors,
     :math:`F`, and a backward scattering set, :math:`B`.
