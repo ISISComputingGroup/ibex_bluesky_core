@@ -34,7 +34,7 @@ def get_instrument() -> str:
 def get_default_output_path() -> Path:
     output_dir_env = os.environ.get(OUTPUT_DIR_ENV_VAR)
     return (
-        Path("//isis.cclrc.ac.uk/inst$") / node() / "user" / "bluesky_scans"
+        Path("C:/Data")
         if output_dir_env is None
         else Path(output_dir_env)
     )

@@ -227,9 +227,12 @@ class PlotPNGSaver(QtAwareCallback):
         self.filename = None
 
     def start(self, doc: RunStart) -> None:
+        rb_num = _get_rb_num(doc)
+        rb_num_str = rb_num if rb_num == "Unknown RB" else f"RB{rb_num}"
         self.filename = (
             self.output_dir
-            / f"{_get_rb_num(doc)}"
+            / f"{rb_num_str}"
+            / "bluesky_scans"
             / f"{get_instrument()}_{self.x}_{self.y}_{format_time(doc)}Z{self.postfix}.png"
         )
 

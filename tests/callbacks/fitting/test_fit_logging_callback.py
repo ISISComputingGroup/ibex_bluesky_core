@@ -35,7 +35,7 @@ def test_after_fitting_callback_writes_to_file_successfully_no_y_uncertainty(
             RE(scan([invariant], mot, -1, 1, 3), [lf, lfl], rb_number="0")
 
     assert m.call_args_list[0].args == (
-        filepath / "0" / f"{node()}_motor_invariant_2024-10-04_13-43-43Z{postfix}.txt",
+        filepath / "RB0" / "bluesky_scans" / f"{node()}_motor_invariant_2024-10-04_13-43-43Z{postfix}.txt",
         "w",
     )  # type: ignore
 
@@ -69,7 +69,7 @@ def test_fitting_callback_handles_no_rb_number_save(
             RE(scan([invariant], mot, -1, 1, 3), [lf, lfl])
 
     assert m.call_args_list[0].args == (
-        filepath / "Unknown RB" / f"{node()}_motor_invariant_2024-10-04_13-43-43Z{postfix}.txt",
+        filepath / "Unknown RB" / "bluesky_scans" / f"{node()}_motor_invariant_2024-10-04_13-43-43Z{postfix}.txt",
         "w",
     )  # type: ignore
 
@@ -98,7 +98,7 @@ def test_after_fitting_callback_writes_to_file_successfully_with_y_uncertainty(
             RE(scan([invariant, uncertainty], mot, -1, 1, 3), [lf, lfl], rb_number="0")
 
     assert m.call_args_list[0].args == (
-        filepath / "0" / f"{node()}_motor_invariant_2024-10-04_13-43-43Z{postfix}.txt",
+        filepath / "RB0" / "bluesky_scans" / f"{node()}_motor_invariant_2024-10-04_13-43-43Z{postfix}.txt",
         "w",
     )  # type: ignore
 

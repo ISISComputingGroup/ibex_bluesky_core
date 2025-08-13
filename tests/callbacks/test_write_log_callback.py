@@ -32,7 +32,8 @@ def test_header_data_all_available_on_start(cb):
         cb.start(run_start)
         result = (
             save_path
-            / f"{run_start.get('rb_number', None)}"
+            / f"RB{run_start.get('rb_number', None)}"
+            / "bluesky_scans"
             / f"{node()}_block_2024-10-04_13-43-43Z.txt"
         )
 
@@ -54,7 +55,7 @@ def test_no_rb_number_folder(cb):
         patch("ibex_bluesky_core.callbacks._file_logger.os.makedirs") as mock_mkdir,
     ):
         cb.start(run_start)
-        result = save_path / "Unknown RB" / f"{node()}_block_2024-10-04_13-43-43Z.txt"
+        result = save_path / "Unknown RB" / "bluesky_scans" / f"{node()}_block_2024-10-04_13-43-43Z.txt"
         assert mock_mkdir.called
 
     mock_file.assert_called_with(result, "a", newline="\n", encoding="utf-8")
@@ -75,7 +76,7 @@ def test_no_motors_doesnt_append_to_filename(cb):
         patch("ibex_bluesky_core.callbacks._file_logger.os.makedirs") as mock_mkdir,
     ):
         cb.start(run_start)
-        result = save_path / "Unknown RB" / f"{node()}_2024-10-04_13-43-43Z.txt"
+        result = save_path / "Unknown RB" / "bluesky_scans" / f"{node()}_2024-10-04_13-43-43Z.txt"
         assert mock_mkdir.called
 
     mock_file.assert_called_with(result, "a", newline="\n", encoding="utf-8")
