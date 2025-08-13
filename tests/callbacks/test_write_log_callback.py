@@ -4,6 +4,7 @@
 from pathlib import Path
 from platform import node
 from unittest.mock import call, mock_open, patch
+from stat import S_IRUSR, S_IRGRP, S_IROTH
 
 import pytest
 from event_model import DataKey, Event, EventDescriptor, RunStart, RunStop
@@ -203,7 +204,32 @@ def test_event_called_before_filename_specified_does_nothing():
 
 def test_stop_clears_descriptors(cb):
     cb.descriptors["test"] = EventDescriptor(uid="test", run_start="", time=0.1, data_keys={})
-
-    cb.stop(RunStop(uid="test", run_start="", time=0.1, exit_status="success"))
+    with patch("os.chmod"):
+        cb.stop(RunStop(uid="test", run_start="", time=0.1, exit_status="success"))
 
     assert not cb.descriptors
+
+def test_file_set_readonly_when_finished(cb):
+    time = 1728049423.5860472
+    start_uid = "test123start"
+    stop_uid = "test123stop"
+    scan_id = 1234
+    run_start = RunStart(
+        time=time, uid=start_uid, scan_id=scan_id, rb_number="0", detectors=["dae"], motors=("block",)
+    )
+    run_stop = RunStop(
+        time=time, run_start=start_uid, uid=stop_uid, exit_status="success")
+    with (
+        patch("ibex_bluesky_core.callbacks._file_logger.open", mock_open()),
+        patch("ibex_bluesky_core.callbacks._file_logger.os.makedirs"),
+        patch("ibex_bluesky_core.callbacks._file_logger.os.chmod") as mock_chmod,
+    ):
+        cb.start(run_start)
+        result = (
+                save_path
+                / f"RB{run_start.get('rb_number', None)}"
+                / "bluesky_scans"
+                / f"{node()}_block_2024-10-04_13-43-43Z.txt"
+        )
+        cb.stop(run_stop)
+    mock_chmod.assert_called_with(result, S_IRUSR | S_IRGRP | S_IROTH)

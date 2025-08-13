@@ -4,6 +4,7 @@ import csv
 import logging
 import os
 from pathlib import Path
+from stat import S_IRUSR, S_IRGRP, S_IROTH
 
 from bluesky.callbacks import CallbackBase
 from event_model.documents.event import Event
@@ -152,4 +153,5 @@ class HumanReadableFileCallback(CallbackBase):
         """Clear descriptors."""
         logger.info("Stopping run, clearing descriptors, filename=%s", self.filename)
         self.descriptors.clear()
+        os.chmod(self.filename, S_IRUSR | S_IRGRP | S_IROTH)
         return super().stop(doc)

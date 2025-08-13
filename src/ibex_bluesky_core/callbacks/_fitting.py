@@ -6,6 +6,7 @@ import os
 import warnings
 from itertools import zip_longest
 from pathlib import Path
+from stat import S_IRUSR, S_IRGRP, S_IROTH
 
 import lmfit
 import numpy as np
@@ -238,6 +239,7 @@ class LiveFitLogger(CallbackBase):
                 self.write_fields_table_uncertainty()
 
             logger.info("Fitting information successfully written to: %s", self.filename.resolve())
+        os.chmod(self.filename, S_IRUSR | S_IRGRP | S_IROTH)
 
     def write_fields_table(self) -> None:
         """Write collected run info to the fitting file."""

@@ -5,6 +5,7 @@ import os
 import threading
 from pathlib import Path
 from typing import Any
+from stat import S_IRUSR, S_IRGRP, S_IROTH
 
 import matplotlib
 import matplotlib.pyplot as plt
@@ -248,3 +249,4 @@ class PlotPNGSaver(QtAwareCallback):
 
         self.filename.parent.mkdir(parents=True, exist_ok=True)
         self.ax.figure.savefig(self.filename, format="png")  # pyright: ignore [reportAttributeAccessIssue]
+        os.chmod(self.filename, S_IRUSR | S_IRGRP | S_IROTH)
