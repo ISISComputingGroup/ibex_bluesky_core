@@ -75,7 +75,7 @@ def dae_scan_plan() -> Generator[Msg, None, None]:
             controller.run_number.name,
             reducer.det_counts.name,
             reducer.det_counts_stddev.name,
-            dae.good_frames.name,
+            dae.period.good_frames.name,
         ],
         human_readable_file_output_dir=Path("C:\\")
         / "instrument"
