@@ -36,45 +36,34 @@ def test_is_matplotlib_backend_qt(mpl_backend: str):
         assert is_matplotlib_backend_qt() == ("qt" in mpl_backend)
 
 
-# polarisation
 @pytest.mark.parametrize(
-    ("a", "b", "variance_a", "variance_b"),
+    ("a", "b", "variance_a", "variance_b", "alpha"),
     [
         # Case 1: Symmetric case with equal uncertainties
-        (5.0, 3.0, 0.1, 0.1),
+        (5.0, 3.0, 0.1, 0.1, 1.0),
         # Case 2: Asymmetric case with different uncertainties
-        (10.0, 6.0, 0.2, 0.3),
+        (10.0, 6.0, 0.2, 0.3, 1.0),
         # Case 3: Case with larger values and different uncertainty magnitudes
-        (100.0, 60.0, 1.0, 2.0),
+        (100.0, 60.0, 1.0, 2.0, 1.0),
+        # Case 4/5: Case with larger values and alpha != 1
+        (100.0, 60.0, 1.0, 2.0, 10),
+        (100.0, 60.0, 1.0, 2.0, 0.1),
     ],
 )
-def test_polarisation_function_calculates_accurately(a, b, variance_a, variance_b):
+def test_polarisation_function_calculates_accurately(a, b, variance_a, variance_b, alpha):
     # 'Uncertainties' library ufloat type; a nominal value and an error value
-    a_ufloat = ufloat(a, variance_a)
-    b_ufloat = ufloat(b, variance_b)
+    a_ufloat = ufloat(a, variance_a**0.5)
+    b_ufloat = ufloat(b, variance_b**0.5)
+    result_ufloat = (a_ufloat - alpha * b_ufloat) / (a_ufloat + alpha * b_ufloat)
 
-    # polarisation value, i.e. (a - b) / (a + b)
-    polarisation_ufloat = (a_ufloat.n - b_ufloat.n) / (a_ufloat.n + b_ufloat.n)
+    a_scipp = sc.scalar(value=a, variance=variance_a, unit="", dtype="float64")
+    b_scipp = sc.scalar(value=b, variance=variance_b, unit="", dtype="float64")
+    result_scipp = calculate_polarisation(a_scipp, b_scipp, alpha=alpha)
 
-    # the partial derivatives of a and b, calculated with 'uncertainties' library's ufloat type
-    partial_a = (2 * b_ufloat.n) / ((a_ufloat.n + b_ufloat.n) ** 2)
-    partial_b = (-2 * a_ufloat.n) / ((a_ufloat.n + b_ufloat.n) ** 2)
-
-    # variance calculated with 'uncertainties' library
-    variance = (partial_a**2 * a_ufloat.s) + (partial_b**2 * b_ufloat.s)
-    uncertainty = variance**0.5  # uncertainty is sqrt of variance
-
-    # Two scipp scalars, to test our polarisation function
-    var_a = sc.scalar(value=a, variance=variance_a, unit="", dtype="float64")
-    var_b = sc.scalar(value=b, variance=variance_b, unit="", dtype="float64")
-    result_value = calculate_polarisation(var_a, var_b)
-    result_uncertainy = (result_value.variance) ** 0.5  # uncertainty is sqrt of variance
-
-    assert result_value.value == pytest.approx(polarisation_ufloat)
-    assert result_uncertainy == pytest.approx(uncertainty)
+    assert result_scipp.value == pytest.approx(result_ufloat.n)
+    assert result_scipp.variance**0.5 == pytest.approx(result_ufloat.s)
 
 
-# test that arrays are supported
 @pytest.mark.parametrize(
     ("a", "b", "variances_a", "variances_b"),
     [
@@ -83,25 +72,21 @@ def test_polarisation_function_calculates_accurately(a, b, variance_a, variance_
 )
 def test_polarisation_2_arrays(a, b, variances_a, variances_b):
     # 'Uncertainties' library ufloat type; a nominal value and an error value
-
-    a_arr = unumpy.uarray(a, [v**0.5 for v in variances_a])  # convert variances to std dev
-    b_arr = unumpy.uarray(b, [v**0.5 for v in variances_b])
+    a_uarray = unumpy.uarray(a, [v**0.5 for v in variances_a])  # convert variances to std dev
+    b_uarray = unumpy.uarray(b, [v**0.5 for v in variances_b])
 
     # polarisation value, i.e. (a - b) / (a + b)
-    polarisation_ufloat = (a_arr - b_arr) / (a_arr + b_arr)
+    polarisation_uarray = (a_uarray - b_uarray) / (a_uarray + b_uarray)
 
-    var_a = sc.array(dims="x", values=a, variances=variances_a, unit="", dtype="float64")
-    var_b = sc.array(dims="x", values=b, variances=variances_b, unit="", dtype="float64")
+    a_scipp = sc.array(dims="x", values=a, variances=variances_a, unit="", dtype="float64")
+    b_scipp = sc.array(dims="x", values=b, variances=variances_b, unit="", dtype="float64")
 
-    result_value = calculate_polarisation(var_a, var_b)
+    result_scipp = calculate_polarisation(a_scipp, b_scipp)
 
-    result_uncertainties = (result_value.variances) ** 0.5
-
-    assert result_value.values == pytest.approx(unumpy.nominal_values(polarisation_ufloat))
-    assert result_uncertainties == pytest.approx(unumpy.std_devs(polarisation_ufloat))
+    assert result_scipp.values == pytest.approx(unumpy.nominal_values(polarisation_uarray))
+    assert result_scipp.variances**0.5 == pytest.approx(unumpy.std_devs(polarisation_uarray))
 
 
-# test that units don't match
 def test_polarisation_units_mismatch():
     var_a = sc.scalar(value=1, variance=0.1, unit="m", dtype="float64")
     var_b = sc.scalar(value=1, variance=0.1, unit="u", dtype="float64")
@@ -112,7 +97,6 @@ def test_polarisation_units_mismatch():
         calculate_polarisation(var_a, var_b)
 
 
-# test that arrays are of unmatching sizes
 def test_polarisation_arrays_of_different_sizes():
     var_a = sc.array(dims=["x"], values=[1, 2], variances=[0.1, 0.1], unit="m", dtype="float64")
     var_b = sc.array(dims=["x"], values=[1], variances=[0.1], unit="m", dtype="float64")
