@@ -1,6 +1,4 @@
 # pyright: reportMissingParameterType=false
-import asyncio
-import sys
 from contextlib import nullcontext
 from unittest.mock import ANY, MagicMock, call, patch
 
@@ -23,6 +21,7 @@ from ibex_bluesky_core.devices.block import (
     block_w,
 )
 from tests.conftest import MOCK_PREFIX
+
 
 async def _make_block(clazz):
     block = clazz(float, MOCK_PREFIX, "float_block")
