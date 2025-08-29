@@ -34,7 +34,7 @@ def test_after_fitting_callback_writes_to_file_successfully_no_y_uncertainty(
         with patch("time.time", MagicMock(return_value=time)):
             RE(
                 scan([invariant], mot, -1, 1, 3),
-                [lf, lfl],  # pyright: ignore until https://github.com/bluesky/bluesky/issues/1938
+                [lf, lfl],
                 rb_number="0",
             )
 
@@ -72,7 +72,7 @@ def test_fitting_callback_handles_no_rb_number_save(
         with patch("time.time", MagicMock(return_value=time)):
             RE(
                 scan([invariant], mot, -1, 1, 3),
-                [lf, lfl],  # pyright: ignore until https://github.com/bluesky/bluesky/issues/1938
+                [lf, lfl],
             )
 
     assert m.call_args_list[0].args == (
@@ -104,7 +104,7 @@ def test_after_fitting_callback_writes_to_file_successfully_with_y_uncertainty(
         with patch("time.time", MagicMock(return_value=time)):
             RE(
                 scan([invariant, uncertainty], mot, -1, 1, 3),
-                [lf, lfl],  # pyright: ignore until https://github.com/bluesky/bluesky/issues/1938
+                [lf, lfl],
                 rb_number="0",
             )
 
@@ -144,7 +144,7 @@ def test_file_not_written_if_no_fitting_result(RE: run_engine.RunEngine):
     ):
         RE(
             scan([invariant], mot, -1, 1, 3),
-            [lf, lfl],  # pyright: ignore until https://github.com/bluesky/bluesky/issues/1938
+            [lf, lfl],
             rb_number="0",
         )
 
