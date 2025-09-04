@@ -2,14 +2,17 @@
 
 import logging
 from collections.abc import Callable, Generator
-from typing import ParamSpec, TypeVar, cast
+from typing import Any, ParamSpec, TypeVar, cast
 
-import bluesky.plan_stubs as bps
+from bluesky import plan_stubs as bps
+from bluesky.plan_stubs import trigger_and_read
 from bluesky.preprocessors import finalize_wrapper
+from bluesky.protocols import Readable
 from bluesky.utils import Msg
 from ophyd_async.epics.motor import Motor, UseSetMode
 
 from ibex_bluesky_core.devices.reflectometry import ReflParameter
+from ibex_bluesky_core.utils import NamedReadableAndMovable
 
 logger = logging.getLogger(__name__)
 
@@ -24,6 +27,7 @@ CALL_QT_AWARE_MSG_KEY = "ibex_bluesky_core_call_qt_aware"
 __all__ = [
     "call_qt_aware",
     "call_sync",
+    "polling_plan",
     "prompt_user_for_choice",
     "redefine_motor",
     "redefine_refl_parameter",
@@ -84,7 +88,9 @@ def call_qt_aware(
     return cast(T, (yield Msg(CALL_QT_AWARE_MSG_KEY, func, *args, **kwargs)))
 
 
-def redefine_motor(motor: Motor, position: float) -> Generator[Msg, None, None]:
+def redefine_motor(
+    motor: Motor, position: float, *, sleep: float = 1
+) -> Generator[Msg, None, None]:
     """Redefines the current positions of a motor.
 
     Note:
@@ -93,12 +99,15 @@ def redefine_motor(motor: Motor, position: float) -> Generator[Msg, None, None]:
     Args:
         motor: The motor to set a position on.
         position: The position to set.
+        sleep: An amount of time to sleep, in seconds, after redefining. Defaults to 1 second.
+            This avoids race conditions where a motor is redefined and then immediately moved.
 
     """
     logger.info("Redefining motor %s to %s", motor.name, position)
 
     def make_motor_usable() -> Generator[Msg, None, None]:
         yield from bps.abs_set(motor.set_use_switch, UseSetMode.USE)
+        yield from bps.sleep(sleep)
 
     def inner() -> Generator[Msg, None, None]:
         yield from bps.abs_set(motor.set_use_switch, UseSetMode.SET)
@@ -142,3 +151,47 @@ def prompt_user_for_choice(*, prompt: str, choices: list[str]) -> Generator[Msg,
         choice = yield from call_sync(input, prompt)
 
     return choice
+
+
+def polling_plan(
+    motor: NamedReadableAndMovable, readable: Readable[Any], destination: float
+) -> Generator[Msg, None, None]:
+    """Move to a destination but drop updates from readable if motor position has not changed.
+
+    Note - this does not start a run, this should be done with a run_decorator or similar in an
+    outer plan which calls this plan.
+
+    Args:
+        motor: the motor to move.
+        readable: the readable to read updates from, but drop if motor has not moved.
+        destination: the destination position.
+
+    Returns:
+        None
+
+    If we just used bp.scan() with a readable that updates more frequently than a motor can
+    register that it has moved, we would have lots of updates with the same motor position,
+    which may not be helpful.
+
+    """
+    yield from bps.checkpoint()
+    yield from bps.create()
+    reading = yield from bps.read(motor)
+    yield from bps.read(readable)
+    yield from bps.save()
+
+    # start the ramp
+    status = yield from bps.abs_set(motor, destination, wait=False)
+    while not status.done:
+        yield from bps.create()
+        new_reading = yield from bps.read(motor)
+        yield from bps.read(readable)
+
+        if new_reading[motor.name]["value"] == reading[motor.name]["value"]:
+            yield from bps.drop()
+        else:
+            reading = new_reading
+            yield from bps.save()
+
+    # take a 'post' data point
+    yield from trigger_and_read([motor, readable])

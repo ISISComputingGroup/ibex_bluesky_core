@@ -7,8 +7,10 @@ import pytest
 from ophyd_async.plan_stubs import ensure_connected
 from ophyd_async.testing import callback_on_mock_put, get_mock_put, set_mock_value
 
+from ibex_bluesky_core.devices import NoYesChoice
 from ibex_bluesky_core.devices.reflectometry import (
     ReflParameter,
+    ReflParameterRedefine,
     refl_parameter,
 )
 
@@ -43,4 +45,17 @@ async def test_times_out_if_changing_never_finishes_on_reflectometry_parameter(R
     set_mock_value(param.changing, True)
     new_value = 456.0
     with pytest.raises(asyncio.TimeoutError):
+        await param.set(new_value)
+
+
+async def test_fails_to_redefine_and_raises_if_not_in_manager_mode(RE):
+    param = ReflParameterRedefine(prefix="UNITTEST:", name="S1VG")
+    RE(ensure_connected(param, mock=True))
+    set_mock_value(param.manager_mode, NoYesChoice.NO)
+    new_value = 456.0
+    with pytest.raises(
+        ValueError,
+        match=r"Cannot redefine mock\+ca\:\/\/UNITTEST:REFL_01:PARAM:S1VG:DEFINE_POS_SP"
+        r" as not in manager mode.",
+    ):
         await param.set(new_value)

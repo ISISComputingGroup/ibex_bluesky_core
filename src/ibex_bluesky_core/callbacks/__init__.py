@@ -16,12 +16,19 @@ from bluesky.utils import Msg, make_decorator
 from event_model import RunStart
 from matplotlib.axes import Axes
 
+from ibex_bluesky_core.callbacks._centre_of_mass import (
+    CentreOfMass,
+)
 from ibex_bluesky_core.callbacks._document_logger import DocLoggingCallback
 from ibex_bluesky_core.callbacks._file_logger import (
     HumanReadableFileCallback,
 )
-from ibex_bluesky_core.callbacks._fitting import LiveFit, LiveFitLogger
-from ibex_bluesky_core.callbacks._plotting import LivePlot, PlotPNGSaver, show_plot
+from ibex_bluesky_core.callbacks._fitting import (
+    ChainedLiveFit,
+    LiveFit,
+    LiveFitLogger,
+)
+from ibex_bluesky_core.callbacks._plotting import LivePColorMesh, LivePlot, PlotPNGSaver, show_plot
 from ibex_bluesky_core.callbacks._utils import get_default_output_path
 from ibex_bluesky_core.fitting import FitMethod
 from ibex_bluesky_core.utils import is_matplotlib_backend_qt
@@ -32,11 +39,14 @@ logger = logging.getLogger(__name__)
 
 
 __all__ = [
+    "CentreOfMass",
+    "ChainedLiveFit",
     "DocLoggingCallback",
     "HumanReadableFileCallback",
     "ISISCallbacks",
     "LiveFit",
     "LiveFitLogger",
+    "LivePColorMesh",
     "LivePlot",
     "PlotPNGSaver",
     "get_default_output_path",
@@ -47,7 +57,7 @@ __all__ = [
 class ISISCallbacks:
     """ISIS standard callbacks for use within plans."""
 
-    def __init__(  # noqa: PLR0912
+    def __init__(  # noqa: PLR0912, PLR0915
         self,
         *,
         x: str,
@@ -64,6 +74,7 @@ class ISISCallbacks:
         fit: FitMethod | None = None,
         show_fit_on_plot: bool = True,
         add_peak_stats: bool = True,
+        add_centre_of_mass: bool = True,
         add_live_fit_logger: bool = True,
         live_fit_logger_output_dir: str | PathLike[str] | None = None,
         live_fit_logger_postfix: str = "",
@@ -90,7 +101,9 @@ class ISISCallbacks:
 
         - LivePlot
 
-        Results can be accessed from the `live_fit` and `peak_stats` properties.
+        - CentreOfMass
+
+        Results can be accessed from the `live_fit`, `com` and `peak_stats` properties.
 
         This is to be used as a member and then as a decorator if results are needed ie::
 
@@ -127,6 +140,7 @@ class ISISCallbacks:
             fit: The fit method to use when fitting.
             show_fit_on_plot: whether to show fit on plot.
             add_peak_stats: whether to add a peak stats callback.
+            add_centre_of_mass: whether to add a centre of mass callback.
             add_live_fit_logger: whether to add a live fit logger.
             live_fit_logger_output_dir: the output directory for live fit logger.
             live_fit_logger_postfix: the postfix to add to live fit logger.
@@ -140,6 +154,7 @@ class ISISCallbacks:
         fig = None
         self._subs = []
         self._peak_stats = None
+        self._com = None
         self._live_fit = None
         if measured_fields is None:
             measured_fields = []
@@ -174,6 +189,10 @@ class ISISCallbacks:
         if add_peak_stats:
             self._peak_stats = PeakStats(x=x, y=y)
             self._subs.append(self._peak_stats)
+
+        if add_centre_of_mass:
+            self._com = CentreOfMass(x=x, y=y)
+            self._subs.append(self._com)
 
         if (add_plot_cb or show_fit_on_plot) and not ax:
             logger.debug("No axis provided, creating a new one")
@@ -258,10 +277,17 @@ class ISISCallbacks:
 
     @property
     def peak_stats(self) -> PeakStats:
-        """The peak stats object containing statistics ie. centre of mass."""
+        """The peak stats object containing statistics ie. bluesky's centre of mass."""
         if self._peak_stats is None:
             raise ValueError("peak stats was not added as a callback.")
         return self._peak_stats
+
+    @property
+    def com(self) -> CentreOfMass:
+        """The centre of mass object containing ibex_bluesky_core's centre of mass."""
+        if self._com is None:
+            raise ValueError("centre of mass was not added as a callback.")
+        return self._com
 
     @property
     def subs(self) -> list[CallbackBase]:

@@ -29,7 +29,7 @@ nitpick_ignore_regex = [
     ("py:obj", r"^.*\.T.*_co$"),
 ]
 
-myst_enable_extensions = ["dollarmath", "strikethrough", "colon_fence"]
+myst_enable_extensions = ["dollarmath", "strikethrough", "colon_fence", "attrs_block"]
 suppress_warnings = ["myst.strikethrough"]
 
 extensions = [
@@ -43,7 +43,10 @@ extensions = [
     "sphinx.ext.intersphinx",
     # Add links to source code in API docs
     "sphinx.ext.viewcode",
+    # Mermaid diagrams
+    "sphinxcontrib.mermaid",
 ]
+mermaid_d3_zoom = True
 napoleon_google_docstring = True
 napoleon_numpy_docstring = False
 
@@ -70,4 +73,19 @@ html_theme_options = {
 html_favicon = "favicon.svg"
 
 autoclass_content = "both"
-myst_heading_anchors = 3
+myst_heading_anchors = 7
+autodoc_preserve_defaults = True
+
+intersphinx_mapping = {
+    "python": ("https://docs.python.org/3", None),
+    "bluesky": ("https://blueskyproject.io/bluesky/main/", None),
+    "ophyd_async": ("https://blueskyproject.io/ophyd-async/main/", None),
+    "event_model": ("https://blueskyproject.io/event-model/main/", None),
+    "scipp": ("https://scipp.github.io/", None),
+    "scippneutron": ("https://scipp.github.io/scippneutron/", None),
+    "numpy": ("https://numpy.org/doc/stable/", None),
+    "scipy": ("https://docs.scipy.org/doc/scipy/", None),
+    "matplotlib": ("https://matplotlib.org", None),
+    "lmfit": ("https://lmfit.github.io/lmfit-py/", None),
+    "typing_extensions": ("https://typing-extensions.readthedocs.io/en/latest/", None),
+}

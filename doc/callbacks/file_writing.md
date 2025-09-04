@@ -1,9 +1,11 @@
 # File writing callbacks
+
+{#hr_file_cb}
 ## Human readable files
 
 A callback ([`HumanReadableFileCallback`](ibex_bluesky_core.callbacks.HumanReadableFileCallback))  exists to write all documents to a separate human-readable file which contains the specified fields. 
 
-This callback will add units and honour precision for each field as well as add some metadata ie. the `uid` of each scan as well as the RB number, which is injected using the {doc}`/preprocessors/rbnumberpp`
+This callback will add units and honour precision for each field as well as add some metadata ie. the `uid` of each scan as well as the RB number, which is injected using the {doc}`/dev/rbnumberpp`
 
 ### Example
 An example of using this could be: 
@@ -49,10 +51,29 @@ of the scan, in `C:\instrument\var\logs\bluesky\output_files\`.
 
 Optional parameters, not shown above, include:
 - `output_dir` parameter is optional, if not input the file will by default be placed in 
-`\\isis\inst$\ndx<inst>\user\TEST\scans\<rbnumber>`. 
+`\\isis\inst$\ndx<inst>\user\bluesky_scans\<rbnumber>`. 
 - `postfix` an optional suffix to append to the end of the file name, to disambiguate scans. Default is no suffix.
 
 The data is prepended on the first event with the names and units of each logged field, and then subsequently the data 
 for each scan separated by a newline. All of this is separated by commas, though the metadata is not.
 
 The file also contains metadata such as the bluesky version, plan type, and rb number.
+
+## Fit outputs
+
+See {ref}`livefit_logger`
+
+## Plot PNGs
+
+See {ref}`plot_png_saver`
+
+{#event_doc_cb}
+## Bluesky Event documents
+
+```{note}
+This callback is added automatically and is not intended to be user-facing - it is primarily for developer diagnostics.
+```
+
+The [`DocLoggingCallback`](ibex_bluesky_core.callbacks.DocLoggingCallback) is a callback that the BlueSky RunEngine subscribes to unconditionally in {py:obj}`RunEngine import level<ibex_bluesky_core.run_engine.get_run_engine>`. After receiving each document, if they share the same start document (in the same run) then it will write them to the same file. These logs are stored under `C:/instrument/var/logs/bluesky/raw_documents` and are handled by the log rotation.
+
+Each document is stored in a JSON format so can be both machine and human readable. It is in the format `{"type": name, "document": document}` whereby `name` is the type of the document, e.g start, stop, event, descriptor and the `document` is the [document from BlueSky in JSON format](https://blueskyproject.io/bluesky/main/documents.html). As these files are produced per BlueSky run, these will be useful for debugging.

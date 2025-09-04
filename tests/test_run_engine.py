@@ -6,11 +6,12 @@ from typing import Any
 from unittest.mock import MagicMock
 
 import bluesky.plan_stubs as bps
+import bluesky.preprocessors as bpp
 import pytest
 from bluesky.run_engine import RunEngineResult
 from bluesky.utils import Msg, RequestAbort, RunEngineInterrupted
 
-from ibex_bluesky_core.run_engine import _DuringTask, get_run_engine
+from ibex_bluesky_core.run_engine import _DuringTask, get_run_engine, run_plan
 from ibex_bluesky_core.version import version
 
 
@@ -87,3 +88,61 @@ def test_during_task_does_wait_with_small_timeout():
 
 def test_runengine_has_version_number_as_metadata(RE):
     assert RE.md["versions"]["ibex_bluesky_core"] == version
+
+
+def test_run_plan_rejects_reentrant_call(RE):
+    def _null():
+        yield from bps.null()
+
+    def plan():
+        yield from _null()
+        run_plan(_null())
+
+    with pytest.raises(
+        RuntimeError, match="reentrant run_plan call attempted; this cannot be supported"
+    ):
+        run_plan(plan())
+
+
+def test_run_plan_rejects_call_if_re_already_busy(RE):
+    def _null():
+        yield from bps.null()
+
+    with pytest.raises(RunEngineInterrupted):
+        RE(bps.pause())
+    assert RE.state == "paused"
+    with pytest.raises(RuntimeError):
+        run_plan(_null())
+
+    RE.halt()
+
+
+def test_run_plan_runs_cleanup_on_interruption(RE):
+    cleaned_up = False
+
+    def plan():
+        def cleanup():
+            yield from bps.null()
+            nonlocal cleaned_up
+            cleaned_up = True
+
+        yield from bpp.finalize_wrapper(bps.pause(), cleanup())
+
+    with pytest.raises(
+        RunEngineInterrupted,
+        match="bluesky RunEngine interrupted; not resumable as running via run_plan",
+    ):
+        run_plan(plan())
+
+    assert RE.state == "idle"
+    assert cleaned_up
+
+
+def test_run_plan_happy_path(RE):
+    def plan():
+        yield from bps.null()
+        return "happy_path_result"
+
+    result = run_plan(plan())
+    assert result.plan_result == "happy_path_result"
+    assert result.exit_status == "success"

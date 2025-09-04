@@ -1,3 +1,4 @@
+{#standard_fitting_models}
 # Standard Fitting Models
 
 ## Linear
@@ -19,7 +20,7 @@ API Reference: [`Polynomial`](ibex_bluesky_core.fitting.Polynomial)
 
 For a polynomial degree `n`:
 ```{math}
-y = c_{n}x^n + c_{n-1}x^n-1 + ... + c_1 * x^1 + c_0 
+y = c_{n}x^n + c_{n-1}x^{n-1} + ... + c_1 * x^1 + c_0 
 ```
 
 ## Gaussian
@@ -35,7 +36,7 @@ API Reference: [`Gaussian`](ibex_bluesky_core.fitting.Gaussian)
 y = \text{amp} * e^{-\frac{(x - x0) ^ 2}{2 * \text{sigma}^2}} + \text{background}
 ```
 
-![GaussianModel](../_static/images_fits/gaussian.png)
+![GaussianModel](./images_fits/gaussian.png)
 
 ## Lorentzian
 
@@ -50,7 +51,7 @@ API Reference: [`Lorentzian`](ibex_bluesky_core.fitting.Lorentzian)
 y = \frac{\text{amp}}{1 + \frac{x - \text{center}}{\text{sigma}}^2} + \text{background}
 ```
 
-![LorentzianModel](../_static/images_fits/lorentzian.png)
+![LorentzianModel](./images_fits/lorentzian.png)
 
 ## Damped Oscillator (DampedOsc)
 
@@ -65,7 +66,7 @@ API Reference: [`DampedOsc`](ibex_bluesky_core.fitting.DampedOsc)
 y = \text{amp} * \cos((x - \text{center}) * \text{freq}) * e^{-\frac{x - \text{center}}{\text{width}^ 2}}
 ```
 
-![DampedOscModel](../_static/images_fits/damped_osc.png)
+![DampedOscModel](./images_fits/damped_osc.png)
 
 ##  Slit Scan (SlitScan)
 
@@ -89,7 +90,7 @@ API Reference: [`SlitScan`](ibex_bluesky_core.fitting.SlitScan)
 y = \min(\text{lin_seg}, \text{exp_seg})
 ```
 
-![SlitScanModel](../_static/images_fits/slit_scan.png)
+![SlitScanModel](./images_fits/slit_scan.png)
 
 ## Error Function (ERF)
 
@@ -104,7 +105,7 @@ API Reference: [`ERF`](ibex_bluesky_core.fitting.ERF)
 y = background + scale * erf(stretch * (x - cen))
 ```
 
-![ERFModel](../_static/images_fits/erf.png)
+![ERFModel](./images_fits/erf.png)
 
 ## Complementary Error Function (ERFC)
 
@@ -119,7 +120,7 @@ API Reference: [`ERFC`](ibex_bluesky_core.fitting.ERFC)
 y = background + scale * erfc(stretch * (x - cen))
 ```
 
-![ERFCModel](../_static/images_fits/erfc.png)
+![ERFCModel](./images_fits/erfc.png)
 
 ## Top Hat (TopHat)
 
@@ -138,7 +139,7 @@ y =
 \end{cases}
 ```
 
-![TopHatModel](../_static/images_fits/tophat.png)
+![TopHatModel](./images_fits/tophat.png)
 
 ## Trapezoid
 
@@ -160,13 +161,13 @@ g(x) = \max(f(x), \text{background})
 y = \min(g(x), \text{background} + \text{height})
 ```
 
-![TrapezoidModel](../_static/images_fits/trapezoid.png)
+![TrapezoidModel](./images_fits/trapezoid.png)
 
 ## Negative Trapezoid
 
 API Reference: [`NegativeTrapezoid`](ibex_bluesky_core.fitting.NegativeTrapezoid)
 
-This model is the same shape as the trapezoid described above, but with a negative height.s
+This model is the same shape as the trapezoid described above, but with a negative height.
 
 - `cen` - The centre (x) of the model
 - `gradient` - How steep the edges of the trapezoid are
@@ -183,3 +184,22 @@ g(x) = \max(f(x), \text{background} - \text{height})
 ```{math}
 y = \min(g(x), \text{background})
 ```
+
+## Muon Momentum
+
+API Reference: [`MuonMomentum`](ibex_bluesky_core.fitting.MuonMomentum)
+
+Fits data from a momentum scan, it is designed for the specific use case of scanning over magnet current on muon instruments.
+
+- `x0` - The center (x) of the model
+- `w` - The horizontal stretch factor of the model
+- `R` - The amplitude of the model
+- `b` - The minimum value (y) of the model
+- `p` - Changes the gradient of the tail ends of the model
+
+``` {math}
+y = \left (\text{erfc} \mathopen{} \left(\frac{x-x_0}{w} \right) \mathclose{} \cdot \frac{R}{2} + b \right) \cdot \left (\frac{x}{x_0} \right)^p
+```
+
+![MuonMomentumModel](./images_fits/muons_momentum.png)
+ 

@@ -1,13 +1,14 @@
-# Fitting Callback
+# Fitting (`LiveFit`)
 
-Similar to [`LivePlot`](../callbacks/plotting.md), [`ibex_bluesky_core`](ibex_bluesky_core) provides a thin wrapper around Bluesky's [`LiveFit`](ibex_bluesky_core.callbacks.LiveFit) class, enhancing it with additional functionality to better support real-time data fitting. This wrapper not only offers a wide selection of models to fit your data on, but also introduces guess generation for fit parameters. As new data points are acquired, the wrapper refines these guesses dynamically, improving the accuracy of the fit with each additional piece of data, allowing for more efficient and adaptive real-time fitting workflows.
+Similar to [`LivePlot`](/callbacks/plotting.md), [`ibex_bluesky_core`](ibex_bluesky_core) provides a thin wrapper around Bluesky's [`LiveFit`](ibex_bluesky_core.callbacks.LiveFit) class, enhancing it with additional functionality to better support real-time data fitting. This wrapper not only offers a wide selection of models to fit your data on, but also introduces guess generation for fit parameters. As new data points are acquired, the wrapper refines these guesses dynamically, improving the accuracy of the fit with each additional piece of data, allowing for more efficient and adaptive real-time fitting workflows.
 
 In order to use the wrapper, import[`LiveFit`](ibex_bluesky_core.callbacks.LiveFit from [`ibex_bluesky_core`](ibex_bluesky_core) rather than 
 `bluesky` directly:
 ```py
 from ibex_bluesky_core.callbacks.fitting import LiveFit
 ```
-**Note:** that you do not *need* [`LivePlot`](ibex_bluesky_core.callbacks.LivePlot)  for [`LiveFit`](ibex_bluesky_core.callbacks.LiveFit) to work but it may be useful to know visaully how well the model fits to the raw data.
+.. note::
+  that you do not *need* [`LivePlot`](ibex_bluesky_core.callbacks.LivePlot)  for [`LiveFit`](ibex_bluesky_core.callbacks.LiveFit) to work but it may be useful to know visaully how well the model fits to the raw data.
 
 ## Configuration
 
@@ -31,11 +32,12 @@ fit_callback = LiveFit(Gaussian.fit(), y="y_signal", x="x_signal", yerr="yerr_si
 fit_plot_callback = LiveFitPlot(fit_callback, ax=ax, color="r")
 ```
 
-**Note:** that the [`LiveFit`](ibex_bluesky_core.callbacks.LiveFit) callback doesn't directly do the plotting, it will return function parameters of the model its trying to fit to; a [`LiveFit`](ibex_bluesky_core.callbacks.LiveFit) object must be passed to `LiveFitPlot` which can then be subscribed to the `RunEngine`. See the [Bluesky Documentation](https://blueskyproject.io/bluesky/main/callbacks.html#livefitplot) for information on the various arguments that can be passed to the `LiveFitPlot` class.
+.. note::
+  that the [`LiveFit`](ibex_bluesky_core.callbacks.LiveFit) callback doesn't directly do the plotting, it will return function parameters of the model its trying to fit to; a [`LiveFit`](ibex_bluesky_core.callbacks.LiveFit) object must be passed to `LiveFitPlot` which can then be subscribed to the `RunEngine`. See the [Bluesky Documentation](https://blueskyproject.io/bluesky/main/callbacks.html#livefitplot) for information on the various arguments that can be passed to the `LiveFitPlot` class.
 
 Using the `yerr` argument allows you to pass uncertainties via a signal to LiveFit, so that the "weight" of each point influences the fit produced. By not providing a signal name you choose not to use uncertainties/weighting in the fitting calculation. Each weight is computed as `1/(standard deviation at point)` and is taken into account to determine how much a point affects the overall fit of the data. Same as the rest of [`LiveFit`](ibex_bluesky_core.callbacks.LiveFit), the fit will be updated after every new point collected now taking into account the weights of each point. Uncertainty data is collected from Bluesky event documents after each new point.
 
-The `plot_callback` and `fit_plot_callback` objects can then be subscribed to the `RunEngine`, using the same methods as described in [`LivePlot`](../callbacks/plotting.md). See the following example using `@subs_decorator`:
+The `plot_callback` and `fit_plot_callback` objects can then be subscribed to the `RunEngine`, using the same methods as described in [`LivePlot`](/callbacks/plotting.md). See the following example using `@subs_decorator`:
 
 ```py
 @subs_decorator(
@@ -89,7 +91,8 @@ lf = LiveFit([FIT].fit(), y="y_signal", x="x_signal", update_every=0.5)
 
 The `[FIT].fit()` function will pass the [`FitMethod`](ibex_bluesky_core.fitting.FitMethod) object straight to the [`LiveFit`](ibex_bluesky_core.callbacks.LiveFit) class.
 
-**Note:** that for the fits in the above table that require parameters, you will need to pass value(s) to their `.fit` method. For example Polynomial fitting:
+.. note::
+  that for the fits in the above table that require parameters, you will need to pass value(s) to their `.fit` method. For example Polynomial fitting:
 
 ```py
 lf = LiveFit(Polynomial.fit(3),  y="y_signal", x="x_signal", update_every=0.5)
@@ -146,7 +149,8 @@ lf = LiveFit(fit_method, y="y_signal", x="x_signal", update_every=0.5)
 # Then subscribe to LiveFitPlot(lf, ...)
 ```
 
-**Note:** that the parameters returned from the guess function must allocate to the arguments to the model function, ignoring the independant variable e.g `x` in this case. Array-like structures are not allowed. See the [lmfit documentation](https://lmfit.github.io/lmfit-py/parameters.html) for more information.
+.. note::
+  that the parameters returned from the guess function must allocate to the arguments to the model function, ignoring the independant variable e.g `x` in this case. Array-like structures are not allowed. See the [lmfit documentation](https://lmfit.github.io/lmfit-py/parameters.html) for more information.
 
 #### Option 2: Continued
 
@@ -201,7 +205,8 @@ lf = LiveFit(fit_method, y="y_signal", x="x_signal", update_every=0.5)
 
 Or you can create a completely user-defined fitting method.
 
-**Note:** that for fits that require arguments, you will need to pass values to their respecitive `.model` and `.guess` functions. E.g for `Polynomial` fitting:
+.. note::
+  that for fits that require arguments, you will need to pass values to their respecitive `.model` and `.guess` functions. E.g for `Polynomial` fitting:
 
 ```py
 fit_method = FitMethod(Polynomial.model(3), different_guess) # If using a custom guess function

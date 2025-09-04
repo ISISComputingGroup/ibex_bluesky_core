@@ -16,12 +16,14 @@ from ibex_bluesky_core.devices.simpledae._controllers import (
     RunPerPointController,
 )
 from ibex_bluesky_core.devices.simpledae._reducers import (
+    INTENSITY_PRECISION,
     VARIANCE_ADDITION,
-    GoodFramesNormalizer,
+    DSpacingMappingReducer,
     MonitorNormalizer,
     PeriodGoodFramesNormalizer,
     PeriodSpecIntegralsReducer,
     ScalarNormalizer,
+    sum_spectra,
     tof_bounded_spectra,
     wavelength_bounded_spectra,
 )
@@ -32,7 +34,6 @@ from ibex_bluesky_core.devices.simpledae._strategies import (
     Waiter,
 )
 from ibex_bluesky_core.devices.simpledae._waiters import (
-    GoodFramesWaiter,
     GoodUahWaiter,
     MEventsWaiter,
     PeriodGoodFramesWaiter,
@@ -41,11 +42,18 @@ from ibex_bluesky_core.devices.simpledae._waiters import (
 )
 from ibex_bluesky_core.utils import get_pv_prefix
 
+# For backwards compatibility.
+# These were removed in https://github.com/ISISComputingGroup/ibex_bluesky_core/issues/136
+GoodFramesWaiter = PeriodGoodFramesWaiter
+GoodFramesNormalizer = PeriodGoodFramesNormalizer
+
 logger = logging.getLogger(__name__)
 
 __all__ = [
+    "INTENSITY_PRECISION",
     "VARIANCE_ADDITION",
     "Controller",
+    "DSpacingMappingReducer",
     "GoodFramesNormalizer",
     "GoodFramesWaiter",
     "GoodUahWaiter",
@@ -65,13 +73,14 @@ __all__ = [
     "Waiter",
     "check_dae_strategies",
     "monitor_normalising_dae",
+    "sum_spectra",
     "tof_bounded_spectra",
     "wavelength_bounded_spectra",
 ]
 
-TController_co = TypeVar("TController_co", bound="Controller", default="Controller", covariant=True)
-TWaiter_co = TypeVar("TWaiter_co", bound="Waiter", default="Waiter", covariant=True)
-TReducer_co = TypeVar("TReducer_co", bound="Reducer", default="Reducer", covariant=True)
+TController_co = TypeVar("TController_co", bound="Controller", default=Controller, covariant=True)
+TWaiter_co = TypeVar("TWaiter_co", bound="Waiter", default=Waiter, covariant=True)
+TReducer_co = TypeVar("TReducer_co", bound="Reducer", default=Reducer, covariant=True)
 
 
 class SimpleDae(Dae, Triggerable, AsyncStageable, Generic[TController_co, TWaiter_co, TReducer_co]):
@@ -176,12 +185,12 @@ def monitor_normalising_dae(
     """
     prefix = get_pv_prefix()
 
+    waiter = PeriodGoodFramesWaiter(frames)
+
     if periods:
         controller = PeriodPerPointController(save_run=save_run)
-        waiter = PeriodGoodFramesWaiter(frames)
     else:
         controller = RunPerPointController(save_run=save_run)
-        waiter = GoodFramesWaiter(frames)
 
     reducer = MonitorNormalizer(
         prefix=prefix,

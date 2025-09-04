@@ -5,7 +5,6 @@ import logging
 import math
 from abc import ABC, abstractmethod
 from collections.abc import Awaitable, Callable, Collection, Sequence
-from typing import TYPE_CHECKING
 
 import numpy as np
 import numpy.typing as npt
@@ -19,14 +18,12 @@ from ophyd_async.core import (
     soft_signal_r_and_setter,
 )
 from scippneutron import conversion
+from scippneutron.conversion.tof import dspacing_from_tof
 
-from ibex_bluesky_core.devices.dae import DaeSpectra
+from ibex_bluesky_core.devices.dae import Dae, DaeSpectra
 from ibex_bluesky_core.devices.simpledae._strategies import Reducer
 
 logger = logging.getLogger(__name__)
-
-if TYPE_CHECKING:
-    from ibex_bluesky_core.devices.simpledae import SimpleDae
 
 
 INTENSITY_PRECISION = 6
@@ -36,10 +33,14 @@ VARIANCE_ADDITION = 0.5
 async def sum_spectra(spectra: Collection[DaeSpectra]) -> sc.Variable | sc.DataArray:
     """Read and sum a number of spectra from the DAE.
 
-    Returns a scipp scalar, which has .value and .variance properties for accessing the sum
-    and variance respectively of the summed counts.
+    Args:
+        spectra: a Collection type object of DAE spectra
 
-    More info on scipp scalars can be found here: https://scipp.github.io/generated/functions/scipp.scalar.html
+    Returns:
+        scipp :external+scipp:py:obj:`Variable <scipp.Variable>`
+        or :external+scipp:py:obj:`DataArray <scipp.DataArray>` describing
+        the sum of the provided spectra.
+
     """
     logger.info("Summing %d spectra using scipp", len(spectra))
     summed_counts = sc.scalar(value=0, unit=sc.units.counts, dtype="float64")
@@ -55,13 +56,14 @@ def tof_bounded_spectra(
     """Sum a set of neutron spectra between the specified time of flight bounds.
 
     Args:
-        bounds: A scipp array of size 2, no variances, unit of us,
-            where the second element must be larger than the first.
+        bounds: A scipp :external+scipp:py:obj:`array <scipp.array>` of size 2, no variances, unit
+            of us, where the second element must be larger than the first.
 
-    Returns a scipp scalar, which has .value and .variance properties for accessing the sum
-    and variance respectively of the summed counts.
+    :rtype:
+        scipp :external+scipp:py:obj:`scalar <scipp.scalar>`
 
-    More info on scipp arrays and scalars can be found here: https://scipp.github.io/generated/functions/scipp.scalar.html
+    Returns a scipp :external+scipp:py:obj:`scalar <scipp.scalar>`, which has .value and .variance
+    properties for accessing the sum and variance respectively of the summed counts.
 
     """
     bounds_value = 2
@@ -87,17 +89,22 @@ def wavelength_bounded_spectra(
     """Sum a set of neutron spectra between the specified wavelength bounds.
 
     Args:
-        bounds: A scipp array of size 2 of wavelength bounds, in units of angstrom,
-            where the second element must be larger than the first.
-        total_flight_path_length: A scipp scalar of Ltotal (total flight path length), the path
-            length from neutron source to detector or monitor, in units of meters.
+        bounds: A scipp :external+scipp:py:obj:`array <scipp.array>` of size 2 of wavelength bounds,
+            in units of angstrom, where the second element must be larger than the first.
+        total_flight_path_length: A scipp :external+scipp:py:obj:`scalar <scipp.scalar>` of Ltotal
+            (total flight path length), the path length from neutron source to detector or monitor,
+            in units of meters.
+
+    :rtype:
+        scipp :external+scipp:py:obj:`scalar <scipp.scalar>`
 
     Time of flight is converted to wavelength using scipp neutron's library function
-        `wavelength_from_tof`, more info on which can be found here:
-        https://scipp.github.io/scippneutron/generated/modules/scippneutron.conversion.tof.wavelength_from_tof.html
+    `wavelength_from_tof`, more info on which can be found here:
+    :external+scippneutron:py:obj:`wavelength_from_tof
+    <scippneutron.conversion.tof.wavelength_from_tof>`
 
-    Returns a scipp scalar, which has .value and .variance properties for accessing the sum
-    and variance respectively of the summed counts.
+    Returns a scipp :external+scipp:py:obj:`scalar <scipp.scalar>`, which has .value and .variance
+    properties for accessing the sum and variance respectively of the summed counts.
 
     """
     bounds_value = 2
@@ -167,10 +174,10 @@ class ScalarNormalizer(Reducer, StandardReadable, ABC):
         super().__init__(name="")
 
     @abstractmethod
-    def denominator(self, dae: "SimpleDae") -> SignalR[int] | SignalR[float]:
+    def denominator(self, dae: Dae) -> SignalR[int] | SignalR[float]:
         """Get the normalization denominator, which is assumed to be a scalar signal."""
 
-    async def reduce_data(self, dae: "SimpleDae") -> None:
+    async def reduce_data(self, dae: Dae) -> None:
         """Apply the normalization."""
         logger.info("starting reduction")
         summed_counts, denominator = await asyncio.gather(
@@ -194,7 +201,7 @@ class ScalarNormalizer(Reducer, StandardReadable, ABC):
 
         logger.info("reduction complete")
 
-    def additional_readable_signals(self, dae: "SimpleDae") -> list[Device]:
+    def additional_readable_signals(self, dae: Dae) -> list[Device]:
         """Publish interesting signals derived or used by this reducer."""
         return [
             self.det_counts,
@@ -208,17 +215,9 @@ class ScalarNormalizer(Reducer, StandardReadable, ABC):
 class PeriodGoodFramesNormalizer(ScalarNormalizer):
     """Sum a set of user-specified spectra, then normalize by period good frames."""
 
-    def denominator(self, dae: "SimpleDae") -> SignalR[int]:
+    def denominator(self, dae: Dae) -> SignalR[int]:
         """Get normalization denominator (period good frames)."""
         return dae.period.good_frames
-
-
-class GoodFramesNormalizer(ScalarNormalizer):
-    """Sum a set of user-specified spectra, then normalize by total good frames."""
-
-    def denominator(self, dae: "SimpleDae") -> SignalR[int]:
-        """Get normalization denominator (total good frames)."""
-        return dae.good_frames
 
 
 class MonitorNormalizer(Reducer, StandardReadable):
@@ -278,7 +277,7 @@ class MonitorNormalizer(Reducer, StandardReadable):
 
         super().__init__(name="")
 
-    async def reduce_data(self, dae: "SimpleDae") -> None:
+    async def reduce_data(self, dae: Dae) -> None:
         """Apply the normalization."""
         logger.info("starting reduction")
         detector_counts, monitor_counts = await asyncio.gather(
@@ -307,7 +306,7 @@ class MonitorNormalizer(Reducer, StandardReadable):
 
         logger.info("reduction complete")
 
-    def additional_readable_signals(self, dae: "SimpleDae") -> list[Device]:
+    def additional_readable_signals(self, dae: Dae) -> list[Device]:
         """Publish interesting signals derived or used by this reducer."""
         return [
             self.det_counts,
@@ -368,16 +367,7 @@ class PeriodSpecIntegralsReducer(Reducer, StandardReadable):
         """Get the monitors used by this reducer."""
         return self._monitors
 
-    async def _trigger_and_get_specdata(self, dae: "SimpleDae") -> npt.NDArray[np.int32]:
-        await dae.controls.update_run.trigger()
-        await dae.raw_spec_data_proc.set(1, wait=True)
-        (raw_data, nord) = await asyncio.gather(
-            dae.raw_spec_data.get_value(),
-            dae.raw_spec_data_nord.get_value(),
-        )
-        return raw_data[:nord]
-
-    async def reduce_data(self, dae: "SimpleDae") -> None:
+    async def reduce_data(self, dae: Dae) -> None:
         """Expose detector & monitor integrals.
 
         After this method returns, it is valid to read from det_integrals and
@@ -393,26 +383,8 @@ class PeriodSpecIntegralsReducer(Reducer, StandardReadable):
 
         """
         logger.info("starting reduction")
-        (
-            raw_data,
-            num_periods,
-            num_spectra,
-            num_time_channels,
-            current_period,
-        ) = await asyncio.gather(
-            self._trigger_and_get_specdata(dae),
-            dae.number_of_periods.signal.get_value(),
-            dae.num_spectra.get_value(),
-            dae.num_time_channels.get_value(),
-            dae.period_num.get_value(),
-        )
 
-        # Raw data includes time channel 0, which contains "junk" data
-        # This could potentially be useful for diagnostics, but is not useful as part of a scan.
-        # So it gets unconditionally chopped out.
-        # Spectrum 0 is also present. This is left so that passing detectors=[1] selects spectrum 1.
-        raw_data = raw_data.reshape((num_periods, num_spectra + 1, num_time_channels + 1))
-        all_current_period_data = raw_data[current_period - 1, :, 1:]
+        all_current_period_data = await dae.trigger_and_get_specdata()
 
         # After this sum, we are left with a 1D array of size nspectra
         det_integrals = np.sum(all_current_period_data[self._detectors], axis=1)
@@ -423,9 +395,130 @@ class PeriodSpecIntegralsReducer(Reducer, StandardReadable):
 
         logger.info("reduction complete")
 
-    def additional_readable_signals(self, dae: "SimpleDae") -> list[Device]:
+    def additional_readable_signals(self, dae: Dae) -> list[Device]:
         """Publish interesting signals derived or used by this reducer."""
         return [
             self.mon_integrals,
             self.det_integrals,
         ]
+
+
+class DSpacingMappingReducer(Reducer, StandardReadable):
+    """A DAE Reducer which exposes an array of d-spacings at each scan point.
+
+    This reducer produces one dimensional arrays of d-spacing, generated by
+    converting the time-of-flight coordinates of each configured spectrum to
+    d-spacing, rebinning all spectra to a common set of d-spacing bins, and
+    then summing all spectra together. The conversion method used is
+    :external+scippneutron:py:obj:`scippneutron.conversion.tof.dspacing_from_tof`.
+
+    For a description of the basic theory behind conversions between
+    time-of-flight and d-spacing, see the
+    `introductory slides <https://www.oxfordneutronschool.org/2024/Lectures/Boothroyd-Introductory%20Theory.pdf>`_
+    from the Oxford Neutron School, or the
+    `ISIS introduction to ToF neutron diffraction <https://www.isis.stfc.ac.uk/Pages/TOF-neutron-diffraction.aspx>`_.
+    """
+
+    def __init__(
+        self,
+        *,
+        prefix: str,
+        detectors: npt.NDArray[np.int64],
+        l_total: sc.Variable,
+        two_theta: sc.Variable,
+        dspacing_bin_edges: sc.Variable,
+    ) -> None:
+        """Create a new DSpacingMappingReducer.
+
+        Args:
+            prefix: PV prefix for the :py:obj:`SimpleDae`.
+            detectors: numpy :external+numpy:py:obj:`array <numpy.array>` of detector
+                spectra to select.
+                For example, ``np.array([1, 2, 3])`` selects spectra 1-3 inclusive.
+                All detectors in this list are assumed to have the same time
+                channel boundaries.
+            l_total: scipp :external+scipp:py:obj:`Variable <scipp.Variable>`
+                describing the total flight path length of each
+                selected detector. Must have the same length as detectors, have units
+                of length, and have a scipp dimension label of "spec"
+            two_theta: scipp :external+scipp:py:obj:`Variable <scipp.Variable>`
+                describing the two theta scattering angle of
+                each selected detector. Must have the same length as detectors, have
+                units of angle, and have a scipp dimension label of "spec"
+            dspacing_bin_edges: scipp :external+scipp:py:obj:`Variable <scipp.Variable>`
+                describing the required d-spacing bin-edges.
+                This must be bin edge coordinates, aligned along a scipp dimension label of
+                "tof", have a unit of length, for example Angstroms
+                (:external+scipp:py:obj:`scipp.units.angstrom <scipp.units>`),
+                and must be strictly ascending.
+
+        """
+        self._detectors = detectors
+        self._l_total = l_total
+        self._two_theta = two_theta
+        self._dspacing_bin_edges = dspacing_bin_edges
+
+        if self._l_total.shape != self._detectors.shape:
+            raise ValueError("l_total and detectors must have same shape")
+        if self._two_theta.shape != self._detectors.shape:
+            raise ValueError("two theta and detectors must have same shape")
+
+        self._first_det = DaeSpectra(
+            dae_prefix=prefix + "DAE:", spectra=int(detectors[0]), period=0
+        )
+
+        self.dspacing, self._dspacing_setter = soft_signal_r_and_setter(
+            Array1D[np.float64], np.array([], dtype=np.float64)
+        )
+
+        super().__init__(name="")
+
+    async def reduce_data(self, dae: Dae) -> None:
+        """Expose calculated d-spacing.
+
+        This will be in units of counts, which may be fractional due to rebinning.
+
+        The binning of the data, and hence the length of the d-spacing
+        array, has bin edges specified by self.dspacing_bins.
+        """
+        logger.info("starting reduction reads")
+        (
+            current_period_data,
+            first_spec_dataarray,
+        ) = await asyncio.gather(
+            dae.trigger_and_get_specdata(detectors=self._detectors),
+            self._first_det.read_spectrum_dataarray(),
+        )
+        logger.info("starting reduction")
+
+        # Since l_total and two_theta are aligned along a "spec" dimension,
+        # the d-spacing array here is then 2-dimensional in [spec, tof]
+        # This represents the (independent) d-spacing bin boundaries for
+        # each detector pixel.
+        dspacing = dspacing_from_tof(
+            tof=first_spec_dataarray.coords["tof"],
+            Ltotal=self._l_total,
+            two_theta=self._two_theta,
+        )
+
+        data = sc.DataArray(
+            data=sc.array(
+                dims=["spec", "tof"],
+                values=current_period_data,
+                unit=sc.units.counts,
+                dtype="float64",
+            ),
+            coords={
+                "tof": dspacing,
+            },
+        )
+
+        binned_data = data.rebin({"tof": self._dspacing_bin_edges})
+        summed_data = binned_data.sum(dim="spec")
+
+        self._dspacing_setter(summed_data.values)
+        logger.info("reduction complete")
+
+    def additional_readable_signals(self, dae: Dae) -> list[Device]:
+        """Publish interesting signals derived or used by this reducer."""
+        return [self.dspacing]

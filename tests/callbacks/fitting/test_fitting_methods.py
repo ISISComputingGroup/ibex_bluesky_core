@@ -1,3 +1,4 @@
+import typing
 import warnings
 from collections.abc import Callable
 from unittest import mock
@@ -17,6 +18,7 @@ from ibex_bluesky_core.fitting import (
     Gaussian,
     Linear,
     Lorentzian,
+    MuonMomentum,
     NegativeTrapezoid,
     Polynomial,
     SlitScan,
@@ -113,14 +115,14 @@ class TestGaussian:
             y = np.array([1.0, 2.0, 1.0], dtype=np.float64)
             outp = Gaussian.guess()(x, y)
 
-            assert pytest.approx(y[0], rel=1e-2) == outp["background"].value
+            assert pytest.approx(y[0], rel=1e-2) == outp["background"]
 
         def test_amp_x0(self):
             x = np.array([-1.0, 0.0, 1.0], dtype=np.float64)
             y = np.array([1.0, 2.0, 1.0], dtype=np.float64)
             outp = Gaussian.guess()(x, y)
 
-            assert y[1] == pytest.approx(outp["amp"].value + outp["background"].value, rel=1e-2)  # type: ignore
+            assert y[1] == pytest.approx(outp["amp"] + outp["background"], rel=1e-2)  # type: ignore
 
         def test_neg_amp_x0(self):
             # upside down gaussian
@@ -139,7 +141,7 @@ class TestGaussian:
             outp = Gaussian.guess()(x, y)
             outp1 = Gaussian.guess()(x, y1)
 
-            assert outp["sigma"].value < outp1["sigma"].value  # type: ignore
+            assert outp["sigma"] < outp1["sigma"]  # type: ignore
 
 
 class TestLorentzian:
@@ -184,14 +186,14 @@ class TestLorentzian:
             y = np.array([1.0, 2.0, 1.0], dtype=np.float64)
             outp = Lorentzian.guess()(x, y)
 
-            assert pytest.approx(1.0, rel=1e-1) == outp["background"].value
+            assert pytest.approx(1.0, rel=1e-1) == outp["background"]
 
         def test_amp_center(self):
             x = np.array([-1.0, 0.0, 1.0], dtype=np.float64)
             y = np.array([1.0, 2.0, 1.0], dtype=np.float64)
             outp = Lorentzian.guess()(x, y)
 
-            assert 2.0 == pytest.approx(outp["amp"].value + outp["background"].value, rel=1e-2)  # type: ignore
+            assert 2.0 == pytest.approx(outp["amp"] + outp["background"], rel=1e-2)  # type: ignore
 
         def test_neg_amp_x0(self):
             # upside down lorentzian
@@ -210,7 +212,7 @@ class TestLorentzian:
             outp = Lorentzian.guess()(x, y)
             outp1 = Lorentzian.guess()(x, y1)
 
-            assert outp["sigma"].value < outp1["sigma"].value  # type: ignore
+            assert outp["sigma"] < outp1["sigma"]  # type: ignore
 
 
 class TestLinear:
@@ -349,7 +351,7 @@ class TestDampedOsc:
             y = np.array([1.0, 2.0, 1.0], dtype=np.float64)
             outp = DampedOsc.guess()(x, y)
 
-            assert 2.0 == pytest.approx(outp["amp"].value, rel=1e-2)
+            assert 2.0 == pytest.approx(outp["amp"], rel=1e-2)
 
         def test_guess_width(self):
             x = np.array([-2.0, -1.0, 0.0, 1.0, 2.0], dtype=np.float64)
@@ -357,7 +359,7 @@ class TestDampedOsc:
             outp = DampedOsc.guess()(x, y)
 
             # Checks that the width guess is max x - min x
-            assert pytest.approx(outp["width"].value, rel=1e-2) == 4.0
+            assert pytest.approx(outp["width"], rel=1e-2) == 4.0
 
         def test_guess_freq(self):
             x = np.array([-2.0, -1.0, 0.0, 1.0, 2.0], dtype=np.float64)
@@ -365,7 +367,7 @@ class TestDampedOsc:
             outp = DampedOsc.guess()(x, y)
 
             # freq = pi / (peak_x - valley_x) = pi / (1 - -1)
-            assert pytest.approx(outp["freq"].value, rel=1e-2) == np.pi / 2
+            assert pytest.approx(outp["freq"], rel=1e-2) == np.pi / 2
 
 
 class TestSlitScan:
@@ -428,42 +430,42 @@ class TestSlitScan:
             y = np.array([1.0, 1.0, 2.0, 3.0], dtype=np.float64)
             outp = SlitScan.guess()(x, y)
 
-            assert 1.0 == pytest.approx(outp["background"].value, rel=1e-2)
+            assert 1.0 == pytest.approx(outp["background"], rel=1e-2)
 
         def test_guess_gradient(self):
             x = np.array([-1.0, 0.0, 1.0, 2.0, 3.0, 4.0], dtype=np.float64)
             y = np.array([1.0, 1.0, 2.0, 3.0, 4.0, 4.0], dtype=np.float64)
             outp = SlitScan.guess()(x, y)
 
-            assert 1.2 == pytest.approx(outp["gradient"].value, rel=1e-2)
+            assert 1.2 == pytest.approx(outp["gradient"], rel=1e-2)
 
         def test_guess_inflections_diff(self):
             x = np.array([-1.0, 0.0, 1.0, 2.0, 3.0, 4.0], dtype=np.float64)
             y = np.array([1.0, 1.0, 2.0, 3.0, 4.0, 4.0], dtype=np.float64)
             outp = SlitScan.guess()(x, y)
 
-            assert 1.666666666 == pytest.approx(outp["inflections_diff"].value, rel=1e-2)
+            assert 1.666666666 == pytest.approx(outp["inflections_diff"], rel=1e-2)
 
         def test_guess_inflections_diff_with_all_zero_data(self):
             x = np.array([-1.0, 0.0, 1.0, 2.0, 3.0, 4.0], dtype=np.float64)
             y = np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0], dtype=np.float64)
             outp = SlitScan.guess()(x, y)
 
-            assert 1.666666666 == pytest.approx(outp["inflections_diff"].value, rel=1e-2)
+            assert 1.666666666 == pytest.approx(outp["inflections_diff"], rel=1e-2)
 
         def test_guess_height_above_inflection1(self):
             x = np.array([-1.0, 0.0, 1.0, 2.0, 3.0, 4.0], dtype=np.float64)
             y = np.array([1.0, 1.0, 2.0, 3.0, 4.0, 4.0], dtype=np.float64)
             outp = SlitScan.guess()(x, y)
 
-            assert 0.6 == pytest.approx(outp["height_above_inflection1"].value, rel=1e-2)
+            assert 0.6 == pytest.approx(outp["height_above_inflection1"], rel=1e-2)
 
         def test_guess_inflection0(self):
             x = np.arange(-5.0, 5.0, 1.0, dtype=np.float64)
             y = np.array([0, 0, 0, 0, 0, 1, 2, 3, 4, 5], dtype=np.float64)
             outp = SlitScan.guess()(x, y)
 
-            assert -2.0 == pytest.approx(outp["inflection0"].value, rel=1e-2)
+            assert -2.0 == pytest.approx(outp["inflection0"], rel=1e-2)
 
 
 class TestERF:
@@ -504,6 +506,16 @@ class TestERF:
             outp = ERF.guess()(x, y)
 
             assert pytest.approx(outp["scale"], rel=1e-2) == 2.0
+
+        def test_guess_stretch(self):
+            x = np.array([-2.0, -1.0, 0.0, 1.0, 2.0], dtype=np.float64)
+            x1 = np.array([-4.0, -2.0, 0.0, 2.0, 4.0], dtype=np.float64)
+            y = np.array([-3.0, -2.0, 0.0, 2.0, 3.0], dtype=np.float64)
+
+            outp = ERF.guess()(x, y)
+            outp1 = ERF.guess()(x1, y)
+
+            assert outp1["stretch"] > outp["stretch"]
 
 
 class TestERFC:
@@ -546,6 +558,16 @@ class TestERFC:
             outp = ERFC.guess()(x, y)
 
             assert pytest.approx(outp["scale"], rel=1e-2) == 2.0
+
+        def test_guess_stretch(self):
+            x = np.array([-2.0, -1.0, 0.0, 1.0, 2.0], dtype=np.float64)
+            x1 = np.array([-4.0, -2.0, 0.0, 2.0, 4.0], dtype=np.float64)
+            y = np.array([6.0, 5.0, 3.0, 1.0, 0.0], dtype=np.float64)
+
+            outp = ERFC.guess()(x, y)
+            outp1 = ERFC.guess()(x1, y)
+
+            assert outp1["stretch"] > outp["stretch"]
 
 
 class TestTopHat:
@@ -823,3 +845,126 @@ class TestNegativeTrapezoid:
             outp = NegativeTrapezoid.guess()(x, y)
             # check that with flat data gradient guess is 0
             assert outp["gradient"] == pytest.approx(0.0, rel=1e-2)
+
+
+class TestMuonMomentum:
+    values: typing.ClassVar[dict[str, float]] = {
+        "x0": 21.89,
+        "w": 0.301,
+        "r": 110,
+        "b": 3.37,
+        "p": 1.82,
+    }
+    x: typing.ClassVar[npt.NDArray[np.float64]] = np.linspace(20.5, 23, 15, dtype=np.float64)
+
+    out: typing.ClassVar[npt.NDArray[np.float64]] = MuonMomentum.model().func(
+        x=x,
+        x0=values["x0"],
+        w=values["w"],
+        r=values["r"],
+        b=values["b"],
+        p=values["p"],
+    )
+
+    class TestMuonMomentumModel:
+        def test_muon_momentum_model_w(self):
+            out2 = MuonMomentum.model().func(
+                x=TestMuonMomentum.x,
+                x0=TestMuonMomentum.values["x0"],
+                w=TestMuonMomentum.values["w"] + 1,
+                r=TestMuonMomentum.values["r"],
+                b=TestMuonMomentum.values["b"],
+                p=TestMuonMomentum.values["p"],
+            )
+
+            assert np.mean(TestMuonMomentum.out) < np.mean(out2)
+
+        def test_muon_momentum_model_b(self):
+            out2 = MuonMomentum.model().func(
+                x=TestMuonMomentum.x,
+                x0=TestMuonMomentum.values["x0"],
+                w=TestMuonMomentum.values["w"],
+                r=TestMuonMomentum.values["r"],
+                b=TestMuonMomentum.values["b"] + 1,
+                p=TestMuonMomentum.values["p"],
+            )
+
+            assert np.min(TestMuonMomentum.out) < np.min(out2)
+
+        def test_muon_momentum_model_r(self):
+            out2 = MuonMomentum.model().func(
+                x=TestMuonMomentum.x,
+                x0=TestMuonMomentum.values["x0"],
+                w=TestMuonMomentum.values["w"],
+                r=TestMuonMomentum.values["r"] + 10,
+                b=TestMuonMomentum.values["b"],
+                p=TestMuonMomentum.values["p"],
+            )
+
+            assert np.max(TestMuonMomentum.out) - np.min(TestMuonMomentum.out) < np.max(
+                out2
+            ) - np.min(out2)
+
+        def test_muon_momentum_model_x0(self):
+            out2 = MuonMomentum.model().func(
+                x=TestMuonMomentum.x,
+                x0=TestMuonMomentum.values["x0"] + 1,
+                w=TestMuonMomentum.values["w"],
+                r=TestMuonMomentum.values["r"],
+                b=TestMuonMomentum.values["b"],
+                p=TestMuonMomentum.values["p"],
+            )
+
+            assert (
+                TestMuonMomentum.x[np.argmax(TestMuonMomentum.out)]
+                < TestMuonMomentum.x[np.argmax(out2)]
+            )
+            assert (
+                TestMuonMomentum.x[np.argmin(TestMuonMomentum.out)]
+                < TestMuonMomentum.x[np.argmin(out2)]
+            )
+
+    class TestMuonMomentumGuess:
+        def test_muon_momentum_guess_b(self):
+            x = np.array([0, 1, 2], dtype=np.float64)
+            y = np.array([20, 20, 10], dtype=np.float64)
+
+            out = MuonMomentum.guess()(x, y)
+
+            assert np.min(y) == out["b"]
+
+        def test_muon_momentum_guess_r(self):
+            x = np.array([0, 1, 2], dtype=np.float64)
+            y = np.array([20, 20, 10], dtype=np.float64)
+
+            out = MuonMomentum.guess()(x, y)
+
+            assert np.max(y) - np.min(y) == out["r"]
+
+        def test_muon_momentum_guess_w(self):
+            x = np.array([0, 1, 2, 3, 4], dtype=np.float64)
+            y = np.array([20, 20, 10, 5, 5], dtype=np.float64)
+            x1 = np.array([0, 0.5, 1.0, 1.5, 2.0], dtype=np.float64)
+
+            out = MuonMomentum.guess()(x, y)
+            out1 = MuonMomentum.guess()(x1, y)
+
+            assert out["w"] < out1["w"]
+
+        def test_muon_momentum_guess_x0(self):
+            x = np.array([0, 1, 2], dtype=np.float64)
+            y = np.array([20, 20, 10], dtype=np.float64)
+            x1 = np.array([3, 4, 5], dtype=np.float64)
+
+            out = MuonMomentum.guess()(x, y)
+            out1 = MuonMomentum.guess()(x1, y)
+
+            assert out1["x0"] > out["x0"]
+
+        def test_muon_momentum_guess_x0_noslope(self):
+            x = np.array([0, 1, 2], dtype=np.float64)
+            y = np.array([20, 20, 20], dtype=np.float64)
+
+            out = MuonMomentum.guess()(x, y)
+
+            assert out["x0"] == x[-1]

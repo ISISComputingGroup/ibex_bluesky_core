@@ -1,21 +1,19 @@
 changelog:
   exclude:
     labels:
-      - ignore-for-release
-    authors:
-      - octocat
+      - bluesky-ignore-for-release
   categories:
     - title: Breaking Changes
       labels:
-        - Semver-Major
+        - bluesky-Semver-Major
         - breaking-change
     - title: New Features
       labels:
-        - Semver-Minor
+        - bluesky-Semver-Minor
     - title: Bug Fixes
       labels:
-        - bug
+        - bluesky-bug
     - title: Other Changes
       labels:
-        - documentation
+        - bluesky-documentation
         - "*"

@@ -5,10 +5,10 @@ import pytest
 from event_model import EventDescriptor, RunStart, RunStop
 from matplotlib import pyplot as plt
 
+from ibex_bluesky_core.callbacks import LivePColorMesh
 from ibex_bluesky_core.callbacks.reflectometry import (
     DetMapAngleScanLiveDispatcher,
     DetMapHeightScanLiveDispatcher,
-    LivePColorMesh,
 )
 
 FAKE_START_DOC: RunStart = {"uid": "1"}  # type: ignore

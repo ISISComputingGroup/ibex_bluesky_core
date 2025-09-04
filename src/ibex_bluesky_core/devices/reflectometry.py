@@ -12,8 +12,9 @@ from ophyd_async.core import (
     StandardReadableFormat,
     observe_value,
 )
-from ophyd_async.epics.core import epics_signal_r, epics_signal_w
+from ophyd_async.epics.core import epics_signal_r, epics_signal_rw, epics_signal_w
 
+from ibex_bluesky_core.devices import NoYesChoice
 from ibex_bluesky_core.utils import get_pv_prefix
 
 logger = logging.getLogger(__name__)
@@ -43,7 +44,7 @@ class ReflParameter(StandardReadable, NamedMovable[float]):
             bool, f"{prefix}REFL_01:PARAM:{name}:CHANGING"
         )
         if has_redefine:
-            self.redefine = ReflParameterRedefine(prefix=f"{prefix}REFL_01:PARAM:{name}:", name="")
+            self.redefine = ReflParameterRedefine(prefix=prefix, name=name)
         else:
             self.redefine = None
         self.changing_timeout = changing_timeout_s
@@ -82,7 +83,8 @@ class ReflParameterRedefine(StandardReadable):
             name: the name of the parameter redefinition.
 
         """
-        self.define_pos_sp = epics_signal_w(float, f"{prefix}DEFINE_POS_SP")
+        self.define_pos_sp = epics_signal_w(float, f"{prefix}REFL_01:PARAM:{name}:DEFINE_POS_SP")
+        self.manager_mode = epics_signal_rw(NoYesChoice, f"{prefix}CS:MANAGER")
         super().__init__(name)
 
     @AsyncStatus.wrap
@@ -93,6 +95,9 @@ class ReflParameterRedefine(StandardReadable):
         waits for the reflectometry parameter redefinition's 'CHANGED' PV
         to go True to indicate it has finished redefining the position.
         """
+        in_manager_mode = await self.manager_mode.get_value()
+        if in_manager_mode != NoYesChoice.YES:
+            raise ValueError(f"Cannot redefine {self.define_pos_sp.source} as not in manager mode.")
         logger.info("setting %s to %s", self.define_pos_sp.source, value)
         await self.define_pos_sp.set(value, wait=True, timeout=None)
         logger.info("waiting for 1s for redefine to finish")
