@@ -206,6 +206,7 @@ class Dae(StandardReadable):
         self.rb_number: SignalRW[str] = isis_epics_signal_rw(str, f"{dae_prefix}_RBNUMBER")
 
         self.controls: DaeControls = DaeControls(dae_prefix)
+        self.autosave_freq: SignalRW[int] = isis_epics_signal_rw(int, f"{dae_prefix}AUTOSAVE:FREQ")
 
         super().__init__(name=name)
 
