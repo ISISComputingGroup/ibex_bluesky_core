@@ -1,0 +1,19 @@
+name: Add dependabot PRs to flash reviews
+on:
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - labeled
+
+jobs:
+  add_flash_review:
+    name: Add dependabot PRs to flash reviews
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/add-to-project@v1.0.2
+        with:
+          project-url: https://github.com/orgs/ISISComputingGroup/projects/17
+          github-token: ${{ secrets.PROJECT_TOKEN }}
+          labeled: dependencies
+          label-operator: OR
