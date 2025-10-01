@@ -10,7 +10,7 @@ import lmfit
 import matplotlib.pyplot as plt
 import numpy as np
 import numpy.typing as npt
-import scipp.typing as sct
+import scipp as sc
 from bluesky.preprocessors import subs_decorator
 from bluesky.protocols import NamedMovable
 from bluesky.utils import Msg
@@ -44,7 +44,7 @@ def _height_scan_callback_and_fit(
     reducer: PeriodSpecIntegralsReducer,
     height: NamedMovable[float],
     ax: Axes,
-    flood: sct.VariableLike | None,
+    flood: sc.Variable | None,
 ) -> tuple[DetMapHeightScanLiveDispatcher, LiveFit]:
     intensity = "intensity"
     height_scan_ld = DetMapHeightScanLiveDispatcher(
@@ -86,7 +86,7 @@ def _angle_scan_callback_and_fit(
     reducer: PeriodSpecIntegralsReducer,
     angle_map: npt.NDArray[np.float64],
     ax: Axes,
-    flood: sct.VariableLike | None,
+    flood: sc.Variable | None,
 ) -> tuple[DetMapAngleScanLiveDispatcher, LiveFit]:
     angle_name = "angle"
     counts_name = "counts"
@@ -167,7 +167,7 @@ def angle_scan_plan(
     dae: SimpleDae[PeriodPerPointController, Waiter, PeriodSpecIntegralsReducer],
     *,
     angle_map: npt.NDArray[np.float64],
-    flood: sct.VariableLike | None = None,
+    flood: sc.Variable | None = None,
 ) -> Generator[Msg, None, ModelResult | None]:
     """Reflectometry detector-mapping angle alignment plan.
 
@@ -242,7 +242,7 @@ def height_and_angle_scan_plan(  # noqa PLR0913
     num: int,
     angle_map: npt.NDArray[np.float64],
     rel: bool = False,
-    flood: sct.VariableLike | None = None,
+    flood: sc.Variable | None = None,
 ) -> Generator[Msg, None, DetMapAlignResult]:
     """Reflectometry detector-mapping simultaneous height & angle alignment plan.
 

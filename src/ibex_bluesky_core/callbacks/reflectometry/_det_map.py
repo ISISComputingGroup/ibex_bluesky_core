@@ -26,7 +26,6 @@ from typing import Any
 import numpy as np
 import numpy.typing as npt
 import scipp as sc
-import scipp.typing as sct
 from bluesky.callbacks.stream import LiveDispatcher
 from event_model import Event, EventDescriptor, RunStop
 
@@ -48,7 +47,7 @@ class DetMapHeightScanLiveDispatcher(LiveDispatcher):
     """
 
     def __init__(
-        self, *, mon_name: str, det_name: str, out_name: str, flood: sct.VariableLike | None = None
+        self, *, mon_name: str, det_name: str, out_name: str, flood: sc.Variable | None = None
     ) -> None:
         """Init."""
         super().__init__()
@@ -101,7 +100,7 @@ class DetMapAngleScanLiveDispatcher(LiveDispatcher):
         x_name: str,
         y_in_name: str,
         y_out_name: str,
-        flood: sct.VariableLike | None = None,
+        flood: sc.Variable | None = None,
     ) -> None:
         """Init."""
         super().__init__()
@@ -149,7 +148,7 @@ class DetMapAngleScanLiveDispatcher(LiveDispatcher):
             return super().stop(doc, _md)
 
         current_time = time.time()
-        for x, y in zip(self.x_data, self.y_data, strict=True):
+        for x, y in zip(self.x_data, self.y_data, strict=True):  # type: ignore
             logger.debug("DetMapAngleScanLiveDispatcher emitting event with x=%f, y=%f", x, y)
             event = {
                 "data": {
