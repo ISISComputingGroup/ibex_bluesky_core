@@ -47,7 +47,9 @@ class DetMapHeightScanLiveDispatcher(LiveDispatcher):
     monitor spectrum used for normalization).
     """
 
-    def __init__(self, *, mon_name: str, det_name: str, out_name: str, flood: sct.VariableLike | None = None) -> None:
+    def __init__(
+        self, *, mon_name: str, det_name: str, out_name: str, flood: sct.VariableLike | None = None
+    ) -> None:
         """Init."""
         super().__init__()
         self._mon_name = mon_name
@@ -94,14 +96,24 @@ class DetMapAngleScanLiveDispatcher(LiveDispatcher):
     """
 
     def __init__(
-        self, x_data: npt.NDArray[np.float64], x_name: str, y_in_name: str, y_out_name: str, flood: sct.VariableLike | None = None
+        self,
+        x_data: npt.NDArray[np.float64],
+        x_name: str,
+        y_in_name: str,
+        y_out_name: str,
+        flood: sct.VariableLike | None = None,
     ) -> None:
         """Init."""
         super().__init__()
         self.x_data = x_data
         self.x_name = x_name
 
-        self.y_data = sc.array(dims=["spectrum"], values=np.zeros_like(x_data), variances=np.zeros_like(x_data), dtype="float64")
+        self.y_data = sc.array(
+            dims=["spectrum"],
+            values=np.zeros_like(x_data),
+            variances=np.zeros_like(x_data),
+            dtype="float64",
+        )
         self.y_in_name: str = y_in_name
         self.y_out_name: str = y_out_name
 
@@ -124,7 +136,9 @@ class DetMapAngleScanLiveDispatcher(LiveDispatcher):
                 f"Shape of data ({data.shape} does not match x_data.shape ({self.x_data.shape})"
             )
 
-        scaled_data = sc.array(dims=["spectrum"], values=data, variances=data, dtype="float64") / self._flood
+        scaled_data = (
+            sc.array(dims=["spectrum"], values=data, variances=data, dtype="float64") / self._flood
+        )
         self.y_data += scaled_data
         return doc
 

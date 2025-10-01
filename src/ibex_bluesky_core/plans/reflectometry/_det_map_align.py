@@ -2,10 +2,11 @@
 
 import logging
 from collections.abc import Generator
-from typing import TypedDict
+from typing import Any, TypedDict
 
 import bluesky.plan_stubs as bps
 import bluesky.plans as bp
+import lmfit
 import matplotlib.pyplot as plt
 import numpy as np
 import numpy.typing as npt
@@ -13,6 +14,7 @@ import scipp.typing as sct
 from bluesky.preprocessors import subs_decorator
 from bluesky.protocols import NamedMovable
 from bluesky.utils import Msg
+from lmfit import Parameter
 from lmfit.model import ModelResult
 from matplotlib.axes import Axes
 from ophyd_async.plan_stubs import ensure_connected
@@ -29,7 +31,7 @@ from ibex_bluesky_core.devices.simpledae import (
     Waiter,
     check_dae_strategies,
 )
-from ibex_bluesky_core.fitting import Gaussian, FitMethod
+from ibex_bluesky_core.fitting import FitMethod, Gaussian
 from ibex_bluesky_core.plan_stubs import call_qt_aware
 
 __all__ = ["DetMapAlignResult", "angle_scan_plan", "height_and_angle_scan_plan"]
@@ -39,7 +41,10 @@ logger = logging.getLogger(__name__)
 
 
 def _height_scan_callback_and_fit(
-    reducer: PeriodSpecIntegralsReducer, height: NamedMovable[float], ax: Axes, flood: sct.VariableLike | None
+    reducer: PeriodSpecIntegralsReducer,
+    height: NamedMovable[float],
+    ax: Axes,
+    flood: sct.VariableLike | None,
 ) -> tuple[DetMapHeightScanLiveDispatcher, LiveFit]:
     intensity = "intensity"
     height_scan_ld = DetMapHeightScanLiveDispatcher(
@@ -63,11 +68,12 @@ def _height_scan_callback_and_fit(
     for cb in height_scan_callbacks.subs:
         height_scan_ld.subscribe(cb)
 
-    def set_title_to_height_fit_result(*args, **kwargs):
+    def set_title_to_height_fit_result(name: str, doc: dict[str, Any]) -> None:
         fit_result = height_scan_callbacks.live_fit.result
         if fit_result is not None:
             ax.set_title(
-                f"Best x0: {fit_result.params['x0'].value:.4f} +/- {fit_result.params['x0'].stderr:.4f}"
+                f"Best x0: {fit_result.params['x0'].value:.4f} "
+                f"+/- {fit_result.params['x0'].stderr:.4f}"
             )
         plt.draw()
 
@@ -77,7 +83,10 @@ def _height_scan_callback_and_fit(
 
 
 def _angle_scan_callback_and_fit(
-    reducer: PeriodSpecIntegralsReducer, angle_map: npt.NDArray[np.float64], ax: Axes, flood: sct.VariableLike | None
+    reducer: PeriodSpecIntegralsReducer,
+    angle_map: npt.NDArray[np.float64],
+    ax: Axes,
+    flood: sct.VariableLike | None,
 ) -> tuple[DetMapAngleScanLiveDispatcher, LiveFit]:
     angle_name = "angle"
     counts_name = "counts"
@@ -94,15 +103,17 @@ def _angle_scan_callback_and_fit(
     # guess away from real peak. For this data, it's actually better to guess the
     # centre as the x-value corresponding to the max y-value. The guesses for background,
     # sigma, and amplitude are left as-is.
-    def gaussian_max_y_guess(x, y):
+    def gaussian_max_y_guess(
+        x: npt.NDArray[np.float64], y: npt.NDArray[np.float64]
+    ) -> dict[str, Parameter]:
         guess = Gaussian().guess()(x, y)
         max_y_idx = np.argmax(y)
-        guess["x0"] = x[max_y_idx]
+        guess["x0"] = lmfit.Parameter("x0", x[max_y_idx])
         return guess
-    
+
     fit_method = FitMethod(
-        model = Gaussian.model(),
-        guess = gaussian_max_y_guess,
+        model=Gaussian.model(),
+        guess=gaussian_max_y_guess,
     )
 
     angle_scan_callbacks = ISISCallbacks(
@@ -122,18 +133,21 @@ def _angle_scan_callback_and_fit(
     for cb in angle_scan_callbacks.subs:
         angle_scan_ld.subscribe(cb)
 
-    def set_title_to_angle_fit_result(*args, **kwargs):
+    def set_title_to_angle_fit_result(name: str, doc: dict[str, Any]) -> None:
         fit_result = angle_scan_callbacks.live_fit.result
         if fit_result is not None:
             ax.set_title(
-                f"Best x0: {fit_result.params['x0'].value:.4f} +/- {fit_result.params['x0'].stderr:.4f}"
+                f"Best x0: {fit_result.params['x0'].value:.4f} "
+                f"+/- {fit_result.params['x0'].stderr:.4f}"
             )
         plt.draw()
 
     angle_scan_ld.subscribe(set_title_to_angle_fit_result, "stop")
 
     # Make sure the Plot PNG saving happens *after* setting plot title to fit result...
-    angle_scan_ld.subscribe(PlotPNGSaver(x=angle_name, y=counts_name, ax=ax, postfix="", output_dir=None))
+    angle_scan_ld.subscribe(
+        PlotPNGSaver(x=angle_name, y=counts_name, ax=ax, postfix="", output_dir=None)
+    )
 
     return angle_scan_ld, angle_scan_callbacks.live_fit
 
@@ -165,6 +179,10 @@ def angle_scan_plan(
         dae: The DAE to acquire from
         angle_map: a numpy array, with the same shape as detectors,
             describing the detector angle of each detector pixel
+        flood: Optional scipp data array describing a flood-correction.
+            This array should be aligned along a "spectrum" dimension; counts are
+            divided by this array before being used in fits. This is used to
+            normalise the intensities detected by each detector pixel.
 
     """
     logger.info("Starting angle scan")
@@ -240,6 +258,10 @@ def height_and_angle_scan_plan(  # noqa PLR0913
         angle_map: a numpy array, with the same shape as detectors,
             describing the detector angle of each detector pixel
         rel: whether this scan should be absolute (default) or relative
+        flood: Optional scipp data array describing a flood-correction.
+            This array should be aligned along a "spectrum" dimension; counts are
+            divided by this array before being used in fits. This is used to
+            normalise the intensities detected by each detector pixel.
 
     Returns:
         A dictionary containing the fit results from gaussian height and angle fits.
