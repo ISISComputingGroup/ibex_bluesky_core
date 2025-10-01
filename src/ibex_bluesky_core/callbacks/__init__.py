@@ -229,7 +229,7 @@ class ISISCallbacks:
                     # where a fit result can be returned before
                     # the QtAwareCallback has had a chance to process it.
                     self._subs.append(self._live_fit)
-                self._subs.append(LiveFitPlot(livefit=self._live_fit, ax=ax))
+                self._subs.append(LiveFitPlot(livefit=self._live_fit, ax=ax, num_points=5000))
             else:
                 self._subs.append(self._live_fit)
 
