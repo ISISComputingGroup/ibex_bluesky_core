@@ -129,6 +129,7 @@ def get_run_engine() -> RunEngine:
         bootstrap_servers=os.environ.get("IBEX_BLUESKY_CORE_KAFKA_BROKER", DEFAULT_KAFKA_BROKER),
         key="doc",
         serializer=msgpack.dumps,
+        producer_config={"enable.idempotence": True},
     )
     RE.subscribe(kafka_callback)
 
