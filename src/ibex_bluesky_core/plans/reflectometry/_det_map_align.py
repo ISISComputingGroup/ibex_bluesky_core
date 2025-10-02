@@ -75,6 +75,8 @@ def _height_scan_callback_and_fit(
                 f"Best x0: {fit_result.params['x0'].value:.4f} "
                 f"+/- {fit_result.params['x0'].stderr:.4f}"
             )
+        else:
+            ax.set_title("Fit failed")  # pragma: no cover
         plt.draw()
 
     height_scan_ld.subscribe(set_title_to_height_fit_result, "stop")
@@ -140,6 +142,8 @@ def _angle_scan_callback_and_fit(
                 f"Best x0: {fit_result.params['x0'].value:.4f} "
                 f"+/- {fit_result.params['x0'].stderr:.4f}"
             )
+        else:
+            ax.set_title("Fit failed")  # pragma: no cover
         plt.draw()
 
     angle_scan_ld.subscribe(set_title_to_angle_fit_result, "stop")
