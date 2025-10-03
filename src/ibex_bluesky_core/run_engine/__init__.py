@@ -3,31 +3,27 @@
 import asyncio
 import functools
 import logging
+import os
+import socket
 from collections.abc import Generator
 from functools import cache
 from threading import Event, Lock
 from typing import Any, cast
 
 import bluesky.preprocessors as bpp
-import msgpack
+import msgpack_numpy
 from bluesky.run_engine import RunEngine, RunEngineResult
 from bluesky.utils import DuringTask, Msg, RunEngineControlException, RunEngineInterrupted
-
-from ibex_bluesky_core.callbacks import DocLoggingCallback
-from ibex_bluesky_core.preprocessors import add_rb_number_processor
-
-__all__ = ["get_kafka_topic_name", "get_run_engine", "run_plan"]
-
-
-import os
-import socket
-
 from bluesky_kafka import Publisher
 
+from ibex_bluesky_core.callbacks import DocLoggingCallback
 from ibex_bluesky_core.plan_stubs import CALL_QT_AWARE_MSG_KEY, CALL_SYNC_MSG_KEY
+from ibex_bluesky_core.preprocessors import add_rb_number_processor
 from ibex_bluesky_core.run_engine._msg_handlers import call_qt_aware_handler, call_sync_handler
 from ibex_bluesky_core.utils import is_matplotlib_backend_qt
 from ibex_bluesky_core.version import version
+
+__all__ = ["get_kafka_topic_name", "get_run_engine", "run_plan"]
 
 logger = logging.getLogger(__name__)
 
@@ -128,7 +124,7 @@ def get_run_engine() -> RunEngine:
         topic=get_kafka_topic_name(),
         bootstrap_servers=os.environ.get("IBEX_BLUESKY_CORE_KAFKA_BROKER", DEFAULT_KAFKA_BROKER),
         key="doc",
-        serializer=msgpack.dumps,
+        serializer=msgpack_numpy.dumps,
         producer_config={"enable.idempotence": True},
     )
     RE.subscribe(kafka_callback)
