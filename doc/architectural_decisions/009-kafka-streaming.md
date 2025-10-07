@@ -34,6 +34,23 @@ documents allowed by `event-model`
 Wherever Kafka is mentioned above, the actual implementation may be a Kafka-like (e.g. RedPanda).
 ```
 
+### Alternatives considered
+
+Encoding bluesky documents into JSON and then wrapping them in the
+[`json_json.fbs` flatbuffers schema](https://github.com/ess-dmsc/streaming-data-types/blob/58793c3dfa060f60b4a933bc085f831744e43f17/schemas/json_json.fbs)
+was considered.
+
+We chose `msgpack` instead of json strings + flatbuffers because:
+- It is more standard in the bluesky community (e.g. it is the default used in `bluesky-kafka`)
+- Bluesky events will be streamed to a dedicated topic, which is unlikely to be confused with data
+using any other schema.
+
+Performance/storage impacts are unlikely to be noticeable for bluesky documents, but nonetheless:
+- `msgpack`-encoded documents are 30-40% smaller than `json` + flatbuffers
+for a typical bluesky document
+- `msgpack`-encoding messages is ~5x faster than `json` + flatbuffers encoding
+for a typical bluesky document.
+
 ## Justification & Consequences
 
 We will stream bluesky documents to Kafka, encoded using `msgpack-numpy`.
