@@ -1081,7 +1081,7 @@ def test_time_channels_wrapper(dae: Dae, RE: RunEngine):
     assert after.time_unit == expected_time_units
 
 
-def test_dae_tables_wrapper(dae: Dae, RE: RunEngine):
+def test_dae_table_wrapper(dae: Dae, RE: RunEngine):
     original_settings = initial_dae_settings
     modified_settings = DaeSettingsData(wiring_filepath="C:\\somefile.dat",
                                         spectra_filepath="C:\\anotherfile.dat",
@@ -1103,7 +1103,7 @@ def test_dae_tables_wrapper(dae: Dae, RE: RunEngine):
         assert current.spectra_filepath == modified_settings.spectra_filepath
         assert current.detector_filepath == modified_settings.detector_filepath
 
-    with patch("ibex_bluesky_core.plans.dae_table_wrapper.ensure_connected"):
+    with patch("ibex_bluesky_core.plan_stubs.dae_table_wrapper.ensure_connected"):
         RE(
             with_dae_tables(
                 _dummy_plan_which_sets_wiring_sepectra_detector(dae),
