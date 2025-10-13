@@ -79,7 +79,7 @@ autodoc_preserve_defaults = True
 intersphinx_mapping = {
     "python": ("https://docs.python.org/3", None),
     "bluesky": ("https://blueskyproject.io/bluesky/main/", None),
-    "ophyd_async": ("https://blueskyproject.io/ophyd-async/main/", None),
+    "ophyd_async": ("https://blueskyproject.io/ophyd-async/v0.12.3/", None),
     "event_model": ("https://blueskyproject.io/event-model/main/", None),
     "scipp": ("https://scipp.github.io/", None),
     "scippneutron": ("https://scipp.github.io/scippneutron/", None),

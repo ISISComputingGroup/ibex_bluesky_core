@@ -41,7 +41,7 @@ classifiers = [
 
 dependencies = [
   "bluesky",  # Bluesky framework
-  "ophyd-async[ca] == 0.12.3",  # Device abstraction
+  "ophyd-async[ca] == 0.12.3",  # Device abstraction. When changing, also change in doc/conf.py
   "matplotlib",  # Plotting
   "lmfit",  # Fitting
   "scipy",  # Definitions of erf/erfc functions
