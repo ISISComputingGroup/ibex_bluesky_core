@@ -1116,6 +1116,6 @@ def test_dae_table_wrapper(dae: Dae, RE: RunEngine):
     after: DaeSettingsData = RE(bps.rd(dae.dae_settings)).plan_result  # type: ignore
 
     assert after == before
-    assert after.wiring_filepath.endswith(expected_wiring)
-    assert after.spectra_filepath.endswith(expected_spectra)
-    assert after.detector_filepath.endswith(expected_detector)
+    assert after.wiring_filepath.endswith(expected_wiring)  # type: ignore
+    assert after.spectra_filepath.endswith(expected_spectra)  # type: ignore
+    assert after.detector_filepath.endswith(expected_detector)  # type: ignore
