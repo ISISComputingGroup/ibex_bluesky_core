@@ -34,7 +34,6 @@ def with_dae_tables(plan: Generator[Msg, None, None], dae: Dae) -> Generator[Msg
 
     def _onexit() -> Generator[Msg, None, None]:
         nonlocal original_dae_setting
-        if original_dae_setting is not None:
-            yield from bps.mv(dae.dae_settings, original_dae_setting)
+        yield from bps.mv(dae.dae_settings, original_dae_setting)
 
     return (yield from bpp.finalize_wrapper(_inner(), _onexit()))

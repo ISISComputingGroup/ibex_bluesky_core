@@ -34,7 +34,6 @@ def with_num_periods(plan: Generator[Msg, None, None], dae: Dae) -> Generator[Ms
 
     def _onexit() -> Generator[Msg, None, None]:
         nonlocal original_num_periods
-        if original_num_periods is not None:
-            yield from bps.mv(dae.number_of_periods, original_num_periods)
+        yield from bps.mv(dae.number_of_periods, original_num_periods)
 
     return (yield from bpp.finalize_wrapper(_inner(), _onexit()))

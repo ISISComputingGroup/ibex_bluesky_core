@@ -34,7 +34,6 @@ def with_time_channels(plan: Generator[Msg, None, None], dae: Dae) -> Generator[
 
     def _onexit() -> Generator[Msg, None, None]:
         nonlocal original_time_channels
-        if original_time_channels is not None:
-            yield from bps.mv(dae.tcb_settings, original_time_channels)
+        yield from bps.mv(dae.tcb_settings, original_time_channels)
 
     return (yield from bpp.finalize_wrapper(_inner(), _onexit()))
