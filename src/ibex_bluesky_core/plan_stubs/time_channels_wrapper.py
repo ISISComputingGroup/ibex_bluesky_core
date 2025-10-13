@@ -11,8 +11,8 @@ from ibex_bluesky_core.devices.dae import DaeTCBSettings
 
 
 def with_time_channels(
-        plan: Generator[Msg, None, None],
-        dae: DaeTCBSettings) -> Generator[Msg, None, None]:
+    plan: Generator[Msg, None, None], dae: DaeTCBSettings
+) -> Generator[Msg, None, None]:
     """Wrap a plan with temporary modification to Time Channel Settings.
 
     Args:

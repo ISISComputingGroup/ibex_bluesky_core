@@ -1045,11 +1045,11 @@ async def test_num_periods_wrapper(dae: Dae, RE: RunEngine):
             with_num_periods(
                 _dummy_plan_which_sets_periods(dae),
                 dae=dae,  # type: ignore
-                )
             )
+        )
 
     result = await dae.number_of_periods.read()
-    assert result['DAE-number_of_periods-signal']['value'] == original_settings
+    assert result["DAE-number_of_periods-signal"]["value"] == original_settings
 
 
 def test_time_channels_wrapper(dae: Dae, RE: RunEngine):
@@ -1083,9 +1083,11 @@ def test_time_channels_wrapper(dae: Dae, RE: RunEngine):
 
 def test_dae_table_wrapper(dae: Dae, RE: RunEngine):
     original_settings = initial_dae_settings
-    modified_settings = DaeSettingsData(wiring_filepath="C:\\somefile.dat",
-                                        spectra_filepath="C:\\anotherfile.dat",
-                                        detector_filepath="C:\\anotherfile123.dat")
+    modified_settings = DaeSettingsData(
+        wiring_filepath="C:\\somefile.dat",
+        spectra_filepath="C:\\anotherfile.dat",
+        detector_filepath="C:\\anotherfile123.dat",
+    )
 
     expected_wiring = "NIMROD84modules+9monitors+LAB5Oct2012Wiring.dat"
     expected_spectra = "NIMROD84modules+9monitors+LAB5Oct2012Spectra.dat"
@@ -1108,8 +1110,8 @@ def test_dae_table_wrapper(dae: Dae, RE: RunEngine):
             with_dae_tables(
                 _dummy_plan_which_sets_wiring_sepectra_detector(dae),
                 dae=dae,  # type: ignore
-                )
             )
+        )
 
     after: DaeSettingsData = RE(bps.rd(dae.dae_settings)).plan_result  # type: ignore
 

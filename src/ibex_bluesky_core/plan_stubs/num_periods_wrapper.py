@@ -11,8 +11,8 @@ from ibex_bluesky_core.devices.dae import DaePeriodSettings
 
 
 def with_num_periods(
-        plan: Generator[Msg, None, None],
-        dae: DaePeriodSettings) -> Generator[Msg, None, None]:
+    plan: Generator[Msg, None, None], dae: DaePeriodSettings
+) -> Generator[Msg, None, None]:
     """Wrap a plan with temporary modification to Periods Settings.
 
     Args:
