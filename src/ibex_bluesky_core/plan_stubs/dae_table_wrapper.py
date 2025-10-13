@@ -10,7 +10,7 @@ from ophyd_async.plan_stubs import ensure_connected
 from ibex_bluesky_core.devices.dae import Dae
 
 
-def with_dae_tables(plan: Generator[Msg, None, None], dae: "Dae") -> Generator[Msg, None, None]:
+def with_dae_tables(plan: Generator[Msg, None, None], dae: Dae) -> Generator[Msg, None, None]:
     """Wrap a plan with temporary modification to DAE Settings.
 
     Args:
@@ -28,7 +28,7 @@ def with_dae_tables(plan: Generator[Msg, None, None], dae: "Dae") -> Generator[M
 
     def _inner() -> Generator[Msg, None, None]:
         nonlocal original_dae_setting
-        original_dae_setting = yield from bps.rd(dae.dae_settings)
+        original_dae_setting = yield from bps.rd(dae.dae_settings) 
 
         yield from plan
 
