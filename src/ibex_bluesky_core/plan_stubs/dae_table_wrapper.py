@@ -28,7 +28,7 @@ def with_dae_tables(plan: Generator[Msg, None, None], dae: Dae) -> Generator[Msg
 
     def _inner() -> Generator[Msg, None, None]:
         nonlocal original_dae_setting
-        original_dae_setting = yield from bps.rd(dae.dae_settings) 
+        original_dae_setting = yield from bps.rd(dae.dae_settings)
 
         yield from plan
 
