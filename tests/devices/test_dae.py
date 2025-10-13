@@ -1,6 +1,6 @@
 # pyright: reportMissingParameterType=false
 from enum import Enum
-from unittest.mock import AsyncMock
+from unittest.mock import AsyncMock, patch
 from xml.etree import ElementTree as ET
 
 import bluesky.plan_stubs as bps
@@ -10,7 +10,6 @@ import scipp as sc
 import scipp.testing
 from bluesky.run_engine import RunEngine
 from ophyd_async.testing import get_mock_put, set_mock_value
-from ibex_bluesky_core.plans.num_periods_wrapper import num_periods_wrapper
 
 from ibex_bluesky_core.devices import compress_and_hex, dehex_and_decompress
 from ibex_bluesky_core.devices.dae import (
@@ -40,6 +39,9 @@ from ibex_bluesky_core.devices.dae._helpers import (
 )
 from ibex_bluesky_core.devices.dae._period_settings import _convert_period_settings_to_xml
 from ibex_bluesky_core.devices.dae._tcb_settings import _convert_tcb_settings_to_xml
+from ibex_bluesky_core.plan_stubs.num_periods_wrapper import with_num_periods
+from ibex_bluesky_core.plan_stubs.dae_table_wrapper import with_dae_tables
+from ibex_bluesky_core.plan_stubs.time_channels_wrapper import with_time_channels
 from tests.conftest import MOCK_PREFIX
 from tests.devices.dae_testing_data import (
     dae_settings_template,
@@ -297,19 +299,20 @@ async def test_dae_settings_get_parsed_correctly():
     xml = await daesettings._raw_dae_settings.get_value()
     assert ET.canonicalize(xml) == ET.canonicalize(xml_filled_in)
 
-async def test_num_periods_wrapper_modifies_and_restores_settings(RE: RunEngine, dae: Dae):
+
+async def test_period_settings_get_parsed_correctly():
     expected_setup_source = PeriodSource.FILE
     expected_period_type = PeriodType.SOFTWARE
     expected_periods_file = "C:\\someperiodfile.txt"
-    expected_soft_periods_num = 10
-    expected_hardware_period_sequences = 5
-    expected_output_delay = 100
-    expected_type_1 = 1
-    expected_frames_1 = 2
-    expected_output_1 = 3
-    expected_type_2 = 2
-    expected_frames_2 = 3
-    expected_output_2 = 4
+    expected_soft_periods_num = 42
+    expected_hardware_period_sequences = 52
+    expected_output_delay = 123
+    expected_type_1 = 0
+    expected_frames_1 = 1
+    expected_output_1 = 2
+    expected_type_2 = 0
+    expected_frames_2 = 1
+    expected_output_2 = 2
     expected_type_3 = 1
     expected_frames_3 = 2
     expected_output_3 = 3
@@ -328,7 +331,7 @@ async def test_num_periods_wrapper_modifies_and_restores_settings(RE: RunEngine,
     expected_type_8 = 2
     expected_frames_8 = 2
     expected_output_8 = 2
-    
+
     periods_settings = [
         SinglePeriodSettings(
             type=expected_type_1, frames=expected_frames_1, output=expected_output_1
@@ -356,7 +359,7 @@ async def test_num_periods_wrapper_modifies_and_restores_settings(RE: RunEngine,
         ),
     ]
 
-    initial_settings = DaePeriodSettingsData(
+    data = DaePeriodSettingsData(
         periods_soft_num=expected_soft_periods_num,
         periods_type=expected_period_type,
         periods_src=expected_setup_source,
@@ -365,46 +368,47 @@ async def test_num_periods_wrapper_modifies_and_restores_settings(RE: RunEngine,
         periods_delay=expected_output_delay,
         periods_settings=periods_settings,
     )
-
-    # Connect the period_settings sub-device and set up the initial data
-    await dae.period_settings._raw_period_settings.connect(mock=True)
-    await dae.period_settings._raw_period_settings.set(initial_period_settings)
-    await dae.period_settings.set(initial_settings)
-
-    # Read the original settings
-    original_settings: DaePeriodSettingsData = RE(bps.rd(dae.period_settings)).plan_result
-    assert original_settings.periods_soft_num == 10
-    assert original_settings.periods_file == "C:\\someperiodfile.txt"
-    assert original_settings.periods_seq == 5
-
-    def inner_plan():
-        current_settings: DaePeriodSettingsData = yield from bps.rd(dae.period_settings)
-        assert current_settings.periods_soft_num == 20
-        assert current_settings.periods_file == "C:\\modified_file.txt"
-        assert current_settings.periods_seq == 5
-        return current_settings
-
-    # Run the wrapper test
-    result = RE(
-        num_periods_wrapper(
-            inner_plan(),
-            dae.period_settings,
-            periods_soft_num=20,
-            periods_file="C:\\modified_file.txt",
-        )
+    xml_filled_in = period_settings_template.format(
+        period_src=expected_setup_source.value,
+        period_type=expected_period_type.value,
+        period_file=expected_periods_file,
+        num_soft_periods=expected_soft_periods_num,
+        period_seq=expected_hardware_period_sequences,
+        period_delay=expected_output_delay,
+        type_1=expected_type_1,
+        frames_1=expected_frames_1,
+        output_1=expected_output_1,
+        type_2=expected_type_2,
+        frames_2=expected_frames_2,
+        output_2=expected_output_2,
+        type_3=expected_type_3,
+        frames_3=expected_frames_3,
+        output_3=expected_output_3,
+        type_4=expected_type_4,
+        frames_4=expected_frames_4,
+        output_4=expected_output_4,
+        type_5=expected_type_5,
+        frames_5=expected_frames_5,
+        output_5=expected_output_5,
+        type_6=expected_type_6,
+        frames_6=expected_frames_6,
+        output_6=expected_output_6,
+        type_7=expected_type_7,
+        frames_7=expected_frames_7,
+        output_7=expected_output_7,
+        type_8=expected_type_8,
+        frames_8=expected_frames_8,
+        output_8=expected_output_8,
     )
+    periodsettings = DaePeriodSettings(MOCK_PREFIX)
+    await periodsettings._raw_period_settings.connect(mock=True)
+    await periodsettings._raw_period_settings.set(initial_period_settings)
+    await periodsettings.set(data)
+    location = await periodsettings.locate()
+    assert location == {"setpoint": data, "readback": data}
+    xml = await periodsettings._raw_period_settings.get_value()
+    assert ET.canonicalize(xml) == ET.canonicalize(xml_filled_in)
 
-    # Check the modified settings
-    modified_settings = result.plan_result
-    assert modified_settings.periods_soft_num == 20
-    assert modified_settings.periods_file == "C:\\modified_file.txt"
-    assert modified_settings.periods_seq == 5
-
-    # Check that settings are restored after the wrapper
-    final_settings: DaePeriodSettingsData = RE(bps.rd(dae.period_settings)).plan_result
-    assert final_settings.periods_soft_num == 10
-    assert final_settings.periods_file == "C:\\someperiodfile.txt"
-    assert final_settings.periods_seq == 5
 
 async def test_tcb_settings_get_parsed_correctly():
     expected_tcb_file = "C:\\tcb.dat"
@@ -1022,3 +1026,94 @@ async def test_if_tof_edges_has_no_units_then_read_spec_dataarray_gives_error(
 
 def test_dae_repr():
     assert repr(Dae(prefix="foo", name="bar")) == "Dae(name=bar, prefix=foo)"
+
+
+async def test_num_periods_wrapper(dae: Dae, RE: RunEngine):
+    original_settings = 4
+    modified_settings = 7
+
+    await dae.number_of_periods.set(original_settings)
+
+    def _dummy_plan_which_sets_periods(dae):
+        yield from bps.mv(dae.number_of_periods, modified_settings)
+
+        current = yield from bps.rd(dae.number_of_periods)
+        assert current == 7
+
+    with patch("ibex_bluesky_core.plan_stubs.num_periods_wrapper.ensure_connected"):
+        RE(
+            with_num_periods(
+                _dummy_plan_which_sets_periods(dae),
+                dae=dae,  # type: ignore
+                )
+            )
+
+    result = await dae.number_of_periods.read()
+    assert result['DAE-number_of_periods-signal']['value'] == original_settings
+
+
+def test_time_channels_wrapper(dae: Dae, RE: RunEngine):
+    original_settings = compress_and_hex(initial_tcb_settings).decode()
+    modified_settings = DaeTCBSettingsData(time_unit=TCBTimeUnit.NANOSECONDS)
+
+    expected_time_units = TCBTimeUnit.MICROSECONDS
+
+    set_mock_value(dae.tcb_settings._raw_tcb_settings, original_settings)
+
+    before: DaeTCBSettingsData = RE(bps.rd(dae.tcb_settings)).plan_result  # type: ignore
+
+    def _dummy_plan_which_sets_time_units(dae):
+        yield from bps.mv(dae.tcb_settings, modified_settings)
+
+        current = yield from bps.rd(dae.tcb_settings)
+        assert current.time_unit == modified_settings.time_unit
+
+    with patch("ibex_bluesky_core.plan_stubs.time_channels_wrapper.ensure_connected"):
+        RE(
+            with_time_channels(
+                _dummy_plan_which_sets_time_units(dae),
+                dae=dae,  # type: ignore
+            )
+        )
+
+    after: DaeTCBSettingsData = RE(bps.rd(dae.tcb_settings)).plan_result  # type: ignore
+    assert after == before
+    assert after.time_unit == expected_time_units
+
+
+def test_dae_tables_wrapper(dae: Dae, RE: RunEngine):
+    original_settings = initial_dae_settings
+    modified_settings = DaeSettingsData(wiring_filepath="C:\\somefile.dat",
+                                        spectra_filepath="C:\\anotherfile.dat",
+                                        detector_filepath="C:\\anotherfile123.dat")
+
+    expected_wiring = "NIMROD84modules+9monitors+LAB5Oct2012Wiring.dat"
+    expected_spectra = "NIMROD84modules+9monitors+LAB5Oct2012Spectra.dat"
+    expected_detector = "NIMROD84modules+9monitors+LAB5Oct2012Detector.dat"
+
+    set_mock_value(dae.dae_settings._raw_dae_settings, original_settings)
+
+    before: DaeSettingsData = RE(bps.rd(dae.dae_settings)).plan_result  # type: ignore
+
+    def _dummy_plan_which_sets_wiring_sepectra_detector(dae):
+        yield from bps.mv(dae.dae_settings, modified_settings)
+
+        current = yield from bps.rd(dae.dae_settings)
+        assert current.wiring_filepath == modified_settings.wiring_filepath
+        assert current.spectra_filepath == modified_settings.spectra_filepath
+        assert current.detector_filepath == modified_settings.detector_filepath
+
+    with patch("ibex_bluesky_core.plans.dae_table_wrapper.ensure_connected"):
+        RE(
+            with_dae_tables(
+                _dummy_plan_which_sets_wiring_sepectra_detector(dae),
+                dae=dae,  # type: ignore
+                )
+            )
+
+    after: DaeSettingsData = RE(bps.rd(dae.dae_settings)).plan_result  # type: ignore
+
+    assert after == before
+    assert after.wiring_filepath.endswith(expected_wiring)
+    assert after.spectra_filepath.endswith(expected_spectra)
+    assert after.detector_filepath.endswith(expected_detector)
