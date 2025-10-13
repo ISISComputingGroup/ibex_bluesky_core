@@ -2,7 +2,6 @@
 
 import asyncio
 import logging
-import sys
 from collections.abc import Callable
 from dataclasses import dataclass
 from typing import Generic, TypeVar
@@ -57,8 +56,6 @@ __all__ = [
 # global flag before checking it. This is an amount of time always applied before
 # looking at the global moving flag.
 GLOBAL_MOVING_FLAG_PRE_WAIT = 0.1
-
-aio_timeout_error = asyncio.exceptions.TimeoutError if sys.version_info < (3, 11) else TimeoutError
 
 
 @dataclass(kw_only=True, frozen=True)
@@ -286,7 +283,7 @@ class BlockRw(BlockR[T], NamedMovable[T]):
         else:
             try:
                 await set_and_settle(value)
-            except aio_timeout_error as e:
+            except TimeoutError as e:
                 logger.info(
                     "block set %s value=%s failed with %s, but continuing anyway because "
                     "continue_on_failed_write is set.",
