@@ -1,6 +1,5 @@
 """Wrap a plan with temporary modification to Time Channel Settings."""
 
-import copy
 from collections.abc import Generator
 
 import bluesky.plan_stubs as bps
@@ -15,14 +14,15 @@ def with_time_channels(
         plan: Generator[Msg, None, None],
         dae: DaeTCBSettings) -> Generator[Msg, None, None]:
     """Wrap a plan with temporary modification to Time Channel Settings.
-    
+
     Args:
         plan: The plan to wrap.
         dae: The Dae instance.
-    
+
     Returns:
         A generator which runs the plan with the modified DAE settings, restoring the original
         settings afterwards.
+
     """
     yield from ensure_connected(dae)
 

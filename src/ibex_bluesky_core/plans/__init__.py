@@ -27,9 +27,9 @@ __all__ = [
     "adaptive_scan",
     "motor_adaptive_scan",
     "motor_scan",
-    "with_num_periods",
     "polling_plan",
     "scan",
+    "with_num_periods",
 ]
 
 

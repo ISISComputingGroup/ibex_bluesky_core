@@ -39,8 +39,8 @@ from ibex_bluesky_core.devices.dae._helpers import (
 )
 from ibex_bluesky_core.devices.dae._period_settings import _convert_period_settings_to_xml
 from ibex_bluesky_core.devices.dae._tcb_settings import _convert_tcb_settings_to_xml
-from ibex_bluesky_core.plan_stubs.num_periods_wrapper import with_num_periods
 from ibex_bluesky_core.plan_stubs.dae_table_wrapper import with_dae_tables
+from ibex_bluesky_core.plan_stubs.num_periods_wrapper import with_num_periods
 from ibex_bluesky_core.plan_stubs.time_channels_wrapper import with_time_channels
 from tests.conftest import MOCK_PREFIX
 from tests.devices.dae_testing_data import (
