@@ -34,7 +34,11 @@ def test_after_fitting_callback_writes_to_file_successfully_no_y_uncertainty(
         patch("os.chmod"),
     ):
         with patch("time.time", MagicMock(return_value=time)):
-            RE(scan([invariant], mot, -1, 1, 3), [lf, lfl], rb_number="0")
+            RE(
+                scan([invariant], mot, -1, 1, 3),
+                [lf, lfl],  # pyright: ignore until https://github.com/bluesky/bluesky/issues/1938
+                rb_number="0",
+            )
 
     assert m.call_args_list[0].args == (
         (
@@ -72,7 +76,10 @@ def test_fitting_callback_handles_no_rb_number_save(
         patch("os.chmod"),
     ):
         with patch("time.time", MagicMock(return_value=time)):
-            RE(scan([invariant], mot, -1, 1, 3), [lf, lfl])
+            RE(
+                scan([invariant], mot, -1, 1, 3),
+                [lf, lfl],  # pyright: ignore until https://github.com/bluesky/bluesky/issues/1938
+            )
 
     assert m.call_args_list[0].args == (
         (
@@ -107,7 +114,11 @@ def test_after_fitting_callback_writes_to_file_successfully_with_y_uncertainty(
         patch("os.chmod"),
     ):
         with patch("time.time", MagicMock(return_value=time)):
-            RE(scan([invariant, uncertainty], mot, -1, 1, 3), [lf, lfl], rb_number="0")
+            RE(
+                scan([invariant, uncertainty], mot, -1, 1, 3),
+                [lf, lfl],  # pyright: ignore until https://github.com/bluesky/bluesky/issues/1938
+                rb_number="0",
+            )
 
     assert m.call_args_list[0].args == (
         (
@@ -146,7 +157,11 @@ def test_file_not_written_if_no_fitting_result(RE: run_engine.RunEngine):
         patch("ibex_bluesky_core.callbacks._fitting.open", m),
         patch("ibex_bluesky_core.callbacks._fitting.os.makedirs"),
     ):
-        RE(scan([invariant], mot, -1, 1, 3), [lf, lfl], rb_number="0")
+        RE(
+            scan([invariant], mot, -1, 1, 3),
+            [lf, lfl],  # pyright: ignore until https://github.com/bluesky/bluesky/issues/1938
+            rb_number="0",
+        )
 
     assert not m.called
 

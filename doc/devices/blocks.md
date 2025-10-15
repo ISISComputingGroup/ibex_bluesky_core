@@ -118,7 +118,9 @@ type `float`, and as such does not take a type argument (unlike the other block 
 
 `Checkable` means that moves which would eventually violate limits can be detected by
 bluesky simulators, before the plan ever runs. This can help to catch errors before
-the plan is executed against hardware.
+the plan is executed against hardware. There is also limit-checking at runtime;
+a {external+ophyd_async:py:obj}`MotorLimitsException <ophyd_async.epics.motor.MotorLimitsException>` will be raised
+at runtime if a requested position is outside the motor's limits.
 
 `Stoppable` means that the motor can be asked to stop by bluesky. Plans may choose to execute
 a `stop()` on failure, or explicitly during a plan.

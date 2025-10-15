@@ -285,42 +285,43 @@ as a list, and `units` (μs/microseconds for time of flight bounding, and angstr
 
 If you don't specify either of these options, they will default to summing over the entire spectrum.
 
-### Polarisation/Asymmetry
+{#polarisationasymmetry}
+### Polarisation & Asymmetry
 
-ibex_bluesky_core provides a helper method,
-{py:obj}`ibex_bluesky_core.utils.calculate_polarisation`, for calculating the quantity (a-b)/(a+b). This quantity is used, for example, in neutron polarisation measurements, and in calculating asymmetry for muon measurements.
+A helper method, {py:obj}`calculate_polarisation <ibex_bluesky_core.utils.calculate_polarisation>`, is provided
+for calculating the quantity {math}`\frac{a-\alpha b}{a+\alpha b}`, where {math}`\alpha` is a scalar constant which is
+assumed not to have a variance. 
+This quantity is used, for example, in neutron polarisation measurements, and in calculating asymmetry for muon measurements.
 
-For this expression, scipp's default uncertainty propagation rules cannot be used as the uncertainties on (a-b) are correlated with those of (a+b) in the division step - but scipp assumes uncorrelated data. This helper method calculates the uncertainties following linear error propagation theory, using the partial derivatives of the above expression.
+For this expression, scipp's default uncertainty propagation rules cannot be used as the uncertainties on
+{math}`(a-\alpha b)` are correlated with those of {math}`(a+\alpha b)` in the division step - but 
+{external+scipp:doc}`scipp's uncertainty propagation mechanism <reference/error-propagation>` assumes
+uncorrelated data. This helper method calculates
+the uncertainties following linear error propagation theory, using the partial derivatives of the above expression:
 
-The partial derivatives are:
+```{math}
+\frac{\delta}{\delta a}(\frac{a - \alpha b}{a + \alpha b}) = \frac{2b\alpha}{(a+b\alpha)^2}
 
-$ \frac{\delta}{\delta a}\Big(\frac{a - b}{a + b}) = \frac{2b}{(a+b)^2} $
+\frac{\delta}{\delta b}(\frac{a - \alpha b}{a + \alpha b}) = -\frac{2a\alpha}{(a+b\alpha)^2}
 
-$ \frac{\delta}{\delta b}\Big(\frac{a - b}{a + b}) = -\frac{2a}{(a+b)^2} $
+\sigma^2_f = (\frac{\delta f}{\delta a})^2 \sigma^2_a + (\frac{\delta f}{\delta b})^2 \sigma^2_b
+```
 
+The polarisation function provided will calculate the polarisation between two values, {math}`a` and {math}`b`, which 
+have different interpretations based on the instrument context:
 
-Which then means the variances computed by this helper function are:
+**SANS Instruments (e.g., LARMOR) & Reflectometry Instruments (e.g. POLREF)**
 
-$ Variance = (\frac{\delta}{\delta a}^2 * variance_a) + (\frac{\delta}{\delta b}^2 * variance_b)  $ 
+{math}`a` & {math}`b` represent intensity (detector counts over monitor counts) before and after switching a
+spin-flipper device. This is implemented by 
+{py:obj}`PolarisationReducer <ibex_bluesky_core.devices.polarisingdae.PolarisationReducer>`.
+For this use case, {math}`\alpha` is always equal to {math}`1`.
 
+**Muon Instruments**
 
-The polarisation function provided will calculate the polarisation between two values, A and B, which 
-have different definitions based on the instrument context.
-
-Instrument-Specific Interpretations
-SANS Instruments (e.g., LARMOR)
-A: Intensity in DAE period before switching a flipper.
-B: Intensity in DAE period after switching a flipper.
-
-Reflectometry Instruments (e.g., POLREF)
-Similar to LARMOR, A and B represent intensities before and after flipper switching.
-
-Muon Instruments
-A and B refer to Measurements from different detector banks.
-
-{py:obj}`ibex_bluesky_core.utils.calculate_polarisation`
-
-See [`PolarisationReducer`](#PolarisationReducer) for how this is integrated into DAE behaviour. 
+A and B refer to Measurements from different detector banks. Muon instruments use the additional {math}`\alpha`
+term, which might not be equal to {math}`1`. A reducer which exposes muon spin asymmetry as a measured quantity
+is implemented by the {py:obj}`MuonAsymmetryReducer <ibex_bluesky_core.devices.muon.MuonAsymmetryReducer>` class.
 
 ## Waiters
 
