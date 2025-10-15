@@ -238,7 +238,10 @@ def test_file_set_readonly_after_written(
         patch("os.chmod") as mock_chmod,
     ):
         with patch("time.time", MagicMock(return_value=time)):
-            RE(scan([invariant], mot, -1, 1, 3), [lf, lfl])
+            RE(
+                scan([invariant], mot, -1, 1, 3),
+                [lf, lfl],  # pyright: ignore until https://github.com/bluesky/bluesky/issues/1938
+            )
 
     fit_filepath = (
         filepath
