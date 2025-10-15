@@ -6,7 +6,7 @@ import os
 import warnings
 from itertools import zip_longest
 from pathlib import Path
-from stat import S_IRUSR, S_IRGRP, S_IROTH
+from stat import S_IRGRP, S_IROTH, S_IRUSR
 
 import lmfit
 import numpy as np

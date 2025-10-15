@@ -1,7 +1,6 @@
+from stat import S_IRGRP, S_IROTH, S_IRUSR
 from typing import Any
 from unittest.mock import MagicMock, patch
-import os
-from stat import S_IRUSR, S_IRGRP, S_IROTH
 
 import pytest
 from matplotlib import pyplot as plt

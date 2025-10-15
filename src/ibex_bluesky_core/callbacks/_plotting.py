@@ -4,8 +4,8 @@ import logging
 import os
 import threading
 from pathlib import Path
+from stat import S_IRGRP, S_IROTH, S_IRUSR
 from typing import Any
-from stat import S_IRUSR, S_IRGRP, S_IROTH
 
 import matplotlib
 import matplotlib.pyplot as plt

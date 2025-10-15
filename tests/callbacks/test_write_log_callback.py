@@ -3,8 +3,8 @@
 
 from pathlib import Path
 from platform import node
+from stat import S_IRGRP, S_IROTH, S_IRUSR
 from unittest.mock import call, mock_open, patch
-from stat import S_IRUSR, S_IRGRP, S_IROTH
 
 import pytest
 from event_model import DataKey, Event, EventDescriptor, RunStart, RunStop
@@ -56,11 +56,13 @@ def test_no_rb_number_folder(cb):
         patch("ibex_bluesky_core.callbacks._file_logger.os.makedirs") as mock_mkdir,
     ):
         cb.start(run_start)
-        result = save_path / "Unknown RB" / "bluesky_scans" / f"{node()}_block_2024-10-04_13-43-43Z.txt"
+        result = (
+            save_path / "Unknown RB" / "bluesky_scans" / f"{node()}_block_2024-10-04_13-43-43Z.txt"
+        )
         assert mock_mkdir.called
 
     mock_file.assert_called_with(result, "a", newline="\n", encoding="utf-8")
-    # time should have been renamed to start_time and converted to human readable
+    # time should have been renamed to start_time and converted to human-readable
     writelines_call_args = mock_file().writelines.call_args[0][0]
     assert "start_time: 2024-10-04_13-43-43\n" in writelines_call_args
     assert f"uid: {uid}\n" in writelines_call_args
@@ -209,16 +211,21 @@ def test_stop_clears_descriptors(cb):
 
     assert not cb.descriptors
 
+
 def test_file_set_readonly_when_finished(cb):
     time = 1728049423.5860472
     start_uid = "test123start"
     stop_uid = "test123stop"
     scan_id = 1234
     run_start = RunStart(
-        time=time, uid=start_uid, scan_id=scan_id, rb_number="0", detectors=["dae"], motors=("block",)
+        time=time,
+        uid=start_uid,
+        scan_id=scan_id,
+        rb_number="0",
+        detectors=["dae"],
+        motors=("block",),
     )
-    run_stop = RunStop(
-        time=time, run_start=start_uid, uid=stop_uid, exit_status="success")
+    run_stop = RunStop(time=time, run_start=start_uid, uid=stop_uid, exit_status="success")
     with (
         patch("ibex_bluesky_core.callbacks._file_logger.open", mock_open()),
         patch("ibex_bluesky_core.callbacks._file_logger.os.makedirs"),
@@ -226,10 +233,10 @@ def test_file_set_readonly_when_finished(cb):
     ):
         cb.start(run_start)
         result = (
-                save_path
-                / f"RB{run_start.get('rb_number', None)}"
-                / "bluesky_scans"
-                / f"{node()}_block_2024-10-04_13-43-43Z.txt"
+            save_path
+            / f"RB{run_start.get('rb_number', None)}"
+            / "bluesky_scans"
+            / f"{node()}_block_2024-10-04_13-43-43Z.txt"
         )
         cb.stop(run_stop)
     mock_chmod.assert_called_with(result, S_IRUSR | S_IRGRP | S_IROTH)
