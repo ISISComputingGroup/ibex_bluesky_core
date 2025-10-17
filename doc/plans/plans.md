@@ -7,7 +7,7 @@ All of these plans can be used directly by the RunEngine (`RE()`) or within a wr
 So you can do this: 
 
 ```python
-result = RE(refl_scan("S1VG", 1, 10, 21, model=Gaussian().fit() frames=500, det=100, mon=3, pixel_range=6, periods=True, save_run=False))
+result = RE(refl_scan("S1VG", 1, 10, 21, model=Gaussian().fit(), frames=500, det=100, mon=3, pixel_range=6, periods=True, save_run=False))
 ```
 
 or this: 
@@ -16,7 +16,7 @@ or this:
 from ibex_bluesky_core.plans.reflectometry import refl_scan
 def my_plan():
     ...  # Some stuff before scan
-    icc = (yield from refl_scan("S1VG", 1, 10, 21, model=Gaussian().fit() frames=500, det=100, mon=3, pixel_range=6, periods=True, save_run=False))
+    icc = (yield from refl_scan("S1VG", 1, 10, 21, model=Gaussian().fit(), frames=500, det=100, mon=3, pixel_range=6, periods=True, save_run=False))
     ...  # Some stuff after scan
 ```
 
@@ -27,7 +27,7 @@ The scanning plans documented on this page will return an [`ISISCallbacks`](ibex
 ```python
 from ibex_bluesky_core.plans import motor_scan
 def my_plan():
-    icc = (yield from motor_scan("MyBlock1", 1, 10, 21, model=Gaussian().fit() frames=500, det=100, mon=3, pixel_range=6, periods=True, save_run=False))
+    icc = (yield from motor_scan("MyBlock1", 1, 10, 21, model=Gaussian().fit(), frames=500, det=100, mon=3, pixel_range=6, periods=True, save_run=False))
     print(icc.live_fit.result.fit_report())
     print(f"COM: {icc.peak_stats['com']}")
 ```
