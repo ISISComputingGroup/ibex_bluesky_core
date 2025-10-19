@@ -359,19 +359,22 @@ async def test_block_mot_set_within_limits(mot_block):
     get_mock_put(mot_block.user_setpoint).assert_called_once_with(20, wait=True)
 
 
-@pytest.mark.skipif(
-    ophyd_async._version.version_tuple < (0, 13, 2),
-    reason="Exception only raised in ophyd_async >= 0.13.2",
-)
 async def test_block_mot_set_outside_limits(mot_block):
     # Local import as API not available in older ophyd_async versions
-    from ophyd_async.epics.motor import MotorLimitsException  # noqa PLC0415
+    if ophyd_async._version.version_tuple >= (0, 13, 5):
+        from ophyd_async.epics.motor import MotorLimitsError  # noqa PLC0415
+
+        err = MotorLimitsError
+    else:
+        from ophyd_async.epics.motor import MotorLimitsException  # noqa PLC0415
+
+        err = MotorLimitsException
 
     set_mock_value(mot_block.user_setpoint, 10)
     set_mock_value(mot_block.velocity, 10)
     set_mock_value(mot_block.high_limit_travel, 15)
     set_mock_value(mot_block.low_limit_travel, 5)
-    with pytest.raises(MotorLimitsException):
+    with pytest.raises(err):
         await mot_block.set(20)
 
 
