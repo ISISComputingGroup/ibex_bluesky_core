@@ -8,7 +8,7 @@ name = "ibex-bluesky-core"  # REQUIRED, is the only field that cannot be marked 
 dynamic = ["version"]
 description = "Core bluesky plan stubs & devices for use at ISIS"
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 license-files = ["LICENSE"]
 
 authors = [
