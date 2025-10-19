@@ -362,11 +362,11 @@ async def test_block_mot_set_within_limits(mot_block):
 async def test_block_mot_set_outside_limits(mot_block):
     # Local import as API not available in older ophyd_async versions
     if ophyd_async._version.version_tuple >= (0, 13, 5):
-        from ophyd_async.epics.motor import MotorLimitsError  # noqa PLC0415
+        from ophyd_async.epics.motor import MotorLimitsError  # pyright: ignore # noqa PLC0415
 
         err = MotorLimitsError
     else:
-        from ophyd_async.epics.motor import MotorLimitsException  # noqa PLC0415
+        from ophyd_async.epics.motor import MotorLimitsException  # pyright: ignore # noqa PLC0415
 
         err = MotorLimitsException
 
