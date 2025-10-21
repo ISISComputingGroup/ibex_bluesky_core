@@ -42,7 +42,7 @@ classifiers = [
 dependencies = [
   "bluesky",  # Bluesky framework
   "bluesky-kafka",  # Bluesky-kafka integration
-  "ophyd-async[ca] == 0.13.4",  # Device abstraction
+  "ophyd-async[ca] == 0.13.4",  # Device abstraction. When changing, also change in doc/conf.py
   "lmfit",  # Fitting
   "matplotlib",  # Plotting
   "msgpack-numpy",  # Encoding kafka messages
