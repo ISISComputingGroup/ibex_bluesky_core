@@ -2,6 +2,7 @@ name: future-dependency-compatibility-test
 on:
   schedule:
     - cron: "0 0 * * *"
+  workflow_dispatch:
 jobs:
   tests:
     runs-on: ubuntu-latest
@@ -10,8 +11,8 @@ jobs:
       matrix:
         version: ['3.11', "3.12"]
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: ${{ matrix.version }}
       - name: install requirements
