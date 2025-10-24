@@ -9,6 +9,10 @@ The plans in this module expect:
 {py:obj}`ibex_bluesky_core.devices.simpledae.PeriodSpecIntegralsReducer`.
 - An angle map, as a `numpy` array of type `float64`, which has the same dimensionality as the set of selected detectors. This
 maps each configured detector pixel to its angular position.
+- An optional flood map, as a {external+scipp:py:obj}`scipp.Variable`. This should have a dimension label of "spectrum"
+and have the same dimensionality as the set of selected detectors. This array may have variances. This is used to
+normalise pixel efficiencies: raw counts are divided by the flood to get scaled counts. If no flood map is provided, no
+normalisation will be performed.
 
 ## Angle scan
 

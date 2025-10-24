@@ -133,10 +133,10 @@ class TestGaussian:
             assert outp["amp"] < 0
 
         def test_sigma(self):
-            x = np.array([-1.0, 0.0, 1.0], dtype=np.float64)
-            y = np.array([1.0, 2.0, 1.0], dtype=np.float64)
+            x = np.array([-2.0, -1.0, 0.0, 1.0, 2.0], dtype=np.float64)
+            y = np.array([0.0, 0.0, 2.0, 0.0, 0.0], dtype=np.float64)
             # y1 is "wider" so must have higher sigma
-            y1 = np.array([1.5, 1.75, 1.5], dtype=np.float64)
+            y1 = np.array([0.0, 2.0, 2.0, 2.0, 0.0], dtype=np.float64)
 
             outp = Gaussian.guess()(x, y)
             outp1 = Gaussian.guess()(x, y1)
