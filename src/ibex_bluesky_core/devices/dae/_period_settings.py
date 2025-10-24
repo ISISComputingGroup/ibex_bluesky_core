@@ -53,6 +53,14 @@ class SinglePeriodSettings:
     label: str | None = None
 
 
+class PeriodSettingType(Enum):
+    """Periods type option for a single row."""
+
+    UNUSED = 0
+    DAQ = 1
+    DWEll = 2
+
+
 @dataclass(kw_only=True)
 class DaePeriodSettingsData:
     """Dataclass for the hardware period settings."""
