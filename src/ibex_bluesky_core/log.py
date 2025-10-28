@@ -18,7 +18,7 @@ DEFAULT_LOG_FOLDER = os.path.join("C:\\", "instrument", "var", "logs", "bluesky"
 # Find the log directory, if already set in the environment, else use the default
 log_location = os.environ.get("IBEX_BLUESKY_CORE_LOGS", DEFAULT_LOG_FOLDER)
 
-INTERESTING_LOGGER_NAMES = ["ibex_bluesky_core", "bluesky", "ophyd_async"]
+INTERESTING_LOGGER_NAMES = ["ibex_bluesky_core", "bluesky", "ophyd_async", "bluesky_kafka"]
 
 
 @cache

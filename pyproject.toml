@@ -41,13 +41,15 @@ classifiers = [
 
 dependencies = [
   "bluesky",  # Bluesky framework
+  "bluesky-kafka",  # Bluesky-kafka integration
   "ophyd-async[ca] == 0.13.4",  # Device abstraction. When changing, also change in doc/conf.py
-  "matplotlib",  # Plotting
   "lmfit",  # Fitting
-  "scipy",  # Definitions of erf/erfc functions
+  "matplotlib",  # Plotting
+  "msgpack-numpy",  # Encoding kafka messages
   "numpy",  # General array support
   "orjson", # json module which handles numpy arrays transparently
   "scipp",  # support for arrays with variances/units
+  "scipy",  # Definitions of erf/erfc functions
   "scippneutron",  # neutron-specific utilities for scipp
   "typing-extensions",  # TypeVar with default-arg support
   "tzdata",  # Windows timezone support
