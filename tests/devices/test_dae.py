@@ -1028,28 +1028,39 @@ def test_dae_repr():
     assert repr(Dae(prefix="foo", name="bar")) == "Dae(name=bar, prefix=foo)"
 
 
-async def test_num_periods_wrapper(dae: Dae, RE: RunEngine):
+def test_num_periods_wrapper(dae: Dae, RE: RunEngine):
     original_settings = 4
-    modified_settings = 7
 
-    await dae.number_of_periods.set(original_settings)
+    # await dae.number_of_periods.set(original_settings)
+    set_mock_value(dae.number_of_periods.signal, original_settings)
 
-    def _dummy_plan_which_sets_periods(dae):
-        yield from bps.mv(dae.number_of_periods, modified_settings)
+    # t = await dae.number_of_periods.signal.get_value()
 
-        current = yield from bps.rd(dae.number_of_periods)
-        assert current == 7
+    # def _dummy_plan_which_sets_periods(dae):
+    #     current = yield from bps.rd(dae.number_of_periods)
+    #     print("Current number of periods:", current)
 
-    with patch("ibex_bluesky_core.plan_stubs.num_periods_wrapper.ensure_connected"):
-        RE(
-            with_num_periods(
-                _dummy_plan_which_sets_periods(dae),
-                dae=dae,  # type: ignore
-            )
+    #     assert current == 80
+
+    #with patch("ibex_bluesky_core.plan_stubs.num_periods_wrapper.ensure_connected"):
+    # This is needed for the DaeCheckingSignal
+    # set_mock_value(dae.number_of_periods.signal, 80)
+
+    RE(
+        with_num_periods(
+            bps.null(),
+            dae=dae,  # type: ignore
+            number_of_periods = 80,
         )
+    )
 
-    result = await dae.number_of_periods.read()
-    assert result["DAE-number_of_periods-signal"]["value"] == original_settings
+
+    mock_set = get_mock_put(dae.number_of_periods.signal)
+
+    mock_set.assert_called_with(80)
+    mock_set.assert_called_with(original_settings)
+    
+    
 
 
 def test_time_channels_wrapper(dae: Dae, RE: RunEngine):
@@ -1079,6 +1090,7 @@ def test_time_channels_wrapper(dae: Dae, RE: RunEngine):
     after: DaeTCBSettingsData = RE(bps.rd(dae.tcb_settings)).plan_result  # type: ignore
     assert after == before
     assert after.time_unit == expected_time_units
+
 
 
 def test_dae_table_wrapper(dae: Dae, RE: RunEngine):

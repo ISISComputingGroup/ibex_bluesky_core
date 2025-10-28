@@ -7,10 +7,13 @@ import bluesky.preprocessors as bpp
 from bluesky.utils import Msg
 from ophyd_async.plan_stubs import ensure_connected
 
-from ibex_bluesky_core.devices.dae import Dae
+
+from ibex_bluesky_core.devices.dae import Dae, DaeTCBSettingsData
 
 
-def with_time_channels(plan: Generator[Msg, None, None], dae: Dae) -> Generator[Msg, None, None]:
+def with_time_channels(plan: Generator[Msg, None, None], 
+                       dae: Dae,
+                       new_tcb_settings: DaeTCBSettingsData) -> Generator[Msg, None, None]:
     """Wrap a plan with temporary modification to Time Channel Settings.
 
     Args:
@@ -28,12 +31,10 @@ def with_time_channels(plan: Generator[Msg, None, None], dae: Dae) -> Generator[
 
     def _inner() -> Generator[Msg, None, None]:
         nonlocal original_time_channels
-        original_time_channels = yield from bps.rd(dae.tcb_settings)  # type: ignore
+        original_time_channels = yield from bps.rd(dae.tcb_settings)
+
+        yield from bps.mv(dae.tcb_settings, new_tcb_settings)
 
         yield from plan
 
-    def _onexit() -> Generator[Msg, None, None]:
-        nonlocal original_time_channels
-        yield from bps.mv(dae.tcb_settings, original_time_channels)
-
-    return (yield from bpp.finalize_wrapper(_inner(), _onexit()))
+    return (yield from bpp.finalize_wrapper(_inner(), bps.mv(dae.tcb_settings, original_time_channels)))
