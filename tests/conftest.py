@@ -3,6 +3,7 @@ from collections.abc import Generator
 import pytest
 from bluesky.run_engine import RunEngine
 
+from ibex_bluesky_core.devices.dae import Dae
 from ibex_bluesky_core.devices.simpledae import Controller, Reducer, SimpleDae, Waiter
 from ibex_bluesky_core.run_engine import get_run_engine
 
@@ -34,5 +35,12 @@ async def simpledae() -> SimpleDae:
         waiter=Waiter(),
         reducer=Reducer(),
     )
+    await dae.connect(mock=True)
+    return dae
+
+
+@pytest.fixture
+async def dae() -> Dae:
+    dae = Dae("UNITTEST:MOCK:")
     await dae.connect(mock=True)
     return dae
