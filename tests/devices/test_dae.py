@@ -39,7 +39,7 @@ from ibex_bluesky_core.devices.dae._helpers import (
 )
 from ibex_bluesky_core.devices.dae._period_settings import _convert_period_settings_to_xml
 from ibex_bluesky_core.devices.dae._tcb_settings import _convert_tcb_settings_to_xml
-from tests.conftest import MOCK_PREFIX, dae
+from tests.conftest import MOCK_PREFIX
 from tests.devices.dae_testing_data import (
     dae_settings_template,
     initial_dae_settings,
@@ -1016,5 +1016,3 @@ async def test_if_tof_edges_has_no_units_then_read_spec_dataarray_gives_error(
 
 def test_dae_repr():
     assert repr(Dae(prefix="foo", name="bar")) == "Dae(name=bar, prefix=foo)"
-
-

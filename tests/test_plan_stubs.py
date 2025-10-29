@@ -6,7 +6,8 @@ from xml.etree import ElementTree as ET
 
 import matplotlib.pyplot as plt
 import pytest
-from bluesky import RunEngine, plan_stubs as bps
+from bluesky import RunEngine
+from bluesky import plan_stubs as bps
 from bluesky.utils import Msg
 from ophyd_async.epics.motor import UseSetMode
 from ophyd_async.plan_stubs import ensure_connected
@@ -14,7 +15,13 @@ from ophyd_async.testing import get_mock_put, set_mock_value
 
 from ibex_bluesky_core.devices import NoYesChoice, compress_and_hex, dehex_and_decompress
 from ibex_bluesky_core.devices.block import BlockMot
-from ibex_bluesky_core.devices.dae import Dae, TCBCalculationMethod, TCBTimeUnit, DaeTCBSettingsData, DaeSettingsData
+from ibex_bluesky_core.devices.dae import (
+    Dae,
+    DaeSettingsData,
+    DaeTCBSettingsData,
+    TCBCalculationMethod,
+    TCBTimeUnit,
+)
 from ibex_bluesky_core.devices.dae._tcb_settings import _convert_xml_to_tcb_settings
 from ibex_bluesky_core.devices.reflectometry import ReflParameter
 from ibex_bluesky_core.plan_stubs import (
@@ -29,7 +36,7 @@ from ibex_bluesky_core.plan_stubs.dae_table_wrapper import with_dae_tables
 from ibex_bluesky_core.plan_stubs.num_periods_wrapper import with_num_periods
 from ibex_bluesky_core.plan_stubs.time_channels_wrapper import with_time_channels
 from ibex_bluesky_core.run_engine._msg_handlers import call_sync_handler
-from tests.devices.dae_testing_data import tcb_settings_template, dae_settings_template
+from tests.devices.dae_testing_data import dae_settings_template, tcb_settings_template
 
 
 def test_call_sync_returns_result(RE):
@@ -210,14 +217,12 @@ def test_num_periods_wrapper(dae: Dae, RE: RunEngine):
     assert mock_set_calls[1].args[0] == original_settings
 
 
-async def test_time_channels_wrapper(dae: Dae, RE: RunEngine):
+def test_time_channels_wrapper(dae: Dae, RE: RunEngine):
     expected_tcb_file = "C:\\tcb.dat"
     expected_calc_method = TCBCalculationMethod.SPECIFY_PARAMETERS
     expected_time_unit = TCBTimeUnit.MICROSECONDS
 
-
     modified_settings = DaeTCBSettingsData(time_unit=TCBTimeUnit.NANOSECONDS)
-
 
     original_tcb_settings = tcb_settings_template.format(
         tcb_file=expected_tcb_file,
@@ -345,7 +350,6 @@ async def test_time_channels_wrapper(dae: Dae, RE: RunEngine):
         tr6_steps_5=1,
     )
 
-
     modified_raw_tcb_settings = tcb_settings_template.format(
         tcb_file=expected_tcb_file,
         time_units=TCBTimeUnit.NANOSECONDS.value,
@@ -472,16 +476,12 @@ async def test_time_channels_wrapper(dae: Dae, RE: RunEngine):
         tr6_steps_5=1,
     )
 
-    set_mock_value(dae.tcb_settings._raw_tcb_settings, compress_and_hex(original_tcb_settings).decode())
+    set_mock_value(
+        dae.tcb_settings._raw_tcb_settings, compress_and_hex(original_tcb_settings).decode()
+    )
 
     with patch("ibex_bluesky_core.plan_stubs.time_channels_wrapper.ensure_connected"):
-        RE(
-            with_time_channels(
-                bps.null(),
-                dae=dae,
-                new_tcb_settings=modified_settings
-            )
-        )
+        RE(with_time_channels(bps.null(), dae=dae, new_tcb_settings=modified_settings))
 
     mock_set_calls = get_mock_put(dae.tcb_settings._raw_tcb_settings).call_args_list
 
@@ -489,10 +489,14 @@ async def test_time_channels_wrapper(dae: Dae, RE: RunEngine):
     # so convert to the dataclass instead.
 
     # assert that modified settings are set
-    assert _convert_xml_to_tcb_settings(modified_raw_tcb_settings) == _convert_xml_to_tcb_settings(dehex_and_decompress(mock_set_calls[0].args[0]).decode())
+    assert _convert_xml_to_tcb_settings(modified_raw_tcb_settings) == _convert_xml_to_tcb_settings(
+        dehex_and_decompress(mock_set_calls[0].args[0]).decode()
+    )
 
     # assert that the original settings are restored
-    assert _convert_xml_to_tcb_settings(original_tcb_settings) == _convert_xml_to_tcb_settings(dehex_and_decompress(mock_set_calls[1].args[0]).decode())
+    assert _convert_xml_to_tcb_settings(original_tcb_settings) == _convert_xml_to_tcb_settings(
+        dehex_and_decompress(mock_set_calls[1].args[0]).decode()
+    )
 
 
 def test_dae_table_wrapper(dae: Dae, RE: RunEngine):
@@ -553,13 +557,7 @@ def test_dae_table_wrapper(dae: Dae, RE: RunEngine):
     set_mock_value(dae.dae_settings._raw_dae_settings, original_settings)
 
     with patch("ibex_bluesky_core.plan_stubs.dae_table_wrapper.ensure_connected"):
-        RE(
-            with_dae_tables(
-                bps.null(),
-                dae=dae,
-                new_settings=modified_settings
-            )
-        )
+        RE(with_dae_tables(bps.null(), dae=dae, new_settings=modified_settings))
 
     mock_set_calls = get_mock_put(dae.dae_settings._raw_dae_settings).call_args_list
 

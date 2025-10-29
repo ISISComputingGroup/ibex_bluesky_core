@@ -1,13 +1,13 @@
 """Wrap a plan with temporary modification to Periods Settings."""
 
-import copy
 from collections.abc import Generator
 
 import bluesky.plan_stubs as bps
 import bluesky.preprocessors as bpp
 from bluesky.utils import Msg
 from ophyd_async.plan_stubs import ensure_connected
-from ibex_bluesky_core.devices.dae import DaePeriodSettings, Dae
+
+from ibex_bluesky_core.devices.dae import Dae
 
 
 def with_num_periods(
@@ -25,7 +25,6 @@ def with_num_periods(
         number of periods afterwards.
 
     """
-
     original_num_periods = None
 
     def _inner() -> Generator[Msg, None, None]:
