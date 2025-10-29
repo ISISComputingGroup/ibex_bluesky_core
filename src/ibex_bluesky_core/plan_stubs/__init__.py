@@ -14,6 +14,10 @@ from ophyd_async.epics.motor import Motor, UseSetMode
 from ibex_bluesky_core.devices.reflectometry import ReflParameter
 from ibex_bluesky_core.utils import NamedReadableAndMovable
 
+from ibex_bluesky_core.plan_stubs.dae_table_wrapper import _with_dae_tables
+from ibex_bluesky_core.plan_stubs.num_periods_wrapper import _with_num_periods
+from ibex_bluesky_core.plan_stubs.time_channels_wrapper import _with_time_channels
+
 logger = logging.getLogger(__name__)
 
 P = ParamSpec("P")
@@ -31,6 +35,9 @@ __all__ = [
     "prompt_user_for_choice",
     "redefine_motor",
     "redefine_refl_parameter",
+    "_with_dae_tables",
+    "_with_num_periods",
+    "_with_time_channels",
 ]
 
 

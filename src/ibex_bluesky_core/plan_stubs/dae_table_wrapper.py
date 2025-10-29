@@ -10,7 +10,7 @@ from ophyd_async.plan_stubs import ensure_connected
 from ibex_bluesky_core.devices.dae import Dae, DaeSettingsData
 
 
-def with_dae_tables(
+def _with_dae_tables(
     plan: Generator[Msg, None, None], dae: Dae, new_settings: DaeSettingsData
 ) -> Generator[Msg, None, None]:
     """Wrap a plan with temporary modification to DAE Settings.

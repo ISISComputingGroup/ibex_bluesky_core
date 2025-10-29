@@ -10,7 +10,7 @@ from ophyd_async.plan_stubs import ensure_connected
 from ibex_bluesky_core.devices.dae import Dae
 
 
-def with_num_periods(
+def _with_num_periods(
     plan: Generator[Msg, None, None], dae: Dae, number_of_periods: int
 ) -> Generator[Msg, None, None]:
     """Wrap a plan with temporary modification to Periods Settings.

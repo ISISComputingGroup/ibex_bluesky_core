@@ -10,7 +10,7 @@ from ophyd_async.plan_stubs import ensure_connected
 from ibex_bluesky_core.devices.dae import Dae, DaeTCBSettingsData
 
 
-def with_time_channels(
+def _with_time_channels(
     plan: Generator[Msg, None, None], dae: Dae, new_tcb_settings: DaeTCBSettingsData
 ) -> Generator[Msg, None, None]:
     """Wrap a plan with temporary modification to Time Channel Settings.
