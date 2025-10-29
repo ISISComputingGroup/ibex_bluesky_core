@@ -148,7 +148,7 @@ class DetMapAngleScanLiveDispatcher(LiveDispatcher):
             return super().stop(doc, _md)
 
         current_time = time.time()
-        for x, y in zip(self.x_data, self.y_data, strict=True):  # type: ignore
+        for x, y in zip(self.x_data, self.y_data, strict=True):  # type: ignore (pyright doesn't understand scipp)
             logger.debug("DetMapAngleScanLiveDispatcher emitting event with x=%f, y=%f", x, y)
             event = {
                 "data": {
