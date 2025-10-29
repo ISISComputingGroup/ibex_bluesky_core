@@ -38,7 +38,7 @@ from ibex_bluesky_core.devices.dae._helpers import (
     _set_value_in_dae_xml,
 )
 from ibex_bluesky_core.devices.dae._period_settings import _convert_period_settings_to_xml
-from ibex_bluesky_core.devices.dae._tcb_settings import _convert_tcb_settings_to_xml
+from ibex_bluesky_core.devices.dae._tcb_settings import _convert_tcb_settings_to_xml, _convert_xml_to_tcb_settings
 from ibex_bluesky_core.plan_stubs.dae_table_wrapper import with_dae_tables
 from ibex_bluesky_core.plan_stubs.num_periods_wrapper import with_num_periods
 from ibex_bluesky_core.plan_stubs.time_channels_wrapper import with_time_channels
@@ -1048,37 +1048,292 @@ def test_num_periods_wrapper(dae: Dae, RE: RunEngine):
     assert mock_set_calls[1].args == original_settings
 
 
-def test_time_channels_wrapper(dae: Dae, RE: RunEngine):
-    original_settings = compress_and_hex(initial_tcb_settings).decode()
+async def test_time_channels_wrapper(dae: Dae, RE: RunEngine):
+    expected_tcb_file = "C:\\tcb.dat"
+    expected_calc_method = TCBCalculationMethod.SPECIFY_PARAMETERS
+    expected_time_unit = TCBTimeUnit.MICROSECONDS
+
+
     modified_settings = DaeTCBSettingsData(time_unit=TCBTimeUnit.NANOSECONDS)
 
-    expected_time_units = TCBTimeUnit.MICROSECONDS
 
-    set_mock_value(dae.tcb_settings._raw_tcb_settings, original_settings)
+    original_tcb_settings = tcb_settings_template.format(
+        tcb_file=expected_tcb_file,
+        time_units=expected_time_unit.value,
+        calc_method=expected_calc_method.value,
+        tr1_mode_1=1,
+        tr1_from_1=1,
+        tr1_to_1=1,
+        tr1_steps_1=1,
+        tr1_mode_2=1,
+        tr1_from_2=1,
+        tr1_to_2=1,
+        tr1_steps_2=1,
+        tr1_mode_3=1,
+        tr1_from_3=1,
+        tr1_to_3=1,
+        tr1_steps_3=1,
+        tr1_mode_4=1,
+        tr1_from_4=1,
+        tr1_to_4=1,
+        tr1_steps_4=1,
+        tr1_mode_5=1,
+        tr1_from_5=1,
+        tr1_to_5=1,
+        tr1_steps_5=1,
+        tr2_mode_1=1,
+        tr2_from_1=1,
+        tr2_to_1=1,
+        tr2_steps_1=1,
+        tr2_mode_2=1,
+        tr2_from_2=1,
+        tr2_to_2=1,
+        tr2_steps_2=1,
+        tr2_mode_3=1,
+        tr2_from_3=1,
+        tr2_to_3=1,
+        tr2_steps_3=1,
+        tr2_mode_4=1,
+        tr2_from_4=1,
+        tr2_to_4=1,
+        tr2_steps_4=1,
+        tr2_mode_5=1,
+        tr2_from_5=1,
+        tr2_to_5=1,
+        tr2_steps_5=1,
+        tr3_mode_1=1,
+        tr3_from_1=1,
+        tr3_to_1=1,
+        tr3_steps_1=1,
+        tr3_mode_2=1,
+        tr3_from_2=1,
+        tr3_to_2=1,
+        tr3_steps_2=1,
+        tr3_mode_3=1,
+        tr3_from_3=1,
+        tr3_to_3=1,
+        tr3_steps_3=1,
+        tr3_mode_4=1,
+        tr3_from_4=1,
+        tr3_to_4=1,
+        tr3_steps_4=1,
+        tr3_mode_5=1,
+        tr3_from_5=1,
+        tr3_to_5=1,
+        tr3_steps_5=1,
+        tr4_mode_1=1,
+        tr4_from_1=1,
+        tr4_to_1=1,
+        tr4_steps_1=1,
+        tr4_mode_2=1,
+        tr4_from_2=1,
+        tr4_to_2=1,
+        tr4_steps_2=1,
+        tr4_mode_3=1,
+        tr4_from_3=1,
+        tr4_to_3=1,
+        tr4_steps_3=1,
+        tr4_mode_4=1,
+        tr4_from_4=1,
+        tr4_to_4=1,
+        tr4_steps_4=1,
+        tr4_mode_5=1,
+        tr4_from_5=1,
+        tr4_to_5=1,
+        tr4_steps_5=1,
+        tr5_mode_1=1,
+        tr5_from_1=1,
+        tr5_to_1=1,
+        tr5_steps_1=1,
+        tr5_mode_2=1,
+        tr5_from_2=1,
+        tr5_to_2=1,
+        tr5_steps_2=1,
+        tr5_mode_3=1,
+        tr5_from_3=1,
+        tr5_to_3=1,
+        tr5_steps_3=1,
+        tr5_mode_4=1,
+        tr5_from_4=1,
+        tr5_to_4=1,
+        tr5_steps_4=1,
+        tr5_mode_5=1,
+        tr5_from_5=1,
+        tr5_to_5=1,
+        tr5_steps_5=1,
+        tr6_mode_1=1,
+        tr6_from_1=1,
+        tr6_to_1=1,
+        tr6_steps_1=1,
+        tr6_mode_2=1,
+        tr6_from_2=1,
+        tr6_to_2=1,
+        tr6_steps_2=1,
+        tr6_mode_3=1,
+        tr6_from_3=1,
+        tr6_to_3=1,
+        tr6_steps_3=1,
+        tr6_mode_4=1,
+        tr6_from_4=1,
+        tr6_to_4=1,
+        tr6_steps_4=1,
+        tr6_mode_5=1,
+        tr6_from_5=1,
+        tr6_to_5=1,
+        tr6_steps_5=1,
+    )
 
-    before: DaeTCBSettingsData = RE(bps.rd(dae.tcb_settings)).plan_result  # type: ignore
 
-    def _dummy_plan_which_sets_time_units(dae):
-        yield from bps.mv(dae.tcb_settings, modified_settings)
+    modified_raw_tcb_settings = tcb_settings_template.format(
+        tcb_file=expected_tcb_file,
+        time_units=TCBTimeUnit.NANOSECONDS.value,
+        calc_method=expected_calc_method.value,
+        tr1_mode_1=1,
+        tr1_from_1=1,
+        tr1_to_1=1,
+        tr1_steps_1=1,
+        tr1_mode_2=1,
+        tr1_from_2=1,
+        tr1_to_2=1,
+        tr1_steps_2=1,
+        tr1_mode_3=1,
+        tr1_from_3=1,
+        tr1_to_3=1,
+        tr1_steps_3=1,
+        tr1_mode_4=1,
+        tr1_from_4=1,
+        tr1_to_4=1,
+        tr1_steps_4=1,
+        tr1_mode_5=1,
+        tr1_from_5=1,
+        tr1_to_5=1,
+        tr1_steps_5=1,
+        tr2_mode_1=1,
+        tr2_from_1=1,
+        tr2_to_1=1,
+        tr2_steps_1=1,
+        tr2_mode_2=1,
+        tr2_from_2=1,
+        tr2_to_2=1,
+        tr2_steps_2=1,
+        tr2_mode_3=1,
+        tr2_from_3=1,
+        tr2_to_3=1,
+        tr2_steps_3=1,
+        tr2_mode_4=1,
+        tr2_from_4=1,
+        tr2_to_4=1,
+        tr2_steps_4=1,
+        tr2_mode_5=1,
+        tr2_from_5=1,
+        tr2_to_5=1,
+        tr2_steps_5=1,
+        tr3_mode_1=1,
+        tr3_from_1=1,
+        tr3_to_1=1,
+        tr3_steps_1=1,
+        tr3_mode_2=1,
+        tr3_from_2=1,
+        tr3_to_2=1,
+        tr3_steps_2=1,
+        tr3_mode_3=1,
+        tr3_from_3=1,
+        tr3_to_3=1,
+        tr3_steps_3=1,
+        tr3_mode_4=1,
+        tr3_from_4=1,
+        tr3_to_4=1,
+        tr3_steps_4=1,
+        tr3_mode_5=1,
+        tr3_from_5=1,
+        tr3_to_5=1,
+        tr3_steps_5=1,
+        tr4_mode_1=1,
+        tr4_from_1=1,
+        tr4_to_1=1,
+        tr4_steps_1=1,
+        tr4_mode_2=1,
+        tr4_from_2=1,
+        tr4_to_2=1,
+        tr4_steps_2=1,
+        tr4_mode_3=1,
+        tr4_from_3=1,
+        tr4_to_3=1,
+        tr4_steps_3=1,
+        tr4_mode_4=1,
+        tr4_from_4=1,
+        tr4_to_4=1,
+        tr4_steps_4=1,
+        tr4_mode_5=1,
+        tr4_from_5=1,
+        tr4_to_5=1,
+        tr4_steps_5=1,
+        tr5_mode_1=1,
+        tr5_from_1=1,
+        tr5_to_1=1,
+        tr5_steps_1=1,
+        tr5_mode_2=1,
+        tr5_from_2=1,
+        tr5_to_2=1,
+        tr5_steps_2=1,
+        tr5_mode_3=1,
+        tr5_from_3=1,
+        tr5_to_3=1,
+        tr5_steps_3=1,
+        tr5_mode_4=1,
+        tr5_from_4=1,
+        tr5_to_4=1,
+        tr5_steps_4=1,
+        tr5_mode_5=1,
+        tr5_from_5=1,
+        tr5_to_5=1,
+        tr5_steps_5=1,
+        tr6_mode_1=1,
+        tr6_from_1=1,
+        tr6_to_1=1,
+        tr6_steps_1=1,
+        tr6_mode_2=1,
+        tr6_from_2=1,
+        tr6_to_2=1,
+        tr6_steps_2=1,
+        tr6_mode_3=1,
+        tr6_from_3=1,
+        tr6_to_3=1,
+        tr6_steps_3=1,
+        tr6_mode_4=1,
+        tr6_from_4=1,
+        tr6_to_4=1,
+        tr6_steps_4=1,
+        tr6_mode_5=1,
+        tr6_from_5=1,
+        tr6_to_5=1,
+        tr6_steps_5=1,
+    )
 
-        current = yield from bps.rd(dae.tcb_settings)
-        assert current.time_unit == modified_settings.time_unit
+    set_mock_value(dae.tcb_settings._raw_tcb_settings, compress_and_hex(original_tcb_settings).decode())
 
     with patch("ibex_bluesky_core.plan_stubs.time_channels_wrapper.ensure_connected"):
         RE(
             with_time_channels(
-                _dummy_plan_which_sets_time_units(dae),
-                dae=dae,  # type: ignore
+                bps.null(),
+                dae=dae,
+                new_tcb_settings=modified_settings
             )
         )
 
-    after: DaeTCBSettingsData = RE(bps.rd(dae.tcb_settings)).plan_result  # type: ignore
-    assert after == before
-    assert after.time_unit == expected_time_units
+    mock_set_calls = get_mock_put(dae.tcb_settings._raw_tcb_settings).call_args_list
+
+    # Note for these two assertions that you can't compare XML directly as order isn't guaranteed,
+    # so convert to the dataclass instead.
+
+    # assert that modified settings are set
+    assert _convert_xml_to_tcb_settings(modified_raw_tcb_settings) == _convert_xml_to_tcb_settings(dehex_and_decompress(mock_set_calls[0].args[0]).decode())
+
+    # assert that the original settings are restored
+    assert _convert_xml_to_tcb_settings(original_tcb_settings) == _convert_xml_to_tcb_settings(dehex_and_decompress(mock_set_calls[1].args[0]).decode())
 
 
 def test_dae_table_wrapper(dae: Dae, RE: RunEngine):
-    original_settings = initial_dae_settings
     modified_settings = DaeSettingsData(
         wiring_filepath="C:\\somefile.dat",
         spectra_filepath="C:\\anotherfile.dat",
