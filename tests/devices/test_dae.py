@@ -1085,33 +1085,67 @@ def test_dae_table_wrapper(dae: Dae, RE: RunEngine):
         detector_filepath="C:\\anotherfile123.dat",
     )
 
-    expected_wiring = "NIMROD84modules+9monitors+LAB5Oct2012Wiring.dat"
-    expected_spectra = "NIMROD84modules+9monitors+LAB5Oct2012Spectra.dat"
-    expected_detector = "NIMROD84modules+9monitors+LAB5Oct2012Detector.dat"
+    original_settings = dae_settings_template.format(
+        wiring_table="C:\\originalfile.dat",
+        detector_table="C:\\anotheroriginalfile.dat",
+        spectra_table="C:\\originalspectrafile.dat",
+        mon_spec=1,
+        from_=1,
+        to=1,
+        timing_src=1,
+        smp_veto=1,
+        ts2_veto=1,
+        hz50_veto=1,
+        veto_0=1,
+        veto_1=1,
+        veto_2=1,
+        veto_3=1,
+        fermi_veto=1,
+        fc_delay=1,
+        fc_width=1,
+        muon_ms_mode=1,
+        muon_cherenkov_pulse=1,
+        veto_0_name="test",
+        veto_1_name="test1",
+    )
+
+    modified_settings_xml = dae_settings_template.format(
+        wiring_table=modified_settings.wiring_filepath,
+        detector_table=modified_settings.detector_filepath,
+        spectra_table=modified_settings.spectra_filepath,
+        mon_spec=1,
+        from_=1,
+        to=1,
+        timing_src=1,
+        smp_veto=1,
+        ts2_veto=1,
+        hz50_veto=1,
+        veto_0=1,
+        veto_1=1,
+        veto_2=1,
+        veto_3=1,
+        fermi_veto=1,
+        fc_delay=1,
+        fc_width=1,
+        muon_ms_mode=1,
+        muon_cherenkov_pulse=1,
+        veto_0_name="test",
+        veto_1_name="test1",
+    )
 
     set_mock_value(dae.dae_settings._raw_dae_settings, original_settings)
-
-    before: DaeSettingsData = RE(bps.rd(dae.dae_settings)).plan_result  # type: ignore
-
-    def _dummy_plan_which_sets_wiring_sepectra_detector(dae):
-        yield from bps.mv(dae.dae_settings, modified_settings)
-
-        current = yield from bps.rd(dae.dae_settings)
-        assert current.wiring_filepath == modified_settings.wiring_filepath
-        assert current.spectra_filepath == modified_settings.spectra_filepath
-        assert current.detector_filepath == modified_settings.detector_filepath
 
     with patch("ibex_bluesky_core.plan_stubs.dae_table_wrapper.ensure_connected"):
         RE(
             with_dae_tables(
-                _dummy_plan_which_sets_wiring_sepectra_detector(dae),
-                dae=dae,  # type: ignore
+                bps.null(),
+                dae=dae,
+                new_settings=modified_settings
             )
         )
 
-    after: DaeSettingsData = RE(bps.rd(dae.dae_settings)).plan_result  # type: ignore
+    mock_set_calls = get_mock_put(dae.dae_settings._raw_dae_settings).call_args_list
 
-    assert after == before
-    assert after.wiring_filepath.endswith(expected_wiring)  # type: ignore
-    assert after.spectra_filepath.endswith(expected_spectra)  # type: ignore
-    assert after.detector_filepath.endswith(expected_detector)  # type: ignore
+    assert ET.canonicalize(modified_settings_xml) == ET.canonicalize(mock_set_calls[0].args[0])
+    assert ET.canonicalize(original_settings) == ET.canonicalize(mock_set_calls[1].args[0])
+
