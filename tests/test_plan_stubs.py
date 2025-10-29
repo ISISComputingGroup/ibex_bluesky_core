@@ -32,9 +32,7 @@ from ibex_bluesky_core.plan_stubs import (
     redefine_motor,
     redefine_refl_parameter,
 )
-from ibex_bluesky_core.plan_stubs.dae_table_wrapper import with_dae_tables
-from ibex_bluesky_core.plan_stubs.num_periods_wrapper import with_num_periods
-from ibex_bluesky_core.plan_stubs.time_channels_wrapper import with_time_channels
+from ibex_bluesky_core.plan_stubs import _with_dae_tables, _with_num_periods, _with_time_channels
 from ibex_bluesky_core.run_engine._msg_handlers import call_sync_handler
 from tests.devices.dae_testing_data import dae_settings_template, tcb_settings_template
 
@@ -204,7 +202,7 @@ def test_num_periods_wrapper(dae: Dae, RE: RunEngine):
 
     with patch("ibex_bluesky_core.plan_stubs.num_periods_wrapper.ensure_connected"):
         RE(
-            with_num_periods(
+            _with_num_periods(
                 bps.null(),
                 dae=dae,
                 number_of_periods=80,
@@ -481,7 +479,7 @@ def test_time_channels_wrapper(dae: Dae, RE: RunEngine):
     )
 
     with patch("ibex_bluesky_core.plan_stubs.time_channels_wrapper.ensure_connected"):
-        RE(with_time_channels(bps.null(), dae=dae, new_tcb_settings=modified_settings))
+        RE(_with_time_channels(bps.null(), dae=dae, new_tcb_settings=modified_settings))
 
     mock_set_calls = get_mock_put(dae.tcb_settings._raw_tcb_settings).call_args_list
 
@@ -557,7 +555,7 @@ def test_dae_table_wrapper(dae: Dae, RE: RunEngine):
     set_mock_value(dae.dae_settings._raw_dae_settings, original_settings)
 
     with patch("ibex_bluesky_core.plan_stubs.dae_table_wrapper.ensure_connected"):
-        RE(with_dae_tables(bps.null(), dae=dae, new_settings=modified_settings))
+        RE(_with_dae_tables(bps.null(), dae=dae, new_settings=modified_settings))
 
     mock_set_calls = get_mock_put(dae.dae_settings._raw_dae_settings).call_args_list
 
