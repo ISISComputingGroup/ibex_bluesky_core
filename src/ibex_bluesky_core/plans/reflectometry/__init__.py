@@ -44,6 +44,7 @@ def refl_scan(  # noqa: PLR0913
     periods: bool = True,
     save_run: bool = False,
     rel: bool = False,
+    md: dict | None = None,
 ) -> Generator[Msg, None, ISISCallbacks]:
     """Scan over a reflectometry parameter.
 
@@ -62,6 +63,7 @@ def refl_scan(  # noqa: PLR0913
         periods: whether to use periods.
         save_run: whether to save the run of the scan.
         rel: whether to use a relative scan around the current position.
+        md: Arbitrary metadata to include in this scan.
 
     Returns:
         an :obj:`ibex_bluesky_core.callbacks.ISISCallbacks` instance.
@@ -84,6 +86,7 @@ def refl_scan(  # noqa: PLR0913
             save_run=save_run,
             periods=periods,
             rel=rel,
+            md=md,
         )
     )
 
@@ -104,6 +107,7 @@ def refl_adaptive_scan(  # noqa: PLR0913
     periods: bool = True,
     save_run: bool = False,
     rel: bool = False,
+    md: dict | None = None,
 ) -> Generator[Msg, None, ISISCallbacks]:
     """Perform an adaptive scan over a reflectometry parameter.
 
@@ -124,6 +128,7 @@ def refl_adaptive_scan(  # noqa: PLR0913
         periods: whether to use periods.
         save_run: whether to save the run of the scan.
         rel: whether to use a relative scan around the current position.
+        md: Arbitrary metadata to include in this scan.
 
     Returns:
         an :obj:`ibex_bluesky_core.callbacks.ISISCallbacks` instance.
@@ -147,5 +152,6 @@ def refl_adaptive_scan(  # noqa: PLR0913
             model=model,
             save_run=save_run,
             rel=rel,
+            md=md,
         )
     )

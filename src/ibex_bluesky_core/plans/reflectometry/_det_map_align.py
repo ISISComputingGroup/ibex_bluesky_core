@@ -172,6 +172,7 @@ def angle_scan_plan(
     *,
     angle_map: npt.NDArray[np.float64],
     flood: sc.Variable | None = None,
+    md: dict | None = None,
 ) -> Generator[Msg, None, ModelResult | None]:
     """Reflectometry detector-mapping angle alignment plan.
 
@@ -187,6 +188,7 @@ def angle_scan_plan(
             This array should be aligned along a "spectrum" dimension; counts are
             divided by this array before being used in fits. This is used to
             normalise the intensities detected by each detector pixel.
+        md: Arbitrary metadata to include in this scan.
 
     """
     logger.info("Starting angle scan")
@@ -212,7 +214,7 @@ def angle_scan_plan(
         ]
     )
     def _inner() -> Generator[Msg, None, None]:
-        yield from bp.count([dae])
+        yield from bp.count([dae], md=md)
 
     yield from _inner()
 
@@ -247,6 +249,7 @@ def height_and_angle_scan_plan(  # noqa PLR0913
     angle_map: npt.NDArray[np.float64],
     rel: bool = False,
     flood: sc.Variable | None = None,
+    md: dict | None = None,
 ) -> Generator[Msg, None, DetMapAlignResult]:
     """Reflectometry detector-mapping simultaneous height & angle alignment plan.
 
@@ -266,6 +269,7 @@ def height_and_angle_scan_plan(  # noqa PLR0913
             This array should be aligned along a "spectrum" dimension; counts are
             divided by this array before being used in fits. This is used to
             normalise the intensities detected by each detector pixel.
+        md: Arbitrary metadata to include in this scan.
 
     Returns:
         A dictionary containing the fit results from gaussian height and angle fits.
@@ -309,7 +313,7 @@ def height_and_angle_scan_plan(  # noqa PLR0913
         nonlocal start, stop, num
         yield from bps.mv(dae.number_of_periods, num)
         plan = bp.rel_scan if rel else bp.scan
-        yield from plan([dae], height, start, stop, num=num)
+        yield from plan([dae], height, start, stop, num=num, md=md)
 
     yield from _inner()
 

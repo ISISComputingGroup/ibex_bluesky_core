@@ -200,7 +200,7 @@ RE.md["user"] = "Tom"
 RE.md["sample"] = "unobtainium"
 ```
 
-**For one {py:obj}`RE <ibex_bluesky_core.get_run_engine>` call**:
+**For one `RE` call**:
 ```python
 RE(some_plan(), sample="unobtainium", user="Tom")
 ```
@@ -232,7 +232,7 @@ def some_plan(dae):
     yield from _inner()
 ```
 
-In addition, many built-in bluesky plans (such as {external+bluesky:py:obj}`bluesky.plans.scan`) take an `md` keyword argument, which can also be used to insert additional metadata for one scan.
+In addition to the above mechanisms, many built-in bluesky plans (such as {external+bluesky:py:obj}`bluesky.plans.scan` and {py:obj}`ibex_bluesky_core.plans.scan`) take an `md` keyword argument, which can also be used to insert additional metadata for one scan.
 
 ## See also
 
