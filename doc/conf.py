@@ -71,6 +71,10 @@ html_theme_options = {
     "style_nav_header_background": "#343131",
 }
 html_favicon = "favicon.svg"
+html_static_path = ["_static"]
+html_css_files = [
+    "css/custom.css",
+]
 
 autoclass_content = "both"
 myst_heading_anchors = 7
@@ -79,7 +83,7 @@ autodoc_preserve_defaults = True
 intersphinx_mapping = {
     "python": ("https://docs.python.org/3", None),
     "bluesky": ("https://blueskyproject.io/bluesky/main/", None),
-    "ophyd_async": ("https://blueskyproject.io/ophyd-async/main/", None),
+    "ophyd_async": ("https://blueskyproject.io/ophyd-async/v0.13.4/", None),
     "event_model": ("https://blueskyproject.io/event-model/main/", None),
     "scipp": ("https://scipp.github.io/", None),
     "scippneutron": ("https://scipp.github.io/scippneutron/", None),
