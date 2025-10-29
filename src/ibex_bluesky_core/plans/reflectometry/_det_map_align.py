@@ -1,5 +1,6 @@
 """Reflectometry detector-mapping alignment plans."""
 
+import functools
 import logging
 from collections.abc import Generator
 from typing import Any, TypedDict
@@ -40,6 +41,19 @@ __all__ = ["DetMapAlignResult", "angle_scan_plan", "height_and_angle_scan_plan"]
 logger = logging.getLogger(__name__)
 
 
+def _set_title_to_fit_result(
+    name: str, doc: dict[str, Any], *, fit_callback: LiveFit, ax: Axes
+) -> None:
+    fit_result = fit_callback.result
+    if fit_result is not None:
+        ax.set_title(
+            f"Best x0: {fit_result.params['x0'].value:.4f} +/- {fit_result.params['x0'].stderr:.4f}"
+        )
+    else:
+        ax.set_title("Fit failed")
+    plt.draw()
+
+
 def _height_scan_callback_and_fit(
     reducer: PeriodSpecIntegralsReducer,
     height: NamedMovable[float],
@@ -68,18 +82,12 @@ def _height_scan_callback_and_fit(
     for cb in height_scan_callbacks.subs:
         height_scan_ld.subscribe(cb)
 
-    def set_title_to_height_fit_result(name: str, doc: dict[str, Any]) -> None:
-        fit_result = height_scan_callbacks.live_fit.result
-        if fit_result is not None:
-            ax.set_title(
-                f"Best x0: {fit_result.params['x0'].value:.4f} "
-                f"+/- {fit_result.params['x0'].stderr:.4f}"
-            )
-        else:
-            ax.set_title("Fit failed")  # pragma: no cover
-        plt.draw()
-
-    height_scan_ld.subscribe(set_title_to_height_fit_result, "stop")
+    height_scan_ld.subscribe(
+        functools.partial(
+            _set_title_to_fit_result, fit_callback=height_scan_callbacks.live_fit, ax=ax
+        ),
+        "stop",
+    )
 
     return height_scan_ld, height_scan_callbacks.live_fit
 
@@ -135,23 +143,15 @@ def _angle_scan_callback_and_fit(
     for cb in angle_scan_callbacks.subs:
         angle_scan_ld.subscribe(cb)
 
-    def set_title_to_angle_fit_result(name: str, doc: dict[str, Any]) -> None:
-        fit_result = angle_scan_callbacks.live_fit.result
-        if fit_result is not None:
-            ax.set_title(
-                f"Best x0: {fit_result.params['x0'].value:.4f} "
-                f"+/- {fit_result.params['x0'].stderr:.4f}"
-            )
-        else:
-            ax.set_title("Fit failed")  # pragma: no cover
-        plt.draw()
-
-    angle_scan_ld.subscribe(set_title_to_angle_fit_result, "stop")
+    angle_scan_ld.subscribe(
+        functools.partial(
+            _set_title_to_fit_result, fit_callback=angle_scan_callbacks.live_fit, ax=ax
+        ),
+        "stop",
+    )
 
     # Make sure the Plot PNG saving happens *after* setting plot title to fit result...
-    angle_scan_ld.subscribe(
-        PlotPNGSaver(x=angle_name, y=counts_name, ax=ax, postfix="", output_dir=None)
-    )
+    angle_scan_ld.subscribe(PlotPNGSaver(x=angle_name, y=counts_name, ax=ax, postfix=""))
 
     return angle_scan_ld, angle_scan_callbacks.live_fit
 
