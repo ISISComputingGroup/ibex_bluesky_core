@@ -71,6 +71,10 @@ html_theme_options = {
     "style_nav_header_background": "#343131",
 }
 html_favicon = "favicon.svg"
+html_static_path = ["_static"]
+html_css_files = [
+    "css/custom.css",
+]
 
 autoclass_content = "both"
 myst_heading_anchors = 7
