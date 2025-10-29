@@ -172,7 +172,7 @@ def angle_scan_plan(
     *,
     angle_map: npt.NDArray[np.float64],
     flood: sc.Variable | None = None,
-    md: dict | None = None,
+    md: dict[Any, Any] | None = None,
 ) -> Generator[Msg, None, ModelResult | None]:
     """Reflectometry detector-mapping angle alignment plan.
 
@@ -249,7 +249,7 @@ def height_and_angle_scan_plan(  # noqa PLR0913
     angle_map: npt.NDArray[np.float64],
     rel: bool = False,
     flood: sc.Variable | None = None,
-    md: dict | None = None,
+    md: dict[Any, Any] | None = None,
 ) -> Generator[Msg, None, DetMapAlignResult]:
     """Reflectometry detector-mapping simultaneous height & angle alignment plan.
 

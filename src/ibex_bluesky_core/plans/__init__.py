@@ -53,7 +53,7 @@ def scan(  # noqa: PLR0913
     periods: bool = True,
     save_run: bool = False,
     rel: bool = False,
-    md: dict | None = None,
+    md: dict[Any, Any] | None = None,
 ) -> Generator[Msg, None, ISISCallbacks]:
     """Scan the DAE against a Movable.
 
@@ -131,7 +131,7 @@ def adaptive_scan(  # noqa: PLR0913, PLR0917
     periods: bool = True,
     save_run: bool = False,
     rel: bool = False,
-    md: dict | None = None,
+    md: dict[Any, Any] | None = None,
 ) -> Generator[Msg, None, ISISCallbacks]:
     """Scan the DAE against a block using an adaptive scan.
 
@@ -205,7 +205,7 @@ def motor_scan(  # noqa: PLR0913
     periods: bool = True,
     save_run: bool = False,
     rel: bool = False,
-    md: dict | None = None,
+    md: dict[Any, Any] | None = None,
 ) -> Generator[Msg, None, ISISCallbacks]:
     """Wrap our scan() plan and create a block_rw and a DAE object.
 
@@ -274,7 +274,7 @@ def motor_adaptive_scan(  # noqa: PLR0913
     periods: bool = True,
     save_run: bool = False,
     rel: bool = False,
-    md: dict | None = None,
+    md: dict[Any, Any] | None = None,
 ) -> Generator[Msg, None, ISISCallbacks]:
     """Wrap adaptive_scan() plan and create a block_rw and a DAE object.
 

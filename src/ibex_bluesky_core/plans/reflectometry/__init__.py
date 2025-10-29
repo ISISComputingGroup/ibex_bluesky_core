@@ -1,6 +1,7 @@
 """Plans specific to Reflectometry beamlines."""
 
 from collections.abc import Generator
+from typing import Any
 
 from bluesky import Msg
 
@@ -44,7 +45,7 @@ def refl_scan(  # noqa: PLR0913
     periods: bool = True,
     save_run: bool = False,
     rel: bool = False,
-    md: dict | None = None,
+    md: dict[Any, Any] | None = None,
 ) -> Generator[Msg, None, ISISCallbacks]:
     """Scan over a reflectometry parameter.
 
@@ -107,7 +108,7 @@ def refl_adaptive_scan(  # noqa: PLR0913
     periods: bool = True,
     save_run: bool = False,
     rel: bool = False,
-    md: dict | None = None,
+    md: dict[Any, Any] | None = None,
 ) -> Generator[Msg, None, ISISCallbacks]:
     """Perform an adaptive scan over a reflectometry parameter.
 
