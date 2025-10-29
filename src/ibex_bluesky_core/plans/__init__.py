@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, Any
 import bluesky.plans as bp
 import matplotlib.pyplot as plt
 from bluesky import plan_stubs as bps
+from bluesky.preprocessors import inject_md_decorator
 from bluesky.protocols import NamedMovable
 from bluesky.utils import Msg
 from matplotlib.axes import Axes
@@ -29,6 +30,17 @@ __all__ = [
     "polling_plan",
     "scan",
 ]
+
+
+def _get_additional_md(
+    dae: "SimpleDae", *, periods: bool, save_run: bool
+) -> Generator[Msg, None, dict[str, Any]]:
+    if periods and save_run:
+        run_number = yield from bps.rd(dae.current_or_next_run_number_str)
+        return {"run_number": run_number}
+    else:
+        yield from bps.null()
+        return {}
 
 
 def scan(  # noqa: PLR0913
@@ -66,7 +78,10 @@ def scan(  # noqa: PLR0913
 
     icc = _set_up_fields_and_icc(block, dae, model, periods, save_run, ax)
 
+    additional_md = yield from _get_additional_md(dae, periods=periods, save_run=save_run)
+
     @icc
+    @inject_md_decorator(additional_md)
     def _inner() -> Generator[Msg, None, None]:
         if rel:
             plan = bp.rel_scan
@@ -148,7 +163,10 @@ def adaptive_scan(  # noqa: PLR0913, PLR0917
 
     icc = _set_up_fields_and_icc(block, dae, model, periods, save_run, ax)
 
+    additional_md = yield from _get_additional_md(dae, periods=periods, save_run=save_run)
+
     @icc
+    @inject_md_decorator(additional_md)
     def _inner() -> Generator[Msg, None, None]:
         if rel:
             plan = bp.rel_adaptive_scan
