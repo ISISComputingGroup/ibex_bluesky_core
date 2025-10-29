@@ -46,12 +46,15 @@ class DetMapHeightScanLiveDispatcher(LiveDispatcher):
     monitor spectrum used for normalization).
     """
 
-    def __init__(self, *, mon_name: str, det_name: str, out_name: str) -> None:
+    def __init__(
+        self, *, mon_name: str, det_name: str, out_name: str, flood: sc.Variable | None = None
+    ) -> None:
         """Init."""
         super().__init__()
         self._mon_name = mon_name
         self._det_name = det_name
         self._out_name = out_name
+        self._flood = flood if flood is not None else sc.scalar(value=1, dtype="float64")
 
     def event(self, doc: Event, **kwargs: dict[str, Any]) -> Event:
         """Process an event."""
@@ -61,6 +64,8 @@ class DetMapHeightScanLiveDispatcher(LiveDispatcher):
 
         det = sc.Variable(dims=["spectrum"], values=det_data, variances=det_data, dtype="float64")
         mon = sc.Variable(dims=["spectrum"], values=mon_data, variances=mon_data, dtype="float64")
+
+        det /= self._flood
 
         det_sum = det.sum()
         mon_sum = mon.sum()
@@ -90,18 +95,30 @@ class DetMapAngleScanLiveDispatcher(LiveDispatcher):
     """
 
     def __init__(
-        self, x_data: npt.NDArray[np.float64], x_name: str, y_in_name: str, y_out_name: str
+        self,
+        x_data: npt.NDArray[np.float64],
+        x_name: str,
+        y_in_name: str,
+        y_out_name: str,
+        flood: sc.Variable | None = None,
     ) -> None:
         """Init."""
         super().__init__()
         self.x_data = x_data
         self.x_name = x_name
 
-        self.y_data = np.zeros_like(x_data)
+        self.y_data = sc.array(
+            dims=["spectrum"],
+            values=np.zeros_like(x_data),
+            variances=np.zeros_like(x_data),
+            dtype="float64",
+        )
         self.y_in_name: str = y_in_name
         self.y_out_name: str = y_out_name
 
         self._descriptor_uid: str | None = None
+
+        self._flood = flood if flood is not None else sc.scalar(value=1, dtype="float64")
 
     def descriptor(self, doc: EventDescriptor) -> None:
         """Process a descriptor."""
@@ -118,7 +135,10 @@ class DetMapAngleScanLiveDispatcher(LiveDispatcher):
                 f"Shape of data ({data.shape} does not match x_data.shape ({self.x_data.shape})"
             )
 
-        self.y_data += data
+        scaled_data = (
+            sc.array(dims=["spectrum"], values=data, variances=data, dtype="float64") / self._flood
+        )
+        self.y_data += scaled_data
         return doc
 
     def stop(self, doc: RunStop, _md: dict[str, Any] | None = None) -> None:
@@ -128,13 +148,13 @@ class DetMapAngleScanLiveDispatcher(LiveDispatcher):
             return super().stop(doc, _md)
 
         current_time = time.time()
-        for x, y in zip(self.x_data, self.y_data, strict=True):
+        for x, y in zip(self.x_data, self.y_data, strict=True):  # type: ignore (pyright doesn't understand scipp)
             logger.debug("DetMapAngleScanLiveDispatcher emitting event with x=%f, y=%f", x, y)
             event = {
                 "data": {
                     self.x_name: x,
-                    self.y_out_name: y,
-                    self.y_out_name + "_err": np.sqrt(y + 0.5),
+                    self.y_out_name: y.value,
+                    self.y_out_name + "_err": np.sqrt(y.variance + 0.5),
                 },
                 "timestamps": {
                     self.x_name: current_time,

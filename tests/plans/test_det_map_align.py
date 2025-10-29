@@ -16,6 +16,7 @@ from ibex_bluesky_core.plans.reflectometry import (
     angle_scan_plan,
     height_and_angle_scan_plan,
 )
+from ibex_bluesky_core.plans.reflectometry._det_map_align import _set_title_to_fit_result
 
 
 @pytest.fixture
@@ -122,3 +123,24 @@ def test_det_map_align_bad_angle_map_shape(RE, dae, height):
                     angle_map=np.array([21, 22, 23, 24]),
                 )
             )
+
+
+def test_set_title_to_fit_result_failed_fit():
+    ax = MagicMock()
+    live_fit = MagicMock()
+    live_fit.result = None
+
+    _set_title_to_fit_result(fit_callback=live_fit, ax=ax, name="stop", doc={})
+
+    ax.set_title.assert_called_once_with("Fit failed")
+
+
+def test_set_title_to_fit_result_good_fit():
+    ax = MagicMock()
+    live_fit = MagicMock()
+    live_fit.result.params["x0"].value = 1.23456789
+    live_fit.result.params["x0"].stderr = 9.87654321
+
+    _set_title_to_fit_result(fit_callback=live_fit, ax=ax, name="stop", doc={})
+
+    ax.set_title.assert_called_once_with("Best x0: 1.2346 +/- 9.8765")

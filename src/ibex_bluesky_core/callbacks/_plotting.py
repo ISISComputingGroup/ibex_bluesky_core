@@ -206,7 +206,7 @@ class PlotPNGSaver(QtAwareCallback):
         y: str,
         ax: Axes,
         postfix: str,
-        output_dir: str | os.PathLike[str] | None,
+        output_dir: str | os.PathLike[str] | None = None,
     ) -> None:
         """Initialise the PlotPNGSaver callback.
 

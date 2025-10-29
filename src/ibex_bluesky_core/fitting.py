@@ -1,5 +1,6 @@
 """Fitting methods used by the LiveFit callback."""
 
+import math
 from abc import ABC, abstractmethod
 from collections.abc import Callable
 
@@ -102,6 +103,19 @@ class Fit(ABC):
         return FitMethod(model=cls.model(*args), guess=cls.guess(*args))
 
 
+def _guess_cen_and_width(
+    x: npt.NDArray[np.float64], y: npt.NDArray[np.float64]
+) -> tuple[float, float]:
+    """Guess the center and width of a positive peak."""
+    com, total_area = center_of_mass_of_area_under_curve(x, y)
+    y_range = np.max(y) - np.min(y)
+    if y_range == 0.0:
+        width = (np.max(x) - np.min(x)) / 2
+    else:
+        width = total_area / y_range
+    return com, width
+
+
 class Gaussian(Fit):
     """Gaussian Fitting."""
 
@@ -130,8 +144,9 @@ class Gaussian(Fit):
         def guess(
             x: npt.NDArray[np.float64], y: npt.NDArray[np.float64]
         ) -> dict[str, lmfit.Parameter]:
-            mean = np.sum(x * y) / np.sum(y)
-            sigma = np.sqrt(np.sum(y * (x - mean) ** 2) / np.sum(y))
+            cen, width = _guess_cen_and_width(x, y)
+            sigma = width / math.sqrt(2 * math.pi)  # From expected area under gaussian
+
             background = np.min(y)
 
             if np.max(y) > abs(np.min(y)):
@@ -142,7 +157,7 @@ class Gaussian(Fit):
             init_guess = {
                 "amp": lmfit.Parameter("amp", amp),
                 "sigma": lmfit.Parameter("sigma", sigma, min=0),
-                "x0": lmfit.Parameter("x0", mean),
+                "x0": lmfit.Parameter("x0", cen),
                 "background": lmfit.Parameter("background", background),
             }
 
@@ -545,19 +560,6 @@ class ERFC(Fit):
             return init_guess
 
         return guess
-
-
-def _guess_cen_and_width(
-    x: npt.NDArray[np.float64], y: npt.NDArray[np.float64]
-) -> tuple[float, float]:
-    """Guess the center and width of a positive peak."""
-    com, total_area = center_of_mass_of_area_under_curve(x, y)
-    y_range = np.max(y) - np.min(y)
-    if y_range == 0.0:
-        width = (np.max(x) - np.min(x)) / 2
-    else:
-        width = total_area / y_range
-    return com, width
 
 
 class TopHat(Fit):
