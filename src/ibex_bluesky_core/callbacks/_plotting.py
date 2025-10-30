@@ -4,6 +4,7 @@ import logging
 import os
 import threading
 from pathlib import Path
+from stat import S_IRGRP, S_IROTH, S_IRUSR
 from typing import Any
 
 import matplotlib
@@ -227,9 +228,12 @@ class PlotPNGSaver(QtAwareCallback):
         self.filename = None
 
     def start(self, doc: RunStart) -> None:
+        rb_num = _get_rb_num(doc)
+        rb_num_str = rb_num if rb_num == "Unknown RB" else f"RB{rb_num}"
         self.filename = (
             self.output_dir
-            / f"{_get_rb_num(doc)}"
+            / f"{rb_num_str}"
+            / "bluesky_scans"
             / f"{get_instrument()}_{self.x}_{self.y}_{format_time(doc)}Z{self.postfix}.png"
         )
 
@@ -245,3 +249,4 @@ class PlotPNGSaver(QtAwareCallback):
 
         self.filename.parent.mkdir(parents=True, exist_ok=True)
         self.ax.figure.savefig(self.filename, format="png")  # pyright: ignore [reportAttributeAccessIssue]
+        os.chmod(self.filename, S_IRUSR | S_IRGRP | S_IROTH)
