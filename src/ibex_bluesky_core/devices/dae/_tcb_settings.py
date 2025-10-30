@@ -7,7 +7,7 @@ from enum import Enum
 from xml.etree.ElementTree import tostring
 
 from bluesky.protocols import Locatable, Location, Movable
-from ophyd_async.core import AsyncStatus, Device, SignalRW
+from ophyd_async.core import AsyncStatus, SignalRW, StandardReadable
 
 from ibex_bluesky_core.devices import (
     compress_and_hex,
@@ -120,7 +120,7 @@ def _convert_tcb_settings_to_xml(current_xml: str, settings: DaeTCBSettingsData)
     return tostring(root, encoding="unicode")
 
 
-class DaeTCBSettings(Device, Locatable[DaeTCBSettingsData], Movable[DaeTCBSettingsData]):
+class DaeTCBSettings(StandardReadable, Locatable[DaeTCBSettingsData], Movable[DaeTCBSettingsData]):
     """Subdevice for the DAE time channel settings."""
 
     def __init__(self, dae_prefix: str, name: str = "") -> None:

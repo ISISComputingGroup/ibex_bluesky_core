@@ -51,13 +51,6 @@ from tests.devices.dae_testing_data import (
 
 
 @pytest.fixture
-async def dae() -> Dae:
-    dae = Dae("UNITTEST:MOCK:")
-    await dae.connect(mock=True)
-    return dae
-
-
-@pytest.fixture
 async def spectrum() -> DaeSpectra:
     spectrum = DaeSpectra(dae_prefix="UNITTEST:MOCK:", spectra=1, period=1)
     await spectrum.connect(mock=True)
