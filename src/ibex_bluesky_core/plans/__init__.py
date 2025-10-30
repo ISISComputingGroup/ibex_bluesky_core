@@ -16,7 +16,6 @@ from ibex_bluesky_core.devices.block import BlockWriteConfig, block_rw
 from ibex_bluesky_core.devices.simpledae import monitor_normalising_dae
 from ibex_bluesky_core.fitting import FitMethod
 from ibex_bluesky_core.plan_stubs import call_qt_aware, polling_plan
-from ibex_bluesky_core.plan_stubs.num_periods_wrapper import with_num_periods
 from ibex_bluesky_core.utils import NamedReadableAndMovable, centred_pixel
 
 if TYPE_CHECKING:
@@ -29,7 +28,6 @@ __all__ = [
     "motor_scan",
     "polling_plan",
     "scan",
-    "with_num_periods",
 ]
 
 
