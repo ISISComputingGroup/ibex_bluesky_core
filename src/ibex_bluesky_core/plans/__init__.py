@@ -31,6 +31,17 @@ __all__ = [
 ]
 
 
+def _get_additional_md(
+    dae: "SimpleDae", *, periods: bool, save_run: bool
+) -> Generator[Msg, None, dict[str, Any]]:
+    if periods and save_run:
+        run_number = yield from bps.rd(dae.current_or_next_run_number_str)
+        return {"run_number": run_number}
+    else:
+        yield from bps.null()
+        return {}
+
+
 def scan(  # noqa: PLR0913
     dae: "SimpleDae",
     block: NamedMovable[float],
@@ -42,6 +53,7 @@ def scan(  # noqa: PLR0913
     periods: bool = True,
     save_run: bool = False,
     rel: bool = False,
+    md: dict[Any, Any] | None = None,
 ) -> Generator[Msg, None, ISISCallbacks]:
     """Scan the DAE against a Movable.
 
@@ -55,6 +67,7 @@ def scan(  # noqa: PLR0913
         periods: whether or not to use software periods.
         save_run: whether or not to save run.
         rel: whether or not to scan around the current position or use absolute positions.
+        md: Arbitrary metadata to include in this scan.
 
     """
     yield from ensure_connected(dae, block)  # type: ignore
@@ -66,13 +79,15 @@ def scan(  # noqa: PLR0913
 
     icc = _set_up_fields_and_icc(block, dae, model, periods, save_run, ax)
 
+    additional_md = yield from _get_additional_md(dae, periods=periods, save_run=save_run)
+
     @icc
     def _inner() -> Generator[Msg, None, None]:
         if rel:
             plan = bp.rel_scan
         else:
             plan = bp.scan
-        yield from plan([dae], block, start, stop, num=num)
+        yield from plan([dae], block, start, stop, num=num, md=additional_md | (md or {}))
 
     yield from _inner()
 
@@ -116,6 +131,7 @@ def adaptive_scan(  # noqa: PLR0913, PLR0917
     periods: bool = True,
     save_run: bool = False,
     rel: bool = False,
+    md: dict[Any, Any] | None = None,
 ) -> Generator[Msg, None, ISISCallbacks]:
     """Scan the DAE against a block using an adaptive scan.
 
@@ -133,6 +149,7 @@ def adaptive_scan(  # noqa: PLR0913, PLR0917
         periods: whether or not to use software periods.
         save_run: whether or not to save run.
         rel: whether or not to scan around the current position or use absolute positions.
+        md: Arbitrary metadata to include in this scan.
 
     Returns:
         an :obj:`ibex_bluesky_core.callbacks.ISISCallbacks` instance.
@@ -147,6 +164,8 @@ def adaptive_scan(  # noqa: PLR0913, PLR0917
     _, ax = yield from call_qt_aware(plt.subplots)
 
     icc = _set_up_fields_and_icc(block, dae, model, periods, save_run, ax)
+
+    additional_md = yield from _get_additional_md(dae, periods=periods, save_run=save_run)
 
     @icc
     def _inner() -> Generator[Msg, None, None]:
@@ -164,6 +183,7 @@ def adaptive_scan(  # noqa: PLR0913, PLR0917
             max_step=max_step,
             target_delta=target_delta,
             backstep=True,
+            md=additional_md | (md or {}),
         )  # type: ignore
 
     yield from _inner()
@@ -185,6 +205,7 @@ def motor_scan(  # noqa: PLR0913
     periods: bool = True,
     save_run: bool = False,
     rel: bool = False,
+    md: dict[Any, Any] | None = None,
 ) -> Generator[Msg, None, ISISCallbacks]:
     """Wrap our scan() plan and create a block_rw and a DAE object.
 
@@ -205,6 +226,7 @@ def motor_scan(  # noqa: PLR0913
         periods: whether or not to use software periods.
         save_run: whether or not to save run.
         rel: whether or not to scan around the current position or use absolute positions.
+        md: Arbitrary metadata to include in this scan.
 
     Returns:
         an :obj:`ibex_bluesky_core.callbacks.ISISCallbacks` instance.
@@ -231,6 +253,7 @@ def motor_scan(  # noqa: PLR0913
             save_run=save_run,
             periods=periods,
             rel=rel,
+            md=md,
         )
     )
 
@@ -251,6 +274,7 @@ def motor_adaptive_scan(  # noqa: PLR0913
     periods: bool = True,
     save_run: bool = False,
     rel: bool = False,
+    md: dict[Any, Any] | None = None,
 ) -> Generator[Msg, None, ISISCallbacks]:
     """Wrap adaptive_scan() plan and create a block_rw and a DAE object.
 
@@ -273,6 +297,7 @@ def motor_adaptive_scan(  # noqa: PLR0913
         periods: whether or not to use software periods.
         save_run: whether or not to save run.
         rel: whether or not to scan around the current position or use absolute positions.
+        md: Arbitrary metadata to include in this scan.
 
     Returns:
         an :obj:`ibex_bluesky_core.callbacks.ISISCallbacks` instance.
@@ -300,5 +325,6 @@ def motor_adaptive_scan(  # noqa: PLR0913
             model=model,
             save_run=save_run,
             rel=rel,
+            md=md,
         )
     )

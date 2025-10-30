@@ -190,6 +190,50 @@ As this is fairly common functionality for most plans, we have created a "standa
 For more information on callbacks, see
 [bluesky callbacks documentation](https://blueskyproject.io/bluesky/main/callbacks.html).
 
+## Metadata
+
+Bluesky provides a number of mechanisms for inserting metadata into a scan. In general, metadata may be any JSON-serialisable object including numbers, strings, lists, dictionaries, and nested combinations of those. The bluesky documentation has an {external+bluesky:doc}`extensive description of metadata mechanisms <metadata>`, but the main options are summarised below.
+
+**Persistently (for this python session)**
+```python
+RE.md["user"] = "Tom"
+RE.md["sample"] = "unobtainium"
+```
+
+**For one `RE` call**:
+```python
+RE(some_plan(), sample="unobtainium", user="Tom")
+```
+
+**Dynamically, within a plan (using {external+bluesky:py:obj}`bluesky.preprocessors.inject_md_wrapper`)**
+```python
+import bluesky.plan_stubs as bps
+from bluesky.preprocessors import inject_md_wrapper
+
+
+def some_plan(dae):
+    run_number = yield from bps.rd(dae.current_or_next_run_number_str)
+    return (yield from inject_md_wrapper(subplan(), {"run_number": run_number}))
+```
+
+**Dynamically, within a plan (using {external+bluesky:py:obj}`bluesky.preprocessors.inject_md_decorator`)**
+```python
+import bluesky.plan_stubs as bps
+from bluesky.preprocessors import inject_md_decorator
+
+
+def some_plan(dae):
+    run_number = yield from bps.rd(dae.current_or_next_run_number_str)
+    
+    @inject_md_decorator({"run_number": run_number})
+    def _inner():
+        yield from subplan()
+
+    yield from _inner()
+```
+
+In addition to the above mechanisms, many built-in bluesky plans (such as {external+bluesky:py:obj}`bluesky.plans.scan` and {py:obj}`ibex_bluesky_core.plans.scan`) take an `md` keyword argument, which can also be used to insert additional metadata for one scan.
+
 ## See also
 
 **Plans & plan-stubs**
