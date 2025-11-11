@@ -92,4 +92,5 @@ intersphinx_mapping = {
     "matplotlib": ("https://matplotlib.org", None),
     "lmfit": ("https://lmfit.github.io/lmfit-py/", None),
     "typing_extensions": ("https://typing-extensions.readthedocs.io/en/latest/", None),
+    "ibex_user_manual": ("https://isiscomputinggroup.github.io/ibex_user_manual/", None),
 }
