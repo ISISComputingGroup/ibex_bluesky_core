@@ -89,7 +89,7 @@ intersphinx_mapping = {
     "scippneutron": ("https://scipp.github.io/scippneutron/", None),
     "numpy": ("https://numpy.org/doc/stable/", None),
     "scipy": ("https://docs.scipy.org/doc/scipy/", None),
-    "matplotlib": ("https://matplotlib.org", None),
+    "matplotlib": ("https://matplotlib.org/stable/", None),
     "lmfit": ("https://lmfit.github.io/lmfit-py/", None),
     "typing_extensions": ("https://typing-extensions.readthedocs.io/en/latest/", None),
     "ibex_user_manual": ("https://isiscomputinggroup.github.io/ibex_user_manual/", None),
