@@ -12,9 +12,9 @@ from bluesky.utils import Msg
 from ophyd_async.epics.motor import Motor, UseSetMode
 
 from ibex_bluesky_core.devices.reflectometry import ReflParameter
-from ibex_bluesky_core.plan_stubs.dae_table_wrapper import _with_dae_tables
-from ibex_bluesky_core.plan_stubs.num_periods_wrapper import _with_num_periods
-from ibex_bluesky_core.plan_stubs.time_channels_wrapper import _with_time_channels
+from ibex_bluesky_core.plan_stubs._dae_table_wrapper import with_dae_tables
+from ibex_bluesky_core.plan_stubs._num_periods_wrapper import with_num_periods
+from ibex_bluesky_core.plan_stubs._time_channels_wrapper import with_time_channels
 from ibex_bluesky_core.utils import NamedReadableAndMovable
 
 logger = logging.getLogger(__name__)
@@ -28,9 +28,9 @@ CALL_QT_AWARE_MSG_KEY = "ibex_bluesky_core_call_qt_aware"
 
 
 __all__ = [
-    "_with_dae_tables",
-    "_with_num_periods",
-    "_with_time_channels",
+    "with_dae_tables",
+    "with_num_periods",
+    "with_time_channels",
     "call_qt_aware",
     "call_sync",
     "polling_plan",

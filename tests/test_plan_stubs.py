@@ -26,9 +26,9 @@ from ibex_bluesky_core.devices.dae._tcb_settings import _convert_xml_to_tcb_sett
 from ibex_bluesky_core.devices.reflectometry import ReflParameter
 from ibex_bluesky_core.plan_stubs import (
     CALL_QT_AWARE_MSG_KEY,
-    _with_dae_tables,
-    _with_num_periods,
-    _with_time_channels,
+    with_dae_tables,
+    with_num_periods,
+    with_time_channels,
     call_qt_aware,
     call_sync,
     prompt_user_for_choice,
@@ -202,9 +202,9 @@ def test_num_periods_wrapper(dae: Dae, RE: RunEngine):
 
     set_mock_value(dae.number_of_periods.signal, original_settings)
 
-    with patch("ibex_bluesky_core.plan_stubs.num_periods_wrapper.ensure_connected"):
+    with patch("ibex_bluesky_core.plan_stubs._num_periods_wrapper.ensure_connected"):
         RE(
-            _with_num_periods(
+            with_num_periods(
                 bps.null(),
                 dae=dae,
                 number_of_periods=80,
@@ -480,8 +480,8 @@ def test_time_channels_wrapper(dae: Dae, RE: RunEngine):
         dae.tcb_settings._raw_tcb_settings, compress_and_hex(original_tcb_settings).decode()
     )
 
-    with patch("ibex_bluesky_core.plan_stubs.time_channels_wrapper.ensure_connected"):
-        RE(_with_time_channels(bps.null(), dae=dae, new_tcb_settings=modified_settings))
+    with patch("ibex_bluesky_core.plan_stubs._time_channels_wrapper.ensure_connected"):
+        RE(with_time_channels(bps.null(), dae=dae, new_tcb_settings=modified_settings))
 
     mock_set_calls = get_mock_put(dae.tcb_settings._raw_tcb_settings).call_args_list
 
@@ -556,8 +556,8 @@ def test_dae_table_wrapper(dae: Dae, RE: RunEngine):
 
     set_mock_value(dae.dae_settings._raw_dae_settings, original_settings)
 
-    with patch("ibex_bluesky_core.plan_stubs.dae_table_wrapper.ensure_connected"):
-        RE(_with_dae_tables(bps.null(), dae=dae, new_settings=modified_settings))
+    with patch("ibex_bluesky_core.plan_stubs._dae_table_wrapper.ensure_connected"):
+        RE(with_dae_tables(bps.null(), dae=dae, new_settings=modified_settings))
 
     mock_set_calls = get_mock_put(dae.dae_settings._raw_dae_settings).call_args_list
 
