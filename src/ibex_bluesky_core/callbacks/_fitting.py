@@ -6,6 +6,7 @@ import os
 import warnings
 from itertools import zip_longest
 from pathlib import Path
+from stat import S_IRGRP, S_IROTH, S_IRUSR
 
 import lmfit
 import numpy as np
@@ -172,8 +173,9 @@ class LiveFitLogger(CallbackBase):
         file = f"{get_instrument()}_{self.x}_{self.y}_{title_format_datetime}Z{self.postfix}.txt"
 
         rb_num = _get_rb_num(doc)
+        rb_num_str = rb_num if rb_num == "Unknown RB" else f"RB{rb_num}"
 
-        self.filename = self.output_dir / f"{rb_num}" / file
+        self.filename = self.output_dir / f"{rb_num_str}" / "bluesky_scans" / file
 
     def event(self, doc: Event) -> Event:
         """Start collecting, y, x, and yerr data.
@@ -237,6 +239,7 @@ class LiveFitLogger(CallbackBase):
                 self.write_fields_table_uncertainty()
 
             logger.info("Fitting information successfully written to: %s", self.filename.resolve())
+        os.chmod(self.filename, S_IRUSR | S_IRGRP | S_IROTH)
 
     def write_fields_table(self) -> None:
         """Write collected run info to the fitting file."""

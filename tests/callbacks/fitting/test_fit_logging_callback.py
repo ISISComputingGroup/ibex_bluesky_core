@@ -2,6 +2,7 @@
 import os
 from pathlib import Path
 from platform import node
+from stat import S_IRGRP, S_IROTH, S_IRUSR
 from unittest.mock import MagicMock, mock_open, patch
 
 import pytest
@@ -30,6 +31,7 @@ def test_after_fitting_callback_writes_to_file_successfully_no_y_uncertainty(
     with (
         patch("ibex_bluesky_core.callbacks._fitting.open", m),
         patch("ibex_bluesky_core.callbacks._fitting.os.makedirs"),
+        patch("os.chmod"),
     ):
         with patch("time.time", MagicMock(return_value=time)):
             RE(
@@ -39,7 +41,10 @@ def test_after_fitting_callback_writes_to_file_successfully_no_y_uncertainty(
             )
 
     assert m.call_args_list[0].args == (
-        filepath / "0" / f"{node()}_motor_invariant_2024-10-04_13-43-43Z{postfix}.txt",
+        (
+            filepath / "RB0" / "bluesky_scans" / f"{node()}_motor_invariant_2024-10-04_13-43-43"
+            f"Z{postfix}.txt"
+        ),
         "w",
     )  # type: ignore
 
@@ -68,6 +73,7 @@ def test_fitting_callback_handles_no_rb_number_save(
     with (
         patch("ibex_bluesky_core.callbacks._fitting.open", m),
         patch("ibex_bluesky_core.callbacks._fitting.os.makedirs"),
+        patch("os.chmod"),
     ):
         with patch("time.time", MagicMock(return_value=time)):
             RE(
@@ -76,7 +82,12 @@ def test_fitting_callback_handles_no_rb_number_save(
             )
 
     assert m.call_args_list[0].args == (
-        filepath / "Unknown RB" / f"{node()}_motor_invariant_2024-10-04_13-43-43Z{postfix}.txt",
+        (
+            filepath
+            / "Unknown RB"
+            / "bluesky_scans"
+            / f"{node()}_motor_invariant_2024-10-04_13-43-43Z{postfix}.txt"
+        ),
         "w",
     )  # type: ignore
 
@@ -100,6 +111,7 @@ def test_after_fitting_callback_writes_to_file_successfully_with_y_uncertainty(
     with (
         patch("ibex_bluesky_core.callbacks._fitting.open", m),
         patch("ibex_bluesky_core.callbacks._fitting.os.makedirs"),
+        patch("os.chmod"),
     ):
         with patch("time.time", MagicMock(return_value=time)):
             RE(
@@ -109,7 +121,10 @@ def test_after_fitting_callback_writes_to_file_successfully_with_y_uncertainty(
             )
 
     assert m.call_args_list[0].args == (
-        filepath / "0" / f"{node()}_motor_invariant_2024-10-04_13-43-43Z{postfix}.txt",
+        (
+            filepath / "RB0" / "bluesky_scans" / f"{node()}_motor_invariant_2024-10-04_13-43-43"
+            f"Z{postfix}.txt"
+        ),
         "w",
     )  # type: ignore
 
@@ -203,3 +218,35 @@ def test_error_thrown_if_no_y_err_data_in_event(RE: run_engine.RunEngine):
                 }
             }
         )
+
+
+def test_file_set_readonly_after_written(
+    RE: run_engine.RunEngine,
+):
+    invariant = soft_signal_rw(float, 0.5, name="invariant")
+    mot = soft_signal_rw(float, name="motor")
+
+    filepath = Path("C:\\") / "instrument" / "var" / "logs"
+    postfix = "fit1"
+    m = mock_open()
+
+    lf = LiveFit(Linear.fit(), y="invariant", x="motor", update_every=50)
+    lfl = LiveFitLogger(lf, y="invariant", x="motor", postfix=postfix, output_dir=filepath)
+    with (
+        patch("ibex_bluesky_core.callbacks._fitting.open", m),
+        patch("ibex_bluesky_core.callbacks._fitting.os.makedirs"),
+        patch("os.chmod") as mock_chmod,
+    ):
+        with patch("time.time", MagicMock(return_value=time)):
+            RE(
+                scan([invariant], mot, -1, 1, 3),
+                [lf, lfl],  # pyright: ignore until https://github.com/bluesky/bluesky/issues/1938
+            )
+
+    fit_filepath = (
+        filepath
+        / "Unknown RB"
+        / "bluesky_scans"
+        / f"{node()}_motor_invariant_2024-10-04_13-43-43Z{postfix}.txt"
+    )
+    mock_chmod.assert_called_with(fit_filepath, S_IRUSR | S_IRGRP | S_IROTH)
