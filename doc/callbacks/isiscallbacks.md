@@ -1,7 +1,7 @@
 {#icc}
-# ISIS Standard Callbacks ({py:obj}`ISISCallbacks <ibex_bluesky_core.callbacks.ISISCallbacks>`)
+# ISIS Standard Callbacks ({py:obj}`~ibex_bluesky_core.callbacks.ISISCallbacks`)
 
-{py:obj}`ISISCallbacks <ibex_bluesky_core.callbacks.ISISCallbacks>` is a helper to add common callbacks to 1-dimensional scans with a single dependent variable (with an optional uncertainty) and a single independent variable.  This should avoid some repetition as you don't need to pass `x` and `y` to each callback.
+{py:obj}`~ibex_bluesky_core.callbacks.ISISCallbacks` is a helper to add common callbacks to 1-dimensional scans with a single dependent variable (with an optional uncertainty) and a single independent variable.  This should avoid some repetition as you don't need to pass `x` and `y` to each callback.
 
 It is composed of the following callbacks:
 - {py:obj}`ibex_bluesky_core.callbacks.LiveFit`
@@ -16,13 +16,13 @@ It is composed of the following callbacks:
 
 ## Live table
 
-A {external+bluesky:py:obj}`LiveTable <bluesky.callbacks.LiveTable>` is enabled by default. This will show the values of X and Y according to their `seq_num` or event order.
+A {external+bluesky:py:obj}`~bluesky.callbacks.LiveTable` is enabled by default. This will show the values of X and Y according to their `seq_num` or event order.
 
 You can pass optional fields to be displayed in the LiveTable with the `fields_for_live_table` argument or the `measured_fields` argument if you want the fields to be put in the human-readable file (see {ref}`below. <hr_files_icc>`)
 
 ## Plotting
 
-Plotting is enabled by default and running a plan with {py:obj}`ISISCallbacks <ibex_bluesky_core.callbacks.ISISCallbacks>` will close any current active plots.
+Plotting is enabled by default and running a plan with {py:obj}`~ibex_bluesky_core.callbacks.ISISCallbacks` will close any current active plots.
 
 ## Fitting
 
@@ -32,7 +32,7 @@ After a scan has run you can get the fitting results by using the {py:obj}`live_
 
 ## Centre of mass and Peak Stats
 
-These are both enabled by default. To access {py:obj}`Centre of Mass <ibex_bluesky_core.callbacks.CentreOfMass>` information after a plan, use the {py:obj}`com <ibex_bluesky_core.callbacks.ISISCallbacks.com>` property.
+These are both enabled by default. To access {py:obj}`~ibex_bluesky_core.callbacks.CentreOfMass` information after a plan, use the {py:obj}`com <ibex_bluesky_core.callbacks.ISISCallbacks.com>` property.
 
 To access {external+bluesky:py:obj}`Peak Stats <bluesky.callbacks.fitting.PeakStats>` after a plan use the {py:obj}`peak_stats <ibex_bluesky_core.callbacks.ISISCallbacks.peak_stats>` property.
 

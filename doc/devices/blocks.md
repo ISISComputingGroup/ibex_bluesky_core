@@ -4,10 +4,10 @@ Blocks are one of IBEX's central abstractions, which present a uniform interface
 scientifically interesting PV.
 
 The {py:obj}`ibex_bluesky_core.devices.block` module provides support for four types of blocks:
-- Read-only ({py:obj}`BlockR <ibex_bluesky_core.devices.block.BlockR>`)
-- Read/write ({py:obj}`BlockRw <ibex_bluesky_core.devices.block.BlockRw>`)
-- Read/write with setpoint readback ({py:obj}`BlockRwRbv <ibex_bluesky_core.devices.block.BlockRwRbv>`)
-- Motors ({py:obj}`BlockMot <ibex_bluesky_core.devices.block.BlockMot>`)
+- Read-only ({py:obj}`~ibex_bluesky_core.devices.block.BlockR`)
+- Read/write ({py:obj}`~ibex_bluesky_core.devices.block.BlockRw`)
+- Read/write with setpoint readback ({py:obj}`~ibex_bluesky_core.devices.block.BlockRwRbv`)
+- Motors ({py:obj}`~ibex_bluesky_core.devices.block.BlockMot`)
 
 ```{note}
 All signals in bluesky have a strong type. This must match
@@ -25,20 +25,20 @@ mot: NotConnected:
 
 ## Block types
 
-### Read-only ({py:obj}`BlockR <ibex_bluesky_core.devices.block.BlockR>`)
+### Read-only ({py:obj}`~ibex_bluesky_core.devices.block.BlockR`)
 
-This is a read-only block. It supports bluesky's {external+bluesky:py:obj}`Readable <bluesky.protocols.Readable>` protocol, as well as
-basic metadata protocols such as {external+bluesky:py:obj}`HasName <bluesky.protocols.HasName>`.
+This is a read-only block. It supports bluesky's {external+bluesky:py:obj}`~bluesky.protocols.Readable` protocol, as well as
+basic metadata protocols such as {external+bluesky:py:obj}`~bluesky.protocols.HasName`.
 
 This type of block is usable by:
 - Plans like {external+bluesky:py:obj}`bluesky.plans.count` or {external+bluesky:py:obj}`bluesky.plans.scan` as a detector object.
 - Plan stubs like {external+bluesky:py:obj}`bluesky.plan_stubs.rd`, which plans may use to get the current value
 of a block for use within a plan.
 
-A {py:obj}`BlockR <ibex_bluesky_core.devices.block.BlockR>` object does not implement any logic on read - it simply returns the most recent
+A {py:obj}`~ibex_bluesky_core.devices.block.BlockR` object does not implement any logic on read - it simply returns the most recent
 value of the block.
 
-A simple constructor, {py:obj}`block_r <ibex_bluesky_core.devices.block.block_r>`, is available, which assumes the current instrument's PV
+A simple constructor, {py:obj}`~ibex_bluesky_core.devices.block.block_r`, is available, which assumes the current instrument's PV
 prefix:
 
 ```python
@@ -46,11 +46,11 @@ from ibex_bluesky_core.devices.block import block_r
 readable_block = block_r(float, "my_block_name")
 ```
 
-### Read-write ({py:obj}`block_rw <ibex_bluesky_core.devices.block.BlockRw>`)
+### Read-write ({py:obj}`~ibex_bluesky_core.devices.block.BlockRw`)
 
-This is a read-write block. It supports the same protocols as a {py:obj}`BlockR <ibex_bluesky_core.devices.block.BlockR>`, plus the {external+bluesky:py:obj}`Movable <bluesky.protocols.Movable>` protocol.
+This is a read-write block. It supports the same protocols as a {py:obj}`~ibex_bluesky_core.devices.block.BlockR`, plus the {external+bluesky:py:obj}`~bluesky.protocols.Movable` protocol.
 
-The addition of the {external+bluesky:py:obj}`Movable <bluesky.protocols.Movable>` protocol means that this type of block can be moved by plan 
+The addition of the {external+bluesky:py:obj}`~bluesky.protocols.Movable` protocol means that this type of block can be moved by plan 
 stubs such as {external+bluesky:py:obj}`bluesky.plan_stubs.mv` or {external+bluesky:py:obj}`bluesky.plan_stubs.abs_set`.
 
 It can also be used as the movable in full plans like {external+bluesky:py:obj}`bluesky.plans.scan`.
@@ -64,7 +64,7 @@ It can also be used as the movable in full plans like {external+bluesky:py:obj}`
  are not motors, even if the documentation tends to use motors as the examples.
 ```
 
-A simple constructor, {py:obj}`block_rw <ibex_bluesky_core.devices.block.block_rw>`, is available, which assumes the current instrument's PV
+A simple constructor, {py:obj}`~ibex_bluesky_core.devices.block.block_rw`, is available, which assumes the current instrument's PV
 prefix:
 
 ```python
@@ -79,10 +79,10 @@ writable_block = block_rw(
 ```
 
 
-### Read/write/setpoint-readback ({py:obj}`block_rw_rbv <ibex_bluesky_core.devices.block.BlockRwRbv>`)
+### Read/write/setpoint-readback ({py:obj}`~ibex_bluesky_core.devices.block.BlockRwRbv`)
 
-This is a block with full support for reading and writing as per {py:obj}`BlockRw <ibex_bluesky_core.devices.block.BlockRw>`, but with
-the addition of bluesky's {external+bluesky:py:obj}`Locatable <bluesky.protocols.Locatable>` protocol, which allows you to read back the
+This is a block with full support for reading and writing as per {py:obj}`~ibex_bluesky_core.devices.block.BlockRw`, but with
+the addition of bluesky's {external+bluesky:py:obj}`~bluesky.protocols.Locatable` protocol, which allows you to read back the
 current setpoint. Where possible, the setpoint will be read back from hardware.
 
 This object is suitable for use in plan stubs such as `bluesky.plan_stubs.locate`.
@@ -91,7 +91,7 @@ This object is also more suitable for use in plans which use relative moves - th
 relative move will be calculated with respect to the setpoint readback from hardware
 (if available).
 
-A simple constructor ({py:obj}`block_rw_rbv <ibex_bluesky_core.devices.block.block_rw_rbv>`) is available:
+A simple constructor ({py:obj}`~ibex_bluesky_core.devices.block.block_rw_rbv`) is available:
 
 ```python
 from ibex_bluesky_core.devices.block import block_rw_rbv, BlockWriteConfig
@@ -104,28 +104,28 @@ rw_rbv_block = block_rw_rbv(
 )
 ```
 
-### Motors ({py:obj}`BlockMot <ibex_bluesky_core.devices.block.BlockMot>`)
+### Motors ({py:obj}`~ibex_bluesky_core.devices.block.BlockMot`)
 
 This represents a block pointing at a motor record. This has support for:
-- Reading ({external+bluesky:py:obj}`Readable <bluesky.protocols.Readable>`)
-- Writing ({external+bluesky:py:obj}`Movable <bluesky.protocols.Movable>`)
-- Limit-checking ({external+bluesky:py:obj}`Checkable <bluesky.protocols.Checkable>`)
-- Stopping (e.g. on scan abort) ({external+bluesky:py:obj}`Stoppable <bluesky.protocols.Stoppable>`)
+- Reading ({external+bluesky:py:obj}`~bluesky.protocols.Readable`)
+- Writing ({external+bluesky:py:obj}`~bluesky.protocols.Movable`)
+- Limit-checking ({external+bluesky:py:obj}`~bluesky.protocols.Checkable`)
+- Stopping (e.g. on scan abort) ({external+bluesky:py:obj}`~bluesky.protocols.Stoppable`)
 - And advanced use-cases like fly-scanning
 
 This type is recommended to be used if the underlying block is a motor record. It always has
 type `float`, and as such does not take a type argument (unlike the other block types).
 
-{external+bluesky:py:obj}`Checkable <bluesky.protocols.Checkable>` means that moves which would eventually violate limits can be detected by
+{external+bluesky:py:obj}`~bluesky.protocols.Checkable` means that moves which would eventually violate limits can be detected by
 bluesky simulators, before the plan ever runs. This can help to catch errors before
 the plan is executed against hardware. There is also limit-checking at runtime;
-a {external+ophyd_async:py:obj}`MotorLimitsException <ophyd_async.epics.motor.MotorLimitsException>` will be raised
+a {external+ophyd_async:py:obj}`~ophyd_async.epics.motor.MotorLimitsException` will be raised
 at runtime if a requested position is outside the motor's limits.
 
-{external+bluesky:py:obj}`Stoppable <bluesky.protocols.Stoppable>` means that the motor can be asked to stop by bluesky. Plans may choose to execute
+{external+bluesky:py:obj}`~bluesky.protocols.Stoppable` means that the motor can be asked to stop by bluesky. Plans may choose to execute
 a `stop()` on failure, or explicitly during a plan.
 
-Similar to other block types, a utility constructor ({py:obj}`block_mot <ibex_bluesky_core.devices.block.block_mot>`) is available; however, it does not
+Similar to other block types, a utility constructor ({py:obj}`~ibex_bluesky_core.devices.block.block_mot`) is available; however, it does not
 require an explicit type as motors are always of `float` data type:
 
 ```python
@@ -134,15 +134,15 @@ mot_block = block_mot("motor_block")
 ```
 
 A motor block does not need an explicit write config: it always waits for the requested motion
-to complete. See {py:obj}`BlockMot <ibex_bluesky_core.devices.block.BlockMot>` for a detailed mapping of
+to complete. See {py:obj}`~ibex_bluesky_core.devices.block.BlockMot` for a detailed mapping of
 the usual write-configuration options and how these are instead achieved by a motor block.
 
 ## Configuring block write behaviour
 
-{py:obj}`BlockRw <ibex_bluesky_core.devices.block.BlockRw>` and {py:obj}`BlockRwRbv <ibex_bluesky_core.devices.block.BlockRwRbv>` both take a `write_config` argument, which can be used to configure
+{py:obj}`~ibex_bluesky_core.devices.block.BlockRw` and {py:obj}`~ibex_bluesky_core.devices.block.BlockRwRbv` both take a `write_config` argument, which can be used to configure
 the behaviour on writing to a block, for example tolerances and settle times.
 
-See {py:obj}`BlockWriteConfig <ibex_bluesky_core.devices.block.BlockWriteConfig>` for a detailed
+See {py:obj}`~ibex_bluesky_core.devices.block.BlockWriteConfig` for a detailed
 description of the available options.
 
 ## Run Control

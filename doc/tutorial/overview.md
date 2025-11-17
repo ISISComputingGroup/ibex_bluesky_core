@@ -1,6 +1,6 @@
 # Getting started
 
-[`ibex_bluesky_core`](ibex_bluesky_core) is a library which bridges the 
+{py:obj}`ibex_bluesky_core` is a library which bridges the 
 [IBEX control system](https://github.com/ISISComputingGroup/ibex_user_manual/wiki/What-Is-IBEX) 
 and the [bluesky data acquisition framework](https://blueskyproject.io/).
 
@@ -55,7 +55,7 @@ det = block_r(float, "p5")  # A readback block with float datatype
 ```
 
 Block objects provide several mechanisms for configuring write behaviour; see 
-{py:obj}`BlockWriteConfig <ibex_bluesky_core.devices.block.BlockWriteConfig>` for detailed options.
+{py:obj}`~ibex_bluesky_core.devices.block.BlockWriteConfig` for detailed options.
 
 Likewise, the DAE is available as a bluesky device: see [the DAE Documentation](../devices/dae.md)
 for full examples including example configurations.

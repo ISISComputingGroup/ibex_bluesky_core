@@ -1,9 +1,7 @@
 {#standard_fitting_models}
 # Standard Fitting Models
 
-## Linear
-
-API Reference: [`Linear`](ibex_bluesky_core.fitting.Linear)
+## {py:obj}`~ibex_bluesky_core.fitting.Linear`
 
 - `c1` - Gradient
 - `c0` - (y) Intercept
@@ -12,9 +10,7 @@ API Reference: [`Linear`](ibex_bluesky_core.fitting.Linear)
 y = c_1x + c_0
 ```
 
-## Polynomial
-
-API Reference: [`Polynomial`](ibex_bluesky_core.fitting.Polynomial)
+## {py:obj}`~ibex_bluesky_core.fitting.Polynomial`
 
 - `cn` ... `c0` - Polynomial coefficients
 
@@ -23,9 +19,7 @@ For a polynomial degree `n`:
 y = c_{n}x^n + c_{n-1}x^{n-1} + ... + c_1 * x^1 + c_0 
 ```
 
-## Gaussian
-
-API Reference: [`Gaussian`](ibex_bluesky_core.fitting.Gaussian)
+## {py:obj}`~ibex_bluesky_core.fitting.Gaussian`
 
 - `amp` - The maximum height of the Gaussian above `background`
 - `sigma` - A scalar for Gaussian width
@@ -38,9 +32,7 @@ y = \text{amp} * e^{-\frac{(x - x0) ^ 2}{2 * \text{sigma}^2}} + \text{background
 
 ![GaussianModel](./images_fits/gaussian.png)
 
-## Lorentzian
-
-API Reference: [`Lorentzian`](ibex_bluesky_core.fitting.Lorentzian)
+## {py:obj}`~ibex_bluesky_core.fitting.Lorentzian`
 
 - `amp` - The maximum height of the Lorentzian above `background`
 - `sigma` - A scalar for Lorentzian width
@@ -53,9 +45,7 @@ y = \frac{\text{amp}}{1 + \frac{x - \text{center}}{\text{sigma}}^2} + \text{back
 
 ![LorentzianModel](./images_fits/lorentzian.png)
 
-## Damped Oscillator (DampedOsc)
-
-API Reference: [`DampedOsc`](ibex_bluesky_core.fitting.DampedOsc)
+## Damped Oscillator ({py:obj}`~ibex_bluesky_core.fitting.DampedOsc`)
 
 - `center` - The centre (x) of the oscillation
 - `amp` - The maximum height of the curve above 0
@@ -68,9 +58,7 @@ y = \text{amp} * \cos((x - \text{center}) * \text{freq}) * e^{-\frac{x - \text{c
 
 ![DampedOscModel](./images_fits/damped_osc.png)
 
-##  Slit Scan (SlitScan)
-
-API Reference: [`SlitScan`](ibex_bluesky_core.fitting.SlitScan)
+##  Slit Scan ({py:obj}`~ibex_bluesky_core.fitting.SlitScan`)
 
 - `background` $b$ - The minimum value (y) of the model
 - `inflection0` $i_0$ - The x coord of the first inflection point
@@ -92,9 +80,7 @@ y = \min(\text{lin_seg}, \text{exp_seg})
 
 ![SlitScanModel](./images_fits/slit_scan.png)
 
-## Error Function (ERF)
-
-API Reference: [`ERF`](ibex_bluesky_core.fitting.ERF)
+## Error Function ({py:obj}`~ibex_bluesky_core.fitting.ERF`)
 
 - `cen` - The centre (x) of the model
 - `stretch` - A horizontal stretch factor for the model
@@ -107,9 +93,7 @@ y = background + scale * erf(stretch * (x - cen))
 
 ![ERFModel](./images_fits/erf.png)
 
-## Complementary Error Function (ERFC)
-
-API Reference: [`ERFC`](ibex_bluesky_core.fitting.ERFC)
+## Complementary Error Function ({py:obj}`~ibex_bluesky_core.fitting.ERFC`)
 
 - `cen` - The centre (x) of the model
 - `stretch` - A horizontal stretch factor for the model
@@ -122,9 +106,7 @@ y = background + scale * erfc(stretch * (x - cen))
 
 ![ERFCModel](./images_fits/erfc.png)
 
-## Top Hat (TopHat)
-
-API Reference: [`TopHat`](ibex_bluesky_core.fitting.TopHat)
+## Top Hat ({py:obj}`~ibex_bluesky_core.fitting.TopHat`)
 
 - `cen` - The centre (x) of the model
 - `width` - How wide the 'hat' is
@@ -141,9 +123,7 @@ y =
 
 ![TopHatModel](./images_fits/tophat.png)
 
-## Trapezoid
-
-API Reference: [`Trapezoid`](ibex_bluesky_core.fitting.Trapezoid)
+## {py:obj}`~ibex_bluesky_core.fitting.Trapezoid`
 
 - `cen` - The centre (x) of the model
 - `gradient` - How steep the edges of the trapezoid are
@@ -163,9 +143,7 @@ y = \min(g(x), \text{background} + \text{height})
 
 ![TrapezoidModel](./images_fits/trapezoid.png)
 
-## Negative Trapezoid
-
-API Reference: [`NegativeTrapezoid`](ibex_bluesky_core.fitting.NegativeTrapezoid)
+## {py:obj}`~ibex_bluesky_core.fitting.NegativeTrapezoid`
 
 This model is the same shape as the trapezoid described above, but with a negative height.
 
@@ -185,9 +163,7 @@ g(x) = \max(f(x), \text{background} - \text{height})
 y = \min(g(x), \text{background})
 ```
 
-## Muon Momentum
-
-API Reference: [`MuonMomentum`](ibex_bluesky_core.fitting.MuonMomentum)
+## Muon Momentum ({py:obj}`~ibex_bluesky_core.fitting.MuonMomentum`)
 
 Fits data from a momentum scan, it is designed for the specific use case of scanning over magnet current on muon instruments.
 

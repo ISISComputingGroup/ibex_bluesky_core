@@ -1,10 +1,10 @@
-# Chained Fitting ({py:obj}`ChainedLiveFit <ibex_bluesky_core.callbacks.ChainedLiveFit>`)
+# Chained Fitting ({py:obj}`~ibex_bluesky_core.callbacks.ChainedLiveFit`)
 
-{py:obj}`ChainedLiveFit <ibex_bluesky_core.callbacks.ChainedLiveFit>` is a specialised callback that manages multiple {py:obj}`LiveFit <ibex_bluesky_core.callbacks.LiveFit>` instances in a chain, where each fit's results inform the next fit's initial parameters. This is particularly useful when fitting datasets where the initial guess for each fit depends on the parameters obtained from a previous fit.
+{py:obj}`~ibex_bluesky_core.callbacks.ChainedLiveFit` is a specialised callback that manages multiple {py:obj}`~ibex_bluesky_core.callbacks.LiveFit` instances in a chain, where each fit's results inform the next fit's initial parameters. This is particularly useful when fitting datasets where the initial guess for each fit depends on the parameters obtained from a previous fit.
 
 This is useful for when you need to be careful with your curve fitting due to the presence of noisy data. It allows you to fit your widest (full) wavelength band first and then using its fit parameters as the initial guess of the parameters for the next fit
 
-To show how we expect this to be used, we will use a {py:obj}`DualRunDae <ibex_bluesky_core.devices.polarisingdae.DualRunDae>` configured with multiple wavelength bands, to highlight the need to carry over fitting parameters. The example below shows two wavelength bands, first wider than the second. We will fit to the data in the widest wavelength band first, and carry over the results of that fit to the guess of the next fit, to improve the chances of that fit converging.
+To show how we expect this to be used, we will use a {py:obj}`~ibex_bluesky_core.devices.polarisingdae.DualRunDae` configured with multiple wavelength bands, to highlight the need to carry over fitting parameters. The example below shows two wavelength bands, first wider than the second. We will fit to the data in the widest wavelength band first, and carry over the results of that fit to the guess of the next fit, to improve the chances of that fit converging.
 
 ```python
 from typing import Generator
@@ -45,11 +45,11 @@ def plan() -> Generator[Msg, None, None]:
 
 The list of signal names for each independent variable should be passed in the same order that the fits are to be applied.
 
-A list of matplotlib axes is accepted, which will mean that {external+bluesky:py:obj}`LiveFitPlots <bluesky.callbacks.mpl_plotting.LiveFitPlot>` are created per {py:obj}`LiveFit <ibex_bluesky_core.callbacks.LiveFit>`, and it will plot the each respective fit to an axis. {external+bluesky:py:obj}`LiveFitPlots <bluesky.callbacks.mpl_plotting.LiveFitPlot>` are not created if you do not pass `ax`.
+A list of matplotlib axes is accepted, which will mean that {external+bluesky:py:obj}`LiveFitPlots <bluesky.callbacks.mpl_plotting.LiveFitPlot>` are created per {py:obj}`~ibex_bluesky_core.callbacks.LiveFit`, and it will plot the each respective fit to an axis. {external+bluesky:py:obj}`LiveFitPlots <bluesky.callbacks.mpl_plotting.LiveFitPlot>` are not created if you do not pass `ax`.
 
 Similar to the `y` parameter, uncertainties for each dependent variable are accepted in `yerr`.
 
-{py:obj}`ChainedLiveFit <ibex_bluesky_core.callbacks.ChainedLiveFit>` currently has the following limitations:
+{py:obj}`~ibex_bluesky_core.callbacks.ChainedLiveFit` currently has the following limitations:
 - The method for fitting must be the same across all dependent variables.
 - Parameter uncertainties are not carried over between fits
-- If a fit fails to converge, subsequent fits will use their default guess functions
+- If a fit fails to converge, the next fits will use their default guess functions
