@@ -413,7 +413,7 @@ class PeriodSpecIntegralsReducer(Reducer, StandardReadable):
             scalar_det_sum, variance=scalar_det_sum + VARIANCE_ADDITION, dtype="float64"
         ) / sc.scalar(scalar_mon_sum, variance=scalar_mon_sum + VARIANCE_ADDITION, dtype="float64")
         self._intensity_setter(normalized.value)
-        self._intensity_stddev_setter(normalized.variance**0.5)
+        self._intensity_stddev_setter(math.sqrt(normalized.variance))
 
         logger.info("reduction complete")
 
