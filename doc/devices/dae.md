@@ -191,13 +191,16 @@ Published signals:
 ### {py:obj}`PeriodSpecIntegralsReducer<ibex_bluesky_core.devices.simpledae.PeriodSpecIntegralsReducer>`
 
 This reducer exposes the raw integrals of the configured detector and monitor spectra, as
-numpy arrays. By itself, this reducer is not useful in a scan, but is useful for downstream
-processing as performed by reflectometry detector-mapping alignment for
-example.
+numpy arrays. As a convenience, this reducer additionally publishes scalar sums of detector
+and monitor intensities, and an 'intensity' (detector sum divided by monitor sum).
 
 Published signals:
 - `reducer.mon_integrals` - `numpy` array of integrated counts on each configured monitor pixel.
 - `reducer.det_integrals` - `numpy` array of integrated counts on each configured detector pixel.
+- `reducer.mon_sum` - scalar of integrated counts on each configured monitor.
+- `reducer.det_sum` - scalar of integrated counts on each configured detector pixel.
+- `reducer.intensity` - detector sum normalized by monitor sum.
+- `reducer.intensity_stddev` - standard deviation of normalized intensity.
 
 ### {py:obj}`DSpacingMappingReducer<ibex_bluesky_core.devices.simpledae.DSpacingMappingReducer>`
 

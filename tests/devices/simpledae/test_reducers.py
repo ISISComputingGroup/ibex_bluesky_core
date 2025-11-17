@@ -1012,6 +1012,14 @@ async def test_period_spec_integrals_reducer(
     np.testing.assert_equal(await reducer.mon_integrals.get_value(), mon_integrals)
     np.testing.assert_equal(await reducer.det_integrals.get_value(), det_integrals)
 
+    assert await reducer.mon_sum.get_value() == mon_integrals.sum()
+    assert await reducer.det_sum.get_value() == det_integrals.sum()
+
+    assert (
+        pytest.approx(await reducer.intensity.get_value())
+        == det_integrals.sum() / mon_integrals.sum()
+    )
+
 
 def test_period_spec_integrals_reducer_publishes_signals(simpledae: SimpleDae):
     reducer = PeriodSpecIntegralsReducer(detectors=np.array([]), monitors=np.array([]))
