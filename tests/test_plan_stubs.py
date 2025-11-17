@@ -26,14 +26,14 @@ from ibex_bluesky_core.devices.dae._tcb_settings import _convert_xml_to_tcb_sett
 from ibex_bluesky_core.devices.reflectometry import ReflParameter
 from ibex_bluesky_core.plan_stubs import (
     CALL_QT_AWARE_MSG_KEY,
-    with_dae_tables,
-    with_num_periods,
-    with_time_channels,
     call_qt_aware,
     call_sync,
     prompt_user_for_choice,
     redefine_motor,
     redefine_refl_parameter,
+    with_dae_tables,
+    with_num_periods,
+    with_time_channels,
 )
 from ibex_bluesky_core.run_engine._msg_handlers import call_sync_handler
 from tests.devices.dae_testing_data import dae_settings_template, tcb_settings_template

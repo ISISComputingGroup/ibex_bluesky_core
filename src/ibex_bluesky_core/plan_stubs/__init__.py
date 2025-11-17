@@ -28,15 +28,15 @@ CALL_QT_AWARE_MSG_KEY = "ibex_bluesky_core_call_qt_aware"
 
 
 __all__ = [
-    "with_dae_tables",
-    "with_num_periods",
-    "with_time_channels",
     "call_qt_aware",
     "call_sync",
     "polling_plan",
     "prompt_user_for_choice",
     "redefine_motor",
     "redefine_refl_parameter",
+    "with_dae_tables",
+    "with_num_periods",
+    "with_time_channels",
 ]
 
 
