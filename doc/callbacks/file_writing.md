@@ -73,6 +73,6 @@ See {ref}`plot_png_saver`
 This callback is added automatically and is not intended to be user-facing - it is primarily for developer diagnostics.
 ```
 
-The {py:obj}`~ibex_bluesky_core.callbacks.DocLoggingCallback` is a callback that the BlueSky RunEngine subscribes to unconditionally during {py:obj}`~ibex_bluesky_core.run_engine.get_run_engine>`. It logs all documents it receives into files grouped by unique scan identifier. These logs are stored under `C:/instrument/var/logs/bluesky/raw_documents`; older logs are moved to long-term storage by a log rotation script.
+The {py:obj}`~ibex_bluesky_core.callbacks.DocLoggingCallback` is a callback that the BlueSky RunEngine subscribes to unconditionally during {py:obj}`~ibex_bluesky_core.run_engine.get_run_engine`. It logs all documents it receives into files grouped by unique scan identifier. These logs are stored under `C:/instrument/var/logs/bluesky/raw_documents`; older logs are moved to long-term storage by a log rotation script.
 
-Each document is stored in a JSON format so can be both machine and human readable. The format is line-delimited JSON, `{"type": name, "document": document}` whereby `name` is the type of the document, e.g start, stop, event, descriptor and the `document` is the {external+bluesky:doc}`document from bluesky in JSON format <documents>`.
+Each document is stored in a JSON format so can be both machine and human-readable. The format is line-delimited JSON, `{"type": name, "document": document}` whereby `name` is the type of the document, e.g start, stop, event, descriptor and the `document` is the {external+bluesky:doc}`document from bluesky in JSON format <documents>`.
