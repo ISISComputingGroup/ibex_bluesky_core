@@ -3,11 +3,10 @@
 {#hr_file_cb}
 ## Human readable files
 
-A callback ([`HumanReadableFileCallback`](ibex_bluesky_core.callbacks.HumanReadableFileCallback))  exists to write all documents to a separate human-readable file which contains the specified fields. 
+{py:obj}`~ibex_bluesky_core.callbacks.HumanReadableFileCallback` can be configured to write all documents to a human-readable file which contains the specified fields.
 
-This callback will add units and honour precision for each field as well as add some metadata ie. the `uid` of each scan as well as the RB number, which is injected using the {doc}`/dev/rbnumberpp`
+This callback will add units and honour precision for each field as well as add some metadata, for example the RB number, which is injected using the {doc}`/dev/rbnumberpp`.
 
-### Example
 An example of using this could be: 
 
 ```{code} python
@@ -47,15 +46,15 @@ RE(some_plan())
 ```
 
 This will put the `block` and `dae.good_frames` data collected over the run into a `.txt` file, named after the `uid` 
-of the scan, in `C:\instrument\var\logs\bluesky\output_files\`. 
+of the scan, in `\\isis\inst$\ndx<inst>\user\bluesky_scans\<rbnumber>`. 
 
 Optional parameters, not shown above, include:
-- `output_dir` parameter is optional, if not input the file will by default be placed in 
+- `output_dir` parameter is optional; if not provided, the file will by default be placed in 
 `\\isis\inst$\ndx<inst>\user\bluesky_scans\<rbnumber>`. 
 - `postfix` an optional suffix to append to the end of the file name, to disambiguate scans. Default is no suffix.
 
 The data is prepended on the first event with the names and units of each logged field, and then subsequently the data 
-for each scan separated by a newline. All of this is separated by commas, though the metadata is not.
+for each scan separated by a newline. The data is separated by commas, though the metadata is not.
 
 The file also contains metadata such as the bluesky version, plan type, and rb number.
 
@@ -74,6 +73,6 @@ See {ref}`plot_png_saver`
 This callback is added automatically and is not intended to be user-facing - it is primarily for developer diagnostics.
 ```
 
-The [`DocLoggingCallback`](ibex_bluesky_core.callbacks.DocLoggingCallback) is a callback that the BlueSky RunEngine subscribes to unconditionally in {py:obj}`RunEngine import level<ibex_bluesky_core.run_engine.get_run_engine>`. After receiving each document, if they share the same start document (in the same run) then it will write them to the same file. These logs are stored under `C:/instrument/var/logs/bluesky/raw_documents` and are handled by the log rotation.
+The {py:obj}`~ibex_bluesky_core.callbacks.DocLoggingCallback` is a callback that the BlueSky RunEngine subscribes to unconditionally during {py:obj}`~ibex_bluesky_core.run_engine.get_run_engine>`. It logs all documents it receives into files grouped by unique scan identifier. These logs are stored under `C:/instrument/var/logs/bluesky/raw_documents`; older logs are moved to long-term storage by a log rotation script.
 
-Each document is stored in a JSON format so can be both machine and human readable. It is in the format `{"type": name, "document": document}` whereby `name` is the type of the document, e.g start, stop, event, descriptor and the `document` is the [document from BlueSky in JSON format](https://blueskyproject.io/bluesky/main/documents.html). As these files are produced per BlueSky run, these will be useful for debugging.
+Each document is stored in a JSON format so can be both machine and human readable. The format is line-delimited JSON, `{"type": name, "document": document}` whereby `name` is the type of the document, e.g start, stop, event, descriptor and the `document` is the {external+bluesky:doc}`document from bluesky in JSON format <documents>`.
