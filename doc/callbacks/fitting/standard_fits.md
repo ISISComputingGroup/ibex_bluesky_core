@@ -1,6 +1,7 @@
 {#standard_fitting_models}
 # Standard Fitting Models
 
+{#fit_linear}
 ## {py:obj}`~ibex_bluesky_core.fitting.Linear`
 
 - `c1` - Gradient
@@ -10,6 +11,7 @@
 y = c_1x + c_0
 ```
 
+{#fit_polynomial}
 ## {py:obj}`~ibex_bluesky_core.fitting.Polynomial`
 
 - `cn` ... `c0` - Polynomial coefficients
@@ -19,6 +21,7 @@ For a polynomial degree `n`:
 y = c_{n}x^n + c_{n-1}x^{n-1} + ... + c_1 * x^1 + c_0 
 ```
 
+{#fit_gaussian}
 ## {py:obj}`~ibex_bluesky_core.fitting.Gaussian`
 
 - `amp` - The maximum height of the Gaussian above `background`
@@ -32,6 +35,7 @@ y = \text{amp} * e^{-\frac{(x - x0) ^ 2}{2 * \text{sigma}^2}} + \text{background
 
 ![GaussianModel](./images_fits/gaussian.png)
 
+{#fit_lorentzian}
 ## {py:obj}`~ibex_bluesky_core.fitting.Lorentzian`
 
 - `amp` - The maximum height of the Lorentzian above `background`
@@ -45,6 +49,7 @@ y = \frac{\text{amp}}{1 + \frac{x - \text{center}}{\text{sigma}}^2} + \text{back
 
 ![LorentzianModel](./images_fits/lorentzian.png)
 
+{#fit_damped_osc}
 ## Damped Oscillator ({py:obj}`~ibex_bluesky_core.fitting.DampedOsc`)
 
 - `center` - The centre (x) of the oscillation
@@ -58,6 +63,7 @@ y = \text{amp} * \cos((x - \text{center}) * \text{freq}) * e^{-\frac{x - \text{c
 
 ![DampedOscModel](./images_fits/damped_osc.png)
 
+{#fit_slitscan}
 ##  Slit Scan ({py:obj}`~ibex_bluesky_core.fitting.SlitScan`)
 
 - `background` $b$ - The minimum value (y) of the model
@@ -80,6 +86,7 @@ y = \min(\text{lin_seg}, \text{exp_seg})
 
 ![SlitScanModel](./images_fits/slit_scan.png)
 
+{#fit_erf}
 ## Error Function ({py:obj}`~ibex_bluesky_core.fitting.ERF`)
 
 - `cen` - The centre (x) of the model
@@ -93,6 +100,7 @@ y = background + scale * erf(stretch * (x - cen))
 
 ![ERFModel](./images_fits/erf.png)
 
+{#fit_erfc}
 ## Complementary Error Function ({py:obj}`~ibex_bluesky_core.fitting.ERFC`)
 
 - `cen` - The centre (x) of the model
@@ -106,6 +114,7 @@ y = background + scale * erfc(stretch * (x - cen))
 
 ![ERFCModel](./images_fits/erfc.png)
 
+{#fit_tophat}
 ## Top Hat ({py:obj}`~ibex_bluesky_core.fitting.TopHat`)
 
 - `cen` - The centre (x) of the model
@@ -123,6 +132,7 @@ y =
 
 ![TopHatModel](./images_fits/tophat.png)
 
+{#fit_trapezoid}
 ## {py:obj}`~ibex_bluesky_core.fitting.Trapezoid`
 
 - `cen` - The centre (x) of the model
@@ -143,6 +153,7 @@ y = \min(g(x), \text{background} + \text{height})
 
 ![TrapezoidModel](./images_fits/trapezoid.png)
 
+{#fit_neg_trapezoid}
 ## {py:obj}`~ibex_bluesky_core.fitting.NegativeTrapezoid`
 
 This model is the same shape as the trapezoid described above, but with a negative height.
@@ -163,6 +174,7 @@ g(x) = \max(f(x), \text{background} - \text{height})
 y = \min(g(x), \text{background})
 ```
 
+{#fit_muon_momentum}
 ## Muon Momentum ({py:obj}`~ibex_bluesky_core.fitting.MuonMomentum`)
 
 Fits data from a momentum scan, it is designed for the specific use case of scanning over magnet current on muon instruments.
