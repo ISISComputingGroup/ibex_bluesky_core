@@ -2,13 +2,19 @@
 
 For reflectometers, we provide a few generic plans which can be used as helpers for automated beamline alignment.
 
-The {py:obj}`~ibex_bluesky_core.plans.reflectometry.optimise_axis_against_intensity` plan is designed to scan over a movable against beam intensity, and given which fitting parameter is chosen to be optimised and the fitting method, it will aim to find an optimum value. See [standard fits](/callbacks/fitting/standard_fits.md) for the fitting parameters for each fitting model you can use. At this stage it will check if the value is 'sensible' - there are some default checks, but the user is encouraged to provide their own checks. If found to be sensible, the motor will be moved to this value, otherwise it will optionally run a callback that can be provided, and then ask the user if they want to rescan or continue to move the movable.
+The {py:obj}`~ibex_bluesky_core.plans.reflectometry.optimise_axis_against_intensity` plan is designed to scan a {py:obj}`~bluesky.protocols.Movable` against beam intensity, and given a fitting routine, will aim to find an optimum value. Many [standard fits](/callbacks/fitting/standard_fits.md) have been implemented and can be used easily.
 
-The idea for how we expect the main auto-alignment plan to be used is that at the top / instrument level, you will move all other movables to some position ready to align, yield from this plan and then re-zero the motor.
-The following is how you would do this for a reflectometry parameter as your movable:
+Once a fit has been performed, {py:obj}`~ibex_bluesky_core.plans.reflectometry.optimise_axis_against_intensity` will check that the fit parameters are 'sensible' - there are some default checks, but the user is encouraged to provide their own checks. If the checks pass, the motor will be moved to the fit value, otherwise it will run a user-provided callback, and then ask the user if they want to rescan or move anyway.
+
+Reflectometer auto-alignment routines will generally be structured as a series of calls which:
+- Put the beamline into a suitable state for the alignment
+- Call {py:obj}`~ibex_bluesky_core.plans.reflectometry.optimise_axis_against_intensity` to optimise the axis. This will leave the axis parked at its optimal position.
+- Redefine that position as zero (note: this is fully optional, but common on reflectometers)
+- Repeat the above steps for subsequent axes
+
+For example, using a reflectometry parameter as your {py:obj}`~bluesky.protocols.Movable`:
 
 ```python
-
 def full_autoalign_plan() -> Generator[Msg, None, None]:
  
     det_pixels = centred_pixel(DEFAULT_DET, PIXEL_RANGE)
@@ -20,8 +26,8 @@ def full_autoalign_plan() -> Generator[Msg, None, None]:
         monitor=DEFAULT_MON,
     )
 
-    s1vg = ReflParameter(prefix=PREFIX, name="S1VG", changing_timeout_s=60)
     # Interfaces with the reflectometry server
+    s1vg = ReflParameter(prefix=PREFIX, name="S1VG", changing_timeout_s=60)
 
     yield from ensure_connected(s1vg, dae)
 
@@ -44,12 +50,16 @@ def full_autoalign_plan() -> Generator[Msg, None, None]:
     # ....
 
     print("Auto alignment complete.")
-
 ```
 
-As mentioned prior, it is recommended that for each movable you want to align, you should provide a checking function, to make sure that for the value you receive for the chosen fitting paramater e.g centre of a gaussian, is sensible. If the optimised value is not found to be sensible then you will have the option to either type 1 and restart the alignment for this movable, or press 2 and continue with moving the movable to the found value. The following is how you would make a check function with the right signature and pass it to {py:obj}`ibex_bluesky_core.plans.reflectometry.optimise_axis_against_intensity`:
+As mentioned prior, it is recommended that for each {py:obj}`~bluesky.protocols.Movable` to be aligned, you should provide a checking function, to make sure that for the value you receive for the chosen fitting paramater e.g centre of a gaussian, is physically reasonable. If the optimised value fails the check, then you will have the option to either restart the alignment for this axis, or continue moving this axis to the located value despite the failing check.
+
+The following is how you would define a check function with the right signature and pass it to {py:obj}`~ibex_bluesky_core.plans.reflectometry.optimise_axis_against_intensity`:
 
 ```python
+from lmfit.model import ModelResult
+from math import isclose
+
 
 def s1vg_checks(result: ModelResult, alignment_param_value: float) -> str | None: # Must take a ModelResult and a float
     """Check for optimised S1VG value. Returns True if sensible."""
@@ -72,7 +82,7 @@ def s1vg_checks(result: ModelResult, alignment_param_value: float) -> str | None
     if result.values["background"] / result.model.func(alignment_param_value) <= max_peak_factor:
         return "Peak was not above the background by factor."
     
-    # Everything is fine so return None
+    # Everything is fine, so return None
     return None
 
 # ...
