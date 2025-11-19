@@ -365,8 +365,8 @@ async def test_block_mot_set_outside_limits(mot_block):
 
     set_mock_value(mot_block.user_setpoint, 10)
     set_mock_value(mot_block.velocity, 10)
-    set_mock_value(mot_block.high_limit_travel, 15)
-    set_mock_value(mot_block.low_limit_travel, 5)
+    set_mock_value(mot_block.dial_high_limit_travel, 15)
+    set_mock_value(mot_block.dial_low_limit_travel, 5)
     with pytest.raises(err):
         await mot_block.set(20)
 
