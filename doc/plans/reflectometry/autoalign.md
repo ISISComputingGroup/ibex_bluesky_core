@@ -2,7 +2,7 @@
 
 For reflectometers, we provide a few generic plans which can be used as helpers for automated beamline alignment.
 
-The {py:obj}`~ibex_bluesky_core.plans.reflectometry.optimise_axis_against_intensity` plan is designed to scan a {py:obj}`~bluesky.protocols.Movable` against beam intensity, and given a fitting routine, will aim to find an optimum value. Many [standard fits](/callbacks/fitting/standard_fits.md) have been implemented and can be used easily.
+The {py:obj}`~ibex_bluesky_core.plans.reflectometry.optimise_axis_against_intensity` plan is designed to scan a {py:obj}`~bluesky.protocols.Movable` against beam intensity, and given a fitting routine, will aim to find an optimum value. [Standard fits](/callbacks/fitting/standard_fits.md) have been implemented and can be used easily, or custom fits can also be used.
 
 Once a fit has been performed, {py:obj}`~ibex_bluesky_core.plans.reflectometry.optimise_axis_against_intensity` will check that the fit parameters are 'sensible' - there are some default checks, but the user is encouraged to provide their own checks. If the checks pass, the motor will be moved to the fit value, otherwise it will run a user-provided callback, and then ask the user if they want to rescan or move anyway.
 
@@ -54,7 +54,7 @@ def full_autoalign_plan() -> Generator[Msg, None, None]:
 
 As mentioned prior, it is recommended that for each {py:obj}`~bluesky.protocols.Movable` to be aligned, you should provide a checking function, to make sure that for the value you receive for the chosen fitting paramater e.g centre of a gaussian, is physically reasonable. If the optimised value fails the check, then you will have the option to either restart the alignment for this axis, or continue moving this axis to the located value despite the failing check.
 
-The following is how you would define a check function with the right signature and pass it to {py:obj}`~ibex_bluesky_core.plans.reflectometry.optimise_axis_against_intensity`:
+The following is how you would define a check function and pass it to {py:obj}`~ibex_bluesky_core.plans.reflectometry.optimise_axis_against_intensity`:
 
 ```python
 from lmfit.model import ModelResult

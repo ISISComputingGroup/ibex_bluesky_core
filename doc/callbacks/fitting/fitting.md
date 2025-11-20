@@ -58,19 +58,21 @@ def plan():
 
 We support **standard fits** for the following trends in data. See [Standard Fits](./standard_fits.md) for more information on the behaviour of these fits.
 
-| Trend | Class Name in {py:obj}`ibex_bluesky_core.fitting` | Arguments | 
-| ----- |---------------------------------------------------| ----------|
-| Linear | [Linear](#fit_linear)                             | None |
-| Polynomial | [Polynomial](#fit_polynomial)                     | Polynomial Degree (int) |
-| Gaussian | [Gaussian](#fit_gaussian)                         | None |
-| Lorentzian | [Lorentzian](#fit_lorentzian)                     | None |
-| Damped Oscillator | [DampedOsc](#fit_damped_osc)                      | None |
-| Slit Scan Fit | [SlitScan](#fit_slitscan)                         | None |
-| Error Function | [ERF](#fit_erf)                                   | None |
-| Complementary Error Function | [ERFC](#fit_erfc)                                 | None |
-| Top Hat | [TopHat](#fit_tophat)                             | None |
-| Trapezoid | [Trapezoid](#fit_trapezoid)                       | None |
-| PeakStats (COM) **\*** | -                                                 | - |
+| Trend                        | Class Name in {py:obj}`ibex_bluesky_core.fitting` | Arguments               | 
+|------------------------------|---------------------------------------------------|-------------------------|
+| Linear                       | [`Linear`](#fit_linear)                           | None                    |
+| Polynomial                   | [`Polynomial`](#fit_polynomial)                   | Polynomial Degree (int) |
+| Gaussian                     | [`Gaussian`](#fit_gaussian)                       | None                    |
+| Lorentzian                   | [`Lorentzian`](#fit_lorentzian)                   | None                    |
+| Damped Oscillator            | [`DampedOsc`](#fit_damped_osc)                    | None                    |
+| Slit Scan Fit                | [`SlitScan`](#fit_slitscan)                       | None                    |
+| Error Function               | [`ERF`](#fit_erf)                                 | None                    |
+| Complementary Error Function | [`ERFC`](#fit_erfc)                               | None                    |
+| Top Hat                      | [`TopHat`](#fit_tophat)                           | None                    |
+| Trapezoid                    | [`Trapezoid`](#fit_trapezoid)                     | None                    |
+| Negative Trapezoid           | [`NegativeTrapezoid`](#fit_neg_trapezoid)         | None                    |
+| Muon Momentum                | [`MuonMomentum`](#fit_muon_momentum)              | None                    |
+| PeakStats (COM) **\***       | -                                                 | -                       |
 
 Bluesky additionally provides a {py:obj}`bluesky.callbacks.fitting.PeakStats` callback which computes peak statistics after a run finishes. Similar to {py:obj}`~ibex_bluesky_core.callbacks.LiveFit`, {py:obj}`~bluesky.callbacks.fitting.PeakStats` does not plot by itself. The {py:obj}`~bluesky.callbacks.mpl_plotting.plot_peak_stats` function can be used to draw results of a {py:obj}`~bluesky.callbacks.fitting.PeakStats` on a plot.
 

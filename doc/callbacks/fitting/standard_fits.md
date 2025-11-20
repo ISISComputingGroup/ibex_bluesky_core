@@ -1,6 +1,8 @@
 {#standard_fitting_models}
 # Standard Fitting Models
 
+The following fitting models are all available under the {py:obj}`ibex_bluesky_core.fitting` module.
+
 {#fit_linear}
 ## {py:obj}`~ibex_bluesky_core.fitting.Linear`
 
@@ -190,4 +192,3 @@ y = \left (\text{erfc} \mathopen{} \left(\frac{x-x_0}{w} \right) \mathclose{} \c
 ```
 
 ![MuonMomentumModel](./images_fits/muons_momentum.png)
- 
