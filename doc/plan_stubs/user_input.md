@@ -1,9 +1,9 @@
 # User input helpers
 
-##  `prompt_user_for_choice`
+##  {py:obj}`~ibex_bluesky_core.plan_stubs.prompt_user_for_choice`
 
 The {py:obj}`ibex_bluesky_core.plan_stubs.prompt_user_for_choice` plan stub can be used to ask
-the user for a constrained set of input choices. This will continue asking if a choice is not valid.
+the user for one of a constrained set of input choices. This will continue asking if a choice is not valid.
 
 For example:
 

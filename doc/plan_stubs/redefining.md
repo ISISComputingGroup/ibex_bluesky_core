@@ -6,7 +6,7 @@ occurs, but the reported position changes to the given position.
 ## {py:obj}`~ibex_bluesky_core.plan_stubs.redefine_motor`
 
 The {py:obj}`ibex_bluesky_core.plan_stubs.redefine_motor` plan stub can be used to redefine the current
-position of a motor (for example a {py:obj}`ibex_bluesky_core.devices.block.BlockMot`) to a new value.
+position of a motor (for example a {py:obj}`~ibex_bluesky_core.devices.block.BlockMot`) to a new value.
 
 The motor does not physically move, but after this plan stub executes, the current position will be defined
 as `value`.
@@ -22,6 +22,7 @@ def my_plan():
     optimimum_value: float = ...
     
     # Physically move the motor to it's optimum position
+    # (bps.mv automatically waits for movements to complete)
     yield from bps.mv(motor, optimimum_value)
     
     # Redefine the current position as zero
@@ -37,7 +38,11 @@ This behaviour can be controlled with the `sleep` keyword argument to
 ## {py:obj}`~ibex_bluesky_core.plan_stubs.redefine_refl_parameter`
 
 The {py:obj}`ibex_bluesky_core.plan_stubs.redefine_refl_parameter` plan stub can be used to redefine the current
-position of a {py:obj}`~ibex_bluesky_core.devices.reflectometry.ReflParameter` to a new value. Note that some reflectometry parameters (e.g. `Theta`) cannot be redefined, so these must be constructed with `has_redefine=False`. {py:obj}`ibex_bluesky_core.plan_stubs.redefine_refl_parameter` will raise an error if a user tries to redefine a parameter that was created with `has_redefine=False`. 
+position of a {py:obj}`~ibex_bluesky_core.devices.reflectometry.ReflParameter` to a new value. 
+
+:::{note}
+Some reflectometry parameters (e.g. Theta) cannot be redefined, so these must be constructed with `has_redefine=False`. {py:obj}`~ibex_bluesky_core.plan_stubs.redefine_refl_parameter` will raise an error if a user tries to redefine a {py:obj}`~ibex_bluesky_core.devices.reflectometry.ReflParameter` that was created with `has_redefine=False`.
+:::
 
 This plan stub has an identical API to that of the {py:obj}`~ibex_bluesky_core.plan_stubs.redefine_motor` plan stub
 described above, but operates on a reflectometry parameter rather than a motor.
