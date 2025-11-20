@@ -78,7 +78,7 @@ html_css_files = [
     "css/custom.css",
 ]
 
-autoclass_content = "both"
+autoclass_content = "init"
 myst_heading_anchors = 7
 autodoc_preserve_defaults = True
 

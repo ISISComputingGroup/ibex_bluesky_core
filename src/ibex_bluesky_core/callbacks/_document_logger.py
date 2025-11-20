@@ -14,7 +14,16 @@ class DocLoggingCallback:
     """Logs all documents under log_location, with the file name of their UID (.log)."""
 
     def __init__(self) -> None:
-        """Initialise current_start_document and filename."""
+        """Log bluesky documents to line-delimited JSON files.
+
+        .. tip::
+
+            This callback is automatically subscribed to the
+            :py:obj:`~bluesky.run_engine.RunEngine` by
+            :py:obj:`~ibex_bluesky_core.run_engine.get_run_engine`.
+            Manually creating this callback is unnecessary.
+
+        """
         self.current_start_document = None
         self.filename = None
 

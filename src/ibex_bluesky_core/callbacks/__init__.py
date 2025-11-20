@@ -1,4 +1,9 @@
-"""Bluesky callbacks which may be attached to the RunEngine."""
+"""ISIS-specific bluesky callbacks.
+
+See Also:
+    - :external+bluesky:doc:`Bluesky callbacks documentation <callbacks>`.
+
+"""
 
 import logging
 import threading
@@ -55,7 +60,7 @@ __all__ = [
 
 
 class ISISCallbacks:
-    """ISIS standard callbacks for use within plans."""
+    """ISIS standard callbacks."""
 
     def __init__(  # noqa: PLR0912, PLR0915
         self,
@@ -85,27 +90,35 @@ class ISISCallbacks:
         live_fit_update_every: int | None = 1,
         live_plot_update_on_every_event: bool = True,
     ) -> None:
-        """A collection of ISIS standard callbacks for use within plans.
+        """A collection of ISIS standard callbacks.
 
-        By default, this adds:
+        This callback collection represents a common set of callbacks used for
+        many scans across ISIS instruments, which are bundled together in this
+        callback collection for convenience. However, for fine-grained control
+        over the exact set of callbacks to be used, individual callbacks may
+        be more appropriate.
 
-        - HumanReadableFileCallback
+        By default, the following callbacks are included:
 
-        - LiveTable
+        - :py:obj:`ibex_bluesky_core.callbacks.HumanReadableFileCallback`
 
-        - PeakStats
+        - :py:obj:`bluesky.callbacks.LiveTable`
 
-        - LiveFit
+        - :py:obj:`bluesky.callbacks.fitting.PeakStats`
 
-        - LiveFitPlot
+        - :py:obj:`ibex_bluesky_core.callbacks.LiveFit`
 
-        - LivePlot
+        - :py:obj:`bluesky.callbacks.mpl_plotting.LiveFitPlot`
 
-        - CentreOfMass
+        - :py:obj:`ibex_bluesky_core.callbacks.LivePlot`
 
-        Results can be accessed from the `live_fit`, `com` and `peak_stats` properties.
+        - :py:obj:`ibex_bluesky_core.callbacks.CentreOfMass`
 
-        This is to be used as a member and then as a decorator if results are needed ie::
+        Results can be accessed from the :py:obj:`~ibex_bluesky_core.callbacks.ISISCallbacks.live_fit`,
+        :py:obj:`~ibex_bluesky_core.callbacks.ISISCallbacks.com` and
+        :py:obj:`~ibex_bluesky_core.callbacks.ISISCallbacks.peak_stats` properties.
+
+        This can be defined in a plan and then as a decorator if results are needed::
 
             def dae_scan_plan():
                 ...
@@ -274,28 +287,28 @@ class ISISCallbacks:
 
     @property
     def live_fit(self) -> LiveFit:
-        """The live fit object containing fitting results."""
+        """The live fit callback, containing fitting results."""
         if self._live_fit is None:
             raise ValueError("live_fit was not added as a callback.")
         return self._live_fit
 
     @property
     def peak_stats(self) -> PeakStats:
-        """The peak stats object containing statistics ie. bluesky's centre of mass."""
+        """The peak stats callback, containing simple peak statistics such as min/max."""
         if self._peak_stats is None:
             raise ValueError("peak stats was not added as a callback.")
         return self._peak_stats
 
     @property
     def com(self) -> CentreOfMass:
-        """The centre of mass object containing ibex_bluesky_core's centre of mass."""
+        """The centre of mass callback, containing ``ibex_bluesky_core``'s centre of mass."""
         if self._com is None:
             raise ValueError("centre of mass was not added as a callback.")
         return self._com
 
     @property
     def subs(self) -> list[CallbackBase]:
-        """The list of subscribed callbacks."""
+        """The list of all subscribed callbacks."""
         return self._subs
 
     def _icbc_wrapper(self, plan: Generator[Msg, None, None]) -> Generator[Msg, None, None]:

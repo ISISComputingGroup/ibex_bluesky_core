@@ -1,4 +1,7 @@
-"""Common utilities for use across devices."""
+"""Bluesky devices and device-related utilities.
+
+Foo bar baz.
+"""
 
 from __future__ import annotations
 
@@ -20,7 +23,8 @@ def dehex_and_decompress(value: bytes) -> bytes:
     Args:
         value: The string to be decompressed, encoded in hex
 
-    Returns A decompressed version of the inputted string
+    Returns:
+        A decompressed version of the inputted string
 
     """
     return zlib.decompress(binascii.unhexlify(value))
@@ -32,7 +36,8 @@ def compress_and_hex(value: str) -> bytes:
     Args:
         value: The string to be compressed
 
-    Returns A compressed and hexed version of the inputted string
+    Returns:
+        A compressed and hexed version of the inputted string
 
     """
     compr = zlib.compress(bytes(value, "utf-8"))
