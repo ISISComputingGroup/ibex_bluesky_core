@@ -94,8 +94,8 @@ def get_run_engine() -> RunEngine:
 
     For full documentation about the run engine, see:
 
-    - https://nsls-ii.github.io/bluesky/tutorial.html#the-runengine
-    - https://nsls-ii.github.io/bluesky/run_engine_api.html
+    - :external+bluesky:ref:`tutorial_run_engine_setup`
+    - :external+bluesky:doc:`run_engine_api`
     """
     logger.info("Creating new bluesky RunEngine")
     loop = asyncio.new_event_loop()
