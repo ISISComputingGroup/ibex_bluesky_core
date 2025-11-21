@@ -1,4 +1,4 @@
-"""ophyd-async devices and utilities for communicating with IBEX blocks."""
+"""bluesky devices and utilities for communicating with IBEX blocks."""
 
 import asyncio
 import logging
@@ -62,71 +62,85 @@ GLOBAL_MOVING_FLAG_PRE_WAIT = 0.1
 class BlockWriteConfig(Generic[T]):
     """Configuration settings for writing to blocks.
 
-    use_completion_callback:
-        Whether to wait for an EPICS completion callback while setting
-        this block. Defaults to true, which is appropriate for most blocks.
+    These settings control how a block write is determined to be 'complete'. A block
+    write should only be marked as complete when the equipment has physically reached
+    the correct state, not just when the equipment has been told to move to the correct
+    state.
 
-    set_success_func:
-        An arbitrary function which is called to decide whether the block has
-        set successfully yet or not. The function takes (setpoint, actual) as arguments and
-        should return true if the value has successfully set and is "ready", or False otherwise.
-
-        This can be used to implement arbitrary tolerance behaviour. For example::
-
-            def check(setpoint: T, actual: T) -> bool:
-                return setpoint - 0.1 <= actual <= setpoint + 0.1
-
-        If use_completion_callback is True, the completion callback must complete before
-        set_success_func is ever called.
-
-        Executing this function should be "fast" (i.e. the function should not sleep), and it should
-        not do any external I/O.
-
-        Defaults to None, which means no check is applied.
-
-    set_timeout_s:
-        A timeout, in seconds, on the value being set successfully. The timeout
-        applies to the EPICS completion callback (if enabled) and the set success function
-        (if provided), and excludes any configured settle time.
-
-        Defaults to None, which means no timeout.
-
-    settle_time_s:
-        A wait time, in seconds, which is unconditionally applied just before the set
-        status is marked as complete. Defaults to zero.
-
-    use_global_moving_flag:
-        Whether to wait for the IBEX global moving indicator to return "stationary". This is useful
-        for compound moves, where changing a single block may cause multiple underlying axes to
-        move, and all movement needs to be complete before the set is considered complete. Defaults
-        to False.
-
-    timeout_is_error:
-        Whether a write timeout is considered an error. Defaults to True. If False, a set will be
-        marked as complete without error even if the block has not given a completion callback or
-        satisfied set_success_func within settle_time_s.
-
+    For example, during a scan of a block against a detector, the detector will be read
+    as soon as the block declares the write as 'complete'.
     """
 
     use_completion_callback: bool = True
+    """
+    Whether to wait for an EPICS completion callback while setting
+    this block. Defaults to :py:obj:`True`, which is appropriate for most blocks.
+    """
+
     set_success_func: Callable[[T, T], bool] | None = None
+    """
+    An arbitrary function which is called to decide whether the block has
+    set successfully yet or not. The function takes ``(setpoint, actual)`` as arguments and
+    should return :py:obj:`True` if the value has successfully set and is "ready", or
+    :py:obj:`False` otherwise.
+
+    This can be used to implement arbitrary tolerance behaviour. For example::
+
+        def check(setpoint: T, actual: T) -> bool:
+            return setpoint - 0.1 <= actual <= setpoint + 0.1
+
+    If use_completion_callback is True, the completion callback must complete before
+    ``set_success_func`` is ever called.
+
+    Executing this function should be "fast" (i.e. the function should not sleep), and it should
+    not do any external I/O.
+
+    Defaults to :py:obj:`None`, which means no check is applied.
+    """
+
     set_timeout_s: float | None = None
+    """
+    A timeout, in seconds, on the value being set successfully. The timeout
+    applies to the EPICS completion callback (if enabled) and the set success function
+    (if provided), and excludes any configured settle time.
+
+    Defaults to :py:obj:`None`, which means no timeout.
+    """
+
     settle_time_s: float = 0.0
+    """
+    A wait time, in seconds, which is unconditionally applied just before the set
+    status is marked as complete. Defaults to zero.
+    """
+
     use_global_moving_flag: bool = False
+    """
+    Whether to wait for the IBEX global moving indicator to return "stationary". This is useful
+    for compound moves, where changing a single block may cause multiple underlying axes to
+    move, and all movement needs to be complete before the set is considered complete.
+    """
+
     timeout_is_error: bool = True
+    """
+    Whether a write timeout is considered an error. Defaults to True. If False, a set will be
+    marked as complete without error even if the block has not given a completion callback or
+    satisfied ``set_success_func`` within ``settle_time_s``.
+    """
 
 
 class RunControl(StandardReadable):
     """Subdevice for common run-control signals."""
 
     def __init__(self, prefix: str, name: str = "") -> None:
-        """Create a run control wrapper for a block.
+        """Subdevice for common run-control signals.
 
-        Usually run control should be accessed via the run_control property on a block, rather
-        than by constructing an instance of this class directly.
+        .. note::
+
+            Run control should be accessed via the ``run_control`` property on a block,
+            rather than by constructing an instance of this class directly.
 
         Args:
-            prefix: the run-control prefix, e.g. "IN:INSTRUMENT:CS:SB:blockname:RC:"
+            prefix: the run-control prefix, e.g. ``IN:INSTRUMENT:CS:SB:blockname:RC:``
             name: ophyd device name
 
         """
@@ -148,13 +162,14 @@ class RunControl(StandardReadable):
 
 
 class BlockR(StandardReadable, Triggerable, Generic[T]):
-    """Device representing an IBEX readable block of arbitrary data type."""
+    """Read-only block."""
 
     def __init__(self, datatype: type[T], prefix: str, block_name: str) -> None:
-        """Create a new read-only block.
+        """Device representing an IBEX readable block of arbitrary data type.
 
         Args:
-            datatype: the type of data in this block (e.g. str, int, float)
+            datatype: the type of data in this block
+                (e.g. :py:obj:`str`, :py:obj:`int`, :py:obj:`float`)
             prefix: the current instrument's PV prefix
             block_name: the name of the block
 
@@ -170,9 +185,13 @@ class BlockR(StandardReadable, Triggerable, Generic[T]):
 
     @AsyncStatus.wrap
     async def trigger(self) -> None:
-        """Blocks need to be triggerable to be used in adaptive scans.
+        """Blocks do not do anything when triggered.
 
-        They do not do anything when triggered.
+        This method implements :py:obj:`bluesky.protocols.Triggerable`,
+        and should not be called directly.
+
+        This empty implementation is provided to allow using blocks in
+        adaptive scans.
         """
 
     def __repr__(self) -> str:
@@ -192,16 +211,22 @@ class BlockRw(BlockR[T], NamedMovable[T]):
         write_config: BlockWriteConfig[T] | None = None,
         sp_suffix: str = ":SP",
     ) -> None:
-        """Create a new read-write block.
+        """Device representing an IBEX read/write block of arbitrary data type.
 
-        The setpoint is not added to read() by default. For most cases where setpoint readback
-        functionality is desired, BlockRwRbv is a more suitable type.
+        The setpoint is not added to ``read()`` by default. For most cases where setpoint readback
+        functionality is desired, :py:obj:`~ibex_bluesky_core.devices.block.BlockRwRbv` is a more
+        suitable type.
 
-        If you *explicitly* need to read the setpoint from a BlockRw, you can do so in a plan with::
+        If you *explicitly* need to read the setpoint from a
+        :py:obj:`~ibex_bluesky_core.devices.block.BlockRw`, you can do so in a plan with:
+
+        .. code-block:: python
 
             import bluesky.plan_stubs as bps
-            block: BlockRw = ...
-            bps.read(block.setpoint)
+
+            def plan():
+                block: BlockRw = ...
+                yield from bps.rd(block.setpoint)
 
         But note that this does not read back the setpoint from hardware, but rather the setpoint
         which was last sent by EPICS.
@@ -230,7 +255,21 @@ class BlockRw(BlockR[T], NamedMovable[T]):
 
     @AsyncStatus.wrap
     async def set(self, value: T) -> None:
-        """Set the setpoint of this block."""
+        """Set the setpoint of this block.
+
+        This method implements :py:obj:`bluesky.protocols.Movable`, and should not be
+        called directly.
+
+        From a plan, set a block using:
+
+        .. code-block:: python
+
+            import bluesky.plan_stubs as bps
+
+            def my_plan():
+                block = BlockRw(...)
+                yield from bps.mv(block, value)
+        """
 
         async def do_set(setpoint: T) -> None:
             logger.info("Setting Block %s to %s", self.name, setpoint)
@@ -305,10 +344,10 @@ class BlockRwRbv(BlockRw[T], Locatable[T]):
         *,
         write_config: BlockWriteConfig[T] | None = None,
     ) -> None:
-        """Create a new read/write/setpoint readback block.
+        """Device representing an IBEX read/write/setpoint readback block of arbitrary data type.
 
-        The setpoint readback is added to read(), but not hints(), by default. If you do not need
-        a setpoint readback, choose BlockRw instead of BlockRwRbv.
+        The setpoint readback is added to read(), but not hints(), by default. If you do not have
+        a setpoint readback, use :py:obj:`~ibex_bluesky_core.devices.block.BlockRw` instead.
 
         Args:
             datatype: the type of data in this block (e.g. str, int, float)
@@ -327,7 +366,32 @@ class BlockRwRbv(BlockRw[T], Locatable[T]):
         )
 
     async def locate(self) -> Location[T]:
-        """Get the current 'location' of this block."""
+        """Get the current :py:obj:`~bluesky.protocols.Location` of this block.
+
+        This method implements :py:obj:`bluesky.protocols.Locatable`, and should not be
+        called directly.
+
+        From a plan, locate a block using:
+
+        .. code-block:: python
+
+            import bluesky.plan_stubs as bps
+
+            def my_plan():
+                block: BlockRwRbv = ...
+                location = yield from bps.locate(block)
+
+        If you only need the current value, rather than the value and the setpoint-readback, use:
+
+        .. code-block:: python
+
+            import bluesky.plan_stubs as bps
+
+            def my_plan():
+                block: BlockRwRbv = ...
+                value = yield from bps.rd(block)
+
+        """
         logger.info("locating block %s", self.name)
         actual, sp_rbv = await asyncio.gather(
             self.readback.get_value(),
@@ -401,7 +465,7 @@ class BlockMot(Motor, Movable[float], HasName):
     def set(  # pyright: ignore
         self, value: float, timeout: CalculatableTimeout = CALCULATE_TIMEOUT
     ) -> WatchableAsyncStatus[float]:
-        """Pass through set to superclass.
+        """Pass through ``set`` to :py:obj:`ophyd_async.epics.motor.Motor.set`.
 
         This is needed so that type-checker correctly understands the type of set.
 
@@ -415,7 +479,7 @@ class BlockMot(Motor, Movable[float], HasName):
 def block_r(datatype: type[T], block_name: str) -> BlockR[T]:
     """Get a local read-only block for the current instrument.
 
-    See documentation of BlockR for more information.
+    See documentation of :py:obj:`~ibex_bluesky_core.devices.block.BlockR` for more information.
     """
     return BlockR(datatype=datatype, prefix=get_pv_prefix(), block_name=block_name)
 
@@ -429,7 +493,7 @@ def block_rw(
 ) -> BlockRw[T]:
     """Get a local read-write block for the current instrument.
 
-    See documentation of BlockRw for more information.
+    See documentation of :py:obj:`~ibex_bluesky_core.devices.block.BlockRw` for more information.
     """
     return BlockRw(
         datatype=datatype,
@@ -445,7 +509,7 @@ def block_w(
 ) -> BlockRw[T]:
     """Get a write-only block for the current instrument.
 
-    This is actually just :obj:`ibex_bluesky_core.devices.block.BlockRw` but with no SP suffix.
+    This is a :py:obj:`~ibex_bluesky_core.devices.block.BlockRw` instance with no SP suffix.
     """
     return BlockRw(
         datatype=datatype,
@@ -461,7 +525,7 @@ def block_rw_rbv(
 ) -> BlockRwRbv[T]:
     """Get a local read/write/setpoint readback block for the current instrument.
 
-    See documentation of BlockRwRbv for more information.
+    See documentation of :py:obj:`~ibex_bluesky_core.devices.block.BlockRwRbv` for more information.
     """
     return BlockRwRbv(
         datatype=datatype, prefix=get_pv_prefix(), block_name=block_name, write_config=write_config
@@ -471,6 +535,6 @@ def block_rw_rbv(
 def block_mot(block_name: str) -> BlockMot:
     """Get a local block pointing at a motor record for the local instrument.
 
-    See documentation of BlockMot for more information.
+    See documentation of :py:obj:`~ibex_bluesky_core.devices.block.BlockMot` for more information.
     """
     return BlockMot(prefix=get_pv_prefix(), block_name=block_name)

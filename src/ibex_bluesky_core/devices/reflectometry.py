@@ -1,4 +1,4 @@
-"""Devices specific to Reflectometry beamlines."""
+"""Reflectometry-specific bluesky devices and utilities."""
 
 import asyncio
 import logging

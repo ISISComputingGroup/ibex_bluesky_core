@@ -1,4 +1,4 @@
-"""A simple interface to the DAE for bluesky."""
+"""High-level bluesky device interface to the DAE for 'typical' measurements."""
 
 import logging
 from typing import Generic

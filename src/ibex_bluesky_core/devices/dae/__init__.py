@@ -1,4 +1,4 @@
-"""Utilities for the DAE device - mostly XML helpers."""
+"""Low-level bluesky device interface to the DAE."""
 
 import asyncio
 from typing import Generic, TypeVar
