@@ -147,16 +147,23 @@ class RunControl(StandardReadable):
         with self.add_children_as_readables(StandardReadableFormat.HINTED_SIGNAL):
             # When explicitly reading run control, the most obvious signal that people will be
             # interested in is whether the block is in range or not.
-            self.in_range = epics_signal_r(bool, f"{prefix}INRANGE")
+            self.in_range: SignalR[bool] = epics_signal_r(bool, f"{prefix}INRANGE")
+            """Whether run-control is currently in-range."""
 
-        self.low_limit = epics_signal_rw(float, f"{prefix}LOW")
-        self.high_limit = epics_signal_rw(float, f"{prefix}HIGH")
+        self.low_limit: SignalRW[float] = epics_signal_rw(float, f"{prefix}LOW")
+        """Run-control low limit."""
+        self.high_limit: SignalRW[float] = epics_signal_rw(float, f"{prefix}HIGH")
+        """Run-control high limit."""
 
-        self.suspend_if_invalid = epics_signal_rw(bool, f"{prefix}SOI")
-        self.enabled = epics_signal_rw(bool, f"{prefix}ENABLE")
+        self.suspend_if_invalid: SignalRW[bool] = epics_signal_rw(bool, f"{prefix}SOI")
+        """Whether run-control should suspend data collection on invalid values."""
+        self.enabled: SignalRW[bool] = epics_signal_rw(bool, f"{prefix}ENABLE")
+        """Run-control enabled."""
 
-        self.out_time = epics_signal_r(float, f"{prefix}OUT:TIME")
-        self.in_time = epics_signal_r(float, f"{prefix}IN:TIME")
+        self.out_time: SignalR[float] = epics_signal_r(float, f"{prefix}OUT:TIME")
+        """Run-control time outside limits."""
+        self.in_time: SignalR[float] = epics_signal_r(float, f"{prefix}IN:TIME")
+        """Run-control time inside limits."""
 
         super().__init__(name=name)
 
@@ -176,9 +183,11 @@ class BlockR(StandardReadable, Triggerable, Generic[T]):
         """
         with self.add_children_as_readables(StandardReadableFormat.HINTED_SIGNAL):
             self.readback: SignalR[T] = epics_signal_r(datatype, f"{prefix}CS:SB:{block_name}")
+            """Readback value. This is the hinted signal for a block."""
 
         # Run control doesn't need to be read by default
-        self.run_control = RunControl(f"{prefix}CS:SB:{block_name}:RC:")
+        self.run_control: RunControl = RunControl(f"{prefix}CS:SB:{block_name}:RC:")
+        """Run-control settings for this block."""
 
         super().__init__(name=block_name)
         self.readback.set_name(block_name)
@@ -243,6 +252,7 @@ class BlockRw(BlockR[T], NamedMovable[T]):
         self.setpoint: SignalRW[T] = epics_signal_rw(
             datatype, f"{prefix}CS:SB:{block_name}{sp_suffix}"
         )
+        """The setpoint for this block."""
 
         self._write_config: BlockWriteConfig[T] = write_config or BlockWriteConfig()
 
@@ -360,6 +370,7 @@ class BlockRwRbv(BlockRw[T], Locatable[T]):
             self.setpoint_readback: SignalR[T] = epics_signal_r(
                 datatype, f"{prefix}CS:SB:{block_name}:SP:RBV"
             )
+            """The setpoint-readback for this block."""
 
         super().__init__(
             datatype=datatype, prefix=prefix, block_name=block_name, write_config=write_config
@@ -413,10 +424,12 @@ class BlockMot(Motor, Movable[float], HasName):
     ) -> None:
         """Create a new motor-record block.
 
-        The 'BlockMot' object supports motion-specific functionality such as:
+        The ``BlockMot`` object supports motion-specific functionality such as:
 
-        - Stopping if a scan is aborted (supports the bluesky 'Stoppable' protocol)
-        - Limit checking (before a move starts - supports the bluesky 'Checkable' protocol)
+        - Stopping if a scan is aborted (supports the bluesky
+          :py:obj:`~bluesky.protocols.Stoppable` protocol)
+        - Limit checking (before a move starts - supports the bluesky
+          :py:obj:`~bluesky.protocols.Checkable` protocol)
         - Automatic calculation of move timeouts based on motor velocity
         - Fly scanning
 
@@ -424,7 +437,8 @@ class BlockMot(Motor, Movable[float], HasName):
         motor which does many retries may exceed the simple default timeout based on velocity (it
         is possible to explicitly specify a timeout on set() to override this).
 
-        Blocks pointing at motors do not take a BlockWriteConfiguration parameter, as these
+        Blocks pointing at motors do not take a
+        :py:obj:`~ibex_bluesky_core.devices.block.BlockWriteConfig` parameter, as these
         parameters duplicate functionality which already exists in the motor record. The mapping is:
 
         use_completion_callback:
@@ -432,15 +446,15 @@ class BlockMot(Motor, Movable[float], HasName):
             wait on that completion callback can be configured by the 'wait' keyword argument on
             set().
         set_success_func:
-            Use .RDBD and .RTRY to control motor retries if the position has not been reached to
-            within a specified tolerance. Note that motors which retry a lot may exceed the default
-            motion timeout which is calculated based on velocity, distance and acceleration.
+            Use ``.RDBD`` and ``.RTRY`` to control motor retries if the position has not been
+            reached to within a specified tolerance. Note that motors which retry a lot may
+            exceed the default motion timeout which is calculated based on velocity,
+            distance and acceleration.
         set_timeout_s:
             A suitable timeout is calculated automatically based on velocity, distance and
-            acceleration as defined on the motor record. This may be overridden by the 'timeout'
-            keyword-argument on set().
+            acceleration as defined on the motor record.
         settle_time_s:
-            Use .DLY on the motor record to configure this.
+            Use ``.DLY`` on the motor record to configure this.
         use_global_moving_flag:
             This is unnecessary for a single motor block, as a completion callback will always be
             used instead to detect when a single move has finished.

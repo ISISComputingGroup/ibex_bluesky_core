@@ -47,44 +47,143 @@ WIRING_TABLE = "Wiring Table"
 
 
 class DaeTimingSource(Enum):
-    """The DAE timing source."""
+    """The DAE timing source.
+
+    See Also:
+        :external+ibex_user_manual:ref:`concept_timing` in the IBEX user manual.
+
+    """
 
     ISIS = 0
+    """
+    Timing pulse from the ISIS accelerator.
+    """
     INTERNAL_TEST_CLOCK = 1
+    """
+    Timing pulse from the internal test clock.
+    """
     SMP = 2
-    MUON_CERENKOV = 3
+    """
+    Timing source from a 'secondary master pulse' (usually a chopper).
+    """
+    MUON_CHERENKOV = 3
+    """
+    Cherenkov pulse timing (muon instruments only)
+    """
     MUON_MS = 4
+    """
+    MS pulse timing (muon instruments only)
+    """
     ISIS_FIRST_TS1 = 5
+    """
+    ISIS timing, but only counting on the first TS1 pulse after the 'missing' TS2 pulse.
+    """
     ISIS_TS1_ONLY = 6
+    """
+    ISIS timing, but only counting TS1 pulses.
+    """
 
 
 @dataclass(kw_only=True)
 class DaeSettingsData:
-    """Dataclass for the general DAE settings."""
+    """Dataclass for general DAE settings.
+
+    All settings accept :py:obj:`None`, which means this setting will not be changed from
+    the current setting.
+    """
 
     wiring_filepath: str | None = None
+    """
+    Wiring table filepath.
+    """
     detector_filepath: str | None = None
+    """
+    Detector table filepath.
+    """
     spectra_filepath: str | None = None
+    """
+    Spectra table filepath.
+    """
     mon_spect: int | None = None
+    """
+    Monitor spectrum number.
+    """
     mon_from: int | None = None
+    """
+    Monitor integration lower bound (us).
+    """
     mon_to: int | None = None
+    """
+    Monitor integration upper bound (us).
+    """
     timing_source: DaeTimingSource | None = None
+    """
+    Dae timing source.
+    """
     smp_veto: bool | None = None
+    """
+    SMP veto enabled.
+    """
     ts2_veto: bool | None = None
+    """
+    TS2 veto enabled.
+    """
     hz50_veto: bool | None = None
+    """
+    50Hz veto enabled.
+    """
     ext0_veto: bool | None = None
+    """
+    External veto 0 enabled.
+    """
     ext1_veto: bool | None = None
+    """
+    External veto 1 enabled.
+    """
     ext2_veto: bool | None = None
+    """
+    External veto 2 enabled.
+    """
     ext3_veto: bool | None = None
+    """
+    External veto 3 enabled.
+    """
     fermi_veto: bool | None = None
+    """
+    Fermi chopper veto enabled.
+    """
     fermi_delay: int | None = None
+    """
+    Fermi chopper veto desired delay (us).
+    """
     fermi_width: int | None = None
+    """
+    Fermi chopper veto width (us).
+    """
     muon_ms_mode: bool | None = None
+    """
+    MS mode enabled (muon instruments only).
+    """
     muon_cherenkov_pulse: int | None = None
+    """
+    Cherenkov pulse selection (muon instruments only).
+    """
     veto_0_name: str | None = None
+    """
+    Veto 0 name.
+    """
     veto_1_name: str | None = None
+    """
+    Veto 1 name.
+    """
     veto_2_name: str | None = None
+    """
+    Veto 2 name.
+    """
     veto_3_name: str | None = None
+    """
+    Veto 3 name.
+    """
 
 
 def _convert_xml_to_dae_settings(value: str) -> DaeSettingsData:
@@ -154,9 +253,11 @@ class DaeSettings(StandardReadable, Locatable[DaeSettingsData], Movable[DaeSetti
     """Subdevice for the DAE general settings."""
 
     def __init__(self, dae_prefix: str, name: str = "") -> None:
-        """Set up signals for the DAE general settings.
+        """DAE settings interface.
 
-        See DaeSettingsData for options.
+        See Also:
+            :py:obj:`DaeSettingsData` for options.
+
         """
         self._raw_dae_settings: SignalRW[str] = isis_epics_signal_rw(
             str, f"{dae_prefix}DAESETTINGS"
@@ -164,7 +265,7 @@ class DaeSettings(StandardReadable, Locatable[DaeSettingsData], Movable[DaeSetti
         super().__init__(name=name)
 
     async def locate(self) -> Location[DaeSettingsData]:
-        """Retrieve and convert the current XML to DaeSettingsData."""
+        """Retrieve the current DAE settings."""
         value = await self._raw_dae_settings.get_value()
         period_settings = _convert_xml_to_dae_settings(value)
         logger.info("locate dae settings: %s", period_settings)
@@ -172,7 +273,7 @@ class DaeSettings(StandardReadable, Locatable[DaeSettingsData], Movable[DaeSetti
 
     @AsyncStatus.wrap
     async def set(self, value: DaeSettingsData) -> None:
-        """Set any changes in the DAE settings to the XML."""
+        """Change any modified DAE settings."""
         current_xml = await self._raw_dae_settings.get_value()
         to_write = _convert_dae_settings_to_xml(current_xml, value)
         logger.info("set dae settings: %s", to_write)
