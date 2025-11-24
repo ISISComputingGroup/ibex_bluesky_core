@@ -95,5 +95,9 @@ intersphinx_mapping = {
     "lmfit": ("https://lmfit.github.io/lmfit-py/", None),
     "typing_extensions": ("https://typing-extensions.readthedocs.io/en/latest/", None),
     "ibex_user_manual": ("https://isiscomputinggroup.github.io/ibex_user_manual/", None),
+    "ibex_developers_manual": (
+        "https://isiscomputinggroup.github.io/ibex_developers_manual/",
+        None,
+    ),
     "genie_python": ("https://isiscomputinggroup.github.io/genie/", None),
 }
