@@ -69,7 +69,7 @@ class SimpleWaiter(Waiter, Generic[T], ABC):
 class PeriodGoodFramesWaiter(SimpleWaiter[int]):
     """Wait for period good frames to reach a user-specified value."""
 
-    def __init__(self, value: float) -> None:
+    def __init__(self, value: int) -> None:
         """Wait for a specified number of good frames in the current period.
 
         Args:
