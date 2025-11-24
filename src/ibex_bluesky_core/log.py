@@ -1,8 +1,9 @@
 """Bluesky specific logging configuration.
 
-Note: logging.config.fileconfig sets the global, application-level, logging policies. We are a
-library so should not set application-level policies. Instead just quietly add handlers for our own
-logger and the bluesky logger.
+.. note::
+    :py:obj:`logging.config.fileconfig` sets the global, application-level, logging policies.
+    :py:obj:`ibex_bluesky_core` is a library, so does not set application-level policies.
+    Instead, handlers for our own logger and the bluesky loggers are added.
 """
 
 import logging
@@ -40,7 +41,7 @@ def file_handler() -> TimedRotatingFileHandler:
 
 
 def setup_logging() -> None:
-    """Set up logging."""
+    """Set up logging with a default configuration."""
     # Create the log directory if it doesn't already exist
     try:
         os.makedirs(log_location, exist_ok=True)
