@@ -9,7 +9,7 @@ from typing import Any
 
 import bluesky.preprocessors as bpp
 import matplotlib.pyplot as plt
-from bluesky.callbacks import CallbackBase, LiveFitPlot, LiveTable
+from bluesky.callbacks import CallbackBase, LiveTable
 from bluesky.callbacks.fitting import PeakStats
 from bluesky.callbacks.mpl_plotting import QtAwareCallback
 from bluesky.utils import Msg, make_decorator
@@ -28,7 +28,13 @@ from ibex_bluesky_core.callbacks._fitting import (
     LiveFit,
     LiveFitLogger,
 )
-from ibex_bluesky_core.callbacks._plotting import LivePColorMesh, LivePlot, PlotPNGSaver, show_plot
+from ibex_bluesky_core.callbacks._plotting import (
+    LiveFitPlot,
+    LivePColorMesh,
+    LivePlot,
+    PlotPNGSaver,
+    show_plot,
+)
 from ibex_bluesky_core.callbacks._utils import get_default_output_path
 from ibex_bluesky_core.fitting import FitMethod
 from ibex_bluesky_core.utils import is_matplotlib_backend_qt

@@ -10,6 +10,7 @@ import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 import numpy.typing as npt
+from bluesky.callbacks import LiveFitPlot as _DefaultLiveFitPlot
 from bluesky.callbacks import LivePlot as _DefaultLivePlot
 from bluesky.callbacks.core import get_obj_fields, make_class_safe
 from bluesky.callbacks.mpl_plotting import QtAwareCallback
@@ -22,6 +23,7 @@ from ibex_bluesky_core.callbacks._utils import (
     get_default_output_path,
     get_instrument,
 )
+from ibex_bluesky_core.fitting import Gaussian, Linear
 
 logger = logging.getLogger(__name__)
 
@@ -111,6 +113,31 @@ class LivePlot(_DefaultLivePlot):
         if not self.update_on_every_event:
             self.update_plot(force=True)
             show_plot()
+
+
+class LiveFitPlot(_DefaultLiveFitPlot):
+
+    def __init__(self,
+                 livefit,
+                 *,
+                 num_points=100,
+                 legend_keys=None,
+                 xlim=None,
+                 ylim=None,
+                 ax=None,
+                 **kwargs):
+
+        super().__init__(livefit, num_points=num_points, legend_keys=legend_keys, xlim=xlim, ylim=ylim, ax=ax, **kwargs)
+
+    def stop(self, doc: RunStop) -> None:
+        """Process a stop document (delegate to superclass, then show the plot)."""
+        precision = 10
+
+        super().stop(doc)
+        equation_values = [(key, value) for key, value in self.livefit.result.values.items() if key in self.livefit.model.param_names]
+        model_title = self.livefit.model.name
+        title_formatted = f"{model_title}:\n {', '.join(f'{k}: {v:.{precision}f}' for k, v in equation_values)}"
+        self.ax.set_title(title_formatted, wrap=True)
 
 
 class LivePColorMesh(QtAwareCallback):
