@@ -41,7 +41,7 @@ class ReflParameter(StandardReadable, NamedMovable[float]):
             self.readback: SignalR[float] = epics_signal_r(float, f"{prefix}REFL_01:PARAM:{name}")
             """Readback value. This is the hinted parameter for this class."""
         self.setpoint: SignalW[float] = epics_signal_w(float, f"{prefix}REFL_01:PARAM:{name}:SP")
-        """Setpoint."""
+        """Reflectometry parameter setpoint signal."""
         self.changing: SignalR[bool] = epics_signal_r(
             bool, f"{prefix}REFL_01:PARAM:{name}:CHANGING"
         )
