@@ -125,19 +125,23 @@ class LiveFitPlot(_DefaultLiveFitPlot):
                  xlim=None,
                  ylim=None,
                  ax=None,
+                 set_title=False,
                  **kwargs):
 
         super().__init__(livefit, num_points=num_points, legend_keys=legend_keys, xlim=xlim, ylim=ylim, ax=ax, **kwargs)
+        self.set_title = set_title
 
     def stop(self, doc: RunStop) -> None:
         """Process a stop document (delegate to superclass, then show the plot)."""
         precision = 10
 
         super().stop(doc)
-        equation_values = [(key, value) for key, value in self.livefit.result.values.items() if key in self.livefit.model.param_names]
-        model_title = self.livefit.model.name
-        title_formatted = f"{model_title}:\n {', '.join(f'{k}: {v:.{precision}f}' for k, v in equation_values)}"
-        self.ax.set_title(title_formatted, wrap=True)
+
+        if self.set_title:
+            equation_values = [(key, value) for key, value in self.livefit.result.values.items() if key in self.livefit.model.param_names]
+            model_title = self.livefit.model.name
+            title_formatted = f"{model_title}:\n {', '.join(f'{k}: {v:.{precision}f}' for k, v in equation_values)}"
+            self.ax.set_title(title_formatted, wrap=True)
 
 
 class LivePColorMesh(QtAwareCallback):

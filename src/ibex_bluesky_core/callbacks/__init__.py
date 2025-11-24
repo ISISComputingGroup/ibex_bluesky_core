@@ -90,6 +90,7 @@ class ISISCallbacks:
         plot_png_postfix: str = "",
         live_fit_update_every: int | None = 1,
         live_plot_update_on_every_event: bool = True,
+        set_title_to_fit_result: bool = True,
     ) -> None:
         """A collection of ISIS standard callbacks for use within plans.
 
@@ -239,7 +240,7 @@ class ISISCallbacks:
                 # Sample 5000 points as this strikes a reasonable balance between displaying
                 # 'enough' points for almost any scan (even after zooming in on a peak), while
                 # not taking 'excessive' compute time to generate these samples.
-                self._subs.append(LiveFitPlot(livefit=self._live_fit, ax=ax, num_points=5000))
+                self._subs.append(LiveFitPlot(livefit=self._live_fit, ax=ax, num_points=5000, set_title=set_title_to_fit_result))
             else:
                 self._subs.append(self._live_fit)
 
