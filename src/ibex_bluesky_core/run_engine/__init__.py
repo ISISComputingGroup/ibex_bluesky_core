@@ -59,14 +59,14 @@ class _DuringTask(DuringTask):
 
 @cache  # functools.cache ensures we only ever create a single instance of the RunEngine
 def get_run_engine() -> RunEngine:
-    """Acquire a RunEngine in a suitable configuration for ISIS experiments.
+    """Acquire a :py:obj:`~bluesky.run_engine.RunEngine` with ISIS configuration.
 
     This function should always be used in preference to creating a bluesky run engine manually.
 
     This function is cached, meaning that the *same* run engine (using the same underlying event
-    loop) will be used if this function is called multiple times. Creating multiple RunEngines is
-    unlikely to be desired behaviour, though we cannot prevent users from creating a RunEngine from
-    bluesky directly.
+    loop) will be used if this function is called multiple times. Creating multiple run engine
+    instances is unlikely to be desired behaviour, though we cannot prevent users from creating a
+    :py:obj:`~bluesky.run_engine.RunEngine` from bluesky directly.
 
     Basic usage:
 
@@ -148,7 +148,7 @@ def run_plan(
     plan: Generator[Msg, Any, Any],
     **metadata_kw: Any,  # noqa ANN401 - this really does accept anything serializable
 ) -> RunEngineResult:
-    """Run a plan.
+    """Run a plan non-interactively.
 
     .. Warning::
 
@@ -166,7 +166,8 @@ def run_plan(
             run engine.
 
     Returns:
-        A ``RunEngineResult`` instance. The return value of the plan can then be accessed using
+        A :py:obj:`~bluesky.run_engine.RunEngineResult` instance.
+        The return value of the plan can then be accessed using
         the ``plan_result`` attribute.
 
     Raises:
@@ -177,8 +178,9 @@ def run_plan(
 
     Calling a plan using this function means that keyboard-interrupt handling will be
     degraded: all keyboard interrupts will now force an immediate abort of the plan, using
-    ``RE.abort()``, rather than giving the possibility of gracefully resuming. Cleanup handlers
-    will execute during the ``RE.abort()``.
+    :py:obj:`RE.abort() <bluesky.run_engine.RunEngine.abort>`, rather than giving the
+    possibility of gracefully resuming. Cleanup handlers will execute during the
+    :py:obj:`RE.abort() <bluesky.run_engine.RunEngine.abort>` call.
 
     The bluesky run engine is not reentrant. It is a programming error to attempt to run a plan
     using this function, from within a plan. To call a sub plan from within an outer plan, use::
