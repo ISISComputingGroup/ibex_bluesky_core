@@ -207,7 +207,7 @@ def motor_scan(  # noqa: PLR0913
     rel: bool = False,
     md: dict[Any, Any] | None = None,
 ) -> Generator[Msg, None, ISISCallbacks]:
-    """Wrap our scan() plan and create a block_rw and a DAE object.
+    """Wrap our ``scan()`` plan and create a ``block_rw`` and a DAE object.
 
     This essentially uses the same mechanism as a waitfor_move by using the global "moving" flag
     to determine if motors are still moving after starting a move.
@@ -276,7 +276,7 @@ def motor_adaptive_scan(  # noqa: PLR0913
     rel: bool = False,
     md: dict[Any, Any] | None = None,
 ) -> Generator[Msg, None, ISISCallbacks]:
-    """Wrap adaptive_scan() plan and create a block_rw and a DAE object.
+    """Wrap ``adaptive_scan()`` plan and create a ``block_rw`` and a DAE object.
 
     This essentially uses the same mechanism as a waitfor_move by using the global "moving" flag
     to determine if motors are still moving after starting a move.

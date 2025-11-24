@@ -158,8 +158,11 @@ def polling_plan(
 ) -> Generator[Msg, None, None]:
     """Move to a destination but drop updates from readable if motor position has not changed.
 
-    Note - this does not start a run, this should be done with a run_decorator or similar in an
-    outer plan which calls this plan.
+    .. note::
+
+        This does not start a run, this should be done with a
+        :py:obj:`~bluesky.preprocessors.run_decorator` or similar in an
+        outer plan which calls this plan.
 
     Args:
         motor: the motor to move.
@@ -168,10 +171,6 @@ def polling_plan(
 
     Returns:
         None
-
-    If we just used bp.scan() with a readable that updates more frequently than a motor can
-    register that it has moved, we would have lots of updates with the same motor position,
-    which may not be helpful.
 
     """
     yield from bps.checkpoint()

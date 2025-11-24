@@ -224,19 +224,20 @@ def angle_scan_plan(
 
 
 class DetMapAlignResult(TypedDict):
-    """Result from mapping alignment plan.
-
-    Keys:
-        height_fit:
-            An lmfit ModelResult object describing the height fit,
-            if the fit succeeded, or None otherwise.
-        angle_fit:
-            An lmfit ModelResult object describing the angle fit,
-            if the fit succeeded, or None otherwise.
-    """
+    """Result from mapping alignment plan."""
 
     height_fit: ModelResult | None
+    """
+    A :py:obj:`lmfit.ModelResult` object describing the height fit.
+
+    If the fit failed, will instead be :py:obj:`None`.
+    """
     angle_fit: ModelResult | None
+    """
+    A :py:obj:`lmfit.ModelResult` object describing the angle fit.
+
+    If the fit failed, will instead be :py:obj:`None`.
+    """
 
 
 def height_and_angle_scan_plan(  # noqa PLR0913
