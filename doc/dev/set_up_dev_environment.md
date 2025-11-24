@@ -2,11 +2,11 @@
 
 ## Resources for bluesky and ophyd-async development
 
-[bluesky user documentation - plans, plan stubs, callbacks etc.](https://blueskyproject.io/bluesky/main/userindex.html)
+{external+bluesky:doc}`bluesky user documentation - plans, plan stubs, callbacks etc <userindex>`
 
-[ophyd-async documentation - devices](https://blueskyproject.io/ophyd-async/main/index.html)
+{external+ophyd_async:doc}`ophyd-async documentation - devices <tutorials>`
 
-[ophyd-async - choosing base classes when writing a device](https://blueskyproject.io/ophyd-async/main/how-to/choose-right-baseclass.html)
+{external+ophyd_async:doc}`ophyd-async - choosing base classes when writing a device <how-to/choose-right-baseclass>`
 
 ## Checkout the repository locally
 

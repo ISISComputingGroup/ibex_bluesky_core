@@ -2,7 +2,7 @@
 
 Releases are created automatically via a github action. 
 
-To create a release just create a new git tag on the commit on main:
+To create a release, create a new git tag on the commit on main:
 ```
 git pull
 git checkout main
@@ -18,4 +18,4 @@ release can then be installed via `pip install ibex_bluesky_core`.
 The workflow must be approved by someone in the ICP-Write group. To do this go 
 to the action (Actions -> the action on the tag) and approve it.
 
-Credentials for Pypi can be found on keeper.
+Credentials for Pypi can be found in keeper.

@@ -7,9 +7,11 @@ We use the [MyST](https://myst-parser.readthedocs.io/en/latest/index.html) parse
 ## Using MyST admonitions
 To use [MyST admonitions](https://myst-parser.readthedocs.io/en/latest/syntax/admonitions.html), you need to use backticks instead of triple colons, ie. 
 
-\`\`\`{tip}\
-Let's give readers a helpful hint!\
-\`\`\`
+:::{code}
+```{tip}
+Let's give readers a helpful hint!
+```
+:::
 
 becomes
 
@@ -48,3 +50,7 @@ To add code blocks within the docstrings of classes or functions, use the `::` m
     ...
     """
 ```
+
+You can also use any other restructured text formatting in docstrings, including links
+to documentation pages, python objects, and so on. Unfortunately it is not possible to
+use markdown syntax in docstrings; restructured text formatting must be used.
