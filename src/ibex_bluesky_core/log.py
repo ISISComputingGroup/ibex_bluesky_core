@@ -1,7 +1,7 @@
 """Bluesky specific logging configuration.
 
 .. note::
-    :py:obj:`logging.config.fileconfig` sets the global, application-level, logging policies.
+    :py:obj:`logging.config.fileConfig` sets the global, application-level, logging policies.
     :py:obj:`ibex_bluesky_core` is a library, so does not set application-level policies.
     Instead, handlers for our own logger and the bluesky loggers are added.
 """
