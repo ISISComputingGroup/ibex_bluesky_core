@@ -228,13 +228,13 @@ class DetMapAlignResult(TypedDict):
 
     height_fit: ModelResult | None
     """
-    A :py:obj:`lmfit.ModelResult` object describing the height fit.
+    A :py:obj:`lmfit.model.ModelResult` object describing the height fit.
 
     If the fit failed, will instead be :py:obj:`None`.
     """
     angle_fit: ModelResult | None
     """
-    A :py:obj:`lmfit.ModelResult` object describing the angle fit.
+    A :py:obj:`lmfit.model.ModelResult` object describing the angle fit.
 
     If the fit failed, will instead be :py:obj:`None`.
     """
