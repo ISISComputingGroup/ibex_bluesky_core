@@ -381,12 +381,7 @@ class PeriodSpecIntegralsReducer(Reducer, StandardReadable):
         """DAE Reducer which exposes integrals of many spectra in the current period.
 
         Two types of integrals are available: detectors and monitors. Other than defaults, their
-        behaviour is identical. No normalization is performed in this reducer - exactly how the
-        detector and monitor integrals are used is defined downstream.
-
-        By itself, the data from this reducer is not suitable for use in a scan - but it provides
-        raw data which may be useful for further processing as part of callbacks
-        (e.g. LiveDispatchers).
+        behaviour is identical.
 
         Args:
             monitors: an array representing the mapping of monitors to acquire integrals from.
@@ -407,6 +402,14 @@ class PeriodSpecIntegralsReducer(Reducer, StandardReadable):
             Array1D[np.int32], np.ndarray([], dtype=np.int32)
         )
         """Monitor integrals, as a :py:obj:`numpy.ndarray`."""
+        self.det_sum, self._det_sum_setter = soft_signal_r_and_setter(int, 0)
+        """Sum of detector integrals, as a :py:obj:`int`"""
+        self.mon_sum, self._mon_sum_setter = soft_signal_r_and_setter(int, 0)
+        """Sum of monitor integrals, as a :py:obj:`int`"""
+        self.intensity, self._intensity_setter = soft_signal_r_and_setter(float, 0.0)
+        """Normalised intensity (detectors/monitors), as a :py:obj:`float`"""
+        self.intensity_stddev, self._intensity_stddev_setter = soft_signal_r_and_setter(float, 0.0)
+        """Standard deviation of normalised intensity (detectors/monitors), as a :py:obj:`float`"""
 
         super().__init__(name="")
 
@@ -446,6 +449,17 @@ class PeriodSpecIntegralsReducer(Reducer, StandardReadable):
         self._det_integrals_setter(det_integrals)
         self._mon_integrals_setter(mon_integrals)
 
+        scalar_det_sum = det_integrals.sum()
+        scalar_mon_sum = mon_integrals.sum()
+        self._det_sum_setter(scalar_det_sum)
+        self._mon_sum_setter(scalar_mon_sum)
+
+        normalized = sc.scalar(
+            scalar_det_sum, variance=scalar_det_sum + VARIANCE_ADDITION, dtype="float64"
+        ) / sc.scalar(scalar_mon_sum, variance=scalar_mon_sum + VARIANCE_ADDITION, dtype="float64")
+        self._intensity_setter(normalized.value)
+        self._intensity_stddev_setter(math.sqrt(normalized.variance))
+
         logger.info("reduction complete")
 
     def additional_readable_signals(self, dae: Dae) -> list[Device]:
@@ -456,6 +470,10 @@ class PeriodSpecIntegralsReducer(Reducer, StandardReadable):
         return [
             self.mon_integrals,
             self.det_integrals,
+            self.det_sum,
+            self.mon_sum,
+            self.intensity,
+            self.intensity_stddev,
         ]
 
 
