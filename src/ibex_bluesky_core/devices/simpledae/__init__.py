@@ -1,4 +1,4 @@
-"""A simple interface to the DAE for bluesky."""
+"""High-level bluesky device interface to the DAE for 'typical' measurements."""
 
 import logging
 from typing import Generic
@@ -84,7 +84,7 @@ TReducer_co = TypeVar("TReducer_co", bound="Reducer", default=Reducer, covariant
 
 
 class SimpleDae(Dae, Triggerable, AsyncStageable, Generic[TController_co, TWaiter_co, TReducer_co]):
-    """Configurable DAE with pluggable strategies for data collection, waiting, and reduction.
+    """DAE with user-defined strategies for data collection, waiting, and reduction.
 
     This class should cover many simple DAE use-cases, but for complex use-cases a custom Dae
     subclass may still be required to give maximum flexibility.
@@ -99,18 +99,21 @@ class SimpleDae(Dae, Triggerable, AsyncStageable, Generic[TController_co, TWaite
         waiter: TWaiter_co,
         reducer: TReducer_co,
     ) -> None:
-        """Initialize a simple DAE interface.
+        """DAE with used-defined strategies for data collection, waiting, and reduction.
+
+        See Also:
+            :doc:`/devices/dae` user documentation.
 
         Args:
             prefix: the PV prefix of the instrument being controlled.
-            name: A friendly name for this DAE object.
+            name: A friendly name for this DAE object. Defaults to "DAE".
             controller: A DAE control strategy, defines how the DAE begins and ends data acquisition
-                Pre-defined strategies in the ibex_bluesky_core.devices.controllers module
+                Should implement the :py:obj:`Controller` protocol.
             waiter: A waiting strategy, defines how the DAE waits for an acquisition to be complete
-                Pre-defined strategies in the ibex_bluesky_core.devices.waiters module
+                Should implement the :py:obj:`Waiter` protocol.
             reducer: A data reduction strategy, defines the post-processing on raw DAE data, for
                 example normalization or unit conversion.
-                Pre-defined strategies in the ibex_bluesky_core.devices.reducers module
+                Should implement the :py:obj:`Reducer` protocol.
 
         """
         self.prefix = prefix
@@ -141,15 +144,26 @@ class SimpleDae(Dae, Triggerable, AsyncStageable, Generic[TController_co, TWaite
 
     @AsyncStatus.wrap
     async def stage(self) -> None:
-        """Pre-scan setup. Delegate to the controller."""
+        """Pre-scan setup.
+
+        The behaviour of this method is defined by :py:obj:`Controller.setup`.
+        """
         await self.controller.setup(self)
 
     @AsyncStatus.wrap
     async def trigger(self) -> None:
-        """Take a single measurement and prepare it for subsequent reading.
+        """Take a single measurement, and prepare it for subsequent reading.
 
         This waits for the acquisition and any defined reduction to be complete, such that
-        after this coroutine completes all relevant data is available via read()
+        after this coroutine completes, all relevant data is available via
+        :py:obj:`bluesky.protocols.Readable.read`.
+
+        The behaviour of this method is defined by the following method calls (in order):
+
+        - :py:obj:`Controller.start_counting`
+        - :py:obj:`Waiter.wait`
+        - :py:obj:`Controller.stop_counting`
+        - :py:obj:`Reducer.reduce_data`
         """
         await self.controller.start_counting(self)
         await self.waiter.wait(self)
@@ -158,7 +172,10 @@ class SimpleDae(Dae, Triggerable, AsyncStageable, Generic[TController_co, TWaite
 
     @AsyncStatus.wrap
     async def unstage(self) -> None:
-        """Post-scan teardown, delegate to the controller."""
+        """Post-scan teardown.
+
+        The behaviour of this method is defined by :py:obj:`Controller.teardown`.
+        """
         await self.controller.teardown(self)
 
 
@@ -170,9 +187,9 @@ def monitor_normalising_dae(
     monitor: int = 1,
     save_run: bool = False,
 ) -> SimpleDae:
-    """Create a simple DAE which normalises using a monitor and waits for frames.
+    """Create a :py:obj:`SimpleDae` which normalises using a monitor and waits for frames.
 
-    This is really a shortcut to reduce code in plans used on the majority of instruments that
+    This is a shortcut to reduce code in plans used on the majority of instruments that
     normalise using a monitor, wait for a number of frames and optionally use software periods.
 
     Args:
@@ -220,10 +237,10 @@ def check_dae_strategies(
     """Check that the provided dae instance has appropriate controller/reducer/waiter configured.
 
     Args:
-        dae: The simpledae instance to check.
-        expected_controller: The expected controller type, on None to not check.
-        expected_waiter: The expected controller type, on None to not check.
-        expected_reducer: The expected controller type, on None to not check.
+        dae: The :py:obj:`SimpleDae` instance to check.
+        expected_controller: The expected controller type, or :py:obj:`None` to not check.
+        expected_waiter: The expected controller type, or :py:obj:`None` to not check.
+        expected_reducer: The expected controller type, or :py:obj:`None` to not check.
 
     """
     if expected_controller is not None:

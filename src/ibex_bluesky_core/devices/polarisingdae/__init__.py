@@ -1,4 +1,4 @@
-"""An interface to the DAE for bluesky, suited for polarisation."""
+"""Specialised DAE interface for polarisation measurements."""
 
 import logging
 from typing import Generic, TypeAlias

@@ -1,7 +1,7 @@
 # Kafka
 
 `ibex_bluesky_core` uses [the `bluesky-kafka` library](https://github.com/bluesky/bluesky-kafka) to send documents
-emitted by the `RunEngine` to kafka. The kafka callback is automatically added by
+emitted by the :py:obj:`~bluesky.run_engine.RunEngine` to kafka. The kafka callback is automatically added by
 {py:obj}`ibex_bluesky_core.run_engine.get_run_engine`, and so no user configuration is required - the callback is always
 enabled.
 

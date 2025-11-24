@@ -1,4 +1,4 @@
-"""Muon specific bluesky device helpers."""
+"""Muon-specific bluesky devices and utilities."""
 
 import asyncio
 import logging

@@ -14,10 +14,10 @@ logger = logging.getLogger(__name__)
 
 
 class DaeSpectra(StandardReadable):
-    """Subdevice for a single DAE spectra."""
+    """Subdevice for a single DAE spectrum."""
 
     def __init__(self, dae_prefix: str, *, spectra: int, period: int, name: str = "") -> None:
-        """Set up signals for a single DAE spectra."""
+        """Interface to a single DAE spectrum."""
         # x-axis; time-of-flight.
         # These are bin-centre coordinates.
         self.tof: SignalR[Array1D[float32]] = epics_signal_r(
@@ -84,7 +84,7 @@ class DaeSpectra(StandardReadable):
         return await self._read_sized(self.counts_per_time, self.counts_per_time_size)
 
     async def read_spectrum_dataarray(self) -> sc.DataArray:
-        """Get a scipp DataArray containing the current data from this spectrum.
+        """Get a :py:obj:`scipp.DataArray` containing the current data from this spectrum.
 
         Variances are set to the counts - i.e. the standard deviation is sqrt(N), which is typical
         for counts data.
