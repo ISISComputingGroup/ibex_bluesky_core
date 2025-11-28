@@ -3,6 +3,9 @@
 import asyncio
 import logging
 
+import numpy as np
+import numpy.typing as npt
+import scipp as sc
 from bluesky.protocols import NamedMovable
 from ophyd_async.core import (
     AsyncStatus,
@@ -15,11 +18,12 @@ from ophyd_async.core import (
 from ophyd_async.epics.core import epics_signal_r, epics_signal_rw, epics_signal_w
 
 from ibex_bluesky_core.devices import NoYesChoice
+from ibex_bluesky_core.devices.simpledae import Reducer
 from ibex_bluesky_core.utils import get_pv_prefix
 
 logger = logging.getLogger(__name__)
 
-__all__ = ["ReflParameter", "ReflParameterRedefine", "refl_parameter"]
+__all__ = ["AngleMappingReducer", "ReflParameter", "ReflParameterRedefine", "refl_parameter"]
 
 
 class ReflParameter(StandardReadable, NamedMovable[float]):
@@ -125,3 +129,22 @@ def refl_parameter(
     return ReflParameter(
         prefix=prefix, name=name, changing_timeout_s=changing_timeout_s, has_redefine=has_redefine
     )
+
+
+class AngleMappingReducer(Reducer, StandardReadable):
+    """Reflectometry angle-mapping reducer."""
+
+    def __init__(
+        self,
+        *,
+        prefix: str,
+        detectors: npt.NDArray[np.int32],
+        angle_map: npt.NDArray[np.float64],
+        flood: sc.Variable | None = None,
+    ) -> None:
+        """Angle-mapping :py:obj:`Reducer` for use by reflectometers.
+
+        This :py:obj:`Reducer` fits the counts on each pixel of a detector,
+        against the relative angular positions of those pixels.
+        """
+        super().__init__()
