@@ -3,23 +3,30 @@
 import asyncio
 import logging
 
+import numpy as np
+import numpy.typing as npt
 from bluesky.protocols import NamedMovable
 from ophyd_async.core import (
     AsyncStatus,
+    Device,
     SignalR,
     SignalW,
     StandardReadable,
     StandardReadableFormat,
     observe_value,
+    soft_signal_r_and_setter,
 )
 from ophyd_async.epics.core import epics_signal_r, epics_signal_rw, epics_signal_w
 
 from ibex_bluesky_core.devices import NoYesChoice
+from ibex_bluesky_core.devices.dae import Dae
+from ibex_bluesky_core.devices.simpledae import Reducer
+from ibex_bluesky_core.fitting import Gaussian
 from ibex_bluesky_core.utils import get_pv_prefix
 
 logger = logging.getLogger(__name__)
 
-__all__ = ["ReflParameter", "ReflParameterRedefine", "refl_parameter"]
+__all__ = ["AngleMappingReducer", "ReflParameter", "ReflParameterRedefine", "refl_parameter"]
 
 
 class ReflParameter(StandardReadable, NamedMovable[float]):
@@ -125,3 +132,94 @@ def refl_parameter(
     return ReflParameter(
         prefix=prefix, name=name, changing_timeout_s=changing_timeout_s, has_redefine=has_redefine
     )
+
+
+class AngleMappingReducer(Reducer, StandardReadable):
+    """Reflectometry angle-mapping reducer."""
+
+    def __init__(
+        self,
+        *,
+        detectors: npt.NDArray[np.int32],
+        angle_map: npt.NDArray[np.float64],
+    ) -> None:
+        """Angle-mapping :py:obj:`Reducer` for use by reflectometers.
+
+        This :py:obj:`Reducer` fits the counts on each pixel of a detector,
+        against the relative angular positions of those pixels. It then exposes
+        fitted quantities, and their standard deviations, as signals from this
+        reducer.
+
+        Args:
+            detectors: numpy array of detector spectra to include.
+            angle_map: numpy array of relative pixel angles for each
+                selected detector
+
+        """
+        self.amp, self._amp_setter = soft_signal_r_and_setter(float, 0.0)
+        """Amplitude of fitted Gaussian"""
+        self.amp_err, self._amp_err_setter = soft_signal_r_and_setter(float, 0.0)
+        """Amplitude standard deviation of fitted Gaussian"""
+        self.sigma, self._sigma_setter = soft_signal_r_and_setter(float, 0.0)
+        """Width (sigma) of fitted Gaussian"""
+        self.sigma_err, self._sigma_err_setter = soft_signal_r_and_setter(float, 0.0)
+        """Width (sigma) standard deviation of fitted Gaussian"""
+        self.x0, self._x0_setter = soft_signal_r_and_setter(float, 0.0)
+        """Centre (x0) of fitted Gaussian"""
+        self.x0_err, self._x0_err_setter = soft_signal_r_and_setter(float, 0.0)
+        """Centre (x0) standard deviation of fitted Gaussian"""
+        self.background, self._background_setter = soft_signal_r_and_setter(float, 0.0)
+        """Background of fitted Gaussian"""
+        self.background_err, self._background_err_setter = soft_signal_r_and_setter(float, 0.0)
+        """Background standard deviation of fitted Gaussian"""
+
+        super().__init__()
+        self._detectors = detectors
+        self._angle_map = angle_map
+        self._fit_method = Gaussian()
+
+    def additional_readable_signals(self, dae: Dae) -> list[Device]:
+        """Expose fit parameters as readable signals.
+
+        :meta private:
+        """
+        return [
+            self.amp,
+            self.amp_err,
+            self.sigma,
+            self.sigma_err,
+            self.x0,
+            self.x0_err,
+            self.background,
+            self.background_err,
+        ]
+
+    async def reduce_data(self, dae: Dae) -> None:
+        """Perform the 'reduction'.
+
+        :meta private:
+        """
+        data = await dae.trigger_and_get_specdata()
+
+        # Filter to relevant detectors
+        data = data[self._detectors]
+
+        # Sum in ToF
+        data = data.sum(axis=1)
+
+        print(data)
+
+        fit_method = Gaussian()
+
+        # Generate initial guesses and fit
+        guess = fit_method.guess()(self._angle_map, data)
+        result = fit_method.model().fit(data, x=self._angle_map, **guess)
+
+        self._amp_setter(result.params["amp"].value)
+        self._amp_err_setter(result.params["amp"].stderr)
+        self._x0_setter(result.params["x0"].value)
+        self._x0_err_setter(result.params["x0"].stderr)
+        self._sigma_setter(result.params["sigma"].value)
+        self._sigma_err_setter(result.params["sigma"].stderr)
+        self._background_setter(result.params["background"].value)
+        self._background_err_setter(result.params["background"].stderr)
