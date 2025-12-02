@@ -259,7 +259,10 @@ class AngleMappingReducer(Reducer, StandardReadable):
         # Generate initial guesses and fit
         guess = fit_method.guess()(self._angle_map, data.values)
         result = fit_method.model().fit(
-            data.values, x=self._angle_map, **guess, weights=1 / (data.variances**0.5)
+            data.values,
+            x=self._angle_map,
+            **guess,  # pyright: ignore
+            weights=1 / (data.variances**0.5),
         )
 
         self._amp_setter(result.params["amp"].value)
