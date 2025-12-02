@@ -80,9 +80,13 @@ async def test_angle_mapping_reducer(dae):
 
     await reducer.reduce_data(fakedae)
 
+    # Approximate fit parameters for above data
     assert await reducer.x0.get_value() == pytest.approx(12.0)
     assert await reducer.amp.get_value() == pytest.approx(10.0, abs=0.01)
     assert await reducer.background.get_value() == pytest.approx(0.0, abs=0.01)
+
+    # Should get a 'good' fit to the above data
+    assert await reducer.r_squared.get_value() == pytest.approx(1.0, abs=0.01)
 
 
 def test_angle_mapping_reducer_interesting_signals():

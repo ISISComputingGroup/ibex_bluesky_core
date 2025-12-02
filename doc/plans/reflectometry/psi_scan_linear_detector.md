@@ -31,10 +31,11 @@ A Psi scan on a linear detector is therefore implemented using the following ste
   - Filter to a range of interesting pixels (for example using {py:obj}`~ibex_bluesky_core.utils.centred_pixel`)
   - Map those pixels to relative angle, to account for pixel spacing which may not be exactly even between all pixels
   - Optionally divide counts in each pixel by a flood map, to account for different pixel efficiencies
-  - Fit angle against counts using a Gaussian curve
-  - Return the 'width' parameter of the Gaussian fit as the data from each scan point
-- Plotting the returned 'width' parameter at each scan point against the scanned variable, Psi, the optimum value of Psi
-occurs when the width is minimised
-  - This is performed using an 'outer' {py:obj}`~ibex_bluesky_core.fitting.Gaussian` fit, using standard
+  - Fit angle against counts using a {py:obj}`~ibex_bluesky_core.fitting.Gaussian` model
+  - Return the fit parameters, including {py:obj}`~~ibex_bluesky_core.devices.reflectometry.AngleMappingReducer.sigma`
+(width) as the data from each scan point
+- Plotting the returned sigma (width) parameter at each scan point against the scanned variable, Psi, the optimum value
+of Psi occurs when the width is minimised
+  - This is performed using an _outer_ {py:obj}`~ibex_bluesky_core.fitting.Gaussian` fit, using standard
 [callbacks and fitting](/callbacks/fitting/fitting) infrastructure. This is expected to give a negative
 {py:obj}`~ibex_bluesky_core.fitting.Gaussian` curve, where the `x0` parameter describes the optimum value of Psi
