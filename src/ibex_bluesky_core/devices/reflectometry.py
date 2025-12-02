@@ -165,7 +165,7 @@ class AngleMappingReducer(Reducer, StandardReadable):
         .. warning::
 
             The uncertainties (signals ending in ``_err``) from this reducer are
-            obtained from :py:obj:`lmfit`. The exact method is described in
+            obtained from ``lmfit``. The exact method is described in
             lmfit's :py:obj:`~lmfit.minimizer.MinimizerResult` documentation.
             For a perfect fit, which might result from fitting a limited number
             of points or flat data, uncertainties may be zero.
