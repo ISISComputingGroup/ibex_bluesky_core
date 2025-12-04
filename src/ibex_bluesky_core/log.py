@@ -41,7 +41,18 @@ def file_handler() -> TimedRotatingFileHandler:
 
 
 def setup_logging() -> None:
-    """Set up logging with a default configuration."""
+    r"""Set up logging with a default configuration.
+
+    The default configuration is to log to ::
+
+        c:\instrument\var\logs\bluesky
+
+    This location can be overridden using the ``IBEX_BLUESKY_CORE_LOGS`` environment variable.
+
+    Loggers listened-to by default include the loggers for this library, as well as
+    the loggers for :py:obj:`bluesky` and :py:obj:`ophyd_async`. The severities of those
+    loggers are set to ``INFO`` by default.
+    """
     # Create the log directory if it doesn't already exist
     try:
         os.makedirs(log_location, exist_ok=True)
