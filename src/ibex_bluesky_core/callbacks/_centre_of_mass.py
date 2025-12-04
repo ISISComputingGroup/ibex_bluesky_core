@@ -16,9 +16,10 @@ class CentreOfMass(CollectThenCompute):
     def __init__(self, x: str, y: str) -> None:
         """Compute centre of mass after a run finishes.
 
-        This callback calculates the CoM of the 2D region bounded by ``min(y)``,
-        ``min(x)``, ``max(x)``, and straight-line segments joining (x, y)
-        data points with their nearest neighbours along the x axis.
+        This callback calculates the centre of mass of the 2D region
+        bounded by ``min(y)``, ``min(x)``, ``max(x)``, and straight-line
+        segments joining (x, y) data points with their nearest neighbours
+        along the x axis.
 
         Args:
             x: Name of independent variable in event data

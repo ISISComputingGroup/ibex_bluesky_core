@@ -80,6 +80,12 @@ autoclass_content = "init"
 myst_heading_anchors = 7
 autodoc_preserve_defaults = True
 
+spelling_lang = "en_GB"
+spelling_filters = ["enchant.tokenize.MentionFilter"]
+spelling_warning = True
+spelling_show_suggestions = True
+spelling_suggestion_limit = 3
+
 intersphinx_mapping = {
     "python": ("https://docs.python.org/3", None),
     "bluesky": ("https://blueskyproject.io/bluesky/main/", None),

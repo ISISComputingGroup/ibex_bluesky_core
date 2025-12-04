@@ -31,7 +31,7 @@ class TCBTimeUnit(Enum):
     """Time unit for DAE TCB settings."""
 
     MICROSECONDS = 0
-    """Micosecond TCB unit (neutron instruments)."""
+    """Microsecond TCB unit (neutron instruments)."""
     NANOSECONDS = 1
     """Nanosecond TCB unit (muon instruments)."""
 
@@ -121,7 +121,7 @@ class DaeTCBSettingsData:
     tcb_file: str | None = None
     """TCB file path."""
     time_unit: TCBTimeUnit | None = None
-    """TCB time unit (usually us for neutron instruments, ns for muon instruments)."""
+    """TCB time unit (usually μs for neutron instruments, ns for muon instruments)."""
     tcb_calculation_method: TCBCalculationMethod | None = None
     """TCB source (file or explicit tables)."""
 
@@ -193,7 +193,7 @@ class DaeTCBSettings(StandardReadable, Locatable[DaeTCBSettingsData], Movable[Da
 
     @AsyncStatus.wrap
     async def set(self, value: DaeTCBSettingsData) -> None:
-        """Set any changes in the tcb settings to the XML."""
+        """Set any changes in the TCB settings to the XML."""
         current_xml = await self._raw_tcb_settings.get_value()
         current_xml_dehexed = dehex_and_decompress(current_xml.encode()).decode()
         xml = _convert_tcb_settings_to_xml(current_xml_dehexed, value)

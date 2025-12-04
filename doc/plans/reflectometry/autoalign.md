@@ -40,7 +40,7 @@ def full_autoalign_plan() -> Generator[Msg, None, None]:
         dae=dae,
         alignment_param=s1vg,
         fit_method=SlitScan.fit(), # What form of data do you expect
-        fit_param="inflection0", # Which fitting paramater do you want to optimise
+        fit_param="inflection0", # Which fitting parameter do you want to optimise
         rel_scan_ranges=[0.3, 0.05], # Scan with range of 0.3, then 0.05
         num_points=10, # Number of points in a scan.
     )
@@ -52,7 +52,7 @@ def full_autoalign_plan() -> Generator[Msg, None, None]:
     print("Auto alignment complete.")
 ```
 
-As mentioned prior, it is recommended that for each {py:obj}`~bluesky.protocols.Movable` to be aligned, you should provide a checking function, to make sure that for the value you receive for the chosen fitting paramater e.g centre of a gaussian, is physically reasonable. If the optimised value fails the check, then you will have the option to either restart the alignment for this axis, or continue moving this axis to the located value despite the failing check.
+As mentioned prior, it is recommended that for each {py:obj}`~bluesky.protocols.Movable` to be aligned, you should provide a checking function, to make sure that for the value you receive for the chosen fitting parameter e.g centre of a Gaussian, is physically reasonable. If the optimised value fails the check, then you will have the option to either restart the alignment for this axis, or continue moving this axis to the located value despite the failing check.
 
 The following is how you would define a check function and pass it to {py:obj}`~ibex_bluesky_core.plans.reflectometry.optimise_axis_against_intensity`:
 

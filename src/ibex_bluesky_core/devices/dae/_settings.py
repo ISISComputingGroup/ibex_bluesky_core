@@ -86,7 +86,7 @@ class DaeTimingSource(Enum):
 
 @dataclass(kw_only=True)
 class DaeSettingsData:
-    """Dataclass for general DAE settings.
+    """Data class for general DAE settings.
 
     All settings accept :py:obj:`None`, which means this setting will not be changed from
     the current setting.
@@ -94,15 +94,15 @@ class DaeSettingsData:
 
     wiring_filepath: str | None = None
     """
-    Wiring table filepath.
+    Wiring table file path.
     """
     detector_filepath: str | None = None
     """
-    Detector table filepath.
+    Detector table file path.
     """
     spectra_filepath: str | None = None
     """
-    Spectra table filepath.
+    Spectra table file path.
     """
     mon_spect: int | None = None
     """

@@ -52,8 +52,8 @@ class FitMethod:
         Contains a model function and a guess function.
 
         Args:
-            model (lmfit.Model | Callable): The model function to use.
-            guess (Callable): The guess function to use.
+            model: The model function to use.
+            guess: The guess function to use.
 
         """
         self.guess = guess
@@ -78,8 +78,9 @@ class Fit(ABC):
             *args (int): Any extra parameters required for fitting.
 
         Returns:
-            lmfit.Model: Model function
-            (x-values: NDArray, parameters: np.float64 -> y-values: NDArray)
+            :py:obj:`lmfit.model.Model`: Model function, which takes
+            x-values as a :py:obj:`numpy.ndarray`, parameters as :py:obj:`float`
+            or :py:obj:`numpy.float64`, and returns y-values as a :py:obj:`numpy.ndarray`.
 
         """
 
@@ -88,14 +89,15 @@ class Fit(ABC):
     def guess(
         cls, *args: int
     ) -> Callable[[npt.NDArray[np.float64], npt.NDArray[np.float64]], dict[str, lmfit.Parameter]]:
-        """Outline base Guessing. method.
+        """Outline base guessing method.
 
         Args:
             *args (int): Any extra parameters required for fitting.
 
         Returns:
-            Callable: Guess function
-            (x-values: NDArray, y-values: NDArray -> parameters: Dict[str, lmfit.Parameter])
+            typing.Callable: Guess function
+            (x-values: :py:obj:`numpy.ndarray`, y-values: :py:obj:`numpy.ndarray`
+            -> parameters: ``Dict[str, lmfit.Parameter]``)
 
         """
 

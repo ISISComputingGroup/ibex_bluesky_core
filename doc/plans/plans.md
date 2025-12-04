@@ -69,7 +69,7 @@ Alternatively, we provide some wrappers that construct the devices for you - the
 - {py:obj}`ibex_bluesky_core.plans.motor_scan`
 - {py:obj}`ibex_bluesky_core.plans.motor_adaptive_scan`
 
-These plans take the _names_ of blocks as arguments, rather than devices, and construct a DAE and block device for you, using the global moving flag to determine if a motor has finished moving (in the same way as a `waitfor_move()`). This might be useful if you have a fairly standard DAE setup and want to scan a block pointing at a motor such as a Sample Changer axis, but is not as flexible or performant as the lower-level plans.
+These plans take the _names_ of blocks as arguments, rather than devices, and construct a DAE and block device for you, using the global moving flag to determine if a motor has finished moving (in the same way as a {py:obj}`genie.waitfor_move`). This might be useful if you have a fairly standard DAE setup and want to scan a block pointing at a motor such as a Sample Changer axis, but is not as flexible or performant as the lower-level plans.
 
 For example, to scan over a motor, wait for 400 frames, and perform a linear fit, you can write this in the console: 
 

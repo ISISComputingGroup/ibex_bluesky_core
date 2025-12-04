@@ -32,7 +32,7 @@ DEFAULT_KAFKA_BROKER = "livedata.isis.cclrc.ac.uk:31092"
 
 
 def get_kafka_topic_name() -> str:
-    """Get the name of the bluesky kafka topic for this machine."""
+    """Get the name of the bluesky Kafka topic for this machine."""
     computer_name = os.environ.get("COMPUTERNAME", socket.gethostname()).upper()
     computer_name = computer_name.upper()
     if computer_name.startswith(("NDX", "NDH")):

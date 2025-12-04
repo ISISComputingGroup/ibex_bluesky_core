@@ -62,7 +62,7 @@ class PeriodSource(Enum):
 
 @dataclass(kw_only=True)
 class SinglePeriodSettings:
-    """Dataclass for the settings on a single hardware period."""
+    """Data class for the settings on a single hardware period."""
 
     type: int | None = None
     """Hardware period type."""
@@ -76,7 +76,7 @@ class SinglePeriodSettings:
 
 @dataclass(kw_only=True)
 class DaePeriodSettingsData:
-    """Dataclass for specifying hardware period settings."""
+    """Data class for specifying hardware period settings."""
 
     periods_settings: list[SinglePeriodSettings] | None = None
     """

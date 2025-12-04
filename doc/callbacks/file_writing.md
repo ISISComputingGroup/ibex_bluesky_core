@@ -56,7 +56,7 @@ Optional parameters, not shown above, include:
 The data is prepended on the first event with the names and units of each logged field, and then subsequently the data 
 for each scan separated by a newline. The data is separated by commas, though the metadata is not.
 
-The file also contains metadata such as the bluesky version, plan type, and rb number.
+The file also contains metadata such as the bluesky version, plan type, and RB number.
 
 ## Fit outputs
 

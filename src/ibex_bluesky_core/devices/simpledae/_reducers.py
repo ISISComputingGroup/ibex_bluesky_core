@@ -385,9 +385,9 @@ class PeriodSpecIntegralsReducer(Reducer, StandardReadable):
 
         Args:
             monitors: an array representing the mapping of monitors to acquire integrals from.
-                For example, passing np.array([1]) selects spectrum 1.
+                For example, passing ``np.array([1])`` selects spectrum 1.
             detectors: an array representing the mapping of detectors to acquire integrals from.
-                For example, passing np.array([5, 6, 7, 8]) would select detector spectra 5-8
+                For example, passing ``np.array([5, 6, 7, 8])`` would select detector spectra 5-8
                 inclusive, and so the output of this reducer would be an array of dimension 4.
 
         """

@@ -273,7 +273,7 @@ def height_and_angle_scan_plan(  # noqa PLR0913
         md: Arbitrary metadata to include in this scan.
 
     Returns:
-        A dictionary containing the fit results from gaussian height and angle fits.
+        A dictionary containing the fit results from Gaussian height and angle fits.
 
     """
     logger.info("Starting combined height and angle scan")

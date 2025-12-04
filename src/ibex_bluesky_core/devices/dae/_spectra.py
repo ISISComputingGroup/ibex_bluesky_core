@@ -84,10 +84,10 @@ class DaeSpectra(StandardReadable):
         return await self._read_sized(self.counts_per_time, self.counts_per_time_size)
 
     async def read_spectrum_dataarray(self) -> sc.DataArray:
-        """Get a :py:obj:`scipp.DataArray` containing the current data from this spectrum.
+        r"""Get a :py:obj:`scipp.DataArray` containing the current data from this spectrum.
 
-        Variances are set to the counts - i.e. the standard deviation is sqrt(N), which is typical
-        for counts data.
+        Variances are set to the counts - i.e. the standard deviation is :math:`\sqrt{N}`, which is
+        typical for counts data.
 
         Data is returned along dimension "tof", which has bin-edge coordinates and units set from
         the units of the underlying PVs.

@@ -161,7 +161,7 @@ lf = LiveFit(fit_method, y="y_signal", x="x_signal", update_every=0.5)
 ```
 
 :::{note}
-The parameters returned from the guess function must allocate to the arguments to the model function, ignoring the independant variable e.g `x` in this case. Array-like structures are not allowed. See the {external+lmfit:doc}`parameters` for more information.
+The parameters returned from the guess function must allocate to the arguments to the model function, ignoring the independent variable e.g `x` in this case. Array-like structures are not allowed. See the {external+lmfit:doc}`parameters` for more information.
 :::
 
 Each {py:obj}`~ibex_bluesky_core.fitting.FitMethod` in {py:obj}`ibex_bluesky_core.fitting` has a `.model()` and `.guess()`, which make up their fitting method. These are publicly accessible class methods.
@@ -215,7 +215,7 @@ lf = LiveFit(fit_method, y="y_signal", x="x_signal", update_every=0.5)
 Or you can create a completely user-defined fitting method.
 
 :::{note}
-For fits that require arguments, you will need to pass values to their respecitive `.model` and `.guess` functions. E.g for {py:obj}`~ibex_bluesky_core.fitting.Polynomial` fitting:
+For fits that require arguments, you will need to pass values to their respective `.model` and `.guess` functions. E.g for {py:obj}`~ibex_bluesky_core.fitting.Polynomial` fitting:
 :::
 
 ```python

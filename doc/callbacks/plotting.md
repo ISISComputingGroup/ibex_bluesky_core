@@ -50,7 +50,7 @@ See [docs for `call_qt_aware`](../plan_stubs/matplotlib_helpers.md) for a descri
 `yield from call_qt_aware` rather than calling `matplotlib` functions directly.
 ```
 
-By providing a signal name to the `yerr` argument you can pass uncertainties to {py:obj}`~ibex_bluesky_core.callbacks.LivePlot`, by not providing anything for this argument means that no errorbars will be drawn. Errorbars are drawn after each point collected, displaying their standard deviation- uncertainty data is collected from Bluesky event documents and errorbars are updated after every new point added.
+By providing a signal name to the `yerr` argument you can pass uncertainties to {py:obj}`~ibex_bluesky_core.callbacks.LivePlot`, by not providing anything for this argument means that no error bars will be drawn. Error bars are drawn after each point collected, displaying their standard deviation - uncertainty data is collected from Bluesky event documents and error bars are updated after every new point added.
 
 The `plot_callback` object can then be subscribed to the run engine, using either:
 - An explicit callback when calling the run engine: `RE(some_plan(), plot_callback)`

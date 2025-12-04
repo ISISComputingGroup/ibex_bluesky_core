@@ -265,7 +265,7 @@ class Dae(StandardReadable):
     ) -> npt.NDArray[np.int32]:
         """Get a correctly-shaped spectrum-data array.
 
-        This array will have shape (num_spectra, num_time_channels).
+        This array will have shape (``num_spectra``, ``num_time_channels``).
 
         If detectors is a slice or an array, the number of detectors will be
         given by that slice or array. If detectors is None, all detectors,
@@ -277,7 +277,7 @@ class Dae(StandardReadable):
         Args:
             detectors: a numpy array or slice describing detectors to get data from.
                 Default is all detectors.
-                Pass np.array([1]) to select detector 1.
+                Pass ``np.array([1])`` to select detector 1.
 
         """
         if detectors is None:

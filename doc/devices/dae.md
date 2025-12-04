@@ -465,7 +465,7 @@ def plan(dae: Dae):
 ### Period-specific signals
 
 For signals which apply to the current period, see {py:obj}`dae.period <ibex_bluesky_core.devices.dae.DaePeriod>`, which contains signals
-such as `dae.period.good_uah` (the number of good uamp-hours collected in the current period).
+such as `dae.period.good_uah` (the number of good microamp-hours collected in the current period).
 
 
 ### Controlling the DAE directly
@@ -487,7 +487,7 @@ Unlike the standard `begin_run` signal, this needs to be `set()` rather than sim
 
 Many signals on the DAE are only available as composite signals - this includes most DAE 
 configuration parameters which are available under the "experiment setup" tab in IBEX, for
-example wiring/detector/spectra tables, tcb settings, or vetos.
+example wiring/detector/spectra tables, TCB settings, or vetoes.
 
 The classes implemented in this way are:
 - {py:obj}`dae.tcb_settings <ibex_bluesky_core.devices.dae.DaeTCBSettings>`
@@ -497,8 +497,8 @@ The classes implemented in this way are:
 - {py:obj}`dae.period_settings <ibex_bluesky_core.devices.dae.DaePeriodSettings>`: 
   - Parameters which appear under the "periods" tab in IBEX
 
-To read or change these settings from plans, use the associated dataclasses, which are
-suffixed with `Data` (e.g. {py:obj}`DaeSettingsData <ibex_bluesky_core.devices.dae.DaeSettingsData>` is the dataclass corresponding to {py:obj}`DaeSettings <ibex_bluesky_core.devices.dae.DaeSettings>`):
+To read or change these settings from plans, use the associated data classes, which are
+suffixed with `Data` (e.g. {py:obj}`~ibex_bluesky_core.devices.dae.DaeSettingsData` is the data class corresponding to {py:obj}`~ibex_bluesky_core.devices.dae.DaeSettings`):
 
 ```python
 import bluesky.plan_stubs as bps

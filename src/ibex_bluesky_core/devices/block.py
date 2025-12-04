@@ -441,21 +441,21 @@ class BlockMot(Motor, Movable[float], HasName):
         :py:obj:`~ibex_bluesky_core.devices.block.BlockWriteConfig` parameter, as these
         parameters duplicate functionality which already exists in the motor record. The mapping is:
 
-        use_completion_callback:
+        ``use_completion_callback``:
             Motors always use completion callbacks to check whether motion has completed. Whether to
             wait on that completion callback can be configured by the 'wait' keyword argument on
             set().
-        set_success_func:
+        ``set_success_func``:
             Use ``.RDBD`` and ``.RTRY`` to control motor retries if the position has not been
             reached to within a specified tolerance. Note that motors which retry a lot may
             exceed the default motion timeout which is calculated based on velocity,
             distance and acceleration.
-        set_timeout_s:
+        ``set_timeout_s``:
             A suitable timeout is calculated automatically based on velocity, distance and
             acceleration as defined on the motor record.
-        settle_time_s:
+        ``settle_time_s``:
             Use ``.DLY`` on the motor record to configure this.
-        use_global_moving_flag:
+        ``use_global_moving_flag``:
             This is unnecessary for a single motor block, as a completion callback will always be
             used instead to detect when a single move has finished.
 

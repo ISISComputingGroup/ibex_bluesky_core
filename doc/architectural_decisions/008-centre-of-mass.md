@@ -20,4 +20,4 @@ We currently only need to support positive peaks, but in future a toggle could b
 
 This will mean that...
 - Our version of the callback will not be supported by Bluesky and may need changes as Bluesky updates.
-- We can have a version of the callback that is made bespokely for our use cases.
+- We can have a version of the callback that is made specifically for our use cases.

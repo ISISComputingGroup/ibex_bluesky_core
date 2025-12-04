@@ -45,7 +45,7 @@ class HumanReadableFileCallback(CallbackBase):
 
         Args:
             fields: a list of field names to include in output files
-            output_dir: filepath into which to write output files
+            output_dir: file path into which to write output files
             postfix: optional postfix to append to output file names
 
         """

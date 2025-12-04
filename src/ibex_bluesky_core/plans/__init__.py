@@ -209,8 +209,9 @@ def motor_scan(  # noqa: PLR0913
 ) -> Generator[Msg, None, ISISCallbacks]:
     """Wrap our ``scan()`` plan and create a ``block_rw`` and a DAE object.
 
-    This essentially uses the same mechanism as a waitfor_move by using the global "moving" flag
-    to determine if motors are still moving after starting a move.
+    This uses the same mechanism as a :py:obj:`genie.waitfor_move`,
+    by using the global "moving" flag to determine if motors are still moving
+    after starting a move.
     This is really just a wrapper around :func:`ibex_bluesky_core.plans.scan`
 
     Args:
@@ -278,7 +279,8 @@ def motor_adaptive_scan(  # noqa: PLR0913
 ) -> Generator[Msg, None, ISISCallbacks]:
     """Wrap ``adaptive_scan()`` plan and create a ``block_rw`` and a DAE object.
 
-    This essentially uses the same mechanism as a waitfor_move by using the global "moving" flag
+    This essentially uses the same mechanism as a :py:obj:`genie.waitfor_move`,
+    by using the global "moving" flag
     to determine if motors are still moving after starting a move.
     This is really just a wrapper around :func:`ibex_bluesky_core.plans.adaptive_scan`
 

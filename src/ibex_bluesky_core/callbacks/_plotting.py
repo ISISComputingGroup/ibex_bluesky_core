@@ -61,14 +61,14 @@ class LivePlot(_DefaultLivePlot):
           if using the IBEX matplotlib backend.
 
         Args:
-            y (str): The name of the dependant variable.
-            x (str or None, optional): The name of the independant variable.
-            yerr (str or None, optional): Name of uncertainties signal.
+            y (str): The name of the dependent variable.
+            x (str or None, optional): The name of the independent variable.
+            yerr (str or None, optional): Name of uncertainty signal.
                 Providing None means do not plot uncertainties.
-            *args: As per mpl_plotting.py
+            *args: As per :py:obj:`bluesky.callbacks.mpl_plotting.LivePlot`
             update_on_every_event (bool, optional): Whether to update plot every event,
                 or just at the end.
-            **kwargs: As per mpl_plotting.py
+            **kwargs: As per :py:obj:`bluesky.callbacks.mpl_plotting.LivePlot`
 
         """
         self.update_on_every_event = update_on_every_event
