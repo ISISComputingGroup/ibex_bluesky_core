@@ -1,4 +1,4 @@
-# Fitting (`LiveFit`)
+# Fitting ({py:obj}`~ibex_bluesky_core.callbacks.LiveFit`)
 
 Similar to [`LivePlot`](/callbacks/plotting.md), {py:obj}`ibex_bluesky_core.callbacks.LiveFit` provides a thin wrapper around Bluesky's {py:obj}`bluesky.callbacks.LiveFit` class, enhancing it with additional functionality to better support real-time data fitting. This wrapper not only offers a wide selection of models to fit your data on, but also introduces guess generation for fit parameters. As new data points are acquired, the wrapper refines these guesses dynamically, improving the accuracy of the fit with each additional piece of data, allowing for more efficient and adaptive real-time fitting workflows.
 
@@ -10,7 +10,7 @@ from ibex_bluesky_core.callbacks import LiveFit
 
 ## Configuration
 
-Below is a full example showing how to use standard {external+matplotlib:doc}`matplotlib <index>` & {external+bluesky:doc}`bluesky <index>` functionality to apply fitting to a scan, using {py:obj}`~ibex_bluesky_core.callbacks.LivePlot` and {py:obj}`~ibex_bluesky_core.callbacks.LiveFit`. The fitting callback is set to expect data to take the form of a Gaussian, using the {py:obj}`ibex_bluesky_core.fitting.Gaussian` model.
+Below is a full example showing how to use standard {external+matplotlib:doc}`matplotlib <index>` & {external+bluesky:doc}`bluesky <index>` functionality to apply fitting to a scan, using {py:obj}`~ibex_bluesky_core.callbacks.LivePlot` and {py:obj}`~ibex_bluesky_core.callbacks.LiveFit`. The fitting callback is set to expect data to take the form of a Gaussian, using the {py:obj}`~ibex_bluesky_core.fitting.Gaussian` model.
 
 ```python
 import matplotlib.pyplot as plt
@@ -78,7 +78,7 @@ Bluesky additionally provides a {py:obj}`bluesky.callbacks.fitting.PeakStats` ca
 
 -------
 
-Each of the above fit classes has a `.fit()` which returns an object of type {py:obj}`ibex_bluesky_core.fitting.FitMethod`. This tells {py:obj}`~ibex_bluesky_core.callbacks.LiveFit` how to perform fitting on the data.
+Each of the above fit classes has a `.fit()` which returns an object of type {py:obj}`~ibex_bluesky_core.fitting.FitMethod`. This tells {py:obj}`~ibex_bluesky_core.callbacks.LiveFit` how to perform fitting on the data.
 
 There are *two* ways that you can choose how to fit a model to your data:
 

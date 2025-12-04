@@ -5,7 +5,7 @@ occurs, but the reported position changes to the given position.
 
 ## {py:obj}`~ibex_bluesky_core.plan_stubs.redefine_motor`
 
-The {py:obj}`ibex_bluesky_core.plan_stubs.redefine_motor` plan stub can be used to redefine the current
+The {py:obj}`~ibex_bluesky_core.plan_stubs.redefine_motor` plan stub can be used to redefine the current
 position of a motor (for example a {py:obj}`~ibex_bluesky_core.devices.block.BlockMot`) to a new value.
 
 The motor does not physically move, but after this plan stub executes, the current position will be defined
@@ -37,7 +37,7 @@ This behaviour can be controlled with the `sleep` keyword argument to
 
 ## {py:obj}`~ibex_bluesky_core.plan_stubs.redefine_refl_parameter`
 
-The {py:obj}`ibex_bluesky_core.plan_stubs.redefine_refl_parameter` plan stub can be used to redefine the current
+The {py:obj}`~ibex_bluesky_core.plan_stubs.redefine_refl_parameter` plan stub can be used to redefine the current
 position of a {py:obj}`~ibex_bluesky_core.devices.reflectometry.ReflParameter` to a new value. 
 
 :::{note}

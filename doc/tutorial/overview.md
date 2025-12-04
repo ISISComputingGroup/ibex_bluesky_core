@@ -186,7 +186,7 @@ def my_plan(det_block_name: str, mot_block_name: str, start: float, stop: float,
 The above will show a {external+bluesky:ref}`livetable` by default, any time `my_plan` is executed. The same mechanism can
 be used to always configure a scan with plots and a fit with a specific type.
 
-This library includes a standard callbacks collection, {py:obj}`ibex_bluesky_core.callbacks.ISISCallbacks`, which should suit the needs of many simple scans. This includes the ability to fit, plot, add human-readable file output and show a live table of scanned fields. See {ref}`icc` on how to use this.
+This library includes a standard callbacks collection, {py:obj}`~ibex_bluesky_core.callbacks.ISISCallbacks`, which should suit the needs of many simple scans. This includes the ability to fit, plot, add human-readable file output and show a live table of scanned fields. See {ref}`icc` on how to use this.
 
 For more general information on callbacks, see the
 {external+bluesky:doc}`bluesky callbacks documentation <callbacks>`.

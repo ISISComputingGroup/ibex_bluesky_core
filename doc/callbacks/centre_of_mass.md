@@ -6,7 +6,7 @@
 - `min(y)`
 - Straight-line segments joining `(x, y)` data points with their nearest neighbours along the x axis
 
-{py:obj}`~ibex_bluesky_core.callbacks.CentreOfMass` stores its result in the {py:obj}`result <ibex_bluesky_core.callbacks.CentreOfMass.result>` property.
+{py:obj}`~ibex_bluesky_core.callbacks.CentreOfMass` stores its result in the {py:obj}`~ibex_bluesky_core.callbacks.CentreOfMass.result` property.
 
 :::{note}
 This will return **different** results from the `com` property available from {py:obj}`bluesky.callbacks.fitting.PeakStats` in the following cases:

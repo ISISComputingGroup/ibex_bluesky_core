@@ -28,13 +28,13 @@ Plotting is enabled by default and running a plan with {py:obj}`~ibex_bluesky_co
 
 If a {ref}`fitting method <standard_fitting_models>` is given via the `fit` argument (this is optional), fitting will be enabled. By default, this fit will be shown on a plot.
 
-After a scan has run you can get the fitting results by using the {py:obj}`live_fit <ibex_bluesky_core.callbacks.ISISCallbacks.live_fit>` property. 
+After a scan has run you can get the fitting results by using the {py:obj}`~ibex_bluesky_core.callbacks.ISISCallbacks.live_fit` property. 
 
 ## Centre of mass and Peak Stats
 
-These are both enabled by default. To access {py:obj}`~ibex_bluesky_core.callbacks.CentreOfMass` information after a plan, use the {py:obj}`com <ibex_bluesky_core.callbacks.ISISCallbacks.com>` property.
+These are both enabled by default. To access {py:obj}`~ibex_bluesky_core.callbacks.CentreOfMass` information after a plan, use the {py:obj}`~ibex_bluesky_core.callbacks.ISISCallbacks.com` property.
 
-To access {external+bluesky:py:obj}`Peak Stats <bluesky.callbacks.fitting.PeakStats>` after a plan use the {py:obj}`peak_stats <ibex_bluesky_core.callbacks.ISISCallbacks.peak_stats>` property.
+To access {external+bluesky:py:obj}`~bluesky.callbacks.fitting.PeakStats` after a plan, use the {py:obj}`~ibex_bluesky_core.callbacks.ISISCallbacks.peak_stats` property.
 
 ## File output
 
