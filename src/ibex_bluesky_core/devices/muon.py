@@ -1,4 +1,4 @@
-"""Muon specific bluesky device helpers."""
+"""Muon-specific bluesky devices and utilities."""
 
 import asyncio
 import logging
@@ -190,7 +190,7 @@ class MuonAsymmetryReducer(Reducer, StandardReadable):
             model: :external:py:obj:`lmfit.model.Model` object describing the model to fit to
                 the muon data. The independent variable must be :math:`t` (time, in nanoseconds).
             fit_parameters: :external:py:obj:`lmfit.parameter.Parameters` object describing
-                the initial parameters (and contraints) for each fit parameter.
+                the initial parameters (and constraints) for each fit parameter.
 
         """
         self._forward_detectors = forward_detectors

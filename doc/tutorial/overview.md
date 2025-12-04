@@ -1,12 +1,12 @@
 # Getting started
 
-[`ibex_bluesky_core`](ibex_bluesky_core) is a library which bridges the 
+{py:obj}`ibex_bluesky_core` is a library which bridges the 
 [IBEX control system](https://github.com/ISISComputingGroup/ibex_user_manual/wiki/What-Is-IBEX) 
 and the [bluesky data acquisition framework](https://blueskyproject.io/).
 
 Bluesky is a highly flexible data acquisition system, which has previously been used at
 large-scale research facilities such as [NSLS-II](https://www.bnl.gov/nsls2/) and 
-[Diamond](https://www.diamond.ac.uk/Home.html), among others.
+[Diamond](https://www.diamond.ac.uk/Home.html), along with many other large-scale scientific facilities.
 
 While the bluesky framework itself is generic enough to cope with many forms of data acquisition,
 one of the core use cases is "scanning" - that is, measuring how some experimental parameter(s) 
@@ -14,10 +14,10 @@ vary with respect to other parameter(s). Bluesky has extensive mechanisms and he
 scanning workflows.
 
 The most important concepts in bluesky are:
-- **Plans** tell bluesky what to do next, in the form of **Messages**
-- **Devices** encapsulate the details of how some specific device is controlled
-- The **RunEngine** executes plans (possibly interacting with devices)
-- **Callbacks** do something with data emitted by the scan
+- **Plans** tell bluesky what to do next, by emitting **Messages**
+- The **RunEngine** executes plans by reacting to **Messages** (possibly interacting with devices)
+- **Devices** encapsulate the details of how some specific device is controlled, reading or writing to EPICS PVs.
+- **Callbacks** do something with the data produced during a scan (fitting, plotting, file-writing, ...)
 
 ## Plans
 
@@ -32,8 +32,8 @@ my_plan = [Msg("null")]
 Where `Msg("null")` is an instruction to bluesky (which in this case, does nothing).
 
 While it's possible to write bluesky plans as any iterable, in practice plans are usually written
-using python [generators](https://peps.python.org/pep-0255/), using python's 
-[`yield from`](https://peps.python.org/pep-0380/) syntax to delegate to other plans as necessary:
+using python [generators](https://peps.python.org/pep-0255/), using [python's 
+`yield from` syntax](https://peps.python.org/pep-0380/) to delegate to other plans as necessary:
 
 ```python
 import bluesky.plan_stubs as bps
@@ -44,7 +44,7 @@ def plan():
 
 ## Devices
 
-[`ibex_bluesky_core`](ibex_bluesky_core) provides built-in support for a number of ISIS-specific devices. For example,
+The {py:obj}`ibex_bluesky_core.devices` module provides built-in support for a number of ISIS-specific devices. For example,
 blocks are available as devices:
 
 ```python
@@ -54,8 +54,8 @@ mot = block_mot("mot")  # An IBEX block pointing at a motor
 det = block_r(float, "p5")  # A readback block with float datatype
 ```
 
-Block objects provide several mechanisms for configuring write behaviour - see 
-[`BlockWriteConfig`](ibex_bluesky_core.devices.block.BlockWriteConfig) for detailed options.
+Block objects provide several mechanisms for configuring write behaviour; see 
+{py:obj}`~ibex_bluesky_core.devices.block.BlockWriteConfig` for detailed options.
 
 Likewise, the DAE is available as a bluesky device: see [the DAE Documentation](../devices/dae.md)
 for full examples including example configurations.
@@ -86,7 +86,7 @@ If, on the other hand, you need to run a plan as part of a larger script, see
 {py:obj}`ibex_bluesky_core.run_engine.run_plan`.
 ```
 
-For more details about plan stubs (plan fragments like `mv` and `read`), see 
+For more details about plan stubs (plan fragments like `mv` and `read`), see the
 [bluesky plan stubs documentation](https://blueskyproject.io/bluesky/main/plans.html#stub-plans)
 
 ## Scanning
@@ -115,7 +115,7 @@ For details about plans which are available directly from `bluesky` - like `bp.s
 
 ## The `RunEngine`
 
-The [`RunEngine`](ibex_bluesky_core.run_engine) is the central "conductor" in bluesky - it is responsible for reading a plan and
+The `RunEngine` is the central "conductor" in bluesky - it is responsible for reading a plan and
 performing the associated actions on the hardware. To get a run engine instance, use:
 
 ```python
@@ -127,9 +127,9 @@ RE = get_run_engine()
 In the IBEX GUI, manually getting a runengine is unnecessary - it is done automatically.
 ```
 
-Then execute a plan using the [`RunEngine`](ibex_bluesky_core.run_engine):
+Then execute a plan using the `RunEngine`:
 
-```
+```python
 RE(my_plan("det", "mot", 0, 10, 5))
 ```
 
@@ -139,8 +139,9 @@ To actually execute the plan, it must be passed to the [`RunEngine`](ibex_bluesk
 called `RE`.
 
 For more detail about the [`RunEngine`](ibex_bluesky_core.run_engine), see:
-- [bluesky RunEngine docs](https://blueskyproject.io/bluesky/main/tutorial.html#the-runengine)
-- [bluesky RunEngine API docs](https://blueskyproject.io/bluesky/main/run_engine_api.html)
+- {py:obj}`ibex_bluesky_core.run_engine.get_run_engine`
+- {external+bluesky:ref}`tutorial_run_engine_setup`
+- {external+bluesky:doc}`run_engine_api`
 
 ## Callbacks
 
@@ -159,8 +160,8 @@ from bluesky.callbacks import LiveTable
 RE(my_plan("det", "mot", 0, 10, 5), LiveTable(["mot", "det"]))
 ```
 
-However, to save typing out callbacks repeatedly, user-specified plans can add callbacks via
-[`subs_decorator`](https://blueskyproject.io/bluesky/main/callbacks.html#through-a-plan):
+However, to save typing out callbacks repeatedly, user-specified plans can add callbacks from within a plan, using
+{external+bluesky:py:obj}`bluesky.preprocessors.subs_decorator`:
 
 ```python
 from ibex_bluesky_core.devices.block import block_r, block_mot
@@ -182,13 +183,13 @@ def my_plan(det_block_name: str, mot_block_name: str, start: float, stop: float,
     yield from _inner()
 ```
 
-The above will show a `LiveTable`[`ibex_bluesky_core`](ibex_bluesky_core) by default, any time `my_plan` is executed. The same mechanism can
-be used for example to always configure a particular scan with plots and a fit with a specific type.
+The above will show a {external+bluesky:ref}`livetable` by default, any time `my_plan` is executed. The same mechanism can
+be used to always configure a scan with plots and a fit with a specific type.
 
-As this is fairly common functionality for most plans, we have created a "standard callbacks" collection which should suit the needs of most plans. This includes the ability to fit, plot, add human-readable file output and show a live table of scanned fields. See {ref}`icc` on how to use this.
+This library includes a standard callbacks collection, {py:obj}`~ibex_bluesky_core.callbacks.ISISCallbacks`, which should suit the needs of many simple scans. This includes the ability to fit, plot, add human-readable file output and show a live table of scanned fields. See {ref}`icc` on how to use this.
 
-For more information on callbacks, see
-[bluesky callbacks documentation](https://blueskyproject.io/bluesky/main/callbacks.html).
+For more general information on callbacks, see the
+{external+bluesky:doc}`bluesky callbacks documentation <callbacks>`.
 
 ## Metadata
 
@@ -237,19 +238,20 @@ In addition to the above mechanisms, many built-in bluesky plans (such as {exter
 ## See also
 
 **Plans & plan-stubs**
-- Bluesky [experiment plans](https://blueskyproject.io/bluesky/main/plans.html#summary) 
-- Bluesky [plan stubs](https://blueskyproject.io/bluesky/main/plans.html#stub-plans)
+- Bluesky {external+bluesky:doc}`plans` 
+- Bluesky {external+bluesky:ref}`stub_plans` 
+- {py:obj}`ibex_bluesky_core.plans`
 - {py:obj}`ibex_bluesky_core.plan_stubs`
 
 **Callbacks**
-- [Bluesky callbacks](https://blueskyproject.io/bluesky/main/callbacks.html)
+- Bluesky {external+bluesky:doc}`callbacks`
 - {py:obj}`ibex_bluesky_core.callbacks`
-- [Fitting callbacks](/callbacks/fitting/fitting.md)
+- {doc}`Fitting Callbacks </callbacks/fitting/fitting>`
 
 **Full Examples**
 - [Manual system tests](https://github.com/ISISComputingGroup/ibex_bluesky_core/tree/main/manual_system_tests) (full, 
 runnable example plans)
 
 **External documentation**
-- [bluesky](https://blueskyproject.io/bluesky)
-- [ophyd-async](https://blueskyproject.io/ophyd-async)
+- {external+bluesky:doc}`bluesky user documentation <userindex>`
+- {external+ophyd_async:doc}`ophyd_async tutorials <tutorials>`

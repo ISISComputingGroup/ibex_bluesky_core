@@ -11,15 +11,15 @@ __all__ = ["CentreOfMass"]
 
 
 class CentreOfMass(CollectThenCompute):
-    """Compute centre of mass after a run finishes.
-
-    Calculates the CoM of the 2D region bounded by min(y), min(x), max(x),
-    and straight-line segments joining (x, y) data points with their nearest
-    neighbours along the x axis.
-    """
+    """Centre of mass callback."""
 
     def __init__(self, x: str, y: str) -> None:
-        """Initialise the callback.
+        """Compute centre of mass after a run finishes.
+
+        This callback calculates the centre of mass of the 2D region
+        bounded by ``min(y)``, ``min(x)``, ``max(x)``, and straight-line
+        segments joining (x, y) data points with their nearest neighbours
+        along the x axis.
 
         Args:
             x: Name of independent variable in event data
@@ -33,11 +33,19 @@ class CentreOfMass(CollectThenCompute):
 
     @property
     def result(self) -> float | None:
-        """The centre-of-mass calculated by this callback."""
+        """The centre-of-mass calculated by this callback.
+
+        The returned position is a :py:obj:`float` along the x-axis, or :py:obj:`None`
+        if no centre of mass has been calculated (for example if the bluesky run has
+        not yet finished).
+        """
         return self._result
 
     def compute(self) -> None:
-        """Calculate statistics at the end of the run."""
+        """Calculate statistics at the end of the run.
+
+        :meta private:
+        """
         x_values = []
         y_values = []
 

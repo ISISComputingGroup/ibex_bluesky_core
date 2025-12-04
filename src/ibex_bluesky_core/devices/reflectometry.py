@@ -1,4 +1,4 @@
-"""Devices specific to Reflectometry beamlines."""
+"""Reflectometry-specific bluesky devices and utilities."""
 
 import asyncio
 import logging
@@ -47,10 +47,21 @@ class ReflParameter(StandardReadable, NamedMovable[float]):
         """
         with self.add_children_as_readables(StandardReadableFormat.HINTED_SIGNAL):
             self.readback: SignalR[float] = epics_signal_r(float, f"{prefix}REFL_01:PARAM:{name}")
+            """Readback value. This is the hinted parameter for this class."""
         self.setpoint: SignalW[float] = epics_signal_w(float, f"{prefix}REFL_01:PARAM:{name}:SP")
+        """Reflectometry parameter setpoint signal."""
         self.changing: SignalR[bool] = epics_signal_r(
             bool, f"{prefix}REFL_01:PARAM:{name}:CHANGING"
         )
+        """Whether this parameter is currently changing."""
+
+        self.redefine: ReflParameterRedefine | None
+        """
+        Signal for redefining this parameter.
+
+        Will be :py:obj:`None` if this parameter was constructed with ``has_redefine=False``.
+        """
+
         if has_redefine:
             self.redefine = ReflParameterRedefine(prefix=prefix, name=name)
         else:
@@ -63,8 +74,8 @@ class ReflParameter(StandardReadable, NamedMovable[float]):
     async def set(self, value: float) -> None:
         """Set the setpoint.
 
-        This waits for the reflectometry parameter's 'CHANGING' PV to go True to
-         indicate it has finished.
+        This waits for the :py:obj:`ReflParameter.changing` signal to go :py:obj:`False` to
+        indicate it has finished.
         """
         logger.info("setting %s to %s", self.setpoint.source, value)
         await self.setpoint.set(value, wait=True, timeout=None)

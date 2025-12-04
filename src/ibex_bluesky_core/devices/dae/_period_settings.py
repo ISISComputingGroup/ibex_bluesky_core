@@ -29,41 +29,83 @@ PERIODS_SOFT_NUM = "Number Of Software Periods"
 
 
 class PeriodType(Enum):
-    """General period type."""
+    """DAE period type."""
 
     SOFTWARE = 0
+    """
+    Software periods.
+    """
     HARDWARE_DAE = 1
+    """
+    Hardware periods (internal DAE control).
+    """
+
     HARDWARE_EXTERNAL = 2
+    """
+    Hardware periods (external signal control).
+    """
 
 
 class PeriodSource(Enum):
     """The period setup source, whether to use parameters or file."""
 
     PARAMETERS = 0
+    """
+    Specify DAE period settings using explicit parameters.
+    """
+
     FILE = 1
+    """
+    Specify DAE period settings using a file.
+    """
 
 
 @dataclass(kw_only=True)
 class SinglePeriodSettings:
-    """Dataclass for the settings on a single period."""
+    """Data class for the settings on a single hardware period."""
 
     type: int | None = None
+    """Hardware period type."""
     frames: int | None = None
+    """Hardware period frames."""
     output: int | None = None
+    """Hardware period output."""
     label: str | None = None
+    """Hardware period label."""
 
 
 @dataclass(kw_only=True)
 class DaePeriodSettingsData:
-    """Dataclass for the hardware period settings."""
+    """Data class for specifying hardware period settings."""
 
     periods_settings: list[SinglePeriodSettings] | None = None
+    """
+    Explicit hardware period settings.
+    """
     periods_soft_num: int | None = None
+    """
+    Number of software periods.
+    """
     periods_type: PeriodType | None = None
+    """
+    Type of DAE periods in use.
+    """
     periods_src: PeriodSource | None = None
+    """
+    Whether to get period settings from file or explicitly-set parameters.
+    """
     periods_file: str | None = None
+    """
+    Hardware period settings file path.
+    """
     periods_seq: int | None = None
+    """
+    Number of hardware period sequences.
+    """
     periods_delay: int | None = None
+    """
+    Hardware periods output delay (in us).
+    """
 
 
 def _convert_xml_to_period_settings(value: str) -> DaePeriodSettingsData:
@@ -114,9 +156,11 @@ class DaePeriodSettings(
     """Subdevice for the DAE hardware period settings."""
 
     def __init__(self, dae_prefix: str, name: str = "") -> None:
-        """Set up signal for the DAE period settings.
+        """DAE hardware period settings.
 
-        See DaePeriodSettingsData for options.
+        See Also:
+            :py:obj:`DaePeriodSettingsData` for options.
+
         """
         self._raw_period_settings: SignalRW[str] = isis_epics_signal_rw(
             str, f"{dae_prefix}HARDWAREPERIODS"
@@ -124,7 +168,7 @@ class DaePeriodSettings(
         super().__init__(name=name)
 
     async def locate(self) -> Location[DaePeriodSettingsData]:
-        """Retrieve and convert the current XML to DaePeriodSettingsData."""
+        """Retrieve the current DAE hardware period settings."""
         value = await self._raw_period_settings.get_value()
         period_settings = _convert_xml_to_period_settings(value)
         logger.debug("locate period settings: %s", period_settings)
@@ -132,7 +176,7 @@ class DaePeriodSettings(
 
     @AsyncStatus.wrap
     async def set(self, value: DaePeriodSettingsData) -> None:
-        """Set any changes in the period settings to the XML."""
+        """Set the current DAE hardware period settings."""
         current_xml = await self._raw_period_settings.get_value()
         to_write = _convert_period_settings_to_xml(current_xml, value)
         logger.info("set period settings: %s", to_write)

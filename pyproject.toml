@@ -62,6 +62,7 @@ doc = [
   "myst_parser",
   "sphinx-autobuild",
   "sphinxcontrib-mermaid",
+  "sphinxcontrib-spelling",
 ]
 dev = [
   "ibex_bluesky_core[doc]",

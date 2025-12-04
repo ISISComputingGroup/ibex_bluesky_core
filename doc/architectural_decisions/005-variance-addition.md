@@ -6,8 +6,8 @@ Current
 
 ## Context
 
-For counts data, the uncertainty on counts is typically defined by poisson counting statistics, i.e. the standard
-deviation on `N` counts is `sqrt(N)`.
+For counts data, the uncertainty on counts is typically defined by Poisson counting statistics, i.e. the standard
+deviation on {math}`N` counts is {math}`\sqrt{N}`.
 
 This can be problematic in cases where zero counts have been collected, as the standard deviation will then be zero,
 which will subsequently lead to "infinite" point weightings in downstream fitting routines for example.
@@ -24,17 +24,17 @@ Use a standard deviation of `NaN` for points with zero counts.
 
 ### Option C
 
-Define the standard deviation of `N` counts as `1` if counts are zero, otherwise `sqrt(N)`. This is one of the
+Define the standard deviation of {math}`N` counts as {math}`1` if counts are zero, otherwise {math}`\sqrt{N}`. This is one of the
 approaches [available in mantid](https://github.com/mantidproject/mantid/blob/bbbb86edc2c3fa554499770463aa25c2b46984e5/docs/source/algorithms/SetUncertainties-v1.rst#L16) for example.
 
 ### Option D
 
-Define the standard deviation of `N` counts as `sqrt(N+0.5)` unconditionally - on the basis that "half a count" is 
+Define the standard deviation of {math}`N` counts as {math}`\sqrt{N+0.5}` unconditionally - on the basis that "half a count" is 
 smaller than the smallest possible actual measurement which can be taken.
 
 ### Option E
 
-No special handling, calculate std. dev. as `sqrt(N)`.
+No special handling, calculate std. dev. as {math}`\sqrt{N}`.
 
 ---
 

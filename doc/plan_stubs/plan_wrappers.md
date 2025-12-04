@@ -4,11 +4,9 @@ Plan wrappers that temporarily modify [DAE (Data Acquisition Electronics)](/devi
 
 ## Available Wrappers
 
-### DAE Table
+### {py:obj}`~dae_table_wrapper<ibex_bluesky_core.plan_stubs.with_dae_tables>`
 
-A function that wraps a plan to temporarily modify the DAE table.
-
-API reference: {py:obj}`dae_table_wrapper<ibex_bluesky_core.plan_stubs.with_dae_tables>`
+A function that wraps a plan to temporarily modify the DAE wiring/detector/spectra tables.
 
 ```python
 RE(
@@ -24,15 +22,13 @@ def plan():
     yield from with_dae_tables(scan(...), dae=dae, new_settings=modified_settings)
 ```
 
-(where `modified_settings` is a dataset in the form {py:obj}`DaeSettingsData <ibex_bluesky_core.devices.dae.DaeSettingsData>`)
+(where `modified_settings` is a dataset in the form {py:obj}`~ibex_bluesky_core.devices.dae.DaeSettingsData`)
 
 
 
-### Num Periods
+### {py:obj}`~ibex_bluesky_core.plan_stubs.with_num_periods`
 
-A function that wraps a plan to temporarily modify the number of periods.
-
-API reference: {py:obj}`num_periods_wrapper<ibex_bluesky_core.plan_stubs.with_num_periods>`
+A function that wraps a plan to temporarily modify the number of DAE software periods.
 
 ```python
 RE(
@@ -49,10 +45,9 @@ def plan():
 ```
 
 
-### Time Channels
-A function that wraps a plan to temporarily modify the time channels boundaries.
+### {py:obj}`~ibex_bluesky_core.plan_stubs.with_time_channels`
 
-API reference: {py:obj}`time_channels_wrapper<ibex_bluesky_core.plan_stubs.with_time_channels>`
+A function that wraps a plan to temporarily modify the DAE time channel boundaries.
 
 ```python
 RE(
@@ -67,11 +62,11 @@ RE(
 def plan():
     yield from with_time_channels(scan(...), dae=dae, new_settings=modified_settings)
 ```
-(where `modified_settings` is a dataset in the form {py:obj}`DaeTCBSettingsData<ibex_bluesky_core.devices.dae.DaeTCBSettingsData>`)
+(where `modified_settings` is a dataset in the form {py:obj}`~ibex_bluesky_core.devices.dae.DaeTCBSettingsData`)
 
 ## Usage
 
-To use these wrappers, the plan written by the user must be wrapped by the function within the RunEngine:
+To use these wrappers, pass a user plan as the first argument to the wrappers in this module:
 
 ``` python
 from ibex_bluesky_core.plan_stubs import with_num_periods
@@ -83,5 +78,6 @@ def plan():
     yield from with_num_periods(scan(...), dae=dae, number_of_periods=1000)
 ```
 
-the plan with the modified DAE settings, restoring the original settings afterwards.
+the plan with the modified DAE settings, restoring the original settings after the scan completes
+(whether successfully or not).
 

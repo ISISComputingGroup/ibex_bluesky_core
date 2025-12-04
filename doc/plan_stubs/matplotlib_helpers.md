@@ -1,6 +1,6 @@
-# [`call_qt_aware`](ibex_bluesky_core.plan_stubs.call_qt_aware) (matplotlib helpers)
+# Matplotlib helpers ({py:obj}`~ibex_bluesky_core.plan_stubs.call_qt_aware`)
 
-When attempting to use `matplotlib` UI functions directly in a plan, and running `matplotlib` using a `Qt`
+When attempting to use {py:obj}`matplotlib` UI functions directly in a plan, and running {py:obj}`matplotlib` using a Qt
 backend (e.g. in a standalone shell outside IBEX), you may see a hang or an error of the form:
 
 ```
@@ -8,16 +8,16 @@ UserWarning: Starting a Matplotlib GUI outside of the main thread will likely fa
   fig, ax = plt.subplots()
 ```
 
-This is because the `RunEngine` runs plans in a worker thread, not in the main thread, which then requires special
+This is because the bluesky run engine runs plans in a worker thread, not in the main thread, which then requires special
 handling when calling functions that will update a UI.
 
-The [`call_qt_aware`](ibex_bluesky_core.plan_stubs.call_qt_aware) plan stub can call `matplotlib` functions in a
+The {py:obj}`~ibex_bluesky_core.plan_stubs.call_qt_aware` plan stub can call {py:obj}`matplotlib` functions in a
 Qt-aware context, which allows them to be run directly from a plan. It allows the same arguments and 
 keyword-arguments as the underlying matplotlib function it is passed.
 
 ```{note}
-Callbacks such as `LivePlot` and `LiveFitPlot` already route UI calls to the appropriate UI thread by default. 
-The following plan stubs are only necessary if you need to call functions which will create or update a matplotlib
+Callbacks such as {py:obj}`~ibex_bluesky_core.callbacks.LivePlot` and {py:obj}`~bluesky.callbacks.mpl_plotting.LiveFitPlot` already route UI calls to the appropriate UI thread by default. 
+The {py:obj}`~ibex_bluesky_core.plan_stubs.call_qt_aware` plan stub is only necessary if you need to call functions which will create or update a matplotlib
 plot from a plan directly - for example to create or close a set of axes before passing them to callbacks.
 ```
 
