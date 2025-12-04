@@ -50,7 +50,7 @@ class LiveFit(_DefaultLiveFit):
         This callback extends the functionality of :py:obj:`bluesky.callbacks.LiveFit` by adding:
 
         - Support for weighting fits by uncertainties. The weights are passed through to the
-          underlying :py:obj:`lmfit.model.Model.fit` routing as ``1/stddev``, if provided.
+          underlying :py:obj:`lmfit.model.Model.fit` routine as ``1/stddev``, if provided.
 
         - Support for dynamic fit guesses, as performed by the models defined in
           :py:obj:`ibex_bluesky_core.fitting`.

@@ -98,7 +98,7 @@ class ISISCallbacks:
         over the exact set of callbacks to be used, individual callbacks may
         be more appropriate.
 
-        By default, the following callbacks are included:
+        By default, the following callbacks are included and enabled:
 
         - :py:obj:`ibex_bluesky_core.callbacks.HumanReadableFileCallback`
 
@@ -301,7 +301,7 @@ class ISISCallbacks:
 
     @property
     def com(self) -> CentreOfMass:
-        """The centre of mass callback, containing ``ibex_bluesky_core``'s centre of mass."""
+        """The :py:obj:`~ibex_bluesky_core.callbacks.CentreOfMass` callback."""
         if self._com is None:
             raise ValueError("centre of mass was not added as a callback.")
         return self._com
