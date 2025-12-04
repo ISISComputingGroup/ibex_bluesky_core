@@ -10,8 +10,11 @@ The files written by this callback contain:
 
 ---
 
-:::{collapse} Example output file from this callback (click to expand)
-```
+<details>
+
+<summary>Example output file from this callback (click to expand)</summary>
+
+```python
 [[Model]]
     Model(Gaussian  [amp * exp(-((x - x0) ** 2) / (2 * sigma**2)) + background])
 [[Fit Statistics]]
@@ -43,11 +46,15 @@ x,y,y uncertainty,modelled y
 0.31062594030116286,1.0235264249142935,1.2440461004858383,0.596417422655042
 ...
 ```
-:::
+
+</details>
 
 ---
 
-:::{collapse} Example configuration (click to expand)
+<details>
+
+<summary>Example configuration (click to expand)</summary>
+
 ```python
 def some_plan() -> Generator[Msg, None, None]:
     ... # Set up prefix, reducers, controllers etc. here
@@ -69,7 +76,8 @@ def some_plan() -> Generator[Msg, None, None]:
     def _inner() -> Generator[Msg, None, None]:
         ... # Continue to plan
 ```
-:::
+
+</details>
 
 ---
 

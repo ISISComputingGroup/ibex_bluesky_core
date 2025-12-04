@@ -45,8 +45,6 @@ extensions = [
     "sphinx.ext.viewcode",
     # Mermaid diagrams
     "sphinxcontrib.mermaid",
-    # Collapsible sections
-    "sphinx_toolbox.collapse",
 ]
 mermaid_d3_zoom = True
 napoleon_google_docstring = True

@@ -61,7 +61,6 @@ doc = [
   "sphinx_rtd_theme", 
   "myst_parser",
   "sphinx-autobuild",
-  "sphinx-toolbox",
   "sphinxcontrib-mermaid",
 ]
 dev = [
