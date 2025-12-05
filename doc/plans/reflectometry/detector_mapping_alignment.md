@@ -4,11 +4,15 @@ Plans described in this section provide support for detector-mapping alignment o
 
 The plans in this module expect:
 - A DAE collecting in period-per-point mode. A suitable controller is 
-{py:obj}`ibex_bluesky_core.devices.simpledae.PeriodPerPointController`.
+{py:obj}`~ibex_bluesky_core.devices.simpledae.PeriodPerPointController`.
 - A DAE configured to reduce data by exposing all spectrum integrals. A suitable reducer is 
-{py:obj}`ibex_bluesky_core.devices.simpledae.PeriodSpecIntegralsReducer`.
-- An angle map, as a `numpy` array of type `float64`, which has the same dimensionality as the set of selected detectors. This
+{py:obj}`~ibex_bluesky_core.devices.simpledae.PeriodSpecIntegralsReducer`.
+- An angle map, as a {py:obj}`numpy.ndarray` array with dtype `float64`, which has the same dimensionality as the set of selected detectors. This
 maps each configured detector pixel to its angular position.
+- An optional flood map, as a {external+scipp:py:obj}`scipp.Variable`. This should have a dimension label of "spectrum"
+and have the same dimensionality as the set of selected detectors. This array may have variances. This is used to
+normalise pixel efficiencies: raw counts are divided by the flood to get scaled counts. If no flood map is provided, no
+normalisation will be performed.
 
 ## Angle scan
 
@@ -16,15 +20,15 @@ API reference: {py:obj}`ibex_bluesky_core.plans.reflectometry.angle_scan_plan`
 
 This plan takes a single DAE measurement, without moving anything.
 
-The resulting plots & data files describe the relationship between angular position of each detector pixel,
+The resulting plots and data files describe the relationship between angular position of each detector pixel,
 and the counts observed on that detector pixel - with the aim of finding the angle at which peak intensity
 occurs.
 
 This plan returns the result of the angle fit, or `None` if the fit failed. The model used is a 
-{py:obj}`Gaussian<ibex_bluesky_core.fitting.Gaussian>`.
+{py:obj}`~ibex_bluesky_core.fitting.Gaussian`.
 
-The following is a full example of how {py:obj}`angle_scan_plan<ibex_bluesky_core.plans.reflectometry.angle_scan_plan>`
-may be called, configuring an appropriate {py:obj}`SimpleDae<ibex_bluesky_core.devices.simpledae.SimpleDae>`.
+The following is a full example of how {py:obj}`~ibex_bluesky_core.plans.reflectometry.angle_scan_plan`
+may be called, configuring an appropriate {py:obj}`~ibex_bluesky_core.devices.simpledae.SimpleDae`.
 
 <details>
 <summary>Click to show example code</summary>
@@ -84,13 +88,12 @@ def map_align_plan() -> Generator[Msg, None, ModelResult | None]:
 API reference: {py:obj}`ibex_bluesky_core.plans.reflectometry.height_and_angle_scan_plan`
 
 This plan scans over a provided height axis, taking a DAE measurement at each point. It then
-does simultaneous height & angle fits, using a single set of measurements - avoiding the need
+does simultaneous height and angle fits, using a single set of measurements - avoiding the need
 to scan height and angle separately.
 
-It is assumed that optimum angle does not depend on height. The result of the angle scan
-returned by this plan is meaningless if this assumption is untrue. This may be verified 
-visually using the generated heatmap, or by multiple invocations of `angle_scan` at different 
-height settings - the optimum angle should not vary with height.
+![Detector-mapping alignment example plots](det_map_align_example.png)
+
+It is assumed that the optimum angle (integrated over all height points) and the optimum height (integrated over all selected pixels) is the best location for both height and angle. If this assumption is untrue, then the result of this plan is meaningless.
 
 This plan produces multiple plots & data files from a single scan:
 - A heatmap visualising the 2-dimensional relationship between angle (x axis), height (y axis), and measured
@@ -102,16 +105,16 @@ across all height points, versus angular pixel position. The only difference bet
 plan above is that this accumulates data across multiple height points, and therefore benefits from the
 counting statistics of all measured height points.
 
-This plan returns a typed dictionary, {py:obj}`DetMapAlignResult<ibex_bluesky_core.plans.reflectometry.DetMapAlignResult>`, with the following keys:
+This plan returns a typed dictionary, {py:obj}`~ibex_bluesky_core.plans.reflectometry.DetMapAlignResult`, with the following keys:
 - `"angle_fit"`: the result of the angle fit, or `None` if the fit failed.
 - `"height_fit"`: the result of the height fit, or `None` if the fit failed.
 
 Both the height & angle data are fitted using two independent
-{py:obj}`Gaussian<ibex_bluesky_core.fitting.Gaussian>` models.
+{py:obj}`~ibex_bluesky_core.fitting.Gaussian` models.
 
-The following is a full example of how {py:obj}`angle_scan_plan<ibex_bluesky_core.plans.reflectometry.height_and_angle_scan_plan>`
-may be called, configuring an appropriate {py:obj}`SimpleDae<ibex_bluesky_core.devices.simpledae.SimpleDae>` and a
-{py:obj}`BlockRw<ibex_bluesky_core.devices.block.BlockRw>`.
+The following is a full example of how {py:obj}`~ibex_bluesky_core.plans.reflectometry.height_and_angle_scan_plan`
+may be called, configuring an appropriate {py:obj}`~ibex_bluesky_core.devices.simpledae.SimpleDae` and a
+{py:obj}`~ibex_bluesky_core.devices.block.BlockRw`.
 
 <details>
 <summary>Click to show example code</summary>
@@ -186,9 +189,9 @@ def map_align() -> Generator[Msg, None, DetMapAlignResult]:
 
 The following specialised components are used to implement the detector-mapping alignment workflow:
 
-### `PeriodSpecIntegralsReducer`
+### {py:obj}`~ibex_bluesky_core.devices.simpledae.PeriodSpecIntegralsReducer`
 
-{py:obj}`PeriodSpecIntegralsReducer<ibex_bluesky_core.devices.simpledae.PeriodSpecIntegralsReducer>`
+{py:obj}`~ibex_bluesky_core.devices.simpledae.PeriodSpecIntegralsReducer`
 is responsible for exposing arrays of DAE detector data. 
 
 It exposes numpy arrays of integer counts data from the current period, integrated over the entire time-of-flight
@@ -197,9 +200,9 @@ even for relatively large numbers of detectors.
 
 This reducer cannot be used by itself in a scan, as it does not produce scalar data. It is only intended for use with
 downstream processors, such as 
-{py:obj}`DetMapHeightScanLiveDispatcher<ibex_bluesky_core.callbacks.reflectometry.DetMapHeightScanLiveDispatcher>`
+{py:obj}`~ibex_bluesky_core.callbacks.reflectometry.DetMapHeightScanLiveDispatcher`
 or
-{py:obj}`DetMapAngleScanLiveDispatcher<ibex_bluesky_core.callbacks.reflectometry.DetMapAngleScanLiveDispatcher>`
+{py:obj}`~ibex_bluesky_core.callbacks.reflectometry.DetMapAngleScanLiveDispatcher`
 described below.
 
 This reducer always accumulates data across the entire configured time-of-flight range - this is because it uses the
@@ -213,11 +216,10 @@ be done by changing DAE time-channel settings.
 This is a limitation of the underlying EPICS spectrum-data map used to implement this reducer.
 ```
 
-### `DetMapHeightScanLiveDispatcher`
+### {py:obj}`~ibex_bluesky_core.callbacks.reflectometry.DetMapHeightScanLiveDispatcher`
 
-{py:obj}`DetMapHeightScanLiveDispatcher<ibex_bluesky_core.callbacks.reflectometry.DetMapHeightScanLiveDispatcher>`
-is a [bluesky LiveDispatcher](https://blueskyproject.io/bluesky/main/callbacks.html#livedispatcher-api) 
-which processes arrays generated by 
+{py:obj}`~ibex_bluesky_core.callbacks.reflectometry.DetMapHeightScanLiveDispatcher`
+is a bluesky {py:obj}`~bluesky.callbacks.stream.LiveDispatcher` which processes arrays generated by 
 {py:obj}`PeriodSpecIntegralsReducer<ibex_bluesky_core.devices.simpledae.PeriodSpecIntegralsReducer>` by integrating
 counts across all detector spectra, and normalizing by integrated counts across all monitor spectra. This dispatcher
 therefore produces the same number of output events as input events (which is the same as the number of scan points).
@@ -236,14 +238,12 @@ event: 40
 event: 10
 ```
 
-### `DetMapAngleScanLiveDispatcher`
+### {py:obj}`~ibex_bluesky_core.callbacks.reflectometry.DetMapAngleScanLiveDispatcher`
 
-{py:obj}`DetMapAngleScanLiveDispatcher<ibex_bluesky_core.callbacks.reflectometry.DetMapAngleScanLiveDispatcher>`
-is a [bluesky LiveDispatcher](https://blueskyproject.io/bluesky/main/callbacks.html#livedispatcher-api) 
-which processes arrays generated by 
-{py:obj}`PeriodSpecIntegralsReducer<ibex_bluesky_core.devices.simpledae.PeriodSpecIntegralsReducer>` by accumulating
-counts from each scan point into an internal array. At the end of the scan, events are then emitted *across* this accumulated
-array. 
+{py:obj}`~ibex_bluesky_core.callbacks.reflectometry.DetMapAngleScanLiveDispatcher`
+is a bluesky {py:obj}`~bluesky.callbacks.stream.LiveDispatcher` which processes arrays generated by 
+{py:obj}`~ibex_bluesky_core.devices.simpledae.PeriodSpecIntegralsReducer` by accumulating
+counts from each scan point into an internal array. At the end of the scan, events are then emitted *across* this accumulated array. 
 
 This means that this dispatcher will always produce a number of events equal to the number of detectors (which is also
 equal to the length of the angle map), regardless of the number of scan points which were performed.

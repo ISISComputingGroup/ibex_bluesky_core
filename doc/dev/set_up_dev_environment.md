@@ -2,11 +2,11 @@
 
 ## Resources for bluesky and ophyd-async development
 
-[bluesky user documentation - plans, plan stubs, callbacks etc.](https://blueskyproject.io/bluesky/main/userindex.html)
+{external+bluesky:doc}`bluesky user documentation - plans, plan stubs, callbacks etc <userindex>`
 
-[ophyd-async documentation - devices](https://blueskyproject.io/ophyd-async/main/index.html)
+{external+ophyd_async:doc}`ophyd-async documentation - devices <tutorials>`
 
-[ophyd-async - choosing base classes when writing a device](https://blueskyproject.io/ophyd-async/main/how-to/choose-right-baseclass.html)
+{external+ophyd_async:doc}`ophyd-async - choosing base classes when writing a device <how-to/choose-right-baseclass>`
 
 ## Checkout the repository locally
 
@@ -35,7 +35,7 @@ python -m pytest
 ```
 
 ```{note}
-To debug the tests in pycharm, use `--no-cov` as an [additional option to your default/template run configuration.](https://stackoverflow.com/a/52295919) There is a conflict [issue](https://youtrack.jetbrains.com/issue/PY-20186/debugging-of-py.test-does-not-stop-on-breakpoints-if-coverage-plugin-enabled) with the pytest-cov module which breaks the debugger.
+To debug the tests in Pycharm, use `--no-cov` as an [additional option to your default/template run configuration.](https://stackoverflow.com/a/52295919) There is a conflict [issue](https://youtrack.jetbrains.com/issue/PY-20186/debugging-of-py.test-does-not-stop-on-breakpoints-if-coverage-plugin-enabled) with the `pytest-cov` module which breaks the debugger.
 ```
 
 ## Run lints
@@ -49,4 +49,4 @@ pyright
 
 To build the sphinx documentation locally run `sphinx-build doc _build` from the root of the repo. The generated output will be in the _build directory.
 
-If you want to preview changes live, you can run `sphinx-autobuild doc _build --watch src` from the root of the repo instead which will start a local, hot-reloadable web server. This should rebuild the documentation whenever you change anything in src, which in turn will rebuild the API reference pages. 
+If you want to preview changes live, you can run `sphinx-autobuild doc _build --watch src` from the root of the repo instead which will start a local, hot-reloadable web server. This should rebuild the documentation whenever you change anything in `src`, which in turn will rebuild the API reference pages. 

@@ -71,6 +71,7 @@ plan_stubs/*
 :caption: Reference
 
 _api
+replotting_scans
 architectural_decisions
 developer_information
 ```

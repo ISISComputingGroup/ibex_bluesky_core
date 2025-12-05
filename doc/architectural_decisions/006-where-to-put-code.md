@@ -34,7 +34,7 @@ Examples of devices and where we would put them under this model:
 Examples of plans and where we would put them under this model:
 ### `ibex_bluesky_core` plans
 - Scanning one block against DAE with a common set of callbacks
-- Optimizing an axis against a readback (e.g. consituent parts of reflectometry auto-align)
+- Optimizing an axis against a readback (e.g. constituent parts of reflectometry auto-align)
 - Very common plans
   - `scan_motor_against_dae`:
     * Always assumes a "motor" - i.e. sets up a block with `use_completion_callback=True` and `use_global_moving_flag=True`

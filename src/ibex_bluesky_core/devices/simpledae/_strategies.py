@@ -4,16 +4,20 @@ from ibex_bluesky_core.devices.dae import Dae
 
 
 class ProvidesExtraReadables:
-    """Strategies may specify interesting DAE signals using this method.
+    """Protocol for specifying extra 'interesting' signals for :py:obj:`SimpleDae`.
 
-    Those signals will then be added to read() and describe() on the top-level SimpleDae object.
+    Strategies may specify interesting DAE signals using the
+    :py:obj:`additional_readable_signals` method. Those signals will then be added
+    to :py:obj:`~bluesky.protocols.Readable.read` and
+    :py:obj:`~bluesky.protocols.Readable.describe` on the top-level
+    :py:obj:`SimpleDae` instance.
     """
 
     def additional_readable_signals(self, dae: Dae) -> list[Device]:
         """Define signals that this strategy considers important.
 
-        These will be added to the dae's default-read signals and made available by read() on the
-        DAE object.
+        These will be added to the dae's default-read signals and made available by
+        ``SimpleDae.read``.
         """
         return []
 
@@ -26,12 +30,12 @@ class Waiter(ProvidesExtraReadables):
 
 
 class Controller(ProvidesExtraReadables):
-    """Controller specifies how DAE runs should be started & stopped.
+    """Specifies how DAE runs should be started & stopped.
 
-    Controller specifies how DAE runs should be started & stopped.
-
-    .. py:class:: Controller:
-        :canonical: ibex_bluesky_core.devices.dae.strategies.Controller:
+    This default implementation does nothing; concrete implementations
+    such as :py:obj:`~ibex_bluesky_core.devices.simpledae.PeriodPerPointController`
+    or :py:obj:`~ibex_bluesky_core.devices.simpledae.RunPerPointController`
+    implement commonly-used behaviours.
     """
 
     async def start_counting(self, dae: Dae) -> None:

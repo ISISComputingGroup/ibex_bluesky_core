@@ -1,6 +1,9 @@
 # pyright: reportMissingParameterType=false
+import functools
+from typing import Any
 from unittest.mock import patch
 
+import bluesky.utils
 import pytest
 from bluesky.preprocessors import run_decorator
 from ophyd_async.plan_stubs import ensure_connected
@@ -119,6 +122,36 @@ def test_scan_does_normal_scan_when_relative_false(RE, dae, block):
     assert start == bp_scan.call_args[0][2]
     assert stop == bp_scan.call_args[0][3]
     assert count == bp_scan.call_args[1]["num"]
+
+
+@pytest.mark.parametrize(
+    "scan_func",
+    [
+        functools.partial(scan, start=1, stop=2, num=2),
+        functools.partial(adaptive_scan, start=1, stop=2, min_step=1, max_step=2, target_delta=1),
+    ],
+)
+def test_if_in_periods_mode_and_run_saved_then_scan_start_doc_contains_run_number(
+    RE, dae, block, scan_func
+):
+    set_mock_value(dae.current_or_next_run_number_str, "12345678")
+
+    start_doc: dict[str, Any] | None = None
+
+    def _cb(typ, doc):
+        if typ == "start":
+            nonlocal start_doc
+            start_doc = doc
+
+    with (
+        patch("ibex_bluesky_core.plans.ensure_connected"),
+    ):
+        # Scan fails because DAE isn't set up right... but it still emits a start doc so that's fine
+        with pytest.raises(bluesky.utils.FailedStatus):
+            RE(scan_func(dae, block, rel=False, periods=True, save_run=True), _cb)
+
+    assert start_doc is not None
+    assert start_doc.get("run_number") == "12345678"
 
 
 def test_scan_does_relative_scan_when_relative_true(RE, dae, block):

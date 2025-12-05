@@ -76,9 +76,15 @@ html_css_files = [
     "css/custom.css",
 ]
 
-autoclass_content = "both"
+autoclass_content = "init"
 myst_heading_anchors = 7
 autodoc_preserve_defaults = True
+
+spelling_lang = "en_GB"
+spelling_filters = ["enchant.tokenize.MentionFilter"]
+spelling_warning = True
+spelling_show_suggestions = True
+spelling_suggestion_limit = 3
 
 intersphinx_mapping = {
     "python": ("https://docs.python.org/3", None),
@@ -89,7 +95,13 @@ intersphinx_mapping = {
     "scippneutron": ("https://scipp.github.io/scippneutron/", None),
     "numpy": ("https://numpy.org/doc/stable/", None),
     "scipy": ("https://docs.scipy.org/doc/scipy/", None),
-    "matplotlib": ("https://matplotlib.org", None),
+    "matplotlib": ("https://matplotlib.org/stable/", None),
     "lmfit": ("https://lmfit.github.io/lmfit-py/", None),
     "typing_extensions": ("https://typing-extensions.readthedocs.io/en/latest/", None),
+    "ibex_user_manual": ("https://isiscomputinggroup.github.io/ibex_user_manual/", None),
+    "ibex_developers_manual": (
+        "https://isiscomputinggroup.github.io/ibex_developers_manual/",
+        None,
+    ),
+    "genie_python": ("https://isiscomputinggroup.github.io/genie/", None),
 }

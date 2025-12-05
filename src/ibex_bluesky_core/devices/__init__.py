@@ -1,4 +1,8 @@
-"""Common utilities for use across devices."""
+"""ISIS-specific bluesky devices and device-related utilities.
+
+The devices in this module are implemented using the :py:obj:`ophyd_async` library,
+which in turn reads or writes to the underlying EPICS PVs to control equipment.
+"""
 
 from __future__ import annotations
 
@@ -20,7 +24,8 @@ def dehex_and_decompress(value: bytes) -> bytes:
     Args:
         value: The string to be decompressed, encoded in hex
 
-    Returns A decompressed version of the inputted string
+    Returns:
+        A decompressed version of the inputted string
 
     """
     return zlib.decompress(binascii.unhexlify(value))
@@ -32,7 +37,8 @@ def compress_and_hex(value: str) -> bytes:
     Args:
         value: The string to be compressed
 
-    Returns A compressed and hexed version of the inputted string
+    Returns:
+        A compressed and hexed version of the inputted string
 
     """
     compr = zlib.compress(bytes(value, "utf-8"))
@@ -40,13 +46,19 @@ def compress_and_hex(value: str) -> bytes:
 
 
 def isis_epics_signal_rw(datatype: type[T], read_pv: str, name: str = "") -> SignalRW[T]:
-    """Make a RW signal with ISIS' PV naming standard ie. read_pv as TITLE, write_pv as TITLE:SP."""
+    """Make a RW signal with ISIS' PV naming standard.
+
+    For a PV like ``IN:INSTNAME:SOME_PARAMETER``:
+
+    - The ``read_pv`` will be set to ``IN:INSTNAME:SOME_PARAMETER``
+    - The ``write_pv`` will be set to ``IN:INSTNAME:SOME_PARAMETER:SP``
+    """
     write_pv = f"{read_pv}:SP"
     return epics_signal_rw(datatype, read_pv, write_pv, name)
 
 
 class NoYesChoice(StrictEnum):
-    """No-Yes enum for an mbbi/mbbo or bi/bo with capitalised "No" and "Yes" options."""
+    """No-Yes enum for an mbbi/mbbo or bi/bo with capitalised "No"/"Yes" options."""
 
     NO = "No"
     YES = "Yes"

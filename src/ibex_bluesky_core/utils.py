@@ -24,20 +24,21 @@ T = TypeVar("T", sc.Variable, sc.DataArray)
 
 
 def is_matplotlib_backend_qt() -> bool:
-    """Return True if matplotlib is using a qt backend."""
+    """Return :py:obj:`True` if matplotlib is using a qt backend, :py:obj:`False` otherwise."""
     return "qt" in matplotlib.get_backend().lower()
 
 
 def centred_pixel(centre: int, pixel_range: int) -> list[int]:
     """Given a centre and range, return a contiguous range of pixels around the centre, inclusive.
 
-    ie. a centre of 50 with a range of 3 will give [47, 48, 49, 50, 51, 52, 53]
+    ie. a centre of 50 with a range of 3 will give ``[47, 48, 49, 50, 51, 52, 53]``.
 
     Args:
           centre (int): The centre pixel number.
           pixel_range (int): The range of pixels either side to surround the centre.
 
-    Returns a list of pixel numbers.
+    Returns:
+         List of pixel numbers.
 
     """
     return [s for s in range(centre - pixel_range, centre + pixel_range + 1)]
@@ -63,16 +64,22 @@ def center_of_mass_of_area_under_curve(
     """Compute the centre of mass of the area under a curve defined by a series of (x, y) points.
 
     The "area under the curve" is a shape bounded by:
-    - min(y), along the bottom edge
-    - min(x), on the left-hand edge
-    - max(x), on the right-hand edge
+
+    - ``min(y)``, along the bottom edge
+    - ``min(x)``, on the left-hand edge
+    - ``max(x)``, on the right-hand edge
     - straight lines joining (x, y) data points to their nearest neighbours
-    along the x-axis, along the top edge
+      along the x-axis, along the top edge
 
     This is implemented by geometric decomposition of the shape into a series of trapezoids,
     which are further decomposed into rectangular and triangular regions.
 
-    Returns a tuple of the centre of mass and the total area under the curve.
+    Args:
+        x: x data points as a :py:obj:`numpy.ndarray`
+        y: y data points as a :py:obj:`numpy.ndarray`
+
+    Returns:
+        Tuple of (center of mass in x axis, area under curve)
 
     """
     # Sorting here avoids special-cases with disordered points, which may occur

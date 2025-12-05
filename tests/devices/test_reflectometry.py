@@ -1,14 +1,17 @@
 # pyright: reportMissingParameterType=false
 import asyncio
-from unittest.mock import patch
+from unittest.mock import AsyncMock, MagicMock, patch
 
 import bluesky.plan_stubs as bps
+import numpy as np
 import pytest
 from ophyd_async.plan_stubs import ensure_connected
 from ophyd_async.testing import callback_on_mock_put, get_mock_put, set_mock_value
 
 from ibex_bluesky_core.devices import NoYesChoice
+from ibex_bluesky_core.devices.dae import Dae
 from ibex_bluesky_core.devices.reflectometry import (
+    AngleMappingReducer,
     ReflParameter,
     ReflParameterRedefine,
     refl_parameter,
@@ -59,3 +62,46 @@ async def test_fails_to_redefine_and_raises_if_not_in_manager_mode(RE):
         r" as not in manager mode.",
     ):
         await param.set(new_value)
+
+
+async def test_angle_mapping_reducer(dae):
+    reducer = AngleMappingReducer(
+        detectors=np.array([0, 1, 2, 3, 4], dtype=np.int32),
+        angle_map=np.array([10, 11, 12, 13, 14], dtype=np.float64),
+    )
+
+    await reducer.connect(mock=True)
+
+    fakedae = Dae(prefix="unittest:")
+    await fakedae.connect(mock=True)
+    fakedae.trigger_and_get_specdata = AsyncMock(
+        return_value=np.array([[0, 0], [0, 1], [0, 10], [0, 1], [0, 0]], dtype=np.float64)
+    )
+
+    await reducer.reduce_data(fakedae)
+
+    # Approximate fit parameters for above data
+    assert await reducer.x0.get_value() == pytest.approx(12.0)
+    assert await reducer.amp.get_value() == pytest.approx(10.0, abs=0.01)
+    assert await reducer.background.get_value() == pytest.approx(0.0, abs=0.01)
+
+    # Should get a 'good' fit to the above data
+    assert await reducer.r_squared.get_value() == pytest.approx(1.0, abs=0.01)
+
+
+def test_angle_mapping_reducer_interesting_signals():
+    reducer = AngleMappingReducer(
+        detectors=np.array([], dtype=np.int32),
+        angle_map=np.array([], dtype=np.float64),
+    )
+
+    assert reducer.additional_readable_signals(MagicMock()) == [
+        reducer.amp,
+        reducer.amp_err,
+        reducer.sigma,
+        reducer.sigma_err,
+        reducer.x0,
+        reducer.x0_err,
+        reducer.background,
+        reducer.background_err,
+    ]

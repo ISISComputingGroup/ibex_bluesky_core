@@ -1,4 +1,4 @@
-"""Utilities for the DAE device - mostly XML helpers."""
+"""Low-level bluesky device interface to the DAE."""
 
 import asyncio
 from typing import Generic, TypeVar
@@ -83,6 +83,10 @@ class DaeCheckingSignal(StandardReadable, Movable[T], Generic[T]):
     def __init__(self, datatype: type[T], prefix: str) -> None:
         """Device that wraps a signal and checks the result of a set.
 
+        This ensures that the DAE has accepted a configuration change, ensuring that
+        runs are not accidentally started in an unwanted configuration if the DAE does
+        not accept new settings.
+
         Args:
             datatype: The datatype of the signal.
             prefix: The PV address of the signal.
@@ -95,10 +99,13 @@ class DaeCheckingSignal(StandardReadable, Movable[T], Generic[T]):
 
     @AsyncStatus.wrap
     async def set(self, value: T) -> None:
-        """Check a signal when it is set. Raises if not set.
+        """Set and check a signal.
 
         Args:
             value: the value to set.
+
+        Raises:
+            OSError: If the signal failed to be set to the specified value.
 
         """
         await self.signal.set(value, wait=True, timeout=None)
@@ -113,20 +120,35 @@ class RunstateEnum(StrictEnum):
     """The run state."""
 
     PROCESSING = "PROCESSING"
+    """Processing state."""
     SETUP = "SETUP"
+    """Setup (idle) state."""
     RUNNING = "RUNNING"
+    """Running state."""
     PAUSED = "PAUSED"
+    """Paused state."""
     WAITING = "WAITING"
+    """Waiting state (running blocked by run control)."""
     VETOING = "VETOING"
+    """Vetoing state (running blocked by hardware signal)."""
     ENDING = "ENDING"
+    """Ending state."""
     SAVING = "SAVING"
+    """Saving state."""
     RESUMING = "RESUMING"
+    """Resuming state."""
     PAUSING = "PAUSING"
+    """Pausing state."""
     BEGINNING = "BEGINNING"
+    """Beginning state."""
     ABORTING = "ABORTING"
+    """Aborting state."""
     UPDATING = "UPDATING"
+    """Updating state."""
     STORING = "STORING"
+    """Storing state."""
     CHANGING = "CHANGING"
+    """Changing state."""
 
     def __str__(self) -> str:
         """Return a string representation of the enum value."""
@@ -137,7 +159,16 @@ class Dae(StandardReadable):
     """Device representing the ISIS data acquisition electronics."""
 
     def __init__(self, prefix: str, name: str = "DAE") -> None:
-        """Create a new Dae ophyd-async device."""
+        """Device representing the full interface to the ISIS data acquisition electronics.
+
+        .. warning::
+
+            This class exposes underlying DAE functionality behaviour to bluesky, but has no
+            configured behaviour. A raw ``Dae`` object is therefore unsuitable for use in a scan.
+
+            To use the DAE in a scan, use a subclass such as
+            :py:obj:`~ibex_bluesky_core.devices.simpledae.SimpleDae`.
+        """
         dae_prefix = f"{prefix}DAE:"
         self._prefix = prefix
         self.good_uah: SignalR[float] = epics_signal_r(float, f"{dae_prefix}GOODUAH")
@@ -234,7 +265,7 @@ class Dae(StandardReadable):
     ) -> npt.NDArray[np.int32]:
         """Get a correctly-shaped spectrum-data array.
 
-        This array will have shape (num_spectra, num_time_channels).
+        This array will have shape (``num_spectra``, ``num_time_channels``).
 
         If detectors is a slice or an array, the number of detectors will be
         given by that slice or array. If detectors is None, all detectors,
@@ -244,10 +275,9 @@ class Dae(StandardReadable):
         settings. The returned array will not include the "junk" time-channel 0.
 
         Args:
-            dae: The SimpleDae instance
             detectors: a numpy array or slice describing detectors to get data from.
                 Default is all detectors.
-                Pass np.array([1]) to select detector 1.
+                Pass ``np.array([1])`` to select detector 1.
 
         """
         if detectors is None:

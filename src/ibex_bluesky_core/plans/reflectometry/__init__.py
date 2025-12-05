@@ -1,6 +1,7 @@
 """Plans specific to Reflectometry beamlines."""
 
 from collections.abc import Generator
+from typing import Any
 
 from bluesky import Msg
 
@@ -44,10 +45,11 @@ def refl_scan(  # noqa: PLR0913
     periods: bool = True,
     save_run: bool = False,
     rel: bool = False,
+    md: dict[Any, Any] | None = None,
 ) -> Generator[Msg, None, ISISCallbacks]:
     """Scan over a reflectometry parameter.
 
-    This is really just a wrapper around :func:`ibex_bluesky_core.plans.scan`
+    This is a wrapper around :py:obj:`ibex_bluesky_core.plans.scan`
 
     Args:
         param: the reflectometry parameter.
@@ -62,9 +64,10 @@ def refl_scan(  # noqa: PLR0913
         periods: whether to use periods.
         save_run: whether to save the run of the scan.
         rel: whether to use a relative scan around the current position.
+        md: Arbitrary metadata to include in this scan.
 
     Returns:
-        an :obj:`ibex_bluesky_core.callbacks.ISISCallbacks` instance.
+        An :obj:`ibex_bluesky_core.callbacks.ISISCallbacks` instance.
 
     """
     block = refl_parameter(param)
@@ -84,6 +87,7 @@ def refl_scan(  # noqa: PLR0913
             save_run=save_run,
             periods=periods,
             rel=rel,
+            md=md,
         )
     )
 
@@ -104,10 +108,11 @@ def refl_adaptive_scan(  # noqa: PLR0913
     periods: bool = True,
     save_run: bool = False,
     rel: bool = False,
+    md: dict[Any, Any] | None = None,
 ) -> Generator[Msg, None, ISISCallbacks]:
     """Perform an adaptive scan over a reflectometry parameter.
 
-    This is really just a wrapper around :func:`ibex_bluesky_core.plans.adaptive_scan`
+    This is a wrapper around :py:obj:`ibex_bluesky_core.plans.adaptive_scan`
 
     Args:
         param: The parameter to scan.
@@ -124,9 +129,10 @@ def refl_adaptive_scan(  # noqa: PLR0913
         periods: whether to use periods.
         save_run: whether to save the run of the scan.
         rel: whether to use a relative scan around the current position.
+        md: Arbitrary metadata to include in this scan.
 
     Returns:
-        an :obj:`ibex_bluesky_core.callbacks.ISISCallbacks` instance.
+        An :obj:`ibex_bluesky_core.callbacks.ISISCallbacks` instance.
 
     """
     block = refl_parameter(param)
@@ -147,5 +153,6 @@ def refl_adaptive_scan(  # noqa: PLR0913
             model=model,
             save_run=save_run,
             rel=rel,
+            md=md,
         )
     )

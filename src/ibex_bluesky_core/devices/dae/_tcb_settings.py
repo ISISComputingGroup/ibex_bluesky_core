@@ -7,7 +7,7 @@ from enum import Enum
 from xml.etree.ElementTree import tostring
 
 from bluesky.protocols import Locatable, Location, Movable
-from ophyd_async.core import AsyncStatus, Device, SignalRW
+from ophyd_async.core import AsyncStatus, SignalRW, StandardReadable
 
 from ibex_bluesky_core.devices import (
     compress_and_hex,
@@ -31,24 +31,47 @@ class TCBTimeUnit(Enum):
     """Time unit for DAE TCB settings."""
 
     MICROSECONDS = 0
+    """Microsecond TCB unit (neutron instruments)."""
     NANOSECONDS = 1
+    """Nanosecond TCB unit (muon instruments)."""
 
 
 class TCBCalculationMethod(Enum):
     """Calculation method for DAE TCB settings."""
 
     SPECIFY_PARAMETERS = 0
+    """
+    Explicitly-specified TCB settings.
+    """
     USE_TCB_FILE = 1
+    """
+    TCB settings from file.
+    """
 
 
 class TimeRegimeMode(Enum):
     """Time Regime Mode options for a single row."""
 
-    BLANK = 0  # Blank
-    DT = 1  # dT = C
-    DTDIVT = 2  # dT/T = C
-    DTDIVT2 = 3  # dT/T**2 = C
-    SHIFTED = 4  # Shifted
+    BLANK = 0
+    """
+    Blank (unused) time regime.
+    """
+    DT = 1
+    """
+    ``dT = C`` spacing.
+    """
+    DTDIVT = 2
+    """
+    ``dT/T = C`` spacing.
+    """
+    DTDIVT2 = 3
+    """
+    ``dT/T**2 = C`` spacing.
+    """
+    SHIFTED = 4
+    """
+    'Shifted' mode.
+    """
 
 
 @dataclass(kw_only=True)
@@ -56,26 +79,51 @@ class TimeRegimeRow:
     """A single time regime row."""
 
     from_: float | None = None
+    """
+    Time from which this TCB row applies.
+    """
     to: float | None = None
+    """
+    Time up to which this TCB row applies.
+    """
     steps: float | None = None
+    """
+    Step size.
+    """
     mode: TimeRegimeMode | None = None
+    """
+    Time regime spacing mode.
+    """
 
 
 @dataclass
 class TimeRegime:
-    """Time regime - contains a dict(rows) which is row_number:TimeRegimeRow."""
+    """A single DAE Time regime."""
 
     rows: dict[int, TimeRegimeRow]
+    """Dictionary with keys representing row number and :py:obj:`TimeRegimeRow` values."""
 
 
 @dataclass(kw_only=True)
 class DaeTCBSettingsData:
-    """Dataclass for the DAE TCB settings."""
+    """DAE TCB (time channel binning) settings.
+
+    All values accept :py:obj:`None`, which means do not change that setting from its
+    current value.
+    """
 
     tcb_tables: dict[int, TimeRegime] | None = None
+    """TCB tables.
+
+    A dictionary of time-regime numbers (as :py:obj:`int` keys) to :py:obj:`TimeRegime`
+    values.
+    """
     tcb_file: str | None = None
+    """TCB file path."""
     time_unit: TCBTimeUnit | None = None
+    """TCB time unit (usually μs for neutron instruments, ns for muon instruments)."""
     tcb_calculation_method: TCBCalculationMethod | None = None
+    """TCB source (file or explicit tables)."""
 
 
 def _convert_xml_to_tcb_settings(value: str) -> DaeTCBSettingsData:
@@ -120,13 +168,15 @@ def _convert_tcb_settings_to_xml(current_xml: str, settings: DaeTCBSettingsData)
     return tostring(root, encoding="unicode")
 
 
-class DaeTCBSettings(Device, Locatable[DaeTCBSettingsData], Movable[DaeTCBSettingsData]):
+class DaeTCBSettings(StandardReadable, Locatable[DaeTCBSettingsData], Movable[DaeTCBSettingsData]):
     """Subdevice for the DAE time channel settings."""
 
     def __init__(self, dae_prefix: str, name: str = "") -> None:
-        """Set up signal for the DAE time channel settings.
+        """DAE time channel settings.
 
-        See DaeTCBSettingsData for options.
+        See Also:
+            :py:obj:`DaeTCBSettingsData` for options.
+
         """
         self._raw_tcb_settings: SignalRW[str] = isis_epics_signal_rw(
             str, f"{dae_prefix}TCBSETTINGS"
@@ -143,7 +193,7 @@ class DaeTCBSettings(Device, Locatable[DaeTCBSettingsData], Movable[DaeTCBSettin
 
     @AsyncStatus.wrap
     async def set(self, value: DaeTCBSettingsData) -> None:
-        """Set any changes in the tcb settings to the XML."""
+        """Set any changes in the TCB settings to the XML."""
         current_xml = await self._raw_tcb_settings.get_value()
         current_xml_dehexed = dehex_and_decompress(current_xml.encode()).decode()
         xml = _convert_tcb_settings_to_xml(current_xml_dehexed, value)
