@@ -1,4 +1,9 @@
-# General Plans 
+# General Plans
+
+:::{note}
+{ref}`Instrument-specific bluesky plans <where_are_plans_devices>` are defined in each instrument's `inst` scripts area.
+This page documents general cross-instrument plans provided within the {py:obj}`ibex_bluesky_core` library.
+:::
 
 The {py:obj}`ibex_bluesky_core.plans` module provides a number of plans that can be run by the RunEngine directly. These are mostly wrappers around the generic {external+bluesky:doc}`bluesky plans <plans>`.
 

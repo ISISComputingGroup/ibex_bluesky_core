@@ -42,6 +42,8 @@ def plan():
     yield from bps.null()
 ```
 
+{ref}`Instrument-specific bluesky plans <where_are_plans_devices>` are defined in each instrument's `inst` scripts area.
+
 ## Devices
 
 The {py:obj}`ibex_bluesky_core.devices` module provides built-in support for a number of ISIS-specific devices. For example,
@@ -59,6 +61,8 @@ Block objects provide several mechanisms for configuring write behaviour; see
 
 Likewise, the DAE is available as a bluesky device: see [the DAE Documentation](../devices/dae.md)
 for full examples including example configurations.
+
+{ref}`Instrument-specific bluesky device instances <where_are_plans_devices>` are defined in each instrument's `inst` scripts area.
 
 ## Setting and reading values
 
