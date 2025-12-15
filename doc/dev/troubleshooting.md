@@ -209,7 +209,7 @@ If you forget to do this, you will get a stack trace containing:
 NotImplementedError: No PV has been set as connect() has not been called
 ```
 
-### Debug {py:obj}`~ophyd_async.core.NotConnected` errors
+### Debug {py:obj}`~ophyd_async.core.NotConnectedError` errors
 
 If {py:obj}`ophyd_async` cannot connect to a PV, you will get an error that looks like:
 

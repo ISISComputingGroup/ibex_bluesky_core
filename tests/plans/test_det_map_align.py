@@ -3,8 +3,7 @@ from unittest.mock import MagicMock, patch
 
 import numpy as np
 import pytest
-from ophyd_async.core import soft_signal_rw
-from ophyd_async.testing import callback_on_mock_put, set_mock_value
+from ophyd_async.core import callback_on_mock_put, set_mock_value, soft_signal_rw
 
 from ibex_bluesky_core.devices.simpledae import (
     PeriodPerPointController,

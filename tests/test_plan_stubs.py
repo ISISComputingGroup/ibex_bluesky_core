@@ -9,9 +9,9 @@ import pytest
 from bluesky import RunEngine
 from bluesky import plan_stubs as bps
 from bluesky.utils import Msg
+from ophyd_async.core import get_mock_put, set_mock_value
 from ophyd_async.epics.motor import UseSetMode
 from ophyd_async.plan_stubs import ensure_connected
-from ophyd_async.testing import get_mock_put, set_mock_value
 
 from ibex_bluesky_core.devices import NoYesChoice, compress_and_hex, dehex_and_decompress
 from ibex_bluesky_core.devices.block import BlockMot

@@ -5,8 +5,8 @@ from unittest.mock import AsyncMock, MagicMock, patch
 import bluesky.plan_stubs as bps
 import numpy as np
 import pytest
+from ophyd_async.core import callback_on_mock_put, get_mock_put, set_mock_value
 from ophyd_async.plan_stubs import ensure_connected
-from ophyd_async.testing import callback_on_mock_put, get_mock_put, set_mock_value
 
 from ibex_bluesky_core.devices import NoYesChoice
 from ibex_bluesky_core.devices.dae import Dae
