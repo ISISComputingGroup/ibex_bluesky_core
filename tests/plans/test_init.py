@@ -6,8 +6,8 @@ from unittest.mock import patch
 import bluesky.utils
 import pytest
 from bluesky.preprocessors import run_decorator
-from ophyd_async.plan_stubs import ensure_connected
 from ophyd_async.core import callback_on_mock_put, get_mock_put, set_mock_value
+from ophyd_async.plan_stubs import ensure_connected
 from ophyd_async.sim import SimMotor
 
 from ibex_bluesky_core.devices.block import BlockMot, BlockR, BlockRw
