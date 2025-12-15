@@ -119,7 +119,7 @@ type `float`, and as such does not take a type argument (unlike the other block 
 {external+bluesky:py:obj}`~bluesky.protocols.Checkable` means that moves which would eventually violate limits can be detected by
 bluesky simulators, before the plan ever runs. This can help to catch errors before
 the plan is executed against hardware. There is also limit-checking at runtime;
-a {external+ophyd_async:py:obj}`~ophyd_async.epics.motor.MotorLimitsException` will be raised
+a {external+ophyd_async:py:obj}`~ophyd_async.epics.motor.MotorLimitsError` will be raised
 at runtime if a requested position is outside the motor's limits.
 
 {external+bluesky:py:obj}`~bluesky.protocols.Stoppable` means that the motor can be asked to stop by bluesky. Plans may choose to execute
