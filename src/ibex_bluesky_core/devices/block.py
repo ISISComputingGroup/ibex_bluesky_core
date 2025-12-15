@@ -484,7 +484,7 @@ class BlockMot(Motor, Movable[float], HasName):
         This is needed so that type-checker correctly understands the type of set.
 
         This method will raise
-        :external+ophyd_async:py:obj:`ophyd_async.epics.motor.MotorLimitsException`
+        :external+ophyd_async:py:obj:`ophyd_async.epics.motor.MotorLimitsError`
         if the requested position was outside the motor's limits.
         """
         return super().set(value, timeout)
