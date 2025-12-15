@@ -5,6 +5,7 @@
 
 ## Where is ...?
 
+{#where_are_plans_devices}
 ### Instrument-specific plans & devices
 
 This is located in each instrument's `inst` script area, with their other instrument-specific scripts.
