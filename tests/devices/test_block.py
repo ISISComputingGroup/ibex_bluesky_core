@@ -6,7 +6,7 @@ import bluesky.plan_stubs as bps
 import bluesky.plans as bp
 import ophyd_async
 import pytest
-from ophyd_async.testing import get_mock_put, set_mock_value
+from ophyd_async.core import get_mock_put, set_mock_value
 
 from ibex_bluesky_core.devices.block import (
     GLOBAL_MOVING_FLAG_PRE_WAIT,
@@ -365,6 +365,8 @@ async def test_block_mot_set_outside_limits(mot_block):
 
     set_mock_value(mot_block.user_setpoint, 10)
     set_mock_value(mot_block.velocity, 10)
+    set_mock_value(mot_block.dial_high_limit_travel, 15)
+    set_mock_value(mot_block.dial_low_limit_travel, 5)
     set_mock_value(mot_block.high_limit_travel, 15)
     set_mock_value(mot_block.low_limit_travel, 5)
     with pytest.raises(err):
