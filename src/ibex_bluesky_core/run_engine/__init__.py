@@ -3,44 +3,25 @@
 import asyncio
 import functools
 import logging
-import os
-import socket
 from collections.abc import Generator
 from functools import cache
 from threading import Event, Lock
 from typing import Any, cast
 
 import bluesky.preprocessors as bpp
-import msgpack_numpy
 from bluesky.run_engine import RunEngine, RunEngineResult
 from bluesky.utils import DuringTask, Msg, RunEngineControlException, RunEngineInterrupted
-from bluesky_kafka import Publisher
 
-from ibex_bluesky_core.callbacks import DocLoggingCallback
+from ibex_bluesky_core.callbacks import DocLoggingCallback, KafkaCallback
 from ibex_bluesky_core.plan_stubs import CALL_QT_AWARE_MSG_KEY, CALL_SYNC_MSG_KEY
 from ibex_bluesky_core.preprocessors import add_rb_number_processor
 from ibex_bluesky_core.run_engine._msg_handlers import call_qt_aware_handler, call_sync_handler
 from ibex_bluesky_core.utils import is_matplotlib_backend_qt
 from ibex_bluesky_core.version import version
 
-__all__ = ["get_kafka_topic_name", "get_run_engine", "run_plan"]
+__all__ = ["get_run_engine", "run_plan"]
 
 logger = logging.getLogger(__name__)
-
-
-DEFAULT_KAFKA_BROKER = "livedata.isis.cclrc.ac.uk:31092"
-
-
-def get_kafka_topic_name() -> str:
-    """Get the name of the bluesky Kafka topic for this machine."""
-    computer_name = os.environ.get("COMPUTERNAME", socket.gethostname()).upper()
-    computer_name = computer_name.upper()
-    if computer_name.startswith(("NDX", "NDH")):
-        name = computer_name[3:]
-    else:
-        name = computer_name
-
-    return f"{name}_bluesky"
 
 
 class _DuringTask(DuringTask):
@@ -120,12 +101,9 @@ def get_run_engine() -> RunEngine:
     log_callback = DocLoggingCallback()
     RE.subscribe(log_callback)
 
-    kafka_callback = Publisher(
-        topic=get_kafka_topic_name(),
-        bootstrap_servers=os.environ.get("IBEX_BLUESKY_CORE_KAFKA_BROKER", DEFAULT_KAFKA_BROKER),
+    kafka_callback = KafkaCallback(
         key="doc",
-        serializer=msgpack_numpy.dumps,
-        producer_config={
+        kafka_config={
             "enable.idempotence": True,
             "log_level": 0,
             "log.connection.close": False,
