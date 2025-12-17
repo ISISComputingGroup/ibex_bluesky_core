@@ -3,7 +3,6 @@
 import threading
 from collections.abc import Generator
 from typing import Any
-from unittest import mock
 from unittest.mock import MagicMock
 
 import bluesky.plan_stubs as bps
@@ -12,7 +11,7 @@ import pytest
 from bluesky.run_engine import RunEngineResult
 from bluesky.utils import Msg, RequestAbort, RunEngineInterrupted
 
-from ibex_bluesky_core.run_engine import _DuringTask, get_kafka_topic_name, get_run_engine, run_plan
+from ibex_bluesky_core.run_engine import _DuringTask, get_run_engine, run_plan
 from ibex_bluesky_core.version import version
 
 
@@ -147,14 +146,3 @@ def test_run_plan_happy_path(RE):
     result = run_plan(plan())
     assert result.plan_result == "happy_path_result"
     assert result.exit_status == "success"
-
-
-def test_get_kafka_topic_name():
-    with mock.patch("ibex_bluesky_core.run_engine.os.environ.get", return_value="FOO"):
-        assert get_kafka_topic_name() == "FOO_bluesky"
-
-    with mock.patch("ibex_bluesky_core.run_engine.os.environ.get", return_value="NDXBAR"):
-        assert get_kafka_topic_name() == "BAR_bluesky"
-
-    with mock.patch("ibex_bluesky_core.run_engine.os.environ.get", return_value="NDHBAZ"):
-        assert get_kafka_topic_name() == "BAZ_bluesky"
