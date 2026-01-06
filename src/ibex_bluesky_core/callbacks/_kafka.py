@@ -49,7 +49,7 @@ class KafkaCallback(CallbackBase):
         super().__init__()
 
         self._topic = topic or get_kafka_topic_name()
-        self._key = key
+        self._key = msgpack_numpy.dumps(key)
 
         if "bootstrap.servers" in kafka_config:
             raise ValueError(
