@@ -33,7 +33,8 @@ ignore = [
     "D213",    # Incompatible with D212
     "D203",    # Incompatible with D211
     "B901",    # This is a standard, expected, pattern in bluesky
-    "PLR6301"  # Too noisy
+    "PLR6301", # Too noisy
+    "RUF067",  # We use this pattern in various places
 ]
 [lint.per-file-ignores]
 "tests/*" = [
