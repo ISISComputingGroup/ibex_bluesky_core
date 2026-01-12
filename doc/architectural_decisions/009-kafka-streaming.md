@@ -23,7 +23,8 @@ central Kafka instance is not currently considered "reliable" in an experiment c
 streaming the documents will allow testing to be done. Kafka will eventually be deployed in a "reliable"
 way accessible to each instrument.
 - We will encode messages from bluesky using `msgpack` (with the `msgpack-numpy` extension), because:
-  - It is the default encoder used by the upstream `bluesky-kafka` integration
+  - It is the default encoder used by the upstream `bluesky-kafka` integration (though we are not using
+that integration directly, as it has been soft-deprecated upstream)
   - It is a schema-less encoder, meaning we do not have to write/maintain fixed schemas for all the
 documents allowed by `event-model`
   - It has reasonable performance in terms of encoding speed and message size
@@ -41,7 +42,7 @@ Encoding bluesky documents into JSON and then wrapping them in the
 was considered.
 
 We chose `msgpack` instead of json strings + flatbuffers because:
-- It is more standard in the bluesky community (e.g. it is the default used in `bluesky-kafka`)
+- It is more standard in the bluesky community
 - Bluesky events will be streamed to a dedicated topic, which is unlikely to be confused with data
 using any other schema.
 
