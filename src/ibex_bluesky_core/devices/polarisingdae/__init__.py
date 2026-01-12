@@ -4,12 +4,15 @@ import logging
 from typing import Generic, TypeAlias
 
 import scipp as sc
-from bluesky.protocols import Movable, Triggerable
+from bluesky.protocols import Triggerable
 from ophyd_async.core import (
     AsyncStageable,
     AsyncStatus,
     Reference,
 )
+
+# https://github.com/bluesky/ophyd-async/pull/1172
+from ophyd_async.core._protocol import AsyncMovable
 from typing_extensions import TypeVar
 
 from ibex_bluesky_core.devices.dae import Dae
@@ -76,7 +79,7 @@ class DualRunDae(
         reducer_final: TPReducer_co,
         reducer_up: TMWBReducer_co,
         reducer_down: TMWBReducer_co,
-        movable: Movable[float],
+        movable: AsyncMovable[float],
         movable_states: list[float],
     ) -> None:
         """Initialise a DualRunDae.
@@ -95,7 +98,7 @@ class DualRunDae(
             movable_states: A tuple of two floats, the states to set at the start and between runs.
 
         """
-        self.movable: Reference[Movable[float]] = Reference(movable)
+        self.movable: Reference[AsyncMovable[float]] = Reference(movable)
         self.movable_states: list[float] = movable_states
 
         self._prefix = prefix
@@ -147,14 +150,14 @@ class DualRunDae(
         This waits for the acquisition and any defined reduction to be complete, such that
         after this coroutine completes, all relevant data is available via read()
         """
-        self.movable().set(self.movable_states[0])
+        await self.movable().set(self.movable_states[0])
 
         await self.controller.start_counting(self)
         await self.waiter.wait(self)
         await self.controller.stop_counting(self)
         await self.reducer_up.reduce_data(self)
 
-        self.movable().set(self.movable_states[1])
+        await self.movable().set(self.movable_states[1])
 
         await self.controller.start_counting(self)
         await self.waiter.wait(self)
@@ -178,7 +181,7 @@ def polarising_dae(  # noqa: PLR0913
     *,
     det_pixels: list[int],
     frames: int,
-    movable: Movable[float],
+    movable: AsyncMovable[float],
     movable_states: list[float],
     intervals: list[sc.Variable],
     total_flight_path_length: sc.Variable,
