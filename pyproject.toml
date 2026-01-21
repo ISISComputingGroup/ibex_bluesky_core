@@ -57,7 +57,7 @@ dependencies = [
 
 [project.optional-dependencies]
 doc = [
-  "sphinx", 
+  "sphinx<9",
   "sphinx_rtd_theme", 
   "myst_parser",
   "sphinx-autobuild",
