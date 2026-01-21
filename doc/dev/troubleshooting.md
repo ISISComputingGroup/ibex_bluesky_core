@@ -10,7 +10,7 @@
 
 This is located in each instrument's `inst` script area, with their other instrument-specific scripts.
 
-`c:\Instrument\Settings\config\NDX<inst>\configurations\Python\inst\bluesky`.
+`c:\Instrument\Settings\config\NDX<inst>\Python\inst\bluesky`.
 
 Instrument-specific bluesky plans will typically be defined in the `plans` module in the above area, and devices will 
 be defined in a `devices` module.
