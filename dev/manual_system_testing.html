@@ -1,0 +1,198 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Manual system testing &mdash; ibex_bluesky_core 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=dc476284" />
+
+  
+    <link rel="shortcut icon" href="../_static/favicon.svg"/>
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="RB Number injection preprocessor" href="rbnumberpp.html" />
+    <link rel="prev" title="Logging" href="logging.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #343131" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            ibex_bluesky_core
+              <img src="../_static/logo.svg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/overview.html">Getting started</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Devices</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../devices/blocks.html">Blocks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devices/dae.html">DAE (Data Acquisition Electronics)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Callbacks</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../callbacks/isiscallbacks.html">ISIS Standard Callbacks (<code class="xref py py-obj docutils literal notranslate"><span class="pre">ISISCallbacks</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../callbacks/fitting.html">Fits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../callbacks/centre_of_mass.html">Centre of Mass</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../callbacks/plotting.html">Plotting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../callbacks/file_writing.html">File writing callbacks</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Plans</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../plans/plans.html">General Plans</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plans/reflectometry.html">Reflectometry-specific Plans</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Plan stubs</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/external_code.html">Calling external code (<code class="xref py py-obj docutils literal notranslate"><span class="pre">call_sync</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/matplotlib_helpers.html">Matplotlib helpers (<code class="xref py py-obj docutils literal notranslate"><span class="pre">call_qt_aware</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/plan_wrappers.html">Plan wrappers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/polling.html">Continuous polling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/redefining.html">Redefinition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/user_input.html">User input helpers</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../_api.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../replotting_scans.html">Replaying documents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../architectural_decisions.html">Architectural Decisions</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../developer_information.html">Developer Information</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="create_a_release.html">Release Process</a></li>
+<li class="toctree-l2"><a class="reference internal" href="kafka.html">Kafka</a></li>
+<li class="toctree-l2"><a class="reference internal" href="logging.html">Logging</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Manual system testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rbnumberpp.html">RB Number injection preprocessor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="set_up_dev_environment.html">Local development</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sphinx_notes.html">Notes on Sphinx and addons</a></li>
+<li class="toctree-l2"><a class="reference internal" href="troubleshooting.html">Troubleshooting</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #343131" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">ibex_bluesky_core</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../developer_information.html">Developer Information</a></li>
+      <li class="breadcrumb-item active">Manual system testing</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/ISISComputingGroup/ibex_bluesky_core/blob/main/doc/dev/manual_system_testing.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="manual-system-testing">
+<h1>Manual system testing<a class="headerlink" href="#manual-system-testing" title="Link to this heading"></a></h1>
+<p>Manual system tests are stored in the <code class="docutils literal notranslate"><span class="pre">manual_system_tests</span></code> directory.</p>
+<p>Each manual system test should be run both in the PyDEV console in the GUI, and in a standalone
+python window, unless the test itself says otherwise.</p>
+<p>The tests will detail any prerequisites in it’s docstrings, and will print out any checks
+or expected results which you should manually verify.</p>
+<section id="running-the-tests-from-pydev-in-the-gui">
+<h2>Running the tests from PyDEV in the GUI<a class="headerlink" href="#running-the-tests-from-pydev-in-the-gui" title="Link to this heading"></a></h2>
+<p>In the PyDEV console in the GUI, type:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Should print that it has loaded a named plan</span>
+<span class="n">g</span><span class="o">.</span><span class="n">load_script</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;c:\instrument\dev\ibex_bluesky_core\manual_system_tests\the_test.py&quot;</span><span class="p">)</span>
+<span class="c1"># The RE object should already be defined in the PyDEV console</span>
+<span class="n">RE</span><span class="p">(</span><span class="n">dae_scan</span><span class="p">())</span>
+</pre></div>
+</div>
+<p>If the plan uses plotting, it should plot using matplotlib embedded in the IBEX GUI.</p>
+</section>
+<section id="running-from-a-standalone-python-session">
+<h2>Running from a standalone python session<a class="headerlink" href="#running-from-a-standalone-python-session" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Set the following environment variables in your <code class="docutils literal notranslate"><span class="pre">cmd</span></code> session</p></li>
+</ul>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">set</span> <span class="n">MYPVPREFIX</span><span class="o">=</span><span class="n">TE</span><span class="p">:</span><span class="n">NDWXXXX</span><span class="p">:</span>
+<span class="nb">set</span> <span class="s2">&quot;EPICS_CA_ADDR_LIST=127.255.255.255 130.246.51.255&quot;</span>
+<span class="nb">set</span> <span class="s2">&quot;EPICS_CA_AUTO_ADDR_LIST=NO&quot;</span>
+
+<span class="nb">set</span> <span class="n">IBEX_BLUESKY_CORE_LOGS</span><span class="o">=</span><span class="n">c</span><span class="p">:</span>\<span class="n">instrument</span>\<span class="n">var</span>\<span class="n">bluesky</span>\<span class="n">tmp</span>
+<span class="nb">set</span> <span class="n">IBEX_BLUESKY_CORE_OUTPUT</span><span class="o">=</span><span class="n">c</span><span class="p">:</span>\<span class="n">instrument</span>\<span class="n">var</span>\<span class="n">bluesky</span>\<span class="n">tmp</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>Checking the prerequisites:</p></li>
+</ul>
+<p>Ensure that any prerequisites are met before running the selected test. These can be located within the <code class="docutils literal notranslate"><span class="pre">.py</span></code> file.</p>
+<ul class="simple">
+<li><p>Run the test using:</p></li>
+</ul>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">c</span><span class="p">:</span>\<span class="n">instrument</span>\<span class="n">dev</span>\<span class="n">ibex_bluesky_core</span>\<span class="n">manual_system_tests</span>\<span class="n">the_test</span><span class="o">.</span><span class="n">py</span>
+</pre></div>
+</div>
+<p>If the plan uses plotting, it should spawn a Qt matplotlib window.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="logging.html" class="btn btn-neutral float-left" title="Logging" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="rbnumberpp.html" class="btn btn-neutral float-right" title="RB Number injection preprocessor" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

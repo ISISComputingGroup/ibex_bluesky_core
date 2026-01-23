@@ -1,0 +1,1706 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Index &mdash; ibex_bluesky_core 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="_static/css/custom.css?v=dc476284" />
+
+  
+    <link rel="shortcut icon" href="_static/favicon.svg"/>
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=2709fde1"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+      <script type="module">import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11.12.1/dist/mermaid.esm.min.mjs";
+
+
+
+
+
+const initStyles = () => {
+    const defaultStyle = document.createElement('style');
+    defaultStyle.textContent = `pre.mermaid {
+    /* Same as .mermaid-container > pre */
+    display: block;
+    width: 100%;
+}
+
+pre.mermaid > svg {
+    /* Same as .mermaid-container > pre > svg */
+    height: 500px;
+    width: 100%;
+    max-width: 100% !important;
+}`;
+    document.head.appendChild(defaultStyle);
+
+    const fullscreenStyle = document.createElement('style');
+    fullscreenStyle.textContent = `.mermaid-container {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+}
+
+.mermaid-container > pre {
+    display: block;
+    width: 100%;
+}
+
+.mermaid-container > pre > svg {
+    height: 500px;
+    width: 100%;
+    max-width: 100% !important;
+}
+
+.mermaid-fullscreen-btn {
+    width: 28px;
+    height: 28px;
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid rgba(0, 0, 0, 0.3);
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    font-size: 14px;
+    line-height: 1;
+    padding: 0;
+    color: #333;
+}
+
+.mermaid-fullscreen-btn:hover {
+    opacity: 100% !important;
+    background: rgba(255, 255, 255, 1);
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+    transform: scale(1.1);
+}
+
+.mermaid-fullscreen-btn.dark-theme {
+    background: rgba(50, 50, 50, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: #e0e0e0;
+}
+
+.mermaid-fullscreen-btn.dark-theme:hover {
+    background: rgba(60, 60, 60, 1);
+    box-shadow: 0 3px 10px rgba(255, 255, 255, 0.2);
+}
+
+.mermaid-fullscreen-modal {
+    display: none;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 95vw;
+    height: 100vh;
+    background: rgba(255, 255, 255, 0.98);
+    z-index: 9999;
+    padding: 20px;
+    overflow: auto;
+}
+
+.mermaid-fullscreen-modal.dark-theme {
+    background: rgba(0, 0, 0, 0.98);
+}
+
+.mermaid-fullscreen-modal.active {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mermaid-container-fullscreen {
+    position: relative;
+    width: 95vw;
+    height: 90vh;
+    max-width: 95vw;
+    max-height: 90vh;
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    overflow: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mermaid-container-fullscreen.dark-theme {
+    background: #1a1a1a;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
+}
+
+.mermaid-container-fullscreen pre.mermaid {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mermaid-container-fullscreen .mermaid svg {
+    height: 100% !important;
+    width: 100% !important;
+    cursor: grab;
+}
+
+.mermaid-fullscreen-close {
+    position: fixed !important;
+    top: 20px !important;
+    right: 20px !important;
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    border-radius: 50%;
+    cursor: pointer;
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    transition: all 0.2s;
+    font-size: 24px;
+    line-height: 1;
+    color: #333;
+}
+
+.mermaid-fullscreen-close:hover {
+    background: white;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+    transform: scale(1.1);
+}
+
+.mermaid-fullscreen-close.dark-theme {
+    background: rgba(50, 50, 50, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #e0e0e0;
+}
+
+.mermaid-fullscreen-close.dark-theme:hover {
+    background: rgba(60, 60, 60, 1);
+    box-shadow: 0 6px 16px rgba(255, 255, 255, 0.2);
+}
+
+.mermaid-fullscreen-modal .mermaid-fullscreen-btn {
+    display: none !important;
+}`;
+    document.head.appendChild(fullscreenStyle);
+}
+
+// Detect if page has dark background
+const isDarkTheme = () => {
+    // We use a set of heuristics:
+    // 1. Check for common dark mode classes or attributes
+    // 2. Check computed background color brightness
+    if (document.documentElement.classList.contains('dark') ||
+        document.documentElement.getAttribute('data-theme') === 'dark' ||
+        document.body.classList.contains('dark') ||
+        document.body.getAttribute('data-theme') === 'dark') {
+        // console.log("Dark theme detected via class/attribute");
+        return true;
+    }
+    if (document.documentElement.classList.contains('light') ||
+        document.documentElement.getAttribute('data-theme') === 'light' ||
+        document.body.classList.contains('light') ||
+        document.body.getAttribute('data-theme') === 'light') {
+        // console.log("Light theme detected via class/attribute");
+        return false;
+    }
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        // console.log("Dark theme detected via prefers-color-scheme");
+        return true;
+    }
+    const bgColor = window.getComputedStyle(document.body).backgroundColor;
+    const match = bgColor.match(/rgb\((\d+),\s*(\d+),\s*(\d+)/);
+    if (match) {
+        const r = parseInt(match[1]);
+        const g = parseInt(match[2]);
+        const b = parseInt(match[3]);
+        const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+        // console.log("Background color brightness:", brightness);
+        return brightness < 128;
+    }
+    // console.log("No dark or light theme detected, defaulting to light theme");
+    return false;
+};
+
+let darkTheme = isDarkTheme();
+let modal = null;
+let modalContent = null;
+let previousScrollOffset = [window.scrollX, window.scrollY];
+
+const runMermaid = async (rerun) => {
+    console.log("Running mermaid diagrams, rerun =", rerun);
+    // clear all existing mermaid charts
+    let all_mermaids = document.querySelectorAll(".mermaid");
+
+    if (rerun) {
+        all_mermaids.forEach((el) => {
+            if(!el.hasAttribute("data-original-code")) {
+                // store original code
+                // console.log(`Storing original code for first run: `, el.innerHTML);
+                el.setAttribute('data-original-code', el.innerHTML);
+            }
+            if(el.getAttribute("data-processed") === "true") {
+                // remove and restore original
+                el.removeAttribute("data-processed");
+                // console.log(`Restoring original code for re-run: `, el.getAttribute('data-original-code'));
+                el.innerHTML = el.getAttribute('data-original-code');
+            } else {
+                // store original code
+                // console.log(`Storing original code for re-run: `, el.innerHTML);
+                el.setAttribute('data-original-code', el.innerHTML);
+            }
+        });
+        await mermaid.run();
+    }
+
+    all_mermaids = document.querySelectorAll(".mermaid");
+    const mermaids_processed = document.querySelectorAll(".mermaid[data-processed='true']");
+
+    if ("True" === "True") {
+        const mermaids_to_add_zoom = -1 === -1 ? all_mermaids.length : -1;
+        if(mermaids_to_add_zoom > 0) {
+            var svgs = d3.selectAll(".mermaid svg");
+            if(all_mermaids.length !== mermaids_processed.length) {
+                setTimeout(() => runMermaid(false), 200);
+                return;
+            } else if(svgs.size() !== mermaids_to_add_zoom) {
+                setTimeout(() => runMermaid(false), 200);
+                return;
+            } else {
+                svgs.each(function() {
+                    var svg = d3.select(this);
+                    svg.html("<g class='wrapper'>" + svg.html() + "</g>");
+                    var inner = svg.select("g");
+                    var zoom = d3.zoom().on("zoom", function(event) {
+                        inner.attr("transform", event.transform);
+                    });
+                    svg.call(zoom);
+                });
+            }
+        }
+    } else if(all_mermaids.length !== mermaids_processed.length) {
+        // Wait for mermaid to process all diagrams
+        setTimeout(() => runMermaid(false), 200);
+        return;
+    }
+
+    // Stop here if not adding fullscreen capability
+    if ("True" !== "True") return;
+
+    if (modal !== null ) {
+        // Destroy existing modal
+        modal.remove();
+        modal = null;
+        modalContent = null;
+    }
+
+    modal = document.createElement('div');
+    modal.className = 'mermaid-fullscreen-modal' + (darkTheme ? ' dark-theme' : '');
+    modal.setAttribute('role', 'dialog');
+    modal.setAttribute('aria-modal', 'true');
+    modal.setAttribute('aria-label', 'Fullscreen diagram viewer');
+    modal.innerHTML = `
+        <button class="mermaid-fullscreen-close${darkTheme ? ' dark-theme' : ''}" aria-label="Close fullscreen">✕</button>
+        <div class="mermaid-container-fullscreen${darkTheme ? ' dark-theme' : ''}"></div>
+    `;
+    document.body.appendChild(modal);
+
+    modalContent = modal.querySelector('.mermaid-container-fullscreen');
+    const closeBtn = modal.querySelector('.mermaid-fullscreen-close');
+
+    const closeModal = () => {
+        modal.classList.remove('active');
+        modalContent.innerHTML = '';
+        document.body.style.overflow = ''
+        window.scrollTo({left: previousScrollOffset[0], top: previousScrollOffset[1], behavior: 'instant'});
+    };
+
+    closeBtn.addEventListener('click', closeModal);
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) closeModal();
+    });
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && modal.classList.contains('active')) {
+            closeModal();
+        }
+    });
+
+    document.querySelectorAll('.mermaid').forEach((mermaidDiv) => {
+        if (mermaidDiv.parentNode.classList.contains('mermaid-container') ||
+            mermaidDiv.closest('.mermaid-fullscreen-modal')) {
+            // Already processed, adjust button class if needed
+            const existingBtn = mermaidDiv.parentNode.querySelector('.mermaid-fullscreen-btn');
+            if (existingBtn) {
+                existingBtn.className = 'mermaid-fullscreen-btn' + (darkTheme ? ' dark-theme' : '');
+            }
+            return;
+        }
+
+        const container = document.createElement('div');
+        container.className = 'mermaid-container';
+        mermaidDiv.parentNode.insertBefore(container, mermaidDiv);
+        container.appendChild(mermaidDiv);
+
+        const fullscreenBtn = document.createElement('button');
+        fullscreenBtn.className = 'mermaid-fullscreen-btn' + (darkTheme ? ' dark-theme' : '');
+        fullscreenBtn.setAttribute('aria-label', 'View diagram in fullscreen');
+        fullscreenBtn.textContent = '⛶';
+        fullscreenBtn.style.opacity = '50%';
+
+        // Calculate dynamic position based on diagram's margin and padding
+        const diagramStyle = window.getComputedStyle(mermaidDiv);
+        const marginTop = parseFloat(diagramStyle.marginTop) || 0;
+        const marginRight = parseFloat(diagramStyle.marginRight) || 0;
+        const paddingTop = parseFloat(diagramStyle.paddingTop) || 0;
+        const paddingRight = parseFloat(diagramStyle.paddingRight) || 0;
+        fullscreenBtn.style.top = `${marginTop + paddingTop + 4}px`;
+        fullscreenBtn.style.right = `${marginRight + paddingRight + 4}px`;
+
+        fullscreenBtn.addEventListener('click', () => {
+            previousScrollOffset = [window.scroll, window.scrollY];
+            const clone = mermaidDiv.cloneNode(true);
+            modalContent.innerHTML = '';
+            modalContent.appendChild(clone);
+
+            const svg = clone.querySelector('svg');
+            if (svg) {
+                svg.removeAttribute('width');
+                svg.removeAttribute('height');
+                svg.style.width = '100%';
+                svg.style.height = 'auto';
+                svg.style.maxWidth = '100%';
+                svg.style.sdisplay = 'block';
+
+                if ("True" === "True") {
+                    setTimeout(() => {
+                        const g = svg.querySelector('g');
+                        if (g) {
+                            var svgD3 = d3.select(svg);
+                            svgD3.html("<g class='wrapper'>" + svgD3.html() + "</g>");
+                            var inner = svgD3.select("g");
+                            var zoom = d3.zoom().on("zoom", function(event) {
+                                inner.attr("transform", event.transform);
+                            });
+                            svgD3.call(zoom);
+                        }
+                    }, 100);
+                }
+            }
+
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        });
+        container.appendChild(fullscreenBtn);
+    });
+};
+
+const load = async () => {
+    initStyles();
+
+    await runMermaid(true);
+
+    const reRunIfThemeChanges = async () => {
+        const newDarkTheme = isDarkTheme();
+        if (newDarkTheme !== darkTheme) {
+            darkTheme = newDarkTheme;
+            console.log("Theme change detected, re-running mermaid with", darkTheme ? "dark" : "default", "theme");
+            await mermaid.initialize(
+                {...JSON.parse(
+                    `{"startOnLoad": false}`
+                ),
+                ...{ darkMode: darkTheme, theme: darkTheme ? 'dark' : 'default' },
+                }
+            );
+            await runMermaid(true);
+        }
+    };
+
+    // Update theme classes when theme changes
+    const themeObserver = new MutationObserver(reRunIfThemeChanges);
+    themeObserver.observe(document.documentElement, {
+        attributes: true,
+        attributeFilter: ['class', 'style', 'data-theme']
+    });
+    themeObserver.observe(document.body, {
+        attributes: true,
+        attributeFilter: ['class', 'style', 'data-theme']
+    });
+};
+
+
+
+
+
+console.log("Initializing mermaid with", darkTheme ? "dark" : "default", "theme");
+mermaid.initialize(
+    {...JSON.parse(
+        `{"startOnLoad": false}`
+    ),
+    ...{ darkMode: darkTheme, theme: darkTheme ? 'dark' : 'default' },
+    }
+);
+
+window.addEventListener("load", load);</script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="#" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #343131" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            ibex_bluesky_core
+              <img src="_static/logo.svg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="tutorial/overview.html">Getting started</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Devices</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="devices/blocks.html">Blocks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devices/dae.html">DAE (Data Acquisition Electronics)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Callbacks</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="callbacks/isiscallbacks.html">ISIS Standard Callbacks (<code class="xref py py-obj docutils literal notranslate"><span class="pre">ISISCallbacks</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="callbacks/fitting.html">Fits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="callbacks/centre_of_mass.html">Centre of Mass</a></li>
+<li class="toctree-l1"><a class="reference internal" href="callbacks/plotting.html">Plotting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="callbacks/file_writing.html">File writing callbacks</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Plans</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="plans/plans.html">General Plans</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plans/reflectometry.html">Reflectometry-specific Plans</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Plan stubs</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="plan_stubs/external_code.html">Calling external code (<code class="xref py py-obj docutils literal notranslate"><span class="pre">call_sync</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plan_stubs/matplotlib_helpers.html">Matplotlib helpers (<code class="xref py py-obj docutils literal notranslate"><span class="pre">call_qt_aware</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plan_stubs/plan_wrappers.html">Plan wrappers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plan_stubs/polling.html">Continuous polling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plan_stubs/redefining.html">Redefinition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plan_stubs/user_input.html">User input helpers</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="_api.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="replotting_scans.html">Replaying documents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="architectural_decisions.html">Architectural Decisions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="developer_information.html">Developer Information</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #343131" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">ibex_bluesky_core</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Index</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/ISISComputingGroup/ibex_bluesky_core/blob/main/doc/genindex" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+
+<h1 id="index">Index</h1>
+
+<div class="genindex-jumpbox">
+ <a href="#A"><strong>A</strong></a>
+ | <a href="#B"><strong>B</strong></a>
+ | <a href="#C"><strong>C</strong></a>
+ | <a href="#D"><strong>D</strong></a>
+ | <a href="#E"><strong>E</strong></a>
+ | <a href="#F"><strong>F</strong></a>
+ | <a href="#G"><strong>G</strong></a>
+ | <a href="#H"><strong>H</strong></a>
+ | <a href="#I"><strong>I</strong></a>
+ | <a href="#K"><strong>K</strong></a>
+ | <a href="#L"><strong>L</strong></a>
+ | <a href="#M"><strong>M</strong></a>
+ | <a href="#N"><strong>N</strong></a>
+ | <a href="#O"><strong>O</strong></a>
+ | <a href="#P"><strong>P</strong></a>
+ | <a href="#R"><strong>R</strong></a>
+ | <a href="#S"><strong>S</strong></a>
+ | <a href="#T"><strong>T</strong></a>
+ | <a href="#U"><strong>U</strong></a>
+ | <a href="#V"><strong>V</strong></a>
+ | <a href="#W"><strong>W</strong></a>
+ | <a href="#X"><strong>X</strong></a>
+ 
+</div>
+<h2 id="A">A</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.DaeControls.abort_run">abort_run (ibex_bluesky_core.devices.dae.DaeControls attribute)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.RunstateEnum.ABORTING">ABORTING (ibex_bluesky_core.devices.dae.RunstateEnum attribute)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.plans.html#ibex_bluesky_core.plans.adaptive_scan">adaptive_scan() (in module ibex_bluesky_core.plans)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.preprocessors.html#ibex_bluesky_core.preprocessors.add_rb_number_processor">add_rb_number_processor() (in module ibex_bluesky_core.preprocessors)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.muon.html#ibex_bluesky_core.devices.muon.MuonAsymmetryReducer.additional_readable_signals">additional_readable_signals() (ibex_bluesky_core.devices.muon.MuonAsymmetryReducer method)</a>
+
+      <ul>
+        <li><a href="generated/ibex_bluesky_core.devices.polarisingdae.html#ibex_bluesky_core.devices.polarisingdae.MultiWavelengthBandNormalizer.additional_readable_signals">(ibex_bluesky_core.devices.polarisingdae.MultiWavelengthBandNormalizer method)</a>
+</li>
+        <li><a href="generated/ibex_bluesky_core.devices.polarisingdae.html#ibex_bluesky_core.devices.polarisingdae.PolarisationReducer.additional_readable_signals">(ibex_bluesky_core.devices.polarisingdae.PolarisationReducer method)</a>
+</li>
+        <li><a href="generated/ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.ProvidesExtraReadables.additional_readable_signals">(ibex_bluesky_core.devices.simpledae.ProvidesExtraReadables method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="generated/ibex_bluesky_core.devices.reflectometry.html#ibex_bluesky_core.devices.reflectometry.AngleMappingReducer.amp">amp (ibex_bluesky_core.devices.reflectometry.AngleMappingReducer attribute)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.reflectometry.html#ibex_bluesky_core.devices.reflectometry.AngleMappingReducer.amp_err">amp_err (ibex_bluesky_core.devices.reflectometry.AngleMappingReducer attribute)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.plans.reflectometry.html#ibex_bluesky_core.plans.reflectometry.DetMapAlignResult.angle_fit">angle_fit (ibex_bluesky_core.plans.reflectometry.DetMapAlignResult attribute)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.plans.reflectometry.html#ibex_bluesky_core.plans.reflectometry.angle_scan_plan">angle_scan_plan() (in module ibex_bluesky_core.plans.reflectometry)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.reflectometry.html#ibex_bluesky_core.devices.reflectometry.AngleMappingReducer">AngleMappingReducer (class in ibex_bluesky_core.devices.reflectometry)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="B">B</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="generated/ibex_bluesky_core.devices.reflectometry.html#ibex_bluesky_core.devices.reflectometry.AngleMappingReducer.background">background (ibex_bluesky_core.devices.reflectometry.AngleMappingReducer attribute)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.reflectometry.html#ibex_bluesky_core.devices.reflectometry.AngleMappingReducer.background_err">background_err (ibex_bluesky_core.devices.reflectometry.AngleMappingReducer attribute)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.BeginRunExBits.BEGIN_DELAYED">BEGIN_DELAYED (ibex_bluesky_core.devices.dae.BeginRunExBits attribute)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.BeginRunExBits.BEGIN_PAUSED">BEGIN_PAUSED (ibex_bluesky_core.devices.dae.BeginRunExBits attribute)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.DaeControls.begin_run">begin_run (ibex_bluesky_core.devices.dae.DaeControls attribute)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.DaeControls.begin_run_ex">begin_run_ex (ibex_bluesky_core.devices.dae.DaeControls attribute)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.RunstateEnum.BEGINNING">BEGINNING (ibex_bluesky_core.devices.dae.RunstateEnum attribute)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.BeginRunEx">BeginRunEx (class in ibex_bluesky_core.devices.dae)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.BeginRunExBits">BeginRunExBits (class in ibex_bluesky_core.devices.dae)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.TimeRegimeMode.BLANK">BLANK (ibex_bluesky_core.devices.dae.TimeRegimeMode attribute)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="generated/ibex_bluesky_core.devices.block.html#ibex_bluesky_core.devices.block.block_mot">block_mot() (in module ibex_bluesky_core.devices.block)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.block.html#ibex_bluesky_core.devices.block.block_r">block_r() (in module ibex_bluesky_core.devices.block)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.block.html#ibex_bluesky_core.devices.block.block_rw">block_rw() (in module ibex_bluesky_core.devices.block)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.block.html#ibex_bluesky_core.devices.block.block_rw_rbv">block_rw_rbv() (in module ibex_bluesky_core.devices.block)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.block.html#ibex_bluesky_core.devices.block.block_w">block_w() (in module ibex_bluesky_core.devices.block)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.block.html#ibex_bluesky_core.devices.block.BlockMot">BlockMot (class in ibex_bluesky_core.devices.block)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.block.html#ibex_bluesky_core.devices.block.BlockR">BlockR (class in ibex_bluesky_core.devices.block)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.block.html#ibex_bluesky_core.devices.block.BlockRw">BlockRw (class in ibex_bluesky_core.devices.block)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.block.html#ibex_bluesky_core.devices.block.BlockRwRbv">BlockRwRbv (class in ibex_bluesky_core.devices.block)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.block.html#ibex_bluesky_core.devices.block.BlockWriteConfig">BlockWriteConfig (class in ibex_bluesky_core.devices.block)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.DaeEventMode.buf_used">buf_used (ibex_bluesky_core.devices.dae.DaeEventMode attribute)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="C">C</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="generated/ibex_bluesky_core.utils.html#ibex_bluesky_core.utils.calculate_polarisation">calculate_polarisation() (in module ibex_bluesky_core.utils)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.plan_stubs.html#ibex_bluesky_core.plan_stubs.call_qt_aware">call_qt_aware() (in module ibex_bluesky_core.plan_stubs)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.plan_stubs.html#ibex_bluesky_core.plan_stubs.call_sync">call_sync() (in module ibex_bluesky_core.plan_stubs)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.utils.html#ibex_bluesky_core.utils.center_of_mass_of_area_under_curve">center_of_mass_of_area_under_curve() (in module ibex_bluesky_core.utils)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.utils.html#ibex_bluesky_core.utils.centred_pixel">centred_pixel() (in module ibex_bluesky_core.utils)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.callbacks.html#ibex_bluesky_core.callbacks.CentreOfMass">CentreOfMass (class in ibex_bluesky_core.callbacks)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.callbacks.html#ibex_bluesky_core.callbacks.ChainedLiveFit">ChainedLiveFit (class in ibex_bluesky_core.callbacks)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.RunstateEnum.CHANGING">CHANGING (ibex_bluesky_core.devices.dae.RunstateEnum attribute)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.reflectometry.html#ibex_bluesky_core.devices.reflectometry.ReflParameter.changing">changing (ibex_bluesky_core.devices.reflectometry.ReflParameter attribute)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.check_dae_strategies">check_dae_strategies() (in module ibex_bluesky_core.devices.simpledae)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.callbacks.html#ibex_bluesky_core.callbacks.ISISCallbacks.com">com (ibex_bluesky_core.callbacks.ISISCallbacks property)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.html#ibex_bluesky_core.devices.compress_and_hex">compress_and_hex() (in module ibex_bluesky_core.devices)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.Controller">Controller (class in ibex_bluesky_core.devices.simpledae)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.DaeMonitor.counts">counts (ibex_bluesky_core.devices.dae.DaeMonitor attribute)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="D">D</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.Dae">Dae (class in ibex_bluesky_core.devices.dae)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.DaeCheckingSignal">DaeCheckingSignal (class in ibex_bluesky_core.devices.dae)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.DaeControls">DaeControls (class in ibex_bluesky_core.devices.dae)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.DaeEventMode">DaeEventMode (class in ibex_bluesky_core.devices.dae)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.DaeMonitor">DaeMonitor (class in ibex_bluesky_core.devices.dae)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.DaePeriod">DaePeriod (class in ibex_bluesky_core.devices.dae)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.DaePeriodSettings">DaePeriodSettings (class in ibex_bluesky_core.devices.dae)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.DaePeriodSettingsData">DaePeriodSettingsData (class in ibex_bluesky_core.devices.dae)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.DaeSettings">DaeSettings (class in ibex_bluesky_core.devices.dae)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.DaeSettingsData">DaeSettingsData (class in ibex_bluesky_core.devices.dae)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.DaeSpectra">DaeSpectra (class in ibex_bluesky_core.devices.dae)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.DaeTCBSettings">DaeTCBSettings (class in ibex_bluesky_core.devices.dae)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.DaeTCBSettingsData">DaeTCBSettingsData (class in ibex_bluesky_core.devices.dae)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.DaeTimingSource">DaeTimingSource (class in ibex_bluesky_core.devices.dae)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.muon.html#ibex_bluesky_core.devices.muon.damped_oscillator">damped_oscillator() (in module ibex_bluesky_core.devices.muon)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.fitting.html#ibex_bluesky_core.fitting.DampedOsc">DampedOsc (class in ibex_bluesky_core.fitting)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.DaeEventMode.data_rate">data_rate (ibex_bluesky_core.devices.dae.DaeEventMode attribute)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.html#ibex_bluesky_core.devices.dehex_and_decompress">dehex_and_decompress() (in module ibex_bluesky_core.devices)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.ScalarNormalizer.denominator">denominator() (ibex_bluesky_core.devices.simpledae.ScalarNormalizer method)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="generated/ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.MonitorNormalizer.det_counts">det_counts (ibex_bluesky_core.devices.simpledae.MonitorNormalizer attribute)</a>
+
+      <ul>
+        <li><a href="generated/ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.ScalarNormalizer.det_counts">(ibex_bluesky_core.devices.simpledae.ScalarNormalizer attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="generated/ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.MonitorNormalizer.det_counts_stddev">det_counts_stddev (ibex_bluesky_core.devices.simpledae.MonitorNormalizer attribute)</a>
+
+      <ul>
+        <li><a href="generated/ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.ScalarNormalizer.det_counts_stddev">(ibex_bluesky_core.devices.simpledae.ScalarNormalizer attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="generated/ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.PeriodSpecIntegralsReducer.det_integrals">det_integrals (ibex_bluesky_core.devices.simpledae.PeriodSpecIntegralsReducer attribute)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.PeriodSpecIntegralsReducer.det_sum">det_sum (ibex_bluesky_core.devices.simpledae.PeriodSpecIntegralsReducer attribute)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.DaeSettingsData.detector_filepath">detector_filepath (ibex_bluesky_core.devices.dae.DaeSettingsData attribute)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.PeriodSpecIntegralsReducer.detectors">detectors (ibex_bluesky_core.devices.simpledae.PeriodSpecIntegralsReducer property)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.plans.reflectometry.html#ibex_bluesky_core.plans.reflectometry.DetMapAlignResult">DetMapAlignResult (class in ibex_bluesky_core.plans.reflectometry)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.callbacks.reflectometry.html#ibex_bluesky_core.callbacks.reflectometry.DetMapAngleScanLiveDispatcher">DetMapAngleScanLiveDispatcher (class in ibex_bluesky_core.callbacks.reflectometry)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.callbacks.reflectometry.html#ibex_bluesky_core.callbacks.reflectometry.DetMapHeightScanLiveDispatcher">DetMapHeightScanLiveDispatcher (class in ibex_bluesky_core.callbacks.reflectometry)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.callbacks.html#ibex_bluesky_core.callbacks.DocLoggingCallback">DocLoggingCallback (class in ibex_bluesky_core.callbacks)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.muon.html#ibex_bluesky_core.devices.muon.double_damped_oscillator">double_damped_oscillator() (in module ibex_bluesky_core.devices.muon)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.DSpacingMappingReducer.dspacing">dspacing (ibex_bluesky_core.devices.simpledae.DSpacingMappingReducer attribute)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.DSpacingMappingReducer">DSpacingMappingReducer (class in ibex_bluesky_core.devices.simpledae)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.TimeRegimeMode.DT">DT (ibex_bluesky_core.devices.dae.TimeRegimeMode attribute)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.TimeRegimeMode.DTDIVT">DTDIVT (ibex_bluesky_core.devices.dae.TimeRegimeMode attribute)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.TimeRegimeMode.DTDIVT2">DTDIVT2 (ibex_bluesky_core.devices.dae.TimeRegimeMode attribute)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.polarisingdae.html#ibex_bluesky_core.devices.polarisingdae.DualRunDae">DualRunDae (class in ibex_bluesky_core.devices.polarisingdae)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="E">E</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="generated/ibex_bluesky_core.devices.block.html#ibex_bluesky_core.devices.block.RunControl.enabled">enabled (ibex_bluesky_core.devices.block.RunControl attribute)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.DaeControls.end_run">end_run (ibex_bluesky_core.devices.dae.DaeControls attribute)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.RunstateEnum.ENDING">ENDING (ibex_bluesky_core.devices.dae.RunstateEnum attribute)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.fitting.html#ibex_bluesky_core.fitting.ERF">ERF (class in ibex_bluesky_core.fitting)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="generated/ibex_bluesky_core.fitting.html#ibex_bluesky_core.fitting.ERFC">ERFC (class in ibex_bluesky_core.fitting)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.DaeSettingsData.ext0_veto">ext0_veto (ibex_bluesky_core.devices.dae.DaeSettingsData attribute)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.DaeSettingsData.ext1_veto">ext1_veto (ibex_bluesky_core.devices.dae.DaeSettingsData attribute)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.DaeSettingsData.ext2_veto">ext2_veto (ibex_bluesky_core.devices.dae.DaeSettingsData attribute)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.DaeSettingsData.ext3_veto">ext3_veto (ibex_bluesky_core.devices.dae.DaeSettingsData attribute)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="F">F</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.DaeSettingsData.fermi_delay">fermi_delay (ibex_bluesky_core.devices.dae.DaeSettingsData attribute)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.DaeSettingsData.fermi_veto">fermi_veto (ibex_bluesky_core.devices.dae.DaeSettingsData attribute)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.DaeSettingsData.fermi_width">fermi_width (ibex_bluesky_core.devices.dae.DaeSettingsData attribute)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.PeriodSource.FILE">FILE (ibex_bluesky_core.devices.dae.PeriodSource attribute)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.log.html#ibex_bluesky_core.log.file_handler">file_handler() (in module ibex_bluesky_core.log)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.DaeEventMode.file_size">file_size (ibex_bluesky_core.devices.dae.DaeEventMode attribute)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.SimpleWaiter.finish_wait_at">finish_wait_at (ibex_bluesky_core.devices.simpledae.SimpleWaiter attribute)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="generated/ibex_bluesky_core.fitting.html#ibex_bluesky_core.fitting.Fit">Fit (class in ibex_bluesky_core.fitting)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.fitting.html#ibex_bluesky_core.fitting.Fit.fit">fit() (ibex_bluesky_core.fitting.Fit class method)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.fitting.html#ibex_bluesky_core.fitting.FitMethod">FitMethod (class in ibex_bluesky_core.fitting)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.DaeEventMode.fraction">fraction (ibex_bluesky_core.devices.dae.DaeEventMode attribute)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.SinglePeriodSettings.frames">frames (ibex_bluesky_core.devices.dae.SinglePeriodSettings attribute)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.DaeMonitor.from_">from_ (ibex_bluesky_core.devices.dae.DaeMonitor attribute)</a>
+
+      <ul>
+        <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.TimeRegimeRow.from_">(ibex_bluesky_core.devices.dae.TimeRegimeRow attribute)</a>
+</li>
+      </ul></li>
+  </ul></td>
+</tr></table>
+
+<h2 id="G">G</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="generated/ibex_bluesky_core.fitting.html#ibex_bluesky_core.fitting.Gaussian">Gaussian (class in ibex_bluesky_core.fitting)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.utils.html#ibex_bluesky_core.utils.get_pv_prefix">get_pv_prefix() (in module ibex_bluesky_core.utils)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.run_engine.html#ibex_bluesky_core.run_engine.get_run_engine">get_run_engine() (in module ibex_bluesky_core.run_engine)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.SimpleWaiter.get_signal">get_signal() (ibex_bluesky_core.devices.simpledae.SimpleWaiter method)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.DaePeriod.good_frames">good_frames (ibex_bluesky_core.devices.dae.DaePeriod attribute)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.DaePeriod.good_uah">good_uah (ibex_bluesky_core.devices.dae.DaePeriod attribute)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.GoodFramesNormalizer">GoodFramesNormalizer (in module ibex_bluesky_core.devices.simpledae)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.GoodFramesWaiter">GoodFramesWaiter (in module ibex_bluesky_core.devices.simpledae)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.GoodUahWaiter">GoodUahWaiter (class in ibex_bluesky_core.devices.simpledae)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.fitting.html#ibex_bluesky_core.fitting.Fit.guess">guess() (ibex_bluesky_core.fitting.Fit class method)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="H">H</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.PeriodType.HARDWARE_DAE">HARDWARE_DAE (ibex_bluesky_core.devices.dae.PeriodType attribute)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.PeriodType.HARDWARE_EXTERNAL">HARDWARE_EXTERNAL (ibex_bluesky_core.devices.dae.PeriodType attribute)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.plans.reflectometry.html#ibex_bluesky_core.plans.reflectometry.height_and_angle_scan_plan">height_and_angle_scan_plan() (in module ibex_bluesky_core.plans.reflectometry)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="generated/ibex_bluesky_core.plans.reflectometry.html#ibex_bluesky_core.plans.reflectometry.DetMapAlignResult.height_fit">height_fit (ibex_bluesky_core.plans.reflectometry.DetMapAlignResult attribute)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.block.html#ibex_bluesky_core.devices.block.RunControl.high_limit">high_limit (ibex_bluesky_core.devices.block.RunControl attribute)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.callbacks.html#ibex_bluesky_core.callbacks.HumanReadableFileCallback">HumanReadableFileCallback (class in ibex_bluesky_core.callbacks)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.DaeSettingsData.hz50_veto">hz50_veto (ibex_bluesky_core.devices.dae.DaeSettingsData attribute)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="I">I</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li>
+    ibex_bluesky_core
+
+      <ul>
+        <li><a href="generated/ibex_bluesky_core.html#module-ibex_bluesky_core">module</a>
+</li>
+      </ul></li>
+      <li>
+    ibex_bluesky_core.callbacks
+
+      <ul>
+        <li><a href="generated/ibex_bluesky_core.callbacks.html#module-ibex_bluesky_core.callbacks">module</a>
+</li>
+      </ul></li>
+      <li>
+    ibex_bluesky_core.callbacks.reflectometry
+
+      <ul>
+        <li><a href="generated/ibex_bluesky_core.callbacks.reflectometry.html#module-ibex_bluesky_core.callbacks.reflectometry">module</a>
+</li>
+      </ul></li>
+      <li>
+    ibex_bluesky_core.devices
+
+      <ul>
+        <li><a href="generated/ibex_bluesky_core.devices.html#module-ibex_bluesky_core.devices">module</a>
+</li>
+      </ul></li>
+      <li>
+    ibex_bluesky_core.devices.block
+
+      <ul>
+        <li><a href="generated/ibex_bluesky_core.devices.block.html#module-ibex_bluesky_core.devices.block">module</a>
+</li>
+      </ul></li>
+      <li>
+    ibex_bluesky_core.devices.dae
+
+      <ul>
+        <li><a href="generated/ibex_bluesky_core.devices.dae.html#module-ibex_bluesky_core.devices.dae">module</a>
+</li>
+      </ul></li>
+      <li>
+    ibex_bluesky_core.devices.muon
+
+      <ul>
+        <li><a href="generated/ibex_bluesky_core.devices.muon.html#module-ibex_bluesky_core.devices.muon">module</a>
+</li>
+      </ul></li>
+      <li>
+    ibex_bluesky_core.devices.polarisingdae
+
+      <ul>
+        <li><a href="generated/ibex_bluesky_core.devices.polarisingdae.html#module-ibex_bluesky_core.devices.polarisingdae">module</a>
+</li>
+      </ul></li>
+      <li>
+    ibex_bluesky_core.devices.reflectometry
+
+      <ul>
+        <li><a href="generated/ibex_bluesky_core.devices.reflectometry.html#module-ibex_bluesky_core.devices.reflectometry">module</a>
+</li>
+      </ul></li>
+      <li>
+    ibex_bluesky_core.devices.simpledae
+
+      <ul>
+        <li><a href="generated/ibex_bluesky_core.devices.simpledae.html#module-ibex_bluesky_core.devices.simpledae">module</a>
+</li>
+      </ul></li>
+      <li>
+    ibex_bluesky_core.fitting
+
+      <ul>
+        <li><a href="generated/ibex_bluesky_core.fitting.html#module-ibex_bluesky_core.fitting">module</a>
+</li>
+      </ul></li>
+      <li>
+    ibex_bluesky_core.log
+
+      <ul>
+        <li><a href="generated/ibex_bluesky_core.log.html#module-ibex_bluesky_core.log">module</a>
+</li>
+      </ul></li>
+      <li>
+    ibex_bluesky_core.plan_stubs
+
+      <ul>
+        <li><a href="generated/ibex_bluesky_core.plan_stubs.html#module-ibex_bluesky_core.plan_stubs">module</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li>
+    ibex_bluesky_core.plans
+
+      <ul>
+        <li><a href="generated/ibex_bluesky_core.plans.html#module-ibex_bluesky_core.plans">module</a>
+</li>
+      </ul></li>
+      <li>
+    ibex_bluesky_core.plans.reflectometry
+
+      <ul>
+        <li><a href="generated/ibex_bluesky_core.plans.reflectometry.html#module-ibex_bluesky_core.plans.reflectometry">module</a>
+</li>
+      </ul></li>
+      <li>
+    ibex_bluesky_core.preprocessors
+
+      <ul>
+        <li><a href="generated/ibex_bluesky_core.preprocessors.html#module-ibex_bluesky_core.preprocessors">module</a>
+</li>
+      </ul></li>
+      <li>
+    ibex_bluesky_core.run_engine
+
+      <ul>
+        <li><a href="generated/ibex_bluesky_core.run_engine.html#module-ibex_bluesky_core.run_engine">module</a>
+</li>
+      </ul></li>
+      <li>
+    ibex_bluesky_core.utils
+
+      <ul>
+        <li><a href="generated/ibex_bluesky_core.utils.html#module-ibex_bluesky_core.utils">module</a>
+</li>
+      </ul></li>
+      <li>
+    ibex_bluesky_core.version
+
+      <ul>
+        <li><a href="generated/ibex_bluesky_core.version.html#module-ibex_bluesky_core.version">module</a>
+</li>
+      </ul></li>
+      <li><a href="generated/ibex_bluesky_core.devices.block.html#ibex_bluesky_core.devices.block.RunControl.in_range">in_range (ibex_bluesky_core.devices.block.RunControl attribute)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.block.html#ibex_bluesky_core.devices.block.RunControl.in_time">in_time (ibex_bluesky_core.devices.block.RunControl attribute)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.MonitorNormalizer.intensity">intensity (ibex_bluesky_core.devices.simpledae.MonitorNormalizer attribute)</a>
+
+      <ul>
+        <li><a href="generated/ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.PeriodSpecIntegralsReducer.intensity">(ibex_bluesky_core.devices.simpledae.PeriodSpecIntegralsReducer attribute)</a>
+</li>
+        <li><a href="generated/ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.ScalarNormalizer.intensity">(ibex_bluesky_core.devices.simpledae.ScalarNormalizer attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="generated/ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.MonitorNormalizer.intensity_stddev">intensity_stddev (ibex_bluesky_core.devices.simpledae.MonitorNormalizer attribute)</a>
+
+      <ul>
+        <li><a href="generated/ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.PeriodSpecIntegralsReducer.intensity_stddev">(ibex_bluesky_core.devices.simpledae.PeriodSpecIntegralsReducer attribute)</a>
+</li>
+        <li><a href="generated/ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.ScalarNormalizer.intensity_stddev">(ibex_bluesky_core.devices.simpledae.ScalarNormalizer attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.DaeTimingSource.INTERNAL_TEST_CLOCK">INTERNAL_TEST_CLOCK (ibex_bluesky_core.devices.dae.DaeTimingSource attribute)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.utils.html#ibex_bluesky_core.utils.is_matplotlib_backend_qt">is_matplotlib_backend_qt() (in module ibex_bluesky_core.utils)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.DaeTimingSource.ISIS">ISIS (ibex_bluesky_core.devices.dae.DaeTimingSource attribute)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.html#ibex_bluesky_core.devices.isis_epics_signal_rw">isis_epics_signal_rw() (in module ibex_bluesky_core.devices)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.DaeTimingSource.ISIS_FIRST_TS1">ISIS_FIRST_TS1 (ibex_bluesky_core.devices.dae.DaeTimingSource attribute)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.DaeTimingSource.ISIS_TS1_ONLY">ISIS_TS1_ONLY (ibex_bluesky_core.devices.dae.DaeTimingSource attribute)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.callbacks.html#ibex_bluesky_core.callbacks.ISISCallbacks">ISISCallbacks (class in ibex_bluesky_core.callbacks)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="K">K</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="generated/ibex_bluesky_core.callbacks.html#ibex_bluesky_core.callbacks.KafkaCallback">KafkaCallback (class in ibex_bluesky_core.callbacks)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="L">L</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.SinglePeriodSettings.label">label (ibex_bluesky_core.devices.dae.SinglePeriodSettings attribute)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.fitting.html#ibex_bluesky_core.fitting.Linear">Linear (class in ibex_bluesky_core.fitting)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.callbacks.html#ibex_bluesky_core.callbacks.ISISCallbacks.live_fit">live_fit (ibex_bluesky_core.callbacks.ISISCallbacks property)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.callbacks.html#ibex_bluesky_core.callbacks.ChainedLiveFit.live_fit_plots">live_fit_plots (ibex_bluesky_core.callbacks.ChainedLiveFit property)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.callbacks.html#ibex_bluesky_core.callbacks.ChainedLiveFit.live_fits">live_fits (ibex_bluesky_core.callbacks.ChainedLiveFit property)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.callbacks.html#ibex_bluesky_core.callbacks.LiveFit">LiveFit (class in ibex_bluesky_core.callbacks)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.callbacks.html#ibex_bluesky_core.callbacks.LiveFitLogger">LiveFitLogger (class in ibex_bluesky_core.callbacks)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="generated/ibex_bluesky_core.callbacks.html#ibex_bluesky_core.callbacks.LivePColorMesh">LivePColorMesh (class in ibex_bluesky_core.callbacks)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.callbacks.html#ibex_bluesky_core.callbacks.LivePlot">LivePlot (class in ibex_bluesky_core.callbacks)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.block.html#ibex_bluesky_core.devices.block.BlockRwRbv.locate">locate() (ibex_bluesky_core.devices.block.BlockRwRbv method)</a>
+
+      <ul>
+        <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.DaePeriodSettings.locate">(ibex_bluesky_core.devices.dae.DaePeriodSettings method)</a>
+</li>
+        <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.DaeSettings.locate">(ibex_bluesky_core.devices.dae.DaeSettings method)</a>
+</li>
+        <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.DaeTCBSettings.locate">(ibex_bluesky_core.devices.dae.DaeTCBSettings method)</a>
+</li>
+      </ul></li>
+      <li><a href="generated/ibex_bluesky_core.fitting.html#ibex_bluesky_core.fitting.Lorentzian">Lorentzian (class in ibex_bluesky_core.fitting)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.block.html#ibex_bluesky_core.devices.block.RunControl.low_limit">low_limit (ibex_bluesky_core.devices.block.RunControl attribute)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="M">M</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="generated/ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.MEventsWaiter">MEventsWaiter (class in ibex_bluesky_core.devices.simpledae)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.TCBTimeUnit.MICROSECONDS">MICROSECONDS (ibex_bluesky_core.devices.dae.TCBTimeUnit attribute)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.TimeRegimeRow.mode">mode (ibex_bluesky_core.devices.dae.TimeRegimeRow attribute)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.fitting.html#ibex_bluesky_core.fitting.Fit.model">model() (ibex_bluesky_core.fitting.Fit class method)</a>
+</li>
+      <li>
+    module
+
+      <ul>
+        <li><a href="generated/ibex_bluesky_core.html#module-ibex_bluesky_core">ibex_bluesky_core</a>
+</li>
+        <li><a href="generated/ibex_bluesky_core.callbacks.html#module-ibex_bluesky_core.callbacks">ibex_bluesky_core.callbacks</a>
+</li>
+        <li><a href="generated/ibex_bluesky_core.callbacks.reflectometry.html#module-ibex_bluesky_core.callbacks.reflectometry">ibex_bluesky_core.callbacks.reflectometry</a>
+</li>
+        <li><a href="generated/ibex_bluesky_core.devices.html#module-ibex_bluesky_core.devices">ibex_bluesky_core.devices</a>
+</li>
+        <li><a href="generated/ibex_bluesky_core.devices.block.html#module-ibex_bluesky_core.devices.block">ibex_bluesky_core.devices.block</a>
+</li>
+        <li><a href="generated/ibex_bluesky_core.devices.dae.html#module-ibex_bluesky_core.devices.dae">ibex_bluesky_core.devices.dae</a>
+</li>
+        <li><a href="generated/ibex_bluesky_core.devices.muon.html#module-ibex_bluesky_core.devices.muon">ibex_bluesky_core.devices.muon</a>
+</li>
+        <li><a href="generated/ibex_bluesky_core.devices.polarisingdae.html#module-ibex_bluesky_core.devices.polarisingdae">ibex_bluesky_core.devices.polarisingdae</a>
+</li>
+        <li><a href="generated/ibex_bluesky_core.devices.reflectometry.html#module-ibex_bluesky_core.devices.reflectometry">ibex_bluesky_core.devices.reflectometry</a>
+</li>
+        <li><a href="generated/ibex_bluesky_core.devices.simpledae.html#module-ibex_bluesky_core.devices.simpledae">ibex_bluesky_core.devices.simpledae</a>
+</li>
+        <li><a href="generated/ibex_bluesky_core.fitting.html#module-ibex_bluesky_core.fitting">ibex_bluesky_core.fitting</a>
+</li>
+        <li><a href="generated/ibex_bluesky_core.log.html#module-ibex_bluesky_core.log">ibex_bluesky_core.log</a>
+</li>
+        <li><a href="generated/ibex_bluesky_core.plan_stubs.html#module-ibex_bluesky_core.plan_stubs">ibex_bluesky_core.plan_stubs</a>
+</li>
+        <li><a href="generated/ibex_bluesky_core.plans.html#module-ibex_bluesky_core.plans">ibex_bluesky_core.plans</a>
+</li>
+        <li><a href="generated/ibex_bluesky_core.plans.reflectometry.html#module-ibex_bluesky_core.plans.reflectometry">ibex_bluesky_core.plans.reflectometry</a>
+</li>
+        <li><a href="generated/ibex_bluesky_core.preprocessors.html#module-ibex_bluesky_core.preprocessors">ibex_bluesky_core.preprocessors</a>
+</li>
+        <li><a href="generated/ibex_bluesky_core.run_engine.html#module-ibex_bluesky_core.run_engine">ibex_bluesky_core.run_engine</a>
+</li>
+        <li><a href="generated/ibex_bluesky_core.utils.html#module-ibex_bluesky_core.utils">ibex_bluesky_core.utils</a>
+</li>
+        <li><a href="generated/ibex_bluesky_core.version.html#module-ibex_bluesky_core.version">ibex_bluesky_core.version</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="generated/ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.MonitorNormalizer.mon_counts">mon_counts (ibex_bluesky_core.devices.simpledae.MonitorNormalizer attribute)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.MonitorNormalizer.mon_counts_stddev">mon_counts_stddev (ibex_bluesky_core.devices.simpledae.MonitorNormalizer attribute)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.DaeSettingsData.mon_from">mon_from (ibex_bluesky_core.devices.dae.DaeSettingsData attribute)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.PeriodSpecIntegralsReducer.mon_integrals">mon_integrals (ibex_bluesky_core.devices.simpledae.PeriodSpecIntegralsReducer attribute)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.DaeSettingsData.mon_spect">mon_spect (ibex_bluesky_core.devices.dae.DaeSettingsData attribute)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.PeriodSpecIntegralsReducer.mon_sum">mon_sum (ibex_bluesky_core.devices.simpledae.PeriodSpecIntegralsReducer attribute)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.DaeSettingsData.mon_to">mon_to (ibex_bluesky_core.devices.dae.DaeSettingsData attribute)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.monitor_normalising_dae">monitor_normalising_dae() (in module ibex_bluesky_core.devices.simpledae)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.MonitorNormalizer">MonitorNormalizer (class in ibex_bluesky_core.devices.simpledae)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.PeriodSpecIntegralsReducer.monitors">monitors (ibex_bluesky_core.devices.simpledae.PeriodSpecIntegralsReducer property)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.plans.html#ibex_bluesky_core.plans.motor_adaptive_scan">motor_adaptive_scan() (in module ibex_bluesky_core.plans)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.plans.html#ibex_bluesky_core.plans.motor_scan">motor_scan() (in module ibex_bluesky_core.plans)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.polarisingdae.html#ibex_bluesky_core.devices.polarisingdae.MultiWavelengthBandNormalizer">MultiWavelengthBandNormalizer (class in ibex_bluesky_core.devices.polarisingdae)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.DaeTimingSource.MUON_CHERENKOV">MUON_CHERENKOV (ibex_bluesky_core.devices.dae.DaeTimingSource attribute)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.DaeSettingsData.muon_cherenkov_pulse">muon_cherenkov_pulse (ibex_bluesky_core.devices.dae.DaeSettingsData attribute)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.DaeTimingSource.MUON_MS">MUON_MS (ibex_bluesky_core.devices.dae.DaeTimingSource attribute)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.DaeSettingsData.muon_ms_mode">muon_ms_mode (ibex_bluesky_core.devices.dae.DaeSettingsData attribute)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.muon.html#ibex_bluesky_core.devices.muon.MuonAsymmetryReducer">MuonAsymmetryReducer (class in ibex_bluesky_core.devices.muon)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.fitting.html#ibex_bluesky_core.fitting.MuonMomentum">MuonMomentum (class in ibex_bluesky_core.fitting)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="N">N</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="generated/ibex_bluesky_core.plans.html#ibex_bluesky_core.plans.NamedReadableAndMovable">NamedReadableAndMovable (class in ibex_bluesky_core.plans)</a>
+
+      <ul>
+        <li><a href="generated/ibex_bluesky_core.utils.html#ibex_bluesky_core.utils.NamedReadableAndMovable">(class in ibex_bluesky_core.utils)</a>
+</li>
+      </ul></li>
+      <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.TCBTimeUnit.NANOSECONDS">NANOSECONDS (ibex_bluesky_core.devices.dae.TCBTimeUnit attribute)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="generated/ibex_bluesky_core.fitting.html#ibex_bluesky_core.fitting.NegativeTrapezoid">NegativeTrapezoid (class in ibex_bluesky_core.fitting)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.BeginRunExBits.NONE">NONE (ibex_bluesky_core.devices.dae.BeginRunExBits attribute)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.html#ibex_bluesky_core.devices.NoYesChoice">NoYesChoice (class in ibex_bluesky_core.devices)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="O">O</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="generated/ibex_bluesky_core.plans.reflectometry.html#ibex_bluesky_core.plans.reflectometry.optimise_axis_against_intensity">optimise_axis_against_intensity() (in module ibex_bluesky_core.plans.reflectometry)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="generated/ibex_bluesky_core.devices.block.html#ibex_bluesky_core.devices.block.RunControl.out_time">out_time (ibex_bluesky_core.devices.block.RunControl attribute)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.SinglePeriodSettings.output">output (ibex_bluesky_core.devices.dae.SinglePeriodSettings attribute)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="P">P</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.PeriodSource.PARAMETERS">PARAMETERS (ibex_bluesky_core.devices.dae.PeriodSource attribute)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.DaeControls.pause_run">pause_run (ibex_bluesky_core.devices.dae.DaeControls attribute)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.RunstateEnum.PAUSED">PAUSED (ibex_bluesky_core.devices.dae.RunstateEnum attribute)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.RunstateEnum.PAUSING">PAUSING (ibex_bluesky_core.devices.dae.RunstateEnum attribute)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.callbacks.html#ibex_bluesky_core.callbacks.ISISCallbacks.peak_stats">peak_stats (ibex_bluesky_core.callbacks.ISISCallbacks property)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.PeriodGoodFramesNormalizer">PeriodGoodFramesNormalizer (class in ibex_bluesky_core.devices.simpledae)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.PeriodGoodFramesWaiter">PeriodGoodFramesWaiter (class in ibex_bluesky_core.devices.simpledae)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.PeriodPerPointController">PeriodPerPointController (class in ibex_bluesky_core.devices.simpledae)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.DaePeriodSettingsData.periods_delay">periods_delay (ibex_bluesky_core.devices.dae.DaePeriodSettingsData attribute)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.DaePeriodSettingsData.periods_file">periods_file (ibex_bluesky_core.devices.dae.DaePeriodSettingsData attribute)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.DaePeriodSettingsData.periods_seq">periods_seq (ibex_bluesky_core.devices.dae.DaePeriodSettingsData attribute)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.DaePeriodSettingsData.periods_settings">periods_settings (ibex_bluesky_core.devices.dae.DaePeriodSettingsData attribute)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.DaePeriodSettingsData.periods_soft_num">periods_soft_num (ibex_bluesky_core.devices.dae.DaePeriodSettingsData attribute)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.DaePeriodSettingsData.periods_src">periods_src (ibex_bluesky_core.devices.dae.DaePeriodSettingsData attribute)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.DaePeriodSettingsData.periods_type">periods_type (ibex_bluesky_core.devices.dae.DaePeriodSettingsData attribute)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.PeriodSource">PeriodSource (class in ibex_bluesky_core.devices.dae)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.PeriodSpecIntegralsReducer">PeriodSpecIntegralsReducer (class in ibex_bluesky_core.devices.simpledae)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.PeriodType">PeriodType (class in ibex_bluesky_core.devices.dae)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.callbacks.html#ibex_bluesky_core.callbacks.PlotPNGSaver">PlotPNGSaver (class in ibex_bluesky_core.callbacks)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.polarisingdae.html#ibex_bluesky_core.devices.polarisingdae.PolarisationReducer">PolarisationReducer (class in ibex_bluesky_core.devices.polarisingdae)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.polarisingdae.html#ibex_bluesky_core.devices.polarisingdae.polarising_dae">polarising_dae() (in module ibex_bluesky_core.devices.polarisingdae)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.plan_stubs.html#ibex_bluesky_core.plan_stubs.polling_plan">polling_plan() (in module ibex_bluesky_core.plan_stubs)</a>
+
+      <ul>
+        <li><a href="generated/ibex_bluesky_core.plans.html#ibex_bluesky_core.plans.polling_plan">(in module ibex_bluesky_core.plans)</a>
+</li>
+      </ul></li>
+      <li><a href="generated/ibex_bluesky_core.fitting.html#ibex_bluesky_core.fitting.Polynomial">Polynomial (class in ibex_bluesky_core.fitting)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.RunstateEnum.PROCESSING">PROCESSING (ibex_bluesky_core.devices.dae.RunstateEnum attribute)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.plan_stubs.html#ibex_bluesky_core.plan_stubs.prompt_user_for_choice">prompt_user_for_choice() (in module ibex_bluesky_core.plan_stubs)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.ProvidesExtraReadables">ProvidesExtraReadables (class in ibex_bluesky_core.devices.simpledae)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="R">R</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="generated/ibex_bluesky_core.devices.reflectometry.html#ibex_bluesky_core.devices.reflectometry.AngleMappingReducer.r_squared">r_squared (ibex_bluesky_core.devices.reflectometry.AngleMappingReducer attribute)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.DaePeriod.raw_frames">raw_frames (ibex_bluesky_core.devices.dae.DaePeriod attribute)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.DaeSpectra.read_counts">read_counts() (ibex_bluesky_core.devices.dae.DaeSpectra method)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.DaeSpectra.read_counts_per_time">read_counts_per_time() (ibex_bluesky_core.devices.dae.DaeSpectra method)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.DaeSpectra.read_spectrum_dataarray">read_spectrum_dataarray() (ibex_bluesky_core.devices.dae.DaeSpectra method)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.DaeSpectra.read_tof">read_tof() (ibex_bluesky_core.devices.dae.DaeSpectra method)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.DaeSpectra.read_tof_edges">read_tof_edges() (ibex_bluesky_core.devices.dae.DaeSpectra method)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.block.html#ibex_bluesky_core.devices.block.BlockR.readback">readback (ibex_bluesky_core.devices.block.BlockR attribute)</a>
+
+      <ul>
+        <li><a href="generated/ibex_bluesky_core.devices.reflectometry.html#ibex_bluesky_core.devices.reflectometry.ReflParameter.readback">(ibex_bluesky_core.devices.reflectometry.ReflParameter attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.DaeControls.recover_run">recover_run (ibex_bluesky_core.devices.dae.DaeControls attribute)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.reflectometry.html#ibex_bluesky_core.devices.reflectometry.ReflParameter.redefine">redefine (ibex_bluesky_core.devices.reflectometry.ReflParameter attribute)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.plan_stubs.html#ibex_bluesky_core.plan_stubs.redefine_motor">redefine_motor() (in module ibex_bluesky_core.plan_stubs)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.plan_stubs.html#ibex_bluesky_core.plan_stubs.redefine_refl_parameter">redefine_refl_parameter() (in module ibex_bluesky_core.plan_stubs)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.muon.html#ibex_bluesky_core.devices.muon.MuonAsymmetryReducer.reduce_data">reduce_data() (ibex_bluesky_core.devices.muon.MuonAsymmetryReducer method)</a>
+
+      <ul>
+        <li><a href="generated/ibex_bluesky_core.devices.polarisingdae.html#ibex_bluesky_core.devices.polarisingdae.MultiWavelengthBandNormalizer.reduce_data">(ibex_bluesky_core.devices.polarisingdae.MultiWavelengthBandNormalizer method)</a>
+</li>
+        <li><a href="generated/ibex_bluesky_core.devices.polarisingdae.html#ibex_bluesky_core.devices.polarisingdae.PolarisationReducer.reduce_data">(ibex_bluesky_core.devices.polarisingdae.PolarisationReducer method)</a>
+</li>
+        <li><a href="generated/ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.DSpacingMappingReducer.reduce_data">(ibex_bluesky_core.devices.simpledae.DSpacingMappingReducer method)</a>
+</li>
+        <li><a href="generated/ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.PeriodSpecIntegralsReducer.reduce_data">(ibex_bluesky_core.devices.simpledae.PeriodSpecIntegralsReducer method)</a>
+</li>
+        <li><a href="generated/ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.Reducer.reduce_data">(ibex_bluesky_core.devices.simpledae.Reducer method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="generated/ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.Reducer">Reducer (class in ibex_bluesky_core.devices.simpledae)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.plans.reflectometry.html#ibex_bluesky_core.plans.reflectometry.refl_adaptive_scan">refl_adaptive_scan() (in module ibex_bluesky_core.plans.reflectometry)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.reflectometry.html#ibex_bluesky_core.devices.reflectometry.refl_parameter">refl_parameter() (in module ibex_bluesky_core.devices.reflectometry)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.plans.reflectometry.html#ibex_bluesky_core.plans.reflectometry.refl_scan">refl_scan() (in module ibex_bluesky_core.plans.reflectometry)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.reflectometry.html#ibex_bluesky_core.devices.reflectometry.ReflParameter">ReflParameter (class in ibex_bluesky_core.devices.reflectometry)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.reflectometry.html#ibex_bluesky_core.devices.reflectometry.ReflParameterRedefine">ReflParameterRedefine (class in ibex_bluesky_core.devices.reflectometry)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.callbacks.html#ibex_bluesky_core.callbacks.CentreOfMass.result">result (ibex_bluesky_core.callbacks.CentreOfMass property)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.DaeControls.resume_run">resume_run (ibex_bluesky_core.devices.dae.DaeControls attribute)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.RunstateEnum.RESUMING">RESUMING (ibex_bluesky_core.devices.dae.RunstateEnum attribute)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.TimeRegime.rows">rows (ibex_bluesky_core.devices.dae.TimeRegime attribute)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.block.html#ibex_bluesky_core.devices.block.BlockR.run_control">run_control (ibex_bluesky_core.devices.block.BlockR attribute)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.DaePeriod.run_duration">run_duration (ibex_bluesky_core.devices.dae.DaePeriod attribute)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.RunPerPointController.run_number">run_number (ibex_bluesky_core.devices.simpledae.RunPerPointController attribute)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.run_engine.html#ibex_bluesky_core.run_engine.run_plan">run_plan() (in module ibex_bluesky_core.run_engine)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.block.html#ibex_bluesky_core.devices.block.RunControl">RunControl (class in ibex_bluesky_core.devices.block)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.RunstateEnum.RUNNING">RUNNING (ibex_bluesky_core.devices.dae.RunstateEnum attribute)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.RunPerPointController">RunPerPointController (class in ibex_bluesky_core.devices.simpledae)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.RunstateEnum">RunstateEnum (class in ibex_bluesky_core.devices.dae)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="S">S</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.DaeControls.save_run">save_run (ibex_bluesky_core.devices.dae.DaeControls attribute)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.RunstateEnum.SAVING">SAVING (ibex_bluesky_core.devices.dae.RunstateEnum attribute)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.ScalarNormalizer">ScalarNormalizer (class in ibex_bluesky_core.devices.simpledae)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.plans.html#ibex_bluesky_core.plans.scan">scan() (in module ibex_bluesky_core.plans)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.DaePeriod.sequence">sequence (ibex_bluesky_core.devices.dae.DaePeriod attribute)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.block.html#ibex_bluesky_core.devices.block.BlockMot.set">set() (ibex_bluesky_core.devices.block.BlockMot method)</a>
+
+      <ul>
+        <li><a href="generated/ibex_bluesky_core.devices.block.html#ibex_bluesky_core.devices.block.BlockRw.set">(ibex_bluesky_core.devices.block.BlockRw method)</a>
+</li>
+        <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.BeginRunEx.set">(ibex_bluesky_core.devices.dae.BeginRunEx method)</a>
+</li>
+        <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.DaeCheckingSignal.set">(ibex_bluesky_core.devices.dae.DaeCheckingSignal method)</a>
+</li>
+        <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.DaePeriodSettings.set">(ibex_bluesky_core.devices.dae.DaePeriodSettings method)</a>
+</li>
+        <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.DaeSettings.set">(ibex_bluesky_core.devices.dae.DaeSettings method)</a>
+</li>
+        <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.DaeTCBSettings.set">(ibex_bluesky_core.devices.dae.DaeTCBSettings method)</a>
+</li>
+        <li><a href="generated/ibex_bluesky_core.devices.reflectometry.html#ibex_bluesky_core.devices.reflectometry.ReflParameter.set">(ibex_bluesky_core.devices.reflectometry.ReflParameter method)</a>
+</li>
+        <li><a href="generated/ibex_bluesky_core.devices.reflectometry.html#ibex_bluesky_core.devices.reflectometry.ReflParameterRedefine.set">(ibex_bluesky_core.devices.reflectometry.ReflParameterRedefine method)</a>
+</li>
+      </ul></li>
+      <li><a href="generated/ibex_bluesky_core.log.html#ibex_bluesky_core.log.set_bluesky_log_levels">set_bluesky_log_levels() (in module ibex_bluesky_core.log)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.block.html#ibex_bluesky_core.devices.block.BlockWriteConfig.set_success_func">set_success_func (ibex_bluesky_core.devices.block.BlockWriteConfig attribute)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.block.html#ibex_bluesky_core.devices.block.BlockWriteConfig.set_timeout_s">set_timeout_s (ibex_bluesky_core.devices.block.BlockWriteConfig attribute)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.block.html#ibex_bluesky_core.devices.block.BlockRw.setpoint">setpoint (ibex_bluesky_core.devices.block.BlockRw attribute)</a>
+
+      <ul>
+        <li><a href="generated/ibex_bluesky_core.devices.reflectometry.html#ibex_bluesky_core.devices.reflectometry.ReflParameter.setpoint">(ibex_bluesky_core.devices.reflectometry.ReflParameter attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="generated/ibex_bluesky_core.devices.block.html#ibex_bluesky_core.devices.block.BlockRwRbv.setpoint_readback">setpoint_readback (ibex_bluesky_core.devices.block.BlockRwRbv attribute)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.block.html#ibex_bluesky_core.devices.block.BlockWriteConfig.settle_time_s">settle_time_s (ibex_bluesky_core.devices.block.BlockWriteConfig attribute)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.RunstateEnum.SETUP">SETUP (ibex_bluesky_core.devices.dae.RunstateEnum attribute)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.Controller.setup">setup() (ibex_bluesky_core.devices.simpledae.Controller method)</a>
+
+      <ul>
+        <li><a href="generated/ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.PeriodPerPointController.setup">(ibex_bluesky_core.devices.simpledae.PeriodPerPointController method)</a>
+</li>
+      </ul></li>
+      <li><a href="generated/ibex_bluesky_core.log.html#ibex_bluesky_core.log.setup_logging">setup_logging() (in module ibex_bluesky_core.log)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.TimeRegimeMode.SHIFTED">SHIFTED (ibex_bluesky_core.devices.dae.TimeRegimeMode attribute)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="generated/ibex_bluesky_core.callbacks.html#ibex_bluesky_core.callbacks.show_plot">show_plot() (in module ibex_bluesky_core.callbacks)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.reflectometry.html#ibex_bluesky_core.devices.reflectometry.AngleMappingReducer.sigma">sigma (ibex_bluesky_core.devices.reflectometry.AngleMappingReducer attribute)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.reflectometry.html#ibex_bluesky_core.devices.reflectometry.AngleMappingReducer.sigma_err">sigma_err (ibex_bluesky_core.devices.reflectometry.AngleMappingReducer attribute)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.SimpleDae">SimpleDae (class in ibex_bluesky_core.devices.simpledae)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.SimpleWaiter">SimpleWaiter (class in ibex_bluesky_core.devices.simpledae)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.SinglePeriodSettings">SinglePeriodSettings (class in ibex_bluesky_core.devices.dae)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.fitting.html#ibex_bluesky_core.fitting.SlitScan">SlitScan (class in ibex_bluesky_core.fitting)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.DaeTimingSource.SMP">SMP (ibex_bluesky_core.devices.dae.DaeTimingSource attribute)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.DaeSettingsData.smp_veto">smp_veto (ibex_bluesky_core.devices.dae.DaeSettingsData attribute)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.PeriodType.SOFTWARE">SOFTWARE (ibex_bluesky_core.devices.dae.PeriodType attribute)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.TCBCalculationMethod.SPECIFY_PARAMETERS">SPECIFY_PARAMETERS (ibex_bluesky_core.devices.dae.TCBCalculationMethod attribute)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.DaeSettingsData.spectra_filepath">spectra_filepath (ibex_bluesky_core.devices.dae.DaeSettingsData attribute)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.DaeMonitor.spectrum">spectrum (ibex_bluesky_core.devices.dae.DaeMonitor attribute)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.polarisingdae.html#ibex_bluesky_core.devices.polarisingdae.DualRunDae.stage">stage() (ibex_bluesky_core.devices.polarisingdae.DualRunDae method)</a>
+
+      <ul>
+        <li><a href="generated/ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.SimpleDae.stage">(ibex_bluesky_core.devices.simpledae.SimpleDae method)</a>
+</li>
+      </ul></li>
+      <li><a href="generated/ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.Controller.start_counting">start_counting() (ibex_bluesky_core.devices.simpledae.Controller method)</a>
+
+      <ul>
+        <li><a href="generated/ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.PeriodPerPointController.start_counting">(ibex_bluesky_core.devices.simpledae.PeriodPerPointController method)</a>
+</li>
+        <li><a href="generated/ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.RunPerPointController.start_counting">(ibex_bluesky_core.devices.simpledae.RunPerPointController method)</a>
+</li>
+      </ul></li>
+      <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.TimeRegimeRow.steps">steps (ibex_bluesky_core.devices.dae.TimeRegimeRow attribute)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.Controller.stop_counting">stop_counting() (ibex_bluesky_core.devices.simpledae.Controller method)</a>
+
+      <ul>
+        <li><a href="generated/ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.PeriodPerPointController.stop_counting">(ibex_bluesky_core.devices.simpledae.PeriodPerPointController method)</a>
+</li>
+        <li><a href="generated/ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.RunPerPointController.stop_counting">(ibex_bluesky_core.devices.simpledae.RunPerPointController method)</a>
+</li>
+      </ul></li>
+      <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.DaeControls.store_run">store_run (ibex_bluesky_core.devices.dae.DaeControls attribute)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.RunstateEnum.STORING">STORING (ibex_bluesky_core.devices.dae.RunstateEnum attribute)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.callbacks.html#ibex_bluesky_core.callbacks.ISISCallbacks.subs">subs (ibex_bluesky_core.callbacks.ISISCallbacks property)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.sum_spectra">sum_spectra() (in module ibex_bluesky_core.devices.simpledae)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.block.html#ibex_bluesky_core.devices.block.RunControl.suspend_if_invalid">suspend_if_invalid (ibex_bluesky_core.devices.block.RunControl attribute)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="T">T</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.DaeTCBSettingsData.tcb_calculation_method">tcb_calculation_method (ibex_bluesky_core.devices.dae.DaeTCBSettingsData attribute)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.DaeTCBSettingsData.tcb_file">tcb_file (ibex_bluesky_core.devices.dae.DaeTCBSettingsData attribute)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.DaeTCBSettingsData.tcb_tables">tcb_tables (ibex_bluesky_core.devices.dae.DaeTCBSettingsData attribute)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.TCBCalculationMethod">TCBCalculationMethod (class in ibex_bluesky_core.devices.dae)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.TCBTimeUnit">TCBTimeUnit (class in ibex_bluesky_core.devices.dae)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.Controller.teardown">teardown() (ibex_bluesky_core.devices.simpledae.Controller method)</a>
+
+      <ul>
+        <li><a href="generated/ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.PeriodPerPointController.teardown">(ibex_bluesky_core.devices.simpledae.PeriodPerPointController method)</a>
+</li>
+      </ul></li>
+      <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.DaeTCBSettingsData.time_unit">time_unit (ibex_bluesky_core.devices.dae.DaeTCBSettingsData attribute)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.block.html#ibex_bluesky_core.devices.block.BlockWriteConfig.timeout_is_error">timeout_is_error (ibex_bluesky_core.devices.block.BlockWriteConfig attribute)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.TimeRegime">TimeRegime (class in ibex_bluesky_core.devices.dae)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.TimeRegimeMode">TimeRegimeMode (class in ibex_bluesky_core.devices.dae)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.TimeRegimeRow">TimeRegimeRow (class in ibex_bluesky_core.devices.dae)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.TimeWaiter">TimeWaiter (class in ibex_bluesky_core.devices.simpledae)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.DaeSettingsData.timing_source">timing_source (ibex_bluesky_core.devices.dae.DaeSettingsData attribute)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.DaeMonitor.to">to (ibex_bluesky_core.devices.dae.DaeMonitor attribute)</a>
+
+      <ul>
+        <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.TimeRegimeRow.to">(ibex_bluesky_core.devices.dae.TimeRegimeRow attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="generated/ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.tof_bounded_spectra">tof_bounded_spectra() (in module ibex_bluesky_core.devices.simpledae)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.fitting.html#ibex_bluesky_core.fitting.TopHat">TopHat (class in ibex_bluesky_core.fitting)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.fitting.html#ibex_bluesky_core.fitting.Trapezoid">Trapezoid (class in ibex_bluesky_core.fitting)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.block.html#ibex_bluesky_core.devices.block.BlockR.trigger">trigger() (ibex_bluesky_core.devices.block.BlockR method)</a>
+
+      <ul>
+        <li><a href="generated/ibex_bluesky_core.devices.polarisingdae.html#ibex_bluesky_core.devices.polarisingdae.DualRunDae.trigger">(ibex_bluesky_core.devices.polarisingdae.DualRunDae method)</a>
+</li>
+        <li><a href="generated/ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.SimpleDae.trigger">(ibex_bluesky_core.devices.simpledae.SimpleDae method)</a>
+</li>
+      </ul></li>
+      <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.Dae.trigger_and_get_specdata">trigger_and_get_specdata() (ibex_bluesky_core.devices.dae.Dae method)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.DaeSettingsData.ts2_veto">ts2_veto (ibex_bluesky_core.devices.dae.DaeSettingsData attribute)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.DaePeriod.type">type (ibex_bluesky_core.devices.dae.DaePeriod attribute)</a>
+
+      <ul>
+        <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.SinglePeriodSettings.type">(ibex_bluesky_core.devices.dae.SinglePeriodSettings attribute)</a>
+</li>
+      </ul></li>
+  </ul></td>
+</tr></table>
+
+<h2 id="U">U</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="generated/ibex_bluesky_core.devices.polarisingdae.html#ibex_bluesky_core.devices.polarisingdae.DualRunDae.unstage">unstage() (ibex_bluesky_core.devices.polarisingdae.DualRunDae method)</a>
+
+      <ul>
+        <li><a href="generated/ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.SimpleDae.unstage">(ibex_bluesky_core.devices.simpledae.SimpleDae method)</a>
+</li>
+      </ul></li>
+      <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.DaeControls.update_run">update_run (ibex_bluesky_core.devices.dae.DaeControls attribute)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.RunstateEnum.UPDATING">UPDATING (ibex_bluesky_core.devices.dae.RunstateEnum attribute)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.block.html#ibex_bluesky_core.devices.block.BlockWriteConfig.use_completion_callback">use_completion_callback (ibex_bluesky_core.devices.block.BlockWriteConfig attribute)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.block.html#ibex_bluesky_core.devices.block.BlockWriteConfig.use_global_moving_flag">use_global_moving_flag (ibex_bluesky_core.devices.block.BlockWriteConfig attribute)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.TCBCalculationMethod.USE_TCB_FILE">USE_TCB_FILE (ibex_bluesky_core.devices.dae.TCBCalculationMethod attribute)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="V">V</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.DaeSettingsData.veto_0_name">veto_0_name (ibex_bluesky_core.devices.dae.DaeSettingsData attribute)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.DaeSettingsData.veto_1_name">veto_1_name (ibex_bluesky_core.devices.dae.DaeSettingsData attribute)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.DaeSettingsData.veto_2_name">veto_2_name (ibex_bluesky_core.devices.dae.DaeSettingsData attribute)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.DaeSettingsData.veto_3_name">veto_3_name (ibex_bluesky_core.devices.dae.DaeSettingsData attribute)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.RunstateEnum.VETOING">VETOING (ibex_bluesky_core.devices.dae.RunstateEnum attribute)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="W">W</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="generated/ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.SimpleWaiter.wait">wait() (ibex_bluesky_core.devices.simpledae.SimpleWaiter method)</a>
+
+      <ul>
+        <li><a href="generated/ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.Waiter.wait">(ibex_bluesky_core.devices.simpledae.Waiter method)</a>
+</li>
+      </ul></li>
+      <li><a href="generated/ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.Waiter">Waiter (class in ibex_bluesky_core.devices.simpledae)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.RunstateEnum.WAITING">WAITING (ibex_bluesky_core.devices.dae.RunstateEnum attribute)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="generated/ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.wavelength_bounded_spectra">wavelength_bounded_spectra() (in module ibex_bluesky_core.devices.simpledae)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.DaeSettingsData.wiring_filepath">wiring_filepath (ibex_bluesky_core.devices.dae.DaeSettingsData attribute)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.plan_stubs.html#ibex_bluesky_core.plan_stubs.with_dae_tables">with_dae_tables() (in module ibex_bluesky_core.plan_stubs)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.plan_stubs.html#ibex_bluesky_core.plan_stubs.with_num_periods">with_num_periods() (in module ibex_bluesky_core.plan_stubs)</a>
+</li>
+      <li><a href="generated/ibex_bluesky_core.plan_stubs.html#ibex_bluesky_core.plan_stubs.with_time_channels">with_time_channels() (in module ibex_bluesky_core.plan_stubs)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="X">X</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="generated/ibex_bluesky_core.devices.reflectometry.html#ibex_bluesky_core.devices.reflectometry.AngleMappingReducer.x0">x0 (ibex_bluesky_core.devices.reflectometry.AngleMappingReducer attribute)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="generated/ibex_bluesky_core.devices.reflectometry.html#ibex_bluesky_core.devices.reflectometry.AngleMappingReducer.x0_err">x0_err (ibex_bluesky_core.devices.reflectometry.AngleMappingReducer attribute)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
