@@ -49,7 +49,7 @@ Examples of plans and where we would put them under this model:
 - RIKEN auto-tuning - but like refl, might be able to use component plans that we keep in `ibex_bluesky_core`
 - "top-level" plans that end users will actually call (though they may delegate almost immediately to `ibex_bluesky_core` helpers)
 
-where `inst` plans/devices are kept in ie. `\instrument\settings\config\<>\configurations\python\inst\bluesky\{plans\devices}` respectively.
+where `inst` plans/devices are kept in ie. `\instrument\settings\config\<>\python\inst\bluesky\{plans\devices}` respectively.
 
 ## Consequences
 Negative: 
