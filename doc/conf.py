@@ -89,7 +89,7 @@ spelling_suggestion_limit = 3
 intersphinx_mapping = {
     "python": ("https://docs.python.org/3", None),
     "bluesky": ("https://blueskyproject.io/bluesky/main/", None),
-    "ophyd_async": ("https://blueskyproject.io/ophyd-async/v0.14.0/", None),
+    "ophyd_async": ("https://blueskyproject.io/ophyd-async/v0.15/", None),
     "event_model": ("https://blueskyproject.io/event-model/main/", None),
     "scipp": ("https://scipp.github.io/", None),
     "scippneutron": ("https://scipp.github.io/scippneutron/", None),
