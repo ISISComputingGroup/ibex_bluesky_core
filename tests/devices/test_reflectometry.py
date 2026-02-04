@@ -37,7 +37,7 @@ def test_set_waits_for_changing_on_reflectometry_parameter(RE):
     callback_on_mock_put(param.setpoint, lambda *a, **k: set_mock_value(param.changing, False))
     new_value = 456.0
     RE(bps.mv(param, new_value))
-    get_mock_put(param.setpoint).assert_called_once_with(new_value, wait=True)
+    get_mock_put(param.setpoint).assert_called_once_with(new_value)
 
 
 async def test_times_out_if_changing_never_finishes_on_reflectometry_parameter(RE):

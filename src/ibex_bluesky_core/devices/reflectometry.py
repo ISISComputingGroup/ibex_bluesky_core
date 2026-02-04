@@ -78,7 +78,7 @@ class ReflParameter(StandardReadable, NamedMovable[float]):
         indicate it has finished.
         """
         logger.info("setting %s to %s", self.setpoint.source, value)
-        await self.setpoint.set(value, wait=True, timeout=None)
+        await self.setpoint.set(value, timeout=None)
         await asyncio.sleep(0.1)
         logger.info("waiting for %s", self.changing.source)
         async for chg in observe_value(self.changing, done_timeout=self.changing_timeout):
@@ -118,7 +118,7 @@ class ReflParameterRedefine(StandardReadable):
         if in_manager_mode != NoYesChoice.YES:
             raise ValueError(f"Cannot redefine {self.define_pos_sp.source} as not in manager mode.")
         logger.info("setting %s to %s", self.define_pos_sp.source, value)
-        await self.define_pos_sp.set(value, wait=True, timeout=None)
+        await self.define_pos_sp.set(value, timeout=None)
         logger.info("waiting for 1s for redefine to finish")
         # The Reflectometry server has a CHANGED PV for a redefine, but it doesn't actually
         # give a monitor update, so just wait an arbitrary length of time for it to be done.

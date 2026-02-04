@@ -249,12 +249,14 @@ class BlockRw(BlockR[T], NamedMovable[T]):
                 be set to empty string to read and write to exactly the same PV.
 
         """
+        self._write_config: BlockWriteConfig[T] = write_config or BlockWriteConfig()
+
         self.setpoint: SignalRW[T] = epics_signal_rw(
-            datatype, f"{prefix}CS:SB:{block_name}{sp_suffix}"
+            datatype,
+            f"{prefix}CS:SB:{block_name}{sp_suffix}",
+            wait=self._write_config.use_completion_callback,
         )
         """The setpoint for this block."""
-
-        self._write_config: BlockWriteConfig[T] = write_config or BlockWriteConfig()
 
         if self._write_config.use_global_moving_flag:
             # Misleading PV name... says it's a str but it's really a bi record.
@@ -283,9 +285,7 @@ class BlockRw(BlockR[T], NamedMovable[T]):
 
         async def do_set(setpoint: T) -> None:
             logger.info("Setting Block %s to %s", self.name, setpoint)
-            await self.setpoint.set(
-                setpoint, wait=self._write_config.use_completion_callback, timeout=None
-            )
+            await self.setpoint.set(setpoint, timeout=None)
             logger.info("Got completion callback from setting block %s to %s", self.name, setpoint)
 
             if self._write_config.use_global_moving_flag:

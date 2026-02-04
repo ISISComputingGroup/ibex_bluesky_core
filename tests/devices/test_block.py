@@ -156,13 +156,13 @@ async def test_read_and_describe_configuration(readable_block):
 async def test_block_set(writable_block):
     set_mock_value(writable_block.setpoint, 10)
     await writable_block.set(20)
-    get_mock_put(writable_block.setpoint).assert_called_once_with(20, wait=True)
+    get_mock_put(writable_block.setpoint).assert_called_once_with(20)
 
 
 async def test_block_set_without_epics_completion_callback():
     block = await _block_with_write_config(BlockWriteConfig(use_completion_callback=False))
     await block.set(20)
-    get_mock_put(block.setpoint).assert_called_once_with(20, wait=False)
+    get_mock_put(block.setpoint).assert_called_once_with(20)
 
 
 async def test_block_set_with_arbitrary_completion_function():
@@ -333,7 +333,7 @@ def test_plan_trigger_block(RE, readable_block):
 def test_plan_mv_block(RE, writable_block):
     set_mock_value(writable_block.setpoint, 123.0)
     RE(bps.mv(writable_block, 456.0))
-    get_mock_put(writable_block.setpoint).assert_called_once_with(456.0, wait=True)
+    get_mock_put(writable_block.setpoint).assert_called_once_with(456.0)
 
 
 def test_block_reprs():
@@ -349,7 +349,7 @@ async def test_block_mot_set_within_limits(mot_block):
     set_mock_value(mot_block.high_limit_travel, 1000)
     set_mock_value(mot_block.low_limit_travel, -1000)
     await mot_block.set(20)
-    get_mock_put(mot_block.user_setpoint).assert_called_once_with(20, wait=True)
+    get_mock_put(mot_block.user_setpoint).assert_called_once_with(20)
 
 
 async def test_block_mot_set_outside_limits(mot_block):
