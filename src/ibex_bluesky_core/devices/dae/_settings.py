@@ -277,4 +277,4 @@ class DaeSettings(StandardReadable, Locatable[DaeSettingsData], Movable[DaeSetti
         current_xml = await self._raw_dae_settings.get_value()
         to_write = _convert_dae_settings_to_xml(current_xml, value)
         logger.info("set dae settings: %s", to_write)
-        await self._raw_dae_settings.set(to_write, wait=True, timeout=None)
+        await self._raw_dae_settings.set(to_write, timeout=None)

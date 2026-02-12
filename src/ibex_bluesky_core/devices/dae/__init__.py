@@ -108,7 +108,7 @@ class DaeCheckingSignal(StandardReadable, Movable[T], Generic[T]):
             OSError: If the signal failed to be set to the specified value.
 
         """
-        await self.signal.set(value, wait=True, timeout=None)
+        await self.signal.set(value, timeout=None)
         actual_value = await self.signal.get_value()
         if value != actual_value:
             raise OSError(
@@ -252,7 +252,7 @@ class Dae(StandardReadable):
         time channels (including the "junk" time-channel 0).
         """
         await self.controls.update_run.trigger()
-        await self.raw_spec_data_proc.set(1, wait=True)
+        await self.raw_spec_data_proc.set(1)
         (raw_data, nord) = await asyncio.gather(
             self.raw_spec_data.get_value(),
             self.raw_spec_data_nord.get_value(),

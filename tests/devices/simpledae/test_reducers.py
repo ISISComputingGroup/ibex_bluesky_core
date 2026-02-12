@@ -1007,7 +1007,7 @@ async def test_period_spec_integrals_reducer(
 
     await reducer.reduce_data(simpledae)
 
-    get_mock_put(simpledae.raw_spec_data_proc).assert_called_with(1, wait=True)
+    get_mock_put(simpledae.raw_spec_data_proc).assert_called_with(1)
 
     np.testing.assert_equal(await reducer.mon_integrals.get_value(), mon_integrals)
     np.testing.assert_equal(await reducer.det_integrals.get_value(), det_integrals)

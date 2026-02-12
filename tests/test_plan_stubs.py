@@ -159,10 +159,10 @@ def test_redefine_motor(RE):
     RE(plan())
 
     get_mock_put(motor.set_use_switch).assert_has_calls(
-        [call(UseSetMode.SET, wait=True), call(UseSetMode.USE, wait=True)]
+        [call(UseSetMode.SET), call(UseSetMode.USE)]
     )
 
-    get_mock_put(motor.user_setpoint).assert_called_once_with(42.0, wait=True)
+    get_mock_put(motor.user_setpoint).assert_called_once_with(42.0)
 
 
 async def test_redefine_refl_parameter(RE):
@@ -172,7 +172,7 @@ async def test_redefine_refl_parameter(RE):
 
     RE(redefine_refl_parameter(param, 42.0))
 
-    get_mock_put(param.redefine.define_pos_sp).assert_called_once_with(42.0, wait=True)  # pyright: ignore [reportOptionalMemberAccess]
+    get_mock_put(param.redefine.define_pos_sp).assert_called_once_with(42.0)  # pyright: ignore [reportOptionalMemberAccess]
 
 
 async def test_raises_when_attempting_to_redefine_refl_parameter_with_no_redefine(RE):

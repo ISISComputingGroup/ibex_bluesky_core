@@ -98,5 +98,5 @@ class BeginRunEx(StandardReadable, Movable[BeginRunExBits]):
 
         """
         logger.info("starting run with options %s", value)
-        await self._raw_begin_run_ex.set(value, wait=True, timeout=None)
+        await self._raw_begin_run_ex.set(value, timeout=None)
         logger.info("start run complete")

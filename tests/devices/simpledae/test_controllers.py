@@ -43,11 +43,11 @@ async def test_period_per_point_controller_begins_run_in_setup_and_ends_in_teard
     set_mock_value(simpledae.run_state, RunstateEnum.PAUSED)
     await period_per_point_controller.setup(simpledae)
     get_mock_put(simpledae.controls.begin_run_ex._raw_begin_run_ex).assert_called_once_with(
-        BeginRunExBits.BEGIN_PAUSED, wait=True
+        BeginRunExBits.BEGIN_PAUSED
     )
     set_mock_value(simpledae.run_state, RunstateEnum.SETUP)
     await period_per_point_controller.teardown(simpledae)
-    get_mock_put(simpledae.controls.end_run).assert_called_once_with(None, wait=True)
+    get_mock_put(simpledae.controls.end_run).assert_called_once_with(None)
 
 
 async def test_aborting_period_per_point_controller_aborts_in_teardown(
@@ -55,7 +55,7 @@ async def test_aborting_period_per_point_controller_aborts_in_teardown(
 ):
     set_mock_value(simpledae.run_state, RunstateEnum.SETUP)
     await aborting_period_per_point_controller.teardown(simpledae)
-    get_mock_put(simpledae.controls.abort_run).assert_called_once_with(None, wait=True)
+    get_mock_put(simpledae.controls.abort_run).assert_called_once_with(None)
 
 
 async def test_period_per_point_controller_changes_periods_and_counts(
@@ -63,12 +63,12 @@ async def test_period_per_point_controller_changes_periods_and_counts(
 ):
     set_mock_value(simpledae.run_state, RunstateEnum.RUNNING)
     await period_per_point_controller.start_counting(simpledae)
-    get_mock_put(simpledae.controls.resume_run).assert_called_once_with(None, wait=True)
-    get_mock_put(simpledae.period_num).assert_called_once_with(1, wait=True)
+    get_mock_put(simpledae.controls.resume_run).assert_called_once_with(None)
+    get_mock_put(simpledae.period_num).assert_called_once_with(1)
 
     set_mock_value(simpledae.run_state, RunstateEnum.PAUSED)
     await period_per_point_controller.stop_counting(simpledae)
-    get_mock_put(simpledae.controls.pause_run).assert_called_once_with(None, wait=True)
+    get_mock_put(simpledae.controls.pause_run).assert_called_once_with(None)
 
 
 async def test_run_per_point_controller_starts_and_ends_runs(
@@ -76,10 +76,10 @@ async def test_run_per_point_controller_starts_and_ends_runs(
 ):
     set_mock_value(simpledae.run_state, RunstateEnum.RUNNING)
     await run_per_point_controller.start_counting(simpledae)
-    get_mock_put(simpledae.controls.begin_run).assert_called_once_with(None, wait=True)
+    get_mock_put(simpledae.controls.begin_run).assert_called_once_with(None)
 
     await run_per_point_controller.stop_counting(simpledae)
-    get_mock_put(simpledae.controls.end_run).assert_called_once_with(None, wait=True)
+    get_mock_put(simpledae.controls.end_run).assert_called_once_with(None)
 
 
 def test_run_per_point_controller_publishes_run(

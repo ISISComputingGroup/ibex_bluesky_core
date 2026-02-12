@@ -18,11 +18,11 @@ logger = logging.getLogger(__name__)
 async def _end_or_abort_run(dae: Dae, save: bool) -> None:
     if save:
         logger.info("ending run")
-        await dae.controls.end_run.trigger(wait=True, timeout=None)
+        await dae.controls.end_run.trigger(timeout=None)
         logger.info("run ended")
     else:
         logger.info("aborting run")
-        await dae.controls.abort_run.trigger(wait=True, timeout=None)
+        await dae.controls.abort_run.trigger(timeout=None)
         logger.info("run aborted")
 
 
@@ -65,7 +65,7 @@ class PeriodPerPointController(Controller):
         """
         logger.info("start counting")
         self._current_period += 1
-        await dae.period_num.set(self._current_period, wait=True, timeout=None)
+        await dae.period_num.set(self._current_period, timeout=None)
 
         # Error if the period change didn't work (e.g. we have exceeded max periods)
         await wait_for_value(
@@ -80,7 +80,7 @@ class PeriodPerPointController(Controller):
         await wait_for_value(dae.period.raw_frames, 0, timeout=10)
 
         logger.info("resuming run")
-        await dae.controls.resume_run.trigger(wait=True, timeout=None)
+        await dae.controls.resume_run.trigger(timeout=None)
         await wait_for_value(
             dae.run_state,
             lambda v: v in {RunstateEnum.RUNNING, RunstateEnum.WAITING, RunstateEnum.VETOING},
@@ -90,7 +90,7 @@ class PeriodPerPointController(Controller):
     async def stop_counting(self, dae: Dae) -> None:
         """Stop counting a scan point, by pausing the run."""
         logger.info("stop counting")
-        await dae.controls.pause_run.trigger(wait=True, timeout=None)
+        await dae.controls.pause_run.trigger(timeout=None)
         await wait_for_value(dae.run_state, RunstateEnum.PAUSED, timeout=10)
 
     async def teardown(self, dae: Dae) -> None:
@@ -133,7 +133,7 @@ class RunPerPointController(Controller, StandardReadable):
     async def start_counting(self, dae: Dae) -> None:
         """Start counting a scan point, by starting a DAE run."""
         logger.info("start counting")
-        await dae.controls.begin_run.trigger(wait=True, timeout=None)
+        await dae.controls.begin_run.trigger(timeout=None)
         await wait_for_value(
             dae.run_state,
             lambda v: v in {RunstateEnum.RUNNING, RunstateEnum.WAITING, RunstateEnum.VETOING},

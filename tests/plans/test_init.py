@@ -191,7 +191,7 @@ def test_adaptive_scan_with_periods_sets_max_periods(RE, dae, block):
                 model=Gaussian().fit(),
             )
         )
-    get_mock_put(dae.number_of_periods.signal).assert_called_with(expected, wait=True)
+    get_mock_put(dae.number_of_periods.signal).assert_called_with(expected)
 
 
 def test_adaptive_scan_does_normal_scan_when_relative_false(RE, dae, block):

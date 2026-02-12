@@ -180,4 +180,4 @@ class DaePeriodSettings(
         current_xml = await self._raw_period_settings.get_value()
         to_write = _convert_period_settings_to_xml(current_xml, value)
         logger.info("set period settings: %s", to_write)
-        await self._raw_period_settings.set(to_write, wait=True, timeout=None)
+        await self._raw_period_settings.set(to_write, timeout=None)

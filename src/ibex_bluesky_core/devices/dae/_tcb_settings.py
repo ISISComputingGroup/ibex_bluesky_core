@@ -199,4 +199,4 @@ class DaeTCBSettings(StandardReadable, Locatable[DaeTCBSettingsData], Movable[Da
         xml = _convert_tcb_settings_to_xml(current_xml_dehexed, value)
         the_value_to_write = compress_and_hex(xml).decode()
         logger.info("set tcb settings: %s", the_value_to_write)
-        await self._raw_tcb_settings.set(the_value_to_write, wait=True, timeout=None)
+        await self._raw_tcb_settings.set(the_value_to_write, timeout=None)
