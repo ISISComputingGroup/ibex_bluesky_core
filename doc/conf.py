@@ -11,6 +11,8 @@ import sys
 
 sys.path.insert(0, os.path.abspath("../src"))
 
+from ophyd_async import __version__ as ophyd_async_version
+
 project = "ibex_bluesky_core"
 copyright = ""
 author = "ISIS Experiment Controls"
@@ -89,7 +91,7 @@ spelling_suggestion_limit = 3
 intersphinx_mapping = {
     "python": ("https://docs.python.org/3", None),
     "bluesky": ("https://blueskyproject.io/bluesky/main/", None),
-    "ophyd_async": ("https://blueskyproject.io/ophyd-async/v0.15/", None),
+    "ophyd_async": (f"https://blueskyproject.io/ophyd-async/v{ophyd_async_version}/", None),
     "event_model": ("https://blueskyproject.io/event-model/main/", None),
     "scipp": ("https://scipp.github.io/", None),
     "scippneutron": ("https://scipp.github.io/scippneutron/", None),

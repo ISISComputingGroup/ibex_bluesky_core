@@ -42,7 +42,7 @@ classifiers = [
 dependencies = [
   "bluesky",  # Bluesky framework
   "confluent-kafka",  # Kafka producer
-  "ophyd-async[ca] == 0.16",  # Device abstraction. When changing, also change in doc/conf.py
+  "ophyd-async[ca] == 0.16",  # Device abstraction.
   "lmfit",  # Fitting
   "matplotlib",  # Plotting
   "msgpack-numpy",  # Encoding kafka messages
