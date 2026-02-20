@@ -1,0 +1,1173 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ibex_bluesky_core.devices.block &mdash; ibex_bluesky_core 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=dc476284" />
+
+  
+    <link rel="shortcut icon" href="../../../_static/favicon.svg"/>
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+      <script type="module">import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11.12.1/dist/mermaid.esm.min.mjs";
+
+
+
+
+
+const initStyles = () => {
+    const defaultStyle = document.createElement('style');
+    defaultStyle.textContent = `pre.mermaid {
+    /* Same as .mermaid-container > pre */
+    display: block;
+    width: 100%;
+}
+
+pre.mermaid > svg {
+    /* Same as .mermaid-container > pre > svg */
+    height: 500px;
+    width: 100%;
+    max-width: 100% !important;
+}`;
+    document.head.appendChild(defaultStyle);
+
+    const fullscreenStyle = document.createElement('style');
+    fullscreenStyle.textContent = `.mermaid-container {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+}
+
+.mermaid-container > pre {
+    display: block;
+    width: 100%;
+}
+
+.mermaid-container > pre > svg {
+    height: 500px;
+    width: 100%;
+    max-width: 100% !important;
+}
+
+.mermaid-fullscreen-btn {
+    width: 28px;
+    height: 28px;
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid rgba(0, 0, 0, 0.3);
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    font-size: 14px;
+    line-height: 1;
+    padding: 0;
+    color: #333;
+}
+
+.mermaid-fullscreen-btn:hover {
+    opacity: 100% !important;
+    background: rgba(255, 255, 255, 1);
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+    transform: scale(1.1);
+}
+
+.mermaid-fullscreen-btn.dark-theme {
+    background: rgba(50, 50, 50, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: #e0e0e0;
+}
+
+.mermaid-fullscreen-btn.dark-theme:hover {
+    background: rgba(60, 60, 60, 1);
+    box-shadow: 0 3px 10px rgba(255, 255, 255, 0.2);
+}
+
+.mermaid-fullscreen-modal {
+    display: none;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 95vw;
+    height: 100vh;
+    background: rgba(255, 255, 255, 0.98);
+    z-index: 9999;
+    padding: 20px;
+    overflow: auto;
+}
+
+.mermaid-fullscreen-modal.dark-theme {
+    background: rgba(0, 0, 0, 0.98);
+}
+
+.mermaid-fullscreen-modal.active {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mermaid-container-fullscreen {
+    position: relative;
+    width: 95vw;
+    height: 90vh;
+    max-width: 95vw;
+    max-height: 90vh;
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    overflow: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mermaid-container-fullscreen.dark-theme {
+    background: #1a1a1a;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
+}
+
+.mermaid-container-fullscreen pre.mermaid {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mermaid-container-fullscreen .mermaid svg {
+    height: 100% !important;
+    width: 100% !important;
+    cursor: grab;
+}
+
+.mermaid-fullscreen-close {
+    position: fixed !important;
+    top: 20px !important;
+    right: 20px !important;
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    border-radius: 50%;
+    cursor: pointer;
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    transition: all 0.2s;
+    font-size: 24px;
+    line-height: 1;
+    color: #333;
+}
+
+.mermaid-fullscreen-close:hover {
+    background: white;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+    transform: scale(1.1);
+}
+
+.mermaid-fullscreen-close.dark-theme {
+    background: rgba(50, 50, 50, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #e0e0e0;
+}
+
+.mermaid-fullscreen-close.dark-theme:hover {
+    background: rgba(60, 60, 60, 1);
+    box-shadow: 0 6px 16px rgba(255, 255, 255, 0.2);
+}
+
+.mermaid-fullscreen-modal .mermaid-fullscreen-btn {
+    display: none !important;
+}`;
+    document.head.appendChild(fullscreenStyle);
+}
+
+// Detect if page has dark background
+const isDarkTheme = () => {
+    // We use a set of heuristics:
+    // 1. Check for common dark mode classes or attributes
+    // 2. Check computed background color brightness
+    if (document.documentElement.classList.contains('dark') ||
+        document.documentElement.getAttribute('data-theme') === 'dark' ||
+        document.body.classList.contains('dark') ||
+        document.body.getAttribute('data-theme') === 'dark') {
+        // console.log("Dark theme detected via class/attribute");
+        return true;
+    }
+    if (document.documentElement.classList.contains('light') ||
+        document.documentElement.getAttribute('data-theme') === 'light' ||
+        document.body.classList.contains('light') ||
+        document.body.getAttribute('data-theme') === 'light') {
+        // console.log("Light theme detected via class/attribute");
+        return false;
+    }
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        // console.log("Dark theme detected via prefers-color-scheme");
+        return true;
+    }
+    const bgColor = window.getComputedStyle(document.body).backgroundColor;
+    const match = bgColor.match(/rgb\((\d+),\s*(\d+),\s*(\d+)/);
+    if (match) {
+        const r = parseInt(match[1]);
+        const g = parseInt(match[2]);
+        const b = parseInt(match[3]);
+        const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+        // console.log("Background color brightness:", brightness);
+        return brightness < 128;
+    }
+    // console.log("No dark or light theme detected, defaulting to light theme");
+    return false;
+};
+
+let darkTheme = isDarkTheme();
+let modal = null;
+let modalContent = null;
+let previousScrollOffset = [window.scrollX, window.scrollY];
+
+const runMermaid = async (rerun) => {
+    console.log("Running mermaid diagrams, rerun =", rerun);
+    // clear all existing mermaid charts
+    let all_mermaids = document.querySelectorAll(".mermaid");
+
+    if (rerun) {
+        all_mermaids.forEach((el) => {
+            if(!el.hasAttribute("data-original-code")) {
+                // store original code
+                // console.log(`Storing original code for first run: `, el.innerHTML);
+                el.setAttribute('data-original-code', el.innerHTML);
+            }
+            if(el.getAttribute("data-processed") === "true") {
+                // remove and restore original
+                el.removeAttribute("data-processed");
+                // console.log(`Restoring original code for re-run: `, el.getAttribute('data-original-code'));
+                el.innerHTML = el.getAttribute('data-original-code');
+            } else {
+                // store original code
+                // console.log(`Storing original code for re-run: `, el.innerHTML);
+                el.setAttribute('data-original-code', el.innerHTML);
+            }
+        });
+        await mermaid.run();
+    }
+
+    all_mermaids = document.querySelectorAll(".mermaid");
+    const mermaids_processed = document.querySelectorAll(".mermaid[data-processed='true']");
+
+    if ("True" === "True") {
+        const mermaids_to_add_zoom = -1 === -1 ? all_mermaids.length : -1;
+        if(mermaids_to_add_zoom > 0) {
+            var svgs = d3.selectAll(".mermaid svg");
+            if(all_mermaids.length !== mermaids_processed.length) {
+                setTimeout(() => runMermaid(false), 200);
+                return;
+            } else if(svgs.size() !== mermaids_to_add_zoom) {
+                setTimeout(() => runMermaid(false), 200);
+                return;
+            } else {
+                svgs.each(function() {
+                    var svg = d3.select(this);
+                    svg.html("<g class='wrapper'>" + svg.html() + "</g>");
+                    var inner = svg.select("g");
+                    var zoom = d3.zoom().on("zoom", function(event) {
+                        inner.attr("transform", event.transform);
+                    });
+                    svg.call(zoom);
+                });
+            }
+        }
+    } else if(all_mermaids.length !== mermaids_processed.length) {
+        // Wait for mermaid to process all diagrams
+        setTimeout(() => runMermaid(false), 200);
+        return;
+    }
+
+    // Stop here if not adding fullscreen capability
+    if ("True" !== "True") return;
+
+    if (modal !== null ) {
+        // Destroy existing modal
+        modal.remove();
+        modal = null;
+        modalContent = null;
+    }
+
+    modal = document.createElement('div');
+    modal.className = 'mermaid-fullscreen-modal' + (darkTheme ? ' dark-theme' : '');
+    modal.setAttribute('role', 'dialog');
+    modal.setAttribute('aria-modal', 'true');
+    modal.setAttribute('aria-label', 'Fullscreen diagram viewer');
+    modal.innerHTML = `
+        <button class="mermaid-fullscreen-close${darkTheme ? ' dark-theme' : ''}" aria-label="Close fullscreen">✕</button>
+        <div class="mermaid-container-fullscreen${darkTheme ? ' dark-theme' : ''}"></div>
+    `;
+    document.body.appendChild(modal);
+
+    modalContent = modal.querySelector('.mermaid-container-fullscreen');
+    const closeBtn = modal.querySelector('.mermaid-fullscreen-close');
+
+    const closeModal = () => {
+        modal.classList.remove('active');
+        modalContent.innerHTML = '';
+        document.body.style.overflow = ''
+        window.scrollTo({left: previousScrollOffset[0], top: previousScrollOffset[1], behavior: 'instant'});
+    };
+
+    closeBtn.addEventListener('click', closeModal);
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) closeModal();
+    });
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && modal.classList.contains('active')) {
+            closeModal();
+        }
+    });
+
+    document.querySelectorAll('.mermaid').forEach((mermaidDiv) => {
+        if (mermaidDiv.parentNode.classList.contains('mermaid-container') ||
+            mermaidDiv.closest('.mermaid-fullscreen-modal')) {
+            // Already processed, adjust button class if needed
+            const existingBtn = mermaidDiv.parentNode.querySelector('.mermaid-fullscreen-btn');
+            if (existingBtn) {
+                existingBtn.className = 'mermaid-fullscreen-btn' + (darkTheme ? ' dark-theme' : '');
+            }
+            return;
+        }
+
+        const container = document.createElement('div');
+        container.className = 'mermaid-container';
+        mermaidDiv.parentNode.insertBefore(container, mermaidDiv);
+        container.appendChild(mermaidDiv);
+
+        const fullscreenBtn = document.createElement('button');
+        fullscreenBtn.className = 'mermaid-fullscreen-btn' + (darkTheme ? ' dark-theme' : '');
+        fullscreenBtn.setAttribute('aria-label', 'View diagram in fullscreen');
+        fullscreenBtn.textContent = '⛶';
+        fullscreenBtn.style.opacity = '50%';
+
+        // Calculate dynamic position based on diagram's margin and padding
+        const diagramStyle = window.getComputedStyle(mermaidDiv);
+        const marginTop = parseFloat(diagramStyle.marginTop) || 0;
+        const marginRight = parseFloat(diagramStyle.marginRight) || 0;
+        const paddingTop = parseFloat(diagramStyle.paddingTop) || 0;
+        const paddingRight = parseFloat(diagramStyle.paddingRight) || 0;
+        fullscreenBtn.style.top = `${marginTop + paddingTop + 4}px`;
+        fullscreenBtn.style.right = `${marginRight + paddingRight + 4}px`;
+
+        fullscreenBtn.addEventListener('click', () => {
+            previousScrollOffset = [window.scroll, window.scrollY];
+            const clone = mermaidDiv.cloneNode(true);
+            modalContent.innerHTML = '';
+            modalContent.appendChild(clone);
+
+            const svg = clone.querySelector('svg');
+            if (svg) {
+                svg.removeAttribute('width');
+                svg.removeAttribute('height');
+                svg.style.width = '100%';
+                svg.style.height = 'auto';
+                svg.style.maxWidth = '100%';
+                svg.style.sdisplay = 'block';
+
+                if ("True" === "True") {
+                    setTimeout(() => {
+                        const g = svg.querySelector('g');
+                        if (g) {
+                            var svgD3 = d3.select(svg);
+                            svgD3.html("<g class='wrapper'>" + svgD3.html() + "</g>");
+                            var inner = svgD3.select("g");
+                            var zoom = d3.zoom().on("zoom", function(event) {
+                                inner.attr("transform", event.transform);
+                            });
+                            svgD3.call(zoom);
+                        }
+                    }, 100);
+                }
+            }
+
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        });
+        container.appendChild(fullscreenBtn);
+    });
+};
+
+const load = async () => {
+    initStyles();
+
+    await runMermaid(true);
+
+    const reRunIfThemeChanges = async () => {
+        const newDarkTheme = isDarkTheme();
+        if (newDarkTheme !== darkTheme) {
+            darkTheme = newDarkTheme;
+            console.log("Theme change detected, re-running mermaid with", darkTheme ? "dark" : "default", "theme");
+            await mermaid.initialize(
+                {...JSON.parse(
+                    `{"startOnLoad": false}`
+                ),
+                ...{ darkMode: darkTheme, theme: darkTheme ? 'dark' : 'default' },
+                }
+            );
+            await runMermaid(true);
+        }
+    };
+
+    // Update theme classes when theme changes
+    const themeObserver = new MutationObserver(reRunIfThemeChanges);
+    themeObserver.observe(document.documentElement, {
+        attributes: true,
+        attributeFilter: ['class', 'style', 'data-theme']
+    });
+    themeObserver.observe(document.body, {
+        attributes: true,
+        attributeFilter: ['class', 'style', 'data-theme']
+    });
+};
+
+
+
+
+
+console.log("Initializing mermaid with", darkTheme ? "dark" : "default", "theme");
+mermaid.initialize(
+    {...JSON.parse(
+        `{"startOnLoad": false}`
+    ),
+    ...{ darkMode: darkTheme, theme: darkTheme ? 'dark' : 'default' },
+    }
+);
+
+window.addEventListener("load", load);</script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #343131" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            ibex_bluesky_core
+              <img src="../../../_static/logo.svg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial/overview.html">Getting started</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Devices</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../devices/blocks.html">Blocks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../devices/dae.html">DAE (Data Acquisition Electronics)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Callbacks</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../callbacks/isiscallbacks.html">ISIS Standard Callbacks (<code class="xref py py-obj docutils literal notranslate"><span class="pre">ISISCallbacks</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../callbacks/fitting.html">Fits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../callbacks/centre_of_mass.html">Centre of Mass</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../callbacks/plotting.html">Plotting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../callbacks/file_writing.html">File writing callbacks</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Plans</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../plans/plans.html">General Plans</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../plans/reflectometry.html">Reflectometry-specific Plans</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Plan stubs</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../plan_stubs/external_code.html">Calling external code (<code class="xref py py-obj docutils literal notranslate"><span class="pre">call_sync</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../plan_stubs/matplotlib_helpers.html">Matplotlib helpers (<code class="xref py py-obj docutils literal notranslate"><span class="pre">call_qt_aware</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../plan_stubs/plan_wrappers.html">Plan wrappers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../plan_stubs/polling.html">Continuous polling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../plan_stubs/redefining.html">Redefinition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../plan_stubs/user_input.html">User input helpers</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../_api.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../replotting_scans.html">Replaying documents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../architectural_decisions.html">Architectural Decisions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../developer_information.html">Developer Information</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #343131" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">ibex_bluesky_core</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+          <li class="breadcrumb-item"><a href="../devices.html">ibex_bluesky_core.devices</a></li>
+      <li class="breadcrumb-item active">ibex_bluesky_core.devices.block</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for ibex_bluesky_core.devices.block</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;bluesky devices and utilities for communicating with IBEX blocks.&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Generic</span><span class="p">,</span> <span class="n">TypeVar</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">bluesky.protocols</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">HasName</span><span class="p">,</span>
+    <span class="n">Locatable</span><span class="p">,</span>
+    <span class="n">Location</span><span class="p">,</span>
+    <span class="n">Movable</span><span class="p">,</span>
+    <span class="n">NamedMovable</span><span class="p">,</span>
+    <span class="n">Triggerable</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ophyd_async.core</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">CALCULATE_TIMEOUT</span><span class="p">,</span>
+    <span class="n">AsyncStatus</span><span class="p">,</span>
+    <span class="n">CalculatableTimeout</span><span class="p">,</span>
+    <span class="n">SignalDatatype</span><span class="p">,</span>
+    <span class="n">SignalR</span><span class="p">,</span>
+    <span class="n">SignalRW</span><span class="p">,</span>
+    <span class="n">StandardReadable</span><span class="p">,</span>
+    <span class="n">StandardReadableFormat</span><span class="p">,</span>
+    <span class="n">WatchableAsyncStatus</span><span class="p">,</span>
+    <span class="n">observe_value</span><span class="p">,</span>
+    <span class="n">wait_for_value</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ophyd_async.epics.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">epics_signal_r</span><span class="p">,</span> <span class="n">epics_signal_rw</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ophyd_async.epics.motor</span><span class="w"> </span><span class="kn">import</span> <span class="n">Motor</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibex_bluesky_core.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_pv_prefix</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="c1"># Block data type</span>
+<span class="n">T</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;T&quot;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="n">SignalDatatype</span><span class="p">)</span>
+
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;BlockMot&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;BlockR&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;BlockRw&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;BlockRwRbv&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;BlockWriteConfig&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;RunControl&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;block_mot&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;block_r&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;block_rw&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;block_rw_rbv&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;block_w&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+
+<span class="c1"># When using the global moving flag, we want to give IOCs enough time to update the</span>
+<span class="c1"># global flag before checking it. This is an amount of time always applied before</span>
+<span class="c1"># looking at the global moving flag.</span>
+<span class="n">GLOBAL_MOVING_FLAG_PRE_WAIT</span> <span class="o">=</span> <span class="mf">0.1</span>
+
+
+<div class="viewcode-block" id="BlockWriteConfig">
+<a class="viewcode-back" href="../../../generated/ibex_bluesky_core.devices.block.html#ibex_bluesky_core.devices.block.BlockWriteConfig">[docs]</a>
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">kw_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">BlockWriteConfig</span><span class="p">(</span><span class="n">Generic</span><span class="p">[</span><span class="n">T</span><span class="p">]):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Configuration settings for writing to blocks.</span>
+
+<span class="sd">    These settings control how a block write is determined to be &#39;complete&#39;. A block</span>
+<span class="sd">    write should only be marked as complete when the equipment has physically reached</span>
+<span class="sd">    the correct state, not just when the equipment has been told to move to the correct</span>
+<span class="sd">    state.</span>
+
+<span class="sd">    For example, during a scan of a block against a detector, the detector will be read</span>
+<span class="sd">    as soon as the block declares the write as &#39;complete&#39;.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">use_completion_callback</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Whether to wait for an EPICS completion callback while setting</span>
+<span class="sd">    this block. Defaults to :py:obj:`True`, which is appropriate for most blocks.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">set_success_func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">T</span><span class="p">,</span> <span class="n">T</span><span class="p">],</span> <span class="nb">bool</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    An arbitrary function which is called to decide whether the block has</span>
+<span class="sd">    set successfully yet or not. The function takes ``(setpoint, actual)`` as arguments and</span>
+<span class="sd">    should return :py:obj:`True` if the value has successfully set and is &quot;ready&quot;, or</span>
+<span class="sd">    :py:obj:`False` otherwise.</span>
+
+<span class="sd">    This can be used to implement arbitrary tolerance behaviour. For example::</span>
+
+<span class="sd">        def check(setpoint: T, actual: T) -&gt; bool:</span>
+<span class="sd">            return setpoint - 0.1 &lt;= actual &lt;= setpoint + 0.1</span>
+
+<span class="sd">    If use_completion_callback is True, the completion callback must complete before</span>
+<span class="sd">    ``set_success_func`` is ever called.</span>
+
+<span class="sd">    Executing this function should be &quot;fast&quot; (i.e. the function should not sleep), and it should</span>
+<span class="sd">    not do any external I/O.</span>
+
+<span class="sd">    Defaults to :py:obj:`None`, which means no check is applied.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">set_timeout_s</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A timeout, in seconds, on the value being set successfully. The timeout</span>
+<span class="sd">    applies to the EPICS completion callback (if enabled) and the set success function</span>
+<span class="sd">    (if provided), and excludes any configured settle time.</span>
+
+<span class="sd">    Defaults to :py:obj:`None`, which means no timeout.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">settle_time_s</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A wait time, in seconds, which is unconditionally applied just before the set</span>
+<span class="sd">    status is marked as complete. Defaults to zero.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">use_global_moving_flag</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Whether to wait for the IBEX global moving indicator to return &quot;stationary&quot;. This is useful</span>
+<span class="sd">    for compound moves, where changing a single block may cause multiple underlying axes to</span>
+<span class="sd">    move, and all movement needs to be complete before the set is considered complete.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">timeout_is_error</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Whether a write timeout is considered an error. Defaults to True. If False, a set will be</span>
+<span class="sd">    marked as complete without error even if the block has not given a completion callback or</span>
+<span class="sd">    satisfied ``set_success_func`` within ``settle_time_s``.</span>
+<span class="sd">    &quot;&quot;&quot;</span></div>
+
+
+
+<div class="viewcode-block" id="RunControl">
+<a class="viewcode-back" href="../../../generated/ibex_bluesky_core.devices.block.html#ibex_bluesky_core.devices.block.RunControl">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">RunControl</span><span class="p">(</span><span class="n">StandardReadable</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Subdevice for common run-control signals.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prefix</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Subdevice for common run-control signals.</span>
+
+<span class="sd">        .. note::</span>
+
+<span class="sd">            Run control should be accessed via the ``run_control`` property on a block,</span>
+<span class="sd">            rather than by constructing an instance of this class directly.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            prefix: the run-control prefix, e.g. ``IN:INSTRUMENT:CS:SB:blockname:RC:``</span>
+<span class="sd">            name: ophyd device name</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_children_as_readables</span><span class="p">(</span><span class="n">StandardReadableFormat</span><span class="o">.</span><span class="n">HINTED_SIGNAL</span><span class="p">):</span>
+            <span class="c1"># When explicitly reading run control, the most obvious signal that people will be</span>
+            <span class="c1"># interested in is whether the block is in range or not.</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">in_range</span><span class="p">:</span> <span class="n">SignalR</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="n">epics_signal_r</span><span class="p">(</span><span class="nb">bool</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">prefix</span><span class="si">}</span><span class="s2">INRANGE&quot;</span><span class="p">)</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;Whether run-control is currently in-range.&quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">low_limit</span><span class="p">:</span> <span class="n">SignalRW</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="n">epics_signal_rw</span><span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">prefix</span><span class="si">}</span><span class="s2">LOW&quot;</span><span class="p">)</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Run-control low limit.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">high_limit</span><span class="p">:</span> <span class="n">SignalRW</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="n">epics_signal_rw</span><span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">prefix</span><span class="si">}</span><span class="s2">HIGH&quot;</span><span class="p">)</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Run-control high limit.&quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">suspend_if_invalid</span><span class="p">:</span> <span class="n">SignalRW</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="n">epics_signal_rw</span><span class="p">(</span><span class="nb">bool</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">prefix</span><span class="si">}</span><span class="s2">SOI&quot;</span><span class="p">)</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Whether run-control should suspend data collection on invalid values.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">enabled</span><span class="p">:</span> <span class="n">SignalRW</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="n">epics_signal_rw</span><span class="p">(</span><span class="nb">bool</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">prefix</span><span class="si">}</span><span class="s2">ENABLE&quot;</span><span class="p">)</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Run-control enabled.&quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">out_time</span><span class="p">:</span> <span class="n">SignalR</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="n">epics_signal_r</span><span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">prefix</span><span class="si">}</span><span class="s2">OUT:TIME&quot;</span><span class="p">)</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Run-control time outside limits.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">in_time</span><span class="p">:</span> <span class="n">SignalR</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="n">epics_signal_r</span><span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">prefix</span><span class="si">}</span><span class="s2">IN:TIME&quot;</span><span class="p">)</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Run-control time inside limits.&quot;&quot;&quot;</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="BlockR">
+<a class="viewcode-back" href="../../../generated/ibex_bluesky_core.devices.block.html#ibex_bluesky_core.devices.block.BlockR">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">BlockR</span><span class="p">(</span><span class="n">StandardReadable</span><span class="p">,</span> <span class="n">Triggerable</span><span class="p">,</span> <span class="n">Generic</span><span class="p">[</span><span class="n">T</span><span class="p">]):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Read-only block.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">datatype</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">T</span><span class="p">],</span> <span class="n">prefix</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">block_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Device representing an IBEX readable block of arbitrary data type.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            datatype: the type of data in this block</span>
+<span class="sd">                (e.g. :py:obj:`str`, :py:obj:`int`, :py:obj:`float`)</span>
+<span class="sd">            prefix: the current instrument&#39;s PV prefix</span>
+<span class="sd">            block_name: the name of the block</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_children_as_readables</span><span class="p">(</span><span class="n">StandardReadableFormat</span><span class="o">.</span><span class="n">HINTED_SIGNAL</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">readback</span><span class="p">:</span> <span class="n">SignalR</span><span class="p">[</span><span class="n">T</span><span class="p">]</span> <span class="o">=</span> <span class="n">epics_signal_r</span><span class="p">(</span><span class="n">datatype</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">prefix</span><span class="si">}</span><span class="s2">CS:SB:</span><span class="si">{</span><span class="n">block_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;Readback value. This is the hinted signal for a block.&quot;&quot;&quot;</span>
+
+        <span class="c1"># Run control doesn&#39;t need to be read by default</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">run_control</span><span class="p">:</span> <span class="n">RunControl</span> <span class="o">=</span> <span class="n">RunControl</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">prefix</span><span class="si">}</span><span class="s2">CS:SB:</span><span class="si">{</span><span class="n">block_name</span><span class="si">}</span><span class="s2">:RC:&quot;</span><span class="p">)</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Run-control settings for this block.&quot;&quot;&quot;</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">block_name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">readback</span><span class="o">.</span><span class="n">set_name</span><span class="p">(</span><span class="n">block_name</span><span class="p">)</span>
+
+<div class="viewcode-block" id="BlockR.trigger">
+<a class="viewcode-back" href="../../../generated/ibex_bluesky_core.devices.block.html#ibex_bluesky_core.devices.block.BlockR.trigger">[docs]</a>
+    <span class="nd">@AsyncStatus</span><span class="o">.</span><span class="n">wrap</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">trigger</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Blocks do not do anything when triggered.</span>
+
+<span class="sd">        This method implements :py:obj:`bluesky.protocols.Triggerable`,</span>
+<span class="sd">        and should not be called directly.</span>
+
+<span class="sd">        This empty implementation is provided to allow using blocks in</span>
+<span class="sd">        adaptive scans.</span>
+<span class="sd">        &quot;&quot;&quot;</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Debug representation of this block.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">(name=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">)&quot;</span></div>
+
+
+
+<div class="viewcode-block" id="BlockRw">
+<a class="viewcode-back" href="../../../generated/ibex_bluesky_core.devices.block.html#ibex_bluesky_core.devices.block.BlockRw">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">BlockRw</span><span class="p">(</span><span class="n">BlockR</span><span class="p">[</span><span class="n">T</span><span class="p">],</span> <span class="n">NamedMovable</span><span class="p">[</span><span class="n">T</span><span class="p">]):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Device representing an IBEX read/write block of arbitrary data type.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">datatype</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">T</span><span class="p">],</span>
+        <span class="n">prefix</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">block_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">write_config</span><span class="p">:</span> <span class="n">BlockWriteConfig</span><span class="p">[</span><span class="n">T</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">sp_suffix</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;:SP&quot;</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Device representing an IBEX read/write block of arbitrary data type.</span>
+
+<span class="sd">        The setpoint is not added to ``read()`` by default. For most cases where setpoint readback</span>
+<span class="sd">        functionality is desired, :py:obj:`~ibex_bluesky_core.devices.block.BlockRwRbv` is a more</span>
+<span class="sd">        suitable type.</span>
+
+<span class="sd">        If you *explicitly* need to read the setpoint from a</span>
+<span class="sd">        :py:obj:`~ibex_bluesky_core.devices.block.BlockRw`, you can do so in a plan with:</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            import bluesky.plan_stubs as bps</span>
+
+<span class="sd">            def plan():</span>
+<span class="sd">                block: BlockRw = ...</span>
+<span class="sd">                yield from bps.rd(block.setpoint)</span>
+
+<span class="sd">        But note that this does not read back the setpoint from hardware, but rather the setpoint</span>
+<span class="sd">        which was last sent by EPICS.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            datatype: the type of data in this block (e.g. str, int, float)</span>
+<span class="sd">            prefix: the current instrument&#39;s PV prefix</span>
+<span class="sd">            block_name: the name of the block</span>
+<span class="sd">            write_config: Settings which control how this device will set the underlying PVs</span>
+<span class="sd">            sp_suffix: Suffix to append to PV for the setpoint. Defaults to &quot;:SP&quot; but can</span>
+<span class="sd">                be set to empty string to read and write to exactly the same PV.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_write_config</span><span class="p">:</span> <span class="n">BlockWriteConfig</span><span class="p">[</span><span class="n">T</span><span class="p">]</span> <span class="o">=</span> <span class="n">write_config</span> <span class="ow">or</span> <span class="n">BlockWriteConfig</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">setpoint</span><span class="p">:</span> <span class="n">SignalRW</span><span class="p">[</span><span class="n">T</span><span class="p">]</span> <span class="o">=</span> <span class="n">epics_signal_rw</span><span class="p">(</span>
+            <span class="n">datatype</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">prefix</span><span class="si">}</span><span class="s2">CS:SB:</span><span class="si">{</span><span class="n">block_name</span><span class="si">}{</span><span class="n">sp_suffix</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="n">wait</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_write_config</span><span class="o">.</span><span class="n">use_completion_callback</span><span class="p">,</span>
+        <span class="p">)</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;The setpoint for this block.&quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_write_config</span><span class="o">.</span><span class="n">use_global_moving_flag</span><span class="p">:</span>
+            <span class="c1"># Misleading PV name... says it&#39;s a str but it&#39;s really a bi record.</span>
+            <span class="c1"># Only link to this if we need to (i.e. if use_global_moving_flag was requested)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">global_moving</span> <span class="o">=</span> <span class="n">epics_signal_r</span><span class="p">(</span><span class="nb">bool</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">prefix</span><span class="si">}</span><span class="s2">CS:MOT:MOVING:STR&quot;</span><span class="p">)</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">datatype</span><span class="o">=</span><span class="n">datatype</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="n">prefix</span><span class="p">,</span> <span class="n">block_name</span><span class="o">=</span><span class="n">block_name</span><span class="p">)</span>
+
+<div class="viewcode-block" id="BlockRw.set">
+<a class="viewcode-back" href="../../../generated/ibex_bluesky_core.devices.block.html#ibex_bluesky_core.devices.block.BlockRw.set">[docs]</a>
+    <span class="nd">@AsyncStatus</span><span class="o">.</span><span class="n">wrap</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">set</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">T</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the setpoint of this block.</span>
+
+<span class="sd">        This method implements :py:obj:`bluesky.protocols.Movable`, and should not be</span>
+<span class="sd">        called directly.</span>
+
+<span class="sd">        From a plan, set a block using:</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            import bluesky.plan_stubs as bps</span>
+
+<span class="sd">            def my_plan():</span>
+<span class="sd">                block = BlockRw(...)</span>
+<span class="sd">                yield from bps.mv(block, value)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">do_set</span><span class="p">(</span><span class="n">setpoint</span><span class="p">:</span> <span class="n">T</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Setting Block </span><span class="si">%s</span><span class="s2"> to </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">setpoint</span><span class="p">)</span>
+            <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">setpoint</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">setpoint</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Got completion callback from setting block </span><span class="si">%s</span><span class="s2"> to </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">setpoint</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_write_config</span><span class="o">.</span><span class="n">use_global_moving_flag</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                    <span class="s2">&quot;Waiting for global moving flag on setting block </span><span class="si">%s</span><span class="s2"> to </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">setpoint</span>
+                <span class="p">)</span>
+                <span class="c1"># Paranoid sleep - ensure that the global flag has had a chance to go into moving,</span>
+                <span class="c1"># otherwise there could be a race condition where we check the flag before the move</span>
+                <span class="c1"># has even started.</span>
+                <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">GLOBAL_MOVING_FLAG_PRE_WAIT</span><span class="p">)</span>
+                <span class="k">await</span> <span class="n">wait_for_value</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">global_moving</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                    <span class="s2">&quot;Done wait for global moving flag on setting block </span><span class="si">%s</span><span class="s2"> to </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                    <span class="n">setpoint</span><span class="p">,</span>
+                <span class="p">)</span>
+
+            <span class="c1"># Wait for the _set_success_func to return true.</span>
+            <span class="c1"># This uses an &quot;async for&quot; to loop over items from observe_value, which is an async</span>
+            <span class="c1"># generator. See documentation on &quot;observe_value&quot; or python &quot;async for&quot; for more details</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_write_config</span><span class="o">.</span><span class="n">set_success_func</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                    <span class="s2">&quot;Waiting for set_success_func on setting block </span><span class="si">%s</span><span class="s2"> to </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">setpoint</span>
+                <span class="p">)</span>
+                <span class="k">async</span> <span class="k">for</span> <span class="n">actual_value</span> <span class="ow">in</span> <span class="n">observe_value</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">readback</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_write_config</span><span class="o">.</span><span class="n">set_success_func</span><span class="p">(</span><span class="n">setpoint</span><span class="p">,</span> <span class="n">actual_value</span><span class="p">):</span>
+                        <span class="k">break</span>
+
+        <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">set_and_settle</span><span class="p">(</span><span class="n">setpoint</span><span class="p">:</span> <span class="n">T</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_write_config</span><span class="o">.</span><span class="n">set_timeout_s</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">wait_for</span><span class="p">(</span><span class="n">do_set</span><span class="p">(</span><span class="n">setpoint</span><span class="p">),</span> <span class="n">timeout</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_write_config</span><span class="o">.</span><span class="n">set_timeout_s</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">await</span> <span class="n">do_set</span><span class="p">(</span><span class="n">setpoint</span><span class="p">)</span>
+
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                <span class="s2">&quot;Waiting for configured settle time (</span><span class="si">%f</span><span class="s2"> seconds) on block </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_write_config</span><span class="o">.</span><span class="n">settle_time_s</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_write_config</span><span class="o">.</span><span class="n">settle_time_s</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_write_config</span><span class="o">.</span><span class="n">timeout_is_error</span><span class="p">:</span>
+            <span class="k">await</span> <span class="n">set_and_settle</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">await</span> <span class="n">set_and_settle</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">TimeoutError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                    <span class="s2">&quot;block set </span><span class="si">%s</span><span class="s2"> value=</span><span class="si">%s</span><span class="s2"> failed with </span><span class="si">%s</span><span class="s2">, but continuing anyway because &quot;</span>
+                    <span class="s2">&quot;continue_on_failed_write is set.&quot;</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                    <span class="n">value</span><span class="p">,</span>
+                    <span class="n">e</span><span class="p">,</span>
+                <span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;block set complete </span><span class="si">%s</span><span class="s2"> value=</span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="BlockRwRbv">
+<a class="viewcode-back" href="../../../generated/ibex_bluesky_core.devices.block.html#ibex_bluesky_core.devices.block.BlockRwRbv">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">BlockRwRbv</span><span class="p">(</span><span class="n">BlockRw</span><span class="p">[</span><span class="n">T</span><span class="p">],</span> <span class="n">Locatable</span><span class="p">[</span><span class="n">T</span><span class="p">]):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Device representing an IBEX read/write/setpoint readback block of arbitrary data type.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">datatype</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">T</span><span class="p">],</span>
+        <span class="n">prefix</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">block_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">write_config</span><span class="p">:</span> <span class="n">BlockWriteConfig</span><span class="p">[</span><span class="n">T</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Device representing an IBEX read/write/setpoint readback block of arbitrary data type.</span>
+
+<span class="sd">        The setpoint readback is added to read(), but not hints(), by default. If you do not have</span>
+<span class="sd">        a setpoint readback, use :py:obj:`~ibex_bluesky_core.devices.block.BlockRw` instead.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            datatype: the type of data in this block (e.g. str, int, float)</span>
+<span class="sd">            prefix: the current instrument&#39;s PV prefix</span>
+<span class="sd">            block_name: the name of the block</span>
+<span class="sd">            write_config: Settings which control how this device will set the underlying PVs</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_children_as_readables</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">setpoint_readback</span><span class="p">:</span> <span class="n">SignalR</span><span class="p">[</span><span class="n">T</span><span class="p">]</span> <span class="o">=</span> <span class="n">epics_signal_r</span><span class="p">(</span>
+                <span class="n">datatype</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">prefix</span><span class="si">}</span><span class="s2">CS:SB:</span><span class="si">{</span><span class="n">block_name</span><span class="si">}</span><span class="s2">:SP:RBV&quot;</span>
+            <span class="p">)</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;The setpoint-readback for this block.&quot;&quot;&quot;</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">datatype</span><span class="o">=</span><span class="n">datatype</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="n">prefix</span><span class="p">,</span> <span class="n">block_name</span><span class="o">=</span><span class="n">block_name</span><span class="p">,</span> <span class="n">write_config</span><span class="o">=</span><span class="n">write_config</span>
+        <span class="p">)</span>
+
+<div class="viewcode-block" id="BlockRwRbv.locate">
+<a class="viewcode-back" href="../../../generated/ibex_bluesky_core.devices.block.html#ibex_bluesky_core.devices.block.BlockRwRbv.locate">[docs]</a>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">locate</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Location</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the current :py:obj:`~bluesky.protocols.Location` of this block.</span>
+
+<span class="sd">        This method implements :py:obj:`bluesky.protocols.Locatable`, and should not be</span>
+<span class="sd">        called directly.</span>
+
+<span class="sd">        From a plan, locate a block using:</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            import bluesky.plan_stubs as bps</span>
+
+<span class="sd">            def my_plan():</span>
+<span class="sd">                block: BlockRwRbv = ...</span>
+<span class="sd">                location = yield from bps.locate(block)</span>
+
+<span class="sd">        If you only need the current value, rather than the value and the setpoint-readback, use:</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            import bluesky.plan_stubs as bps</span>
+
+<span class="sd">            def my_plan():</span>
+<span class="sd">                block: BlockRwRbv = ...</span>
+<span class="sd">                value = yield from bps.rd(block)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;locating block </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="n">actual</span><span class="p">,</span> <span class="n">sp_rbv</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">readback</span><span class="o">.</span><span class="n">get_value</span><span class="p">(),</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">setpoint_readback</span><span class="o">.</span><span class="n">get_value</span><span class="p">(),</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;readback&quot;</span><span class="p">:</span> <span class="n">actual</span><span class="p">,</span>
+            <span class="s2">&quot;setpoint&quot;</span><span class="p">:</span> <span class="n">sp_rbv</span><span class="p">,</span>
+        <span class="p">}</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="BlockMot">
+<a class="viewcode-back" href="../../../generated/ibex_bluesky_core.devices.block.html#ibex_bluesky_core.devices.block.BlockMot">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">BlockMot</span><span class="p">(</span><span class="n">Motor</span><span class="p">,</span> <span class="n">Movable</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="n">HasName</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Device representing an IBEX block pointing at a motor.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">prefix</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">block_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a new motor-record block.</span>
+
+<span class="sd">        The ``BlockMot`` object supports motion-specific functionality such as:</span>
+
+<span class="sd">        - Stopping if a scan is aborted (supports the bluesky</span>
+<span class="sd">          :py:obj:`~bluesky.protocols.Stoppable` protocol)</span>
+<span class="sd">        - Limit checking (before a move starts - supports the bluesky</span>
+<span class="sd">          :py:obj:`~bluesky.protocols.Checkable` protocol)</span>
+<span class="sd">        - Automatic calculation of move timeouts based on motor velocity</span>
+<span class="sd">        - Fly scanning</span>
+
+<span class="sd">        However, it generally relies on the underlying motor being &quot;well-behaved&quot;. For example, a</span>
+<span class="sd">        motor which does many retries may exceed the simple default timeout based on velocity (it</span>
+<span class="sd">        is possible to explicitly specify a timeout on set() to override this).</span>
+
+<span class="sd">        Blocks pointing at motors do not take a</span>
+<span class="sd">        :py:obj:`~ibex_bluesky_core.devices.block.BlockWriteConfig` parameter, as these</span>
+<span class="sd">        parameters duplicate functionality which already exists in the motor record. The mapping is:</span>
+
+<span class="sd">        ``use_completion_callback``:</span>
+<span class="sd">            Motors always use completion callbacks to check whether motion has completed. Whether to</span>
+<span class="sd">            wait on that completion callback can be configured by the &#39;wait&#39; keyword argument on</span>
+<span class="sd">            set().</span>
+<span class="sd">        ``set_success_func``:</span>
+<span class="sd">            Use ``.RDBD`` and ``.RTRY`` to control motor retries if the position has not been</span>
+<span class="sd">            reached to within a specified tolerance. Note that motors which retry a lot may</span>
+<span class="sd">            exceed the default motion timeout which is calculated based on velocity,</span>
+<span class="sd">            distance and acceleration.</span>
+<span class="sd">        ``set_timeout_s``:</span>
+<span class="sd">            A suitable timeout is calculated automatically based on velocity, distance and</span>
+<span class="sd">            acceleration as defined on the motor record.</span>
+<span class="sd">        ``settle_time_s``:</span>
+<span class="sd">            Use ``.DLY`` on the motor record to configure this.</span>
+<span class="sd">        ``use_global_moving_flag``:</span>
+<span class="sd">            This is unnecessary for a single motor block, as a completion callback will always be</span>
+<span class="sd">            used instead to detect when a single move has finished.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">run_control</span> <span class="o">=</span> <span class="n">RunControl</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">prefix</span><span class="si">}</span><span class="s2">CS:SB:</span><span class="si">{</span><span class="n">block_name</span><span class="si">}</span><span class="s2">:RC:&quot;</span><span class="p">)</span>
+
+        <span class="c1"># GWBLOCK aliases .VAL to .RBV on a motor record for a block pointing at MOT:MTRxxxx.RBV,</span>
+        <span class="c1"># which is what we have recommended to our users for motor blocks... That means that you</span>
+        <span class="c1"># can&#39;t write to .VAL on a motor block. ophyd_async (reasonably) assumes you can write to</span>
+        <span class="c1"># .VAL for a motor which you want to move.</span>
+        <span class="c1">#</span>
+        <span class="c1"># However, we also have motor record aliases for :SP and :SP:RBV, which *don&#39;t* get mangled</span>
+        <span class="c1"># by GWBLOCK in that way. So by pointing at CS:SB:blockname:SP:RBV rather than</span>
+        <span class="c1"># CS:SB:blockname here, we avoid a write access exception when moving a motor block.</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">prefix</span><span class="si">}</span><span class="s2">CS:SB:</span><span class="si">{</span><span class="n">block_name</span><span class="si">}</span><span class="s2">:SP:RBV&quot;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">block_name</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Debug representation of this block.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">(name=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">)&quot;</span>
+
+<div class="viewcode-block" id="BlockMot.set">
+<a class="viewcode-back" href="../../../generated/ibex_bluesky_core.devices.block.html#ibex_bluesky_core.devices.block.BlockMot.set">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set</span><span class="p">(</span>  <span class="c1"># pyright: ignore</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="n">CalculatableTimeout</span> <span class="o">=</span> <span class="n">CALCULATE_TIMEOUT</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">WatchableAsyncStatus</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Pass through ``set`` to :py:obj:`ophyd_async.epics.motor.Motor.set`.</span>
+
+<span class="sd">        This is needed so that type-checker correctly understands the type of set.</span>
+
+<span class="sd">        This method will raise</span>
+<span class="sd">        :external+ophyd_async:py:obj:`ophyd_async.epics.motor.MotorLimitsError`</span>
+<span class="sd">        if the requested position was outside the motor&#39;s limits.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">timeout</span><span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="block_r">
+<a class="viewcode-back" href="../../../generated/ibex_bluesky_core.devices.block.html#ibex_bluesky_core.devices.block.block_r">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">block_r</span><span class="p">(</span><span class="n">datatype</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">T</span><span class="p">],</span> <span class="n">block_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BlockR</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get a local read-only block for the current instrument.</span>
+
+<span class="sd">    See documentation of :py:obj:`~ibex_bluesky_core.devices.block.BlockR` for more information.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">BlockR</span><span class="p">(</span><span class="n">datatype</span><span class="o">=</span><span class="n">datatype</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="n">get_pv_prefix</span><span class="p">(),</span> <span class="n">block_name</span><span class="o">=</span><span class="n">block_name</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="block_rw">
+<a class="viewcode-back" href="../../../generated/ibex_bluesky_core.devices.block.html#ibex_bluesky_core.devices.block.block_rw">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">block_rw</span><span class="p">(</span>
+    <span class="n">datatype</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">T</span><span class="p">],</span>
+    <span class="n">block_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">write_config</span><span class="p">:</span> <span class="n">BlockWriteConfig</span><span class="p">[</span><span class="n">T</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">sp_suffix</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;:SP&quot;</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BlockRw</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get a local read-write block for the current instrument.</span>
+
+<span class="sd">    See documentation of :py:obj:`~ibex_bluesky_core.devices.block.BlockRw` for more information.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">BlockRw</span><span class="p">(</span>
+        <span class="n">datatype</span><span class="o">=</span><span class="n">datatype</span><span class="p">,</span>
+        <span class="n">prefix</span><span class="o">=</span><span class="n">get_pv_prefix</span><span class="p">(),</span>
+        <span class="n">block_name</span><span class="o">=</span><span class="n">block_name</span><span class="p">,</span>
+        <span class="n">write_config</span><span class="o">=</span><span class="n">write_config</span><span class="p">,</span>
+        <span class="n">sp_suffix</span><span class="o">=</span><span class="n">sp_suffix</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="block_w">
+<a class="viewcode-back" href="../../../generated/ibex_bluesky_core.devices.block.html#ibex_bluesky_core.devices.block.block_w">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">block_w</span><span class="p">(</span>
+    <span class="n">datatype</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">T</span><span class="p">],</span> <span class="n">block_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">write_config</span><span class="p">:</span> <span class="n">BlockWriteConfig</span><span class="p">[</span><span class="n">T</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BlockRw</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get a write-only block for the current instrument.</span>
+
+<span class="sd">    This is a :py:obj:`~ibex_bluesky_core.devices.block.BlockRw` instance with no SP suffix.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">BlockRw</span><span class="p">(</span>
+        <span class="n">datatype</span><span class="o">=</span><span class="n">datatype</span><span class="p">,</span>
+        <span class="n">prefix</span><span class="o">=</span><span class="n">get_pv_prefix</span><span class="p">(),</span>
+        <span class="n">block_name</span><span class="o">=</span><span class="n">block_name</span><span class="p">,</span>
+        <span class="n">write_config</span><span class="o">=</span><span class="n">write_config</span><span class="p">,</span>
+        <span class="n">sp_suffix</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="block_rw_rbv">
+<a class="viewcode-back" href="../../../generated/ibex_bluesky_core.devices.block.html#ibex_bluesky_core.devices.block.block_rw_rbv">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">block_rw_rbv</span><span class="p">(</span>
+    <span class="n">datatype</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">T</span><span class="p">],</span> <span class="n">block_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">write_config</span><span class="p">:</span> <span class="n">BlockWriteConfig</span><span class="p">[</span><span class="n">T</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BlockRwRbv</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get a local read/write/setpoint readback block for the current instrument.</span>
+
+<span class="sd">    See documentation of :py:obj:`~ibex_bluesky_core.devices.block.BlockRwRbv` for more information.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">BlockRwRbv</span><span class="p">(</span>
+        <span class="n">datatype</span><span class="o">=</span><span class="n">datatype</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="n">get_pv_prefix</span><span class="p">(),</span> <span class="n">block_name</span><span class="o">=</span><span class="n">block_name</span><span class="p">,</span> <span class="n">write_config</span><span class="o">=</span><span class="n">write_config</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="block_mot">
+<a class="viewcode-back" href="../../../generated/ibex_bluesky_core.devices.block.html#ibex_bluesky_core.devices.block.block_mot">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">block_mot</span><span class="p">(</span><span class="n">block_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BlockMot</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get a local block pointing at a motor record for the local instrument.</span>
+
+<span class="sd">    See documentation of :py:obj:`~ibex_bluesky_core.devices.block.BlockMot` for more information.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">BlockMot</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="n">get_pv_prefix</span><span class="p">(),</span> <span class="n">block_name</span><span class="o">=</span><span class="n">block_name</span><span class="p">)</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

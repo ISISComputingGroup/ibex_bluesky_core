@@ -1,0 +1,778 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ibex_bluesky_core.run_engine &mdash; ibex_bluesky_core 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=dc476284" />
+
+  
+    <link rel="shortcut icon" href="../../_static/favicon.svg"/>
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+      <script type="module">import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11.12.1/dist/mermaid.esm.min.mjs";
+
+
+
+
+
+const initStyles = () => {
+    const defaultStyle = document.createElement('style');
+    defaultStyle.textContent = `pre.mermaid {
+    /* Same as .mermaid-container > pre */
+    display: block;
+    width: 100%;
+}
+
+pre.mermaid > svg {
+    /* Same as .mermaid-container > pre > svg */
+    height: 500px;
+    width: 100%;
+    max-width: 100% !important;
+}`;
+    document.head.appendChild(defaultStyle);
+
+    const fullscreenStyle = document.createElement('style');
+    fullscreenStyle.textContent = `.mermaid-container {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+}
+
+.mermaid-container > pre {
+    display: block;
+    width: 100%;
+}
+
+.mermaid-container > pre > svg {
+    height: 500px;
+    width: 100%;
+    max-width: 100% !important;
+}
+
+.mermaid-fullscreen-btn {
+    width: 28px;
+    height: 28px;
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid rgba(0, 0, 0, 0.3);
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    font-size: 14px;
+    line-height: 1;
+    padding: 0;
+    color: #333;
+}
+
+.mermaid-fullscreen-btn:hover {
+    opacity: 100% !important;
+    background: rgba(255, 255, 255, 1);
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+    transform: scale(1.1);
+}
+
+.mermaid-fullscreen-btn.dark-theme {
+    background: rgba(50, 50, 50, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: #e0e0e0;
+}
+
+.mermaid-fullscreen-btn.dark-theme:hover {
+    background: rgba(60, 60, 60, 1);
+    box-shadow: 0 3px 10px rgba(255, 255, 255, 0.2);
+}
+
+.mermaid-fullscreen-modal {
+    display: none;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 95vw;
+    height: 100vh;
+    background: rgba(255, 255, 255, 0.98);
+    z-index: 9999;
+    padding: 20px;
+    overflow: auto;
+}
+
+.mermaid-fullscreen-modal.dark-theme {
+    background: rgba(0, 0, 0, 0.98);
+}
+
+.mermaid-fullscreen-modal.active {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mermaid-container-fullscreen {
+    position: relative;
+    width: 95vw;
+    height: 90vh;
+    max-width: 95vw;
+    max-height: 90vh;
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    overflow: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mermaid-container-fullscreen.dark-theme {
+    background: #1a1a1a;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
+}
+
+.mermaid-container-fullscreen pre.mermaid {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mermaid-container-fullscreen .mermaid svg {
+    height: 100% !important;
+    width: 100% !important;
+    cursor: grab;
+}
+
+.mermaid-fullscreen-close {
+    position: fixed !important;
+    top: 20px !important;
+    right: 20px !important;
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    border-radius: 50%;
+    cursor: pointer;
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    transition: all 0.2s;
+    font-size: 24px;
+    line-height: 1;
+    color: #333;
+}
+
+.mermaid-fullscreen-close:hover {
+    background: white;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+    transform: scale(1.1);
+}
+
+.mermaid-fullscreen-close.dark-theme {
+    background: rgba(50, 50, 50, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #e0e0e0;
+}
+
+.mermaid-fullscreen-close.dark-theme:hover {
+    background: rgba(60, 60, 60, 1);
+    box-shadow: 0 6px 16px rgba(255, 255, 255, 0.2);
+}
+
+.mermaid-fullscreen-modal .mermaid-fullscreen-btn {
+    display: none !important;
+}`;
+    document.head.appendChild(fullscreenStyle);
+}
+
+// Detect if page has dark background
+const isDarkTheme = () => {
+    // We use a set of heuristics:
+    // 1. Check for common dark mode classes or attributes
+    // 2. Check computed background color brightness
+    if (document.documentElement.classList.contains('dark') ||
+        document.documentElement.getAttribute('data-theme') === 'dark' ||
+        document.body.classList.contains('dark') ||
+        document.body.getAttribute('data-theme') === 'dark') {
+        // console.log("Dark theme detected via class/attribute");
+        return true;
+    }
+    if (document.documentElement.classList.contains('light') ||
+        document.documentElement.getAttribute('data-theme') === 'light' ||
+        document.body.classList.contains('light') ||
+        document.body.getAttribute('data-theme') === 'light') {
+        // console.log("Light theme detected via class/attribute");
+        return false;
+    }
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        // console.log("Dark theme detected via prefers-color-scheme");
+        return true;
+    }
+    const bgColor = window.getComputedStyle(document.body).backgroundColor;
+    const match = bgColor.match(/rgb\((\d+),\s*(\d+),\s*(\d+)/);
+    if (match) {
+        const r = parseInt(match[1]);
+        const g = parseInt(match[2]);
+        const b = parseInt(match[3]);
+        const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+        // console.log("Background color brightness:", brightness);
+        return brightness < 128;
+    }
+    // console.log("No dark or light theme detected, defaulting to light theme");
+    return false;
+};
+
+let darkTheme = isDarkTheme();
+let modal = null;
+let modalContent = null;
+let previousScrollOffset = [window.scrollX, window.scrollY];
+
+const runMermaid = async (rerun) => {
+    console.log("Running mermaid diagrams, rerun =", rerun);
+    // clear all existing mermaid charts
+    let all_mermaids = document.querySelectorAll(".mermaid");
+
+    if (rerun) {
+        all_mermaids.forEach((el) => {
+            if(!el.hasAttribute("data-original-code")) {
+                // store original code
+                // console.log(`Storing original code for first run: `, el.innerHTML);
+                el.setAttribute('data-original-code', el.innerHTML);
+            }
+            if(el.getAttribute("data-processed") === "true") {
+                // remove and restore original
+                el.removeAttribute("data-processed");
+                // console.log(`Restoring original code for re-run: `, el.getAttribute('data-original-code'));
+                el.innerHTML = el.getAttribute('data-original-code');
+            } else {
+                // store original code
+                // console.log(`Storing original code for re-run: `, el.innerHTML);
+                el.setAttribute('data-original-code', el.innerHTML);
+            }
+        });
+        await mermaid.run();
+    }
+
+    all_mermaids = document.querySelectorAll(".mermaid");
+    const mermaids_processed = document.querySelectorAll(".mermaid[data-processed='true']");
+
+    if ("True" === "True") {
+        const mermaids_to_add_zoom = -1 === -1 ? all_mermaids.length : -1;
+        if(mermaids_to_add_zoom > 0) {
+            var svgs = d3.selectAll(".mermaid svg");
+            if(all_mermaids.length !== mermaids_processed.length) {
+                setTimeout(() => runMermaid(false), 200);
+                return;
+            } else if(svgs.size() !== mermaids_to_add_zoom) {
+                setTimeout(() => runMermaid(false), 200);
+                return;
+            } else {
+                svgs.each(function() {
+                    var svg = d3.select(this);
+                    svg.html("<g class='wrapper'>" + svg.html() + "</g>");
+                    var inner = svg.select("g");
+                    var zoom = d3.zoom().on("zoom", function(event) {
+                        inner.attr("transform", event.transform);
+                    });
+                    svg.call(zoom);
+                });
+            }
+        }
+    } else if(all_mermaids.length !== mermaids_processed.length) {
+        // Wait for mermaid to process all diagrams
+        setTimeout(() => runMermaid(false), 200);
+        return;
+    }
+
+    // Stop here if not adding fullscreen capability
+    if ("True" !== "True") return;
+
+    if (modal !== null ) {
+        // Destroy existing modal
+        modal.remove();
+        modal = null;
+        modalContent = null;
+    }
+
+    modal = document.createElement('div');
+    modal.className = 'mermaid-fullscreen-modal' + (darkTheme ? ' dark-theme' : '');
+    modal.setAttribute('role', 'dialog');
+    modal.setAttribute('aria-modal', 'true');
+    modal.setAttribute('aria-label', 'Fullscreen diagram viewer');
+    modal.innerHTML = `
+        <button class="mermaid-fullscreen-close${darkTheme ? ' dark-theme' : ''}" aria-label="Close fullscreen">✕</button>
+        <div class="mermaid-container-fullscreen${darkTheme ? ' dark-theme' : ''}"></div>
+    `;
+    document.body.appendChild(modal);
+
+    modalContent = modal.querySelector('.mermaid-container-fullscreen');
+    const closeBtn = modal.querySelector('.mermaid-fullscreen-close');
+
+    const closeModal = () => {
+        modal.classList.remove('active');
+        modalContent.innerHTML = '';
+        document.body.style.overflow = ''
+        window.scrollTo({left: previousScrollOffset[0], top: previousScrollOffset[1], behavior: 'instant'});
+    };
+
+    closeBtn.addEventListener('click', closeModal);
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) closeModal();
+    });
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && modal.classList.contains('active')) {
+            closeModal();
+        }
+    });
+
+    document.querySelectorAll('.mermaid').forEach((mermaidDiv) => {
+        if (mermaidDiv.parentNode.classList.contains('mermaid-container') ||
+            mermaidDiv.closest('.mermaid-fullscreen-modal')) {
+            // Already processed, adjust button class if needed
+            const existingBtn = mermaidDiv.parentNode.querySelector('.mermaid-fullscreen-btn');
+            if (existingBtn) {
+                existingBtn.className = 'mermaid-fullscreen-btn' + (darkTheme ? ' dark-theme' : '');
+            }
+            return;
+        }
+
+        const container = document.createElement('div');
+        container.className = 'mermaid-container';
+        mermaidDiv.parentNode.insertBefore(container, mermaidDiv);
+        container.appendChild(mermaidDiv);
+
+        const fullscreenBtn = document.createElement('button');
+        fullscreenBtn.className = 'mermaid-fullscreen-btn' + (darkTheme ? ' dark-theme' : '');
+        fullscreenBtn.setAttribute('aria-label', 'View diagram in fullscreen');
+        fullscreenBtn.textContent = '⛶';
+        fullscreenBtn.style.opacity = '50%';
+
+        // Calculate dynamic position based on diagram's margin and padding
+        const diagramStyle = window.getComputedStyle(mermaidDiv);
+        const marginTop = parseFloat(diagramStyle.marginTop) || 0;
+        const marginRight = parseFloat(diagramStyle.marginRight) || 0;
+        const paddingTop = parseFloat(diagramStyle.paddingTop) || 0;
+        const paddingRight = parseFloat(diagramStyle.paddingRight) || 0;
+        fullscreenBtn.style.top = `${marginTop + paddingTop + 4}px`;
+        fullscreenBtn.style.right = `${marginRight + paddingRight + 4}px`;
+
+        fullscreenBtn.addEventListener('click', () => {
+            previousScrollOffset = [window.scroll, window.scrollY];
+            const clone = mermaidDiv.cloneNode(true);
+            modalContent.innerHTML = '';
+            modalContent.appendChild(clone);
+
+            const svg = clone.querySelector('svg');
+            if (svg) {
+                svg.removeAttribute('width');
+                svg.removeAttribute('height');
+                svg.style.width = '100%';
+                svg.style.height = 'auto';
+                svg.style.maxWidth = '100%';
+                svg.style.sdisplay = 'block';
+
+                if ("True" === "True") {
+                    setTimeout(() => {
+                        const g = svg.querySelector('g');
+                        if (g) {
+                            var svgD3 = d3.select(svg);
+                            svgD3.html("<g class='wrapper'>" + svgD3.html() + "</g>");
+                            var inner = svgD3.select("g");
+                            var zoom = d3.zoom().on("zoom", function(event) {
+                                inner.attr("transform", event.transform);
+                            });
+                            svgD3.call(zoom);
+                        }
+                    }, 100);
+                }
+            }
+
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        });
+        container.appendChild(fullscreenBtn);
+    });
+};
+
+const load = async () => {
+    initStyles();
+
+    await runMermaid(true);
+
+    const reRunIfThemeChanges = async () => {
+        const newDarkTheme = isDarkTheme();
+        if (newDarkTheme !== darkTheme) {
+            darkTheme = newDarkTheme;
+            console.log("Theme change detected, re-running mermaid with", darkTheme ? "dark" : "default", "theme");
+            await mermaid.initialize(
+                {...JSON.parse(
+                    `{"startOnLoad": false}`
+                ),
+                ...{ darkMode: darkTheme, theme: darkTheme ? 'dark' : 'default' },
+                }
+            );
+            await runMermaid(true);
+        }
+    };
+
+    // Update theme classes when theme changes
+    const themeObserver = new MutationObserver(reRunIfThemeChanges);
+    themeObserver.observe(document.documentElement, {
+        attributes: true,
+        attributeFilter: ['class', 'style', 'data-theme']
+    });
+    themeObserver.observe(document.body, {
+        attributes: true,
+        attributeFilter: ['class', 'style', 'data-theme']
+    });
+};
+
+
+
+
+
+console.log("Initializing mermaid with", darkTheme ? "dark" : "default", "theme");
+mermaid.initialize(
+    {...JSON.parse(
+        `{"startOnLoad": false}`
+    ),
+    ...{ darkMode: darkTheme, theme: darkTheme ? 'dark' : 'default' },
+    }
+);
+
+window.addEventListener("load", load);</script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #343131" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            ibex_bluesky_core
+              <img src="../../_static/logo.svg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial/overview.html">Getting started</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Devices</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../devices/blocks.html">Blocks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devices/dae.html">DAE (Data Acquisition Electronics)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Callbacks</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../callbacks/isiscallbacks.html">ISIS Standard Callbacks (<code class="xref py py-obj docutils literal notranslate"><span class="pre">ISISCallbacks</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../callbacks/fitting.html">Fits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../callbacks/centre_of_mass.html">Centre of Mass</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../callbacks/plotting.html">Plotting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../callbacks/file_writing.html">File writing callbacks</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Plans</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../plans/plans.html">General Plans</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../plans/reflectometry.html">Reflectometry-specific Plans</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Plan stubs</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../plan_stubs/external_code.html">Calling external code (<code class="xref py py-obj docutils literal notranslate"><span class="pre">call_sync</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../plan_stubs/matplotlib_helpers.html">Matplotlib helpers (<code class="xref py py-obj docutils literal notranslate"><span class="pre">call_qt_aware</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../plan_stubs/plan_wrappers.html">Plan wrappers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../plan_stubs/polling.html">Continuous polling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../plan_stubs/redefining.html">Redefinition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../plan_stubs/user_input.html">User input helpers</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../_api.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../replotting_scans.html">Replaying documents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../architectural_decisions.html">Architectural Decisions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer_information.html">Developer Information</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #343131" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">ibex_bluesky_core</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">ibex_bluesky_core.run_engine</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for ibex_bluesky_core.run_engine</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Utilities for the bluesky run engine, configured for IBEX.&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">functools</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Generator</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">functools</span><span class="w"> </span><span class="kn">import</span> <span class="n">cache</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">threading</span><span class="w"> </span><span class="kn">import</span> <span class="n">Event</span><span class="p">,</span> <span class="n">Lock</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">cast</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">bluesky.preprocessors</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">bpp</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">bluesky.run_engine</span><span class="w"> </span><span class="kn">import</span> <span class="n">RunEngine</span><span class="p">,</span> <span class="n">RunEngineResult</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">bluesky.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">DuringTask</span><span class="p">,</span> <span class="n">Msg</span><span class="p">,</span> <span class="n">RunEngineControlException</span><span class="p">,</span> <span class="n">RunEngineInterrupted</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibex_bluesky_core.callbacks</span><span class="w"> </span><span class="kn">import</span> <span class="n">DocLoggingCallback</span><span class="p">,</span> <span class="n">KafkaCallback</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibex_bluesky_core.plan_stubs</span><span class="w"> </span><span class="kn">import</span> <span class="n">CALL_QT_AWARE_MSG_KEY</span><span class="p">,</span> <span class="n">CALL_SYNC_MSG_KEY</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibex_bluesky_core.preprocessors</span><span class="w"> </span><span class="kn">import</span> <span class="n">add_rb_number_processor</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibex_bluesky_core.run_engine._msg_handlers</span><span class="w"> </span><span class="kn">import</span> <span class="n">call_qt_aware_handler</span><span class="p">,</span> <span class="n">call_sync_handler</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibex_bluesky_core.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">is_matplotlib_backend_qt</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibex_bluesky_core.version</span><span class="w"> </span><span class="kn">import</span> <span class="n">version</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;get_run_engine&quot;</span><span class="p">,</span> <span class="s2">&quot;run_plan&quot;</span><span class="p">]</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">_DuringTask</span><span class="p">(</span><span class="n">DuringTask</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">block</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">blocking_event</span><span class="p">:</span> <span class="n">Event</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;On windows, event.wait() on the main thread is not interruptible by a CTRL-C.</span>
+
+<span class="sd">        Therefore, split the event.wait into many smaller event.waits, each with a 0.1 second</span>
+<span class="sd">        timeout. This allows:</span>
+<span class="sd">        - CTRL-C to be handled reasonably responsively for users</span>
+<span class="sd">        - returning as soon as possible after the event is set</span>
+<span class="sd">        - not busy-waiting</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">while</span> <span class="ow">not</span> <span class="n">blocking_event</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="mf">0.1</span><span class="p">):</span>
+            <span class="k">pass</span>
+
+
+<div class="viewcode-block" id="get_run_engine">
+<a class="viewcode-back" href="../../generated/ibex_bluesky_core.run_engine.html#ibex_bluesky_core.run_engine.get_run_engine">[docs]</a>
+<span class="nd">@cache</span>  <span class="c1"># functools.cache ensures we only ever create a single instance of the RunEngine</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_run_engine</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">RunEngine</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Acquire a :py:obj:`~bluesky.run_engine.RunEngine` with ISIS configuration.</span>
+
+<span class="sd">    This function should always be used in preference to creating a bluesky run engine manually.</span>
+
+<span class="sd">    This function is cached, meaning that the *same* run engine (using the same underlying event</span>
+<span class="sd">    loop) will be used if this function is called multiple times. Creating multiple run engine</span>
+<span class="sd">    instances is unlikely to be desired behaviour, though we cannot prevent users from creating a</span>
+<span class="sd">    :py:obj:`~bluesky.run_engine.RunEngine` from bluesky directly.</span>
+
+<span class="sd">    Basic usage:</span>
+
+<span class="sd">    - Get the IBEX run engine::</span>
+
+<span class="sd">        RE = get_run_engine()</span>
+
+<span class="sd">    - Run a plan::</span>
+
+<span class="sd">        from bluesky.plans import count  # Or any other plan</span>
+
+<span class="sd">        det = ...  # A &quot;detector&quot; object, for example a Block or Dae device.</span>
+<span class="sd">        RE(count([det]))</span>
+
+<span class="sd">    - Control the state of the run engine::</span>
+
+<span class="sd">        RE.abort(reason=&quot;...&quot;)  # Stop a plan, do cleanup, and mark as failed (e.g. bad data).</span>
+<span class="sd">        RE.stop()  # Stop a plan, do cleanup, mark as success&quot;(e.g. scan has moved past peak).</span>
+<span class="sd">        RE.halt()  # Stop a plan, don&#39;t do any cleanup, just abort with no further action.</span>
+<span class="sd">        RE.resume()  # Resume running a previously-paused plan.</span>
+
+<span class="sd">    - Subscribe to data emitted by this run engine::</span>
+
+<span class="sd">        RE.subscribe(lambda name, document: ...)</span>
+
+<span class="sd">    For full documentation about the run engine, see:</span>
+
+<span class="sd">    - :external+bluesky:ref:`tutorial_run_engine_setup`</span>
+<span class="sd">    - :external+bluesky:doc:`run_engine_api`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Creating new bluesky RunEngine&quot;</span><span class="p">)</span>
+    <span class="n">loop</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">new_event_loop</span><span class="p">()</span>
+
+    <span class="c1"># Only log *very* slow callbacks (in asyncio debug mode)</span>
+    <span class="c1"># Fitting/plotting can take more than the 100ms default.</span>
+    <span class="n">loop</span><span class="o">.</span><span class="n">slow_callback_duration</span> <span class="o">=</span> <span class="mi">500</span>
+
+    <span class="c1"># See https://github.com/bluesky/bluesky/pull/1770 for details</span>
+    <span class="c1"># We don&#39;t need to use our custom _DuringTask if matplotlib is</span>
+    <span class="c1"># configured to use Qt.</span>
+    <span class="n">dt</span> <span class="o">=</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">is_matplotlib_backend_qt</span><span class="p">()</span> <span class="k">else</span> <span class="n">_DuringTask</span><span class="p">()</span>
+
+    <span class="n">RE</span> <span class="o">=</span> <span class="n">RunEngine</span><span class="p">(</span>
+        <span class="n">loop</span><span class="o">=</span><span class="n">loop</span><span class="p">,</span>
+        <span class="n">during_task</span><span class="o">=</span><span class="n">dt</span><span class="p">,</span>
+        <span class="n">call_returns_result</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>  <span class="c1"># Will be default in a future bluesky version.</span>
+    <span class="p">)</span>
+
+    <span class="n">RE</span><span class="o">.</span><span class="n">md</span><span class="p">[</span><span class="s2">&quot;versions&quot;</span><span class="p">][</span><span class="s2">&quot;ibex_bluesky_core&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">version</span>
+
+    <span class="n">log_callback</span> <span class="o">=</span> <span class="n">DocLoggingCallback</span><span class="p">()</span>
+    <span class="n">RE</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="n">log_callback</span><span class="p">)</span>
+
+    <span class="n">kafka_callback</span> <span class="o">=</span> <span class="n">KafkaCallback</span><span class="p">(</span>
+        <span class="n">key</span><span class="o">=</span><span class="s2">&quot;doc&quot;</span><span class="p">,</span>
+        <span class="n">kafka_config</span><span class="o">=</span><span class="p">{</span>
+            <span class="s2">&quot;enable.idempotence&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="s2">&quot;log_level&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="s2">&quot;log.connection.close&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="p">},</span>
+    <span class="p">)</span>
+    <span class="n">RE</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="n">kafka_callback</span><span class="p">)</span>
+
+    <span class="n">RE</span><span class="o">.</span><span class="n">register_command</span><span class="p">(</span><span class="n">CALL_SYNC_MSG_KEY</span><span class="p">,</span> <span class="n">call_sync_handler</span><span class="p">)</span>
+    <span class="n">RE</span><span class="o">.</span><span class="n">register_command</span><span class="p">(</span><span class="n">CALL_QT_AWARE_MSG_KEY</span><span class="p">,</span> <span class="n">call_qt_aware_handler</span><span class="p">)</span>
+
+    <span class="n">RE</span><span class="o">.</span><span class="n">preprocessors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">functools</span><span class="o">.</span><span class="n">partial</span><span class="p">(</span><span class="n">bpp</span><span class="o">.</span><span class="n">plan_mutator</span><span class="p">,</span> <span class="n">msg_proc</span><span class="o">=</span><span class="n">add_rb_number_processor</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">RE</span></div>
+
+
+
+<span class="n">_RUN_PLAN_LOCK</span> <span class="o">=</span> <span class="n">Lock</span><span class="p">()</span>  <span class="c1"># Explicitly *not* an RLock - RunEngine is not reentrant.</span>
+
+
+<div class="viewcode-block" id="run_plan">
+<a class="viewcode-back" href="../../generated/ibex_bluesky_core.run_engine.html#ibex_bluesky_core.run_engine.run_plan">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">run_plan</span><span class="p">(</span>
+    <span class="n">plan</span><span class="p">:</span> <span class="n">Generator</span><span class="p">[</span><span class="n">Msg</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+    <span class="o">**</span><span class="n">metadata_kw</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>  <span class="c1"># noqa ANN401 - this really does accept anything serializable</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RunEngineResult</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Run a plan non-interactively.</span>
+
+<span class="sd">    .. Warning::</span>
+
+<span class="sd">        The usual way to run a plan in bluesky is by calling ``RE(plan(...))`` interactively.</span>
+<span class="sd">        An ``RE`` object is already available in recent versions of the IBEX user interface,</span>
+<span class="sd">        or can be acquired by calling ``get_run_engine()``.</span>
+
+<span class="sd">        Use of this function is **not recommended**, but it is nevertheless provided as an escape</span>
+<span class="sd">        hatch for workflows which would otherwise be difficult to express or where parts of scanning</span>
+<span class="sd">        scripts have not, or cannot, be migrated to bluesky.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        plan (positional-only): The plan to run. This is typically a generator instance.</span>
+<span class="sd">        metadata_kw (optional, keyword-only): Keyword arguments (metadata) to pass to the bluesky</span>
+<span class="sd">            run engine.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        A :py:obj:`~bluesky.run_engine.RunEngineResult` instance.</span>
+<span class="sd">        The return value of the plan can then be accessed using</span>
+<span class="sd">        the ``plan_result`` attribute.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        RuntimeError: if the run engine was not idle at the start of this call.</span>
+<span class="sd">        RuntimeError: if a reentrant call to the run engine is detected.</span>
+<span class="sd">        :py:obj:`bluesky.utils.RunEngineInterrupted`: if the user, or the plan itself, explicitly</span>
+<span class="sd">            requests an interruption.</span>
+
+<span class="sd">    Calling a plan using this function means that keyboard-interrupt handling will be</span>
+<span class="sd">    degraded: all keyboard interrupts will now force an immediate abort of the plan, using</span>
+<span class="sd">    :py:obj:`RE.abort() &lt;bluesky.run_engine.RunEngine.abort&gt;`, rather than giving the</span>
+<span class="sd">    possibility of gracefully resuming. Cleanup handlers will execute during the</span>
+<span class="sd">    :py:obj:`RE.abort() &lt;bluesky.run_engine.RunEngine.abort&gt;` call.</span>
+
+<span class="sd">    The bluesky run engine is not reentrant. It is a programming error to attempt to run a plan</span>
+<span class="sd">    using this function, from within a plan. To call a sub plan from within an outer plan, use::</span>
+
+<span class="sd">        def outer_plan():</span>
+<span class="sd">            ...</span>
+<span class="sd">            yield from subplan(...)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">RE</span> <span class="o">=</span> <span class="n">get_run_engine</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">_RUN_PLAN_LOCK</span><span class="o">.</span><span class="n">acquire</span><span class="p">(</span><span class="n">blocking</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+            <span class="s2">&quot;reentrant run_plan call attempted; this cannot be supported.</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="s2">&quot;It is a programming error to attempt to run a plan using run_plan &quot;</span>
+            <span class="s2">&quot;from within a plan.</span><span class="se">\n</span><span class="s2">&quot;</span>
+            <span class="s2">&quot;To call a sub plan from within an outer plan, &quot;</span>
+            <span class="s2">&quot;use &#39;yield from subplan(...)&#39; instead.</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">RE</span><span class="o">.</span><span class="n">state</span> <span class="o">!=</span> <span class="s2">&quot;idle&quot;</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                <span class="s2">&quot;Cannot run plan; RunEngine is not idle at start of run_plan call. &quot;</span>
+                <span class="s2">&quot;You may need to call RE.abort() to abort after a previous plan.&quot;</span>
+            <span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">cast</span><span class="p">(</span><span class="n">RunEngineResult</span><span class="p">,</span> <span class="n">RE</span><span class="p">(</span><span class="n">plan</span><span class="p">,</span> <span class="o">**</span><span class="n">metadata_kw</span><span class="p">))</span>
+        <span class="k">except</span> <span class="p">(</span><span class="n">RunEngineInterrupted</span><span class="p">,</span> <span class="n">RunEngineControlException</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">RunEngineInterrupted</span><span class="p">(</span>
+                <span class="s2">&quot;bluesky RunEngine interrupted; not resumable as running via run_plan&quot;</span>
+            <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="kc">None</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">RE</span><span class="o">.</span><span class="n">state</span> <span class="o">!=</span> <span class="s2">&quot;idle&quot;</span><span class="p">:</span>
+                <span class="c1"># Safest reasonable default? Don&#39;t want to halt()</span>
+                <span class="c1"># as that wouldn&#39;t do cleanup e.g. dae settings</span>
+                <span class="n">RE</span><span class="o">.</span><span class="n">abort</span><span class="p">()</span>
+    <span class="k">finally</span><span class="p">:</span>
+        <span class="n">_RUN_PLAN_LOCK</span><span class="o">.</span><span class="n">release</span><span class="p">()</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,208 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Local development &mdash; ibex_bluesky_core 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=dc476284" />
+
+  
+    <link rel="shortcut icon" href="../_static/favicon.svg"/>
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Notes on Sphinx and addons" href="sphinx_notes.html" />
+    <link rel="prev" title="RB Number injection preprocessor" href="rbnumberpp.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #343131" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            ibex_bluesky_core
+              <img src="../_static/logo.svg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/overview.html">Getting started</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Devices</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../devices/blocks.html">Blocks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devices/dae.html">DAE (Data Acquisition Electronics)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Callbacks</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../callbacks/isiscallbacks.html">ISIS Standard Callbacks (<code class="xref py py-obj docutils literal notranslate"><span class="pre">ISISCallbacks</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../callbacks/fitting.html">Fits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../callbacks/centre_of_mass.html">Centre of Mass</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../callbacks/plotting.html">Plotting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../callbacks/file_writing.html">File writing callbacks</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Plans</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../plans/plans.html">General Plans</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plans/reflectometry.html">Reflectometry-specific Plans</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Plan stubs</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/external_code.html">Calling external code (<code class="xref py py-obj docutils literal notranslate"><span class="pre">call_sync</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/matplotlib_helpers.html">Matplotlib helpers (<code class="xref py py-obj docutils literal notranslate"><span class="pre">call_qt_aware</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/plan_wrappers.html">Plan wrappers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/polling.html">Continuous polling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/redefining.html">Redefinition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/user_input.html">User input helpers</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../_api.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../replotting_scans.html">Replaying documents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../architectural_decisions.html">Architectural Decisions</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../developer_information.html">Developer Information</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="create_a_release.html">Release Process</a></li>
+<li class="toctree-l2"><a class="reference internal" href="kafka.html">Kafka</a></li>
+<li class="toctree-l2"><a class="reference internal" href="logging.html">Logging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="manual_system_testing.html">Manual system testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rbnumberpp.html">RB Number injection preprocessor</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Local development</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sphinx_notes.html">Notes on Sphinx and addons</a></li>
+<li class="toctree-l2"><a class="reference internal" href="troubleshooting.html">Troubleshooting</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #343131" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">ibex_bluesky_core</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../developer_information.html">Developer Information</a></li>
+      <li class="breadcrumb-item active">Local development</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/ISISComputingGroup/ibex_bluesky_core/blob/main/doc/dev/set_up_dev_environment.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="local-development">
+<h1>Local development<a class="headerlink" href="#local-development" title="Link to this heading"></a></h1>
+<section id="resources-for-bluesky-and-ophyd-async-development">
+<h2>Resources for bluesky and ophyd-async development<a class="headerlink" href="#resources-for-bluesky-and-ophyd-async-development" title="Link to this heading"></a></h2>
+<p><a class="reference external" href="https://blueskyproject.io/bluesky/main/userindex.html" title="(in bluesky v1.14.7.dev29+gfb2c32466)"><span class="xref std std-doc">bluesky user documentation - plans, plan stubs, callbacks etc</span></a></p>
+<p><a class="reference external" href="https://blueskyproject.io/ophyd-async/v0.16/tutorials.html" title="(in ophyd-async v0.16)"><span class="xref std std-doc">ophyd-async documentation - devices</span></a></p>
+<p><a class="reference external" href="https://blueskyproject.io/ophyd-async/v0.16/how-to/choose-right-baseclass.html" title="(in ophyd-async v0.16)"><span class="xref std std-doc">ophyd-async - choosing base classes when writing a device</span></a></p>
+</section>
+<section id="checkout-the-repository-locally">
+<h2>Checkout the repository locally<a class="headerlink" href="#checkout-the-repository-locally" title="Link to this heading"></a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="n">c</span><span class="p">:</span>\<span class="n">Instrument</span>\<span class="n">Dev</span>
+<span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">ISISComputingGroup</span><span class="o">/</span><span class="n">ibex_bluesky_core</span><span class="o">.</span><span class="n">git</span>
+</pre></div>
+</div>
+</section>
+<section id="create-activate-a-virtual-environment-windows">
+<h2>Create &amp; activate a virtual environment (windows)<a class="headerlink" href="#create-activate-a-virtual-environment-windows" title="Link to this heading"></a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="n">c</span><span class="p">:</span>\<span class="n">Instrument</span>\<span class="n">Dev</span>\<span class="n">ibex_bluesky_core</span>
+<span class="n">python</span> <span class="o">-</span><span class="n">m</span> <span class="n">venv</span> <span class="o">.</span><span class="n">venv</span>
+<span class="o">.</span><span class="n">venv</span>\<span class="n">Scripts</span>\<span class="n">activate</span>
+</pre></div>
+</div>
+</section>
+<section id="install-the-library-dev-dependencies-in-editable-mode">
+<h2>Install the library &amp; dev dependencies in editable mode<a class="headerlink" href="#install-the-library-dev-dependencies-in-editable-mode" title="Link to this heading"></a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="o">-</span><span class="n">m</span> <span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">e</span> <span class="o">.</span><span class="p">[</span><span class="n">dev</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>To run tests based on changes not yet in a release in the GUI PyDev console you will need to run this command using your global python install rather than in the venv.</p>
+</section>
+<section id="unit-tests">
+<h2>Unit tests<a class="headerlink" href="#unit-tests" title="Link to this heading"></a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="o">-</span><span class="n">m</span> <span class="n">pytest</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>To debug the tests in Pycharm, use <code class="docutils literal notranslate"><span class="pre">--no-cov</span></code> as an <a class="reference external" href="https://stackoverflow.com/a/52295919">additional option to your default/template run configuration.</a> There is a conflict <a class="reference external" href="https://youtrack.jetbrains.com/issue/PY-20186/debugging-of-py.test-does-not-stop-on-breakpoints-if-coverage-plugin-enabled">issue</a> with the <code class="docutils literal notranslate"><span class="pre">pytest-cov</span></code> module which breaks the debugger.</p>
+</div>
+</section>
+<section id="run-lints">
+<h2>Run lints<a class="headerlink" href="#run-lints" title="Link to this heading"></a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ruff</span> <span class="nb">format</span> <span class="o">--</span><span class="n">check</span>
+<span class="n">ruff</span> <span class="n">check</span>
+<span class="n">pyright</span>
+</pre></div>
+</div>
+</section>
+<section id="build-docs-locally">
+<h2>Build docs locally<a class="headerlink" href="#build-docs-locally" title="Link to this heading"></a></h2>
+<p>To build the sphinx documentation locally run <code class="docutils literal notranslate"><span class="pre">sphinx-build</span> <span class="pre">doc</span> <span class="pre">_build</span></code> from the root of the repo. The generated output will be in the _build directory.</p>
+<p>If you want to preview changes live, you can run <code class="docutils literal notranslate"><span class="pre">sphinx-autobuild</span> <span class="pre">doc</span> <span class="pre">_build</span> <span class="pre">--watch</span> <span class="pre">src</span></code> from the root of the repo instead which will start a local, hot-reloadable web server. This should rebuild the documentation whenever you change anything in <code class="docutils literal notranslate"><span class="pre">src</span></code>, which in turn will rebuild the API reference pages.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="rbnumberpp.html" class="btn btn-neutral float-left" title="RB Number injection preprocessor" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="sphinx_notes.html" class="btn btn-neutral float-right" title="Notes on Sphinx and addons" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

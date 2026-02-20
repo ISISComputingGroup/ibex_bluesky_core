@@ -1,0 +1,391 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Getting started &mdash; ibex_bluesky_core 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=dc476284" />
+
+  
+    <link rel="shortcut icon" href="../_static/favicon.svg"/>
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Blocks" href="../devices/blocks.html" />
+    <link rel="prev" title="ibex_bluesky_core documentation" href="../index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #343131" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            ibex_bluesky_core
+              <img src="../_static/logo.svg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Getting started</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#plans">Plans</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#devices">Devices</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#setting-and-reading-values">Setting and reading values</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#scanning">Scanning</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#the-runengine">The <code class="docutils literal notranslate"><span class="pre">RunEngine</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#callbacks">Callbacks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#metadata">Metadata</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#see-also">See also</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Devices</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../devices/blocks.html">Blocks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devices/dae.html">DAE (Data Acquisition Electronics)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Callbacks</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../callbacks/isiscallbacks.html">ISIS Standard Callbacks (<code class="xref py py-obj docutils literal notranslate"><span class="pre">ISISCallbacks</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../callbacks/fitting.html">Fits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../callbacks/centre_of_mass.html">Centre of Mass</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../callbacks/plotting.html">Plotting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../callbacks/file_writing.html">File writing callbacks</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Plans</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../plans/plans.html">General Plans</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plans/reflectometry.html">Reflectometry-specific Plans</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Plan stubs</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/external_code.html">Calling external code (<code class="xref py py-obj docutils literal notranslate"><span class="pre">call_sync</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/matplotlib_helpers.html">Matplotlib helpers (<code class="xref py py-obj docutils literal notranslate"><span class="pre">call_qt_aware</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/plan_wrappers.html">Plan wrappers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/polling.html">Continuous polling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/redefining.html">Redefinition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/user_input.html">User input helpers</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../_api.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../replotting_scans.html">Replaying documents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../architectural_decisions.html">Architectural Decisions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer_information.html">Developer Information</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #343131" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">ibex_bluesky_core</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Getting started</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/ISISComputingGroup/ibex_bluesky_core/blob/main/doc/tutorial/overview.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="getting-started">
+<h1>Getting started<a class="headerlink" href="#getting-started" title="Link to this heading"></a></h1>
+<p><a class="reference internal" href="../generated/ibex_bluesky_core.html#module-ibex_bluesky_core" title="ibex_bluesky_core"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ibex_bluesky_core</span></code></a> is a library which bridges the
+<a class="reference external" href="https://github.com/ISISComputingGroup/ibex_user_manual/wiki/What-Is-IBEX">IBEX control system</a>
+and the <a class="reference external" href="https://blueskyproject.io/">bluesky data acquisition framework</a>.</p>
+<p>Bluesky is a highly flexible data acquisition system, which has previously been used at
+large-scale research facilities such as <a class="reference external" href="https://www.bnl.gov/nsls2/">NSLS-II</a> and
+<a class="reference external" href="https://www.diamond.ac.uk/Home.html">Diamond</a>, along with many other large-scale scientific facilities.</p>
+<p>While the bluesky framework itself is generic enough to cope with many forms of data acquisition,
+one of the core use cases is “scanning” - that is, measuring how some experimental parameter(s)
+vary with respect to other parameter(s). Bluesky has extensive mechanisms and helpers for typical
+scanning workflows.</p>
+<p>The most important concepts in bluesky are:</p>
+<ul class="simple">
+<li><p><strong>Plans</strong> tell bluesky what to do next, by emitting <strong>Messages</strong></p></li>
+<li><p>The <strong>RunEngine</strong> executes plans by reacting to <strong>Messages</strong> (possibly interacting with devices)</p></li>
+<li><p><strong>Devices</strong> encapsulate the details of how some specific device is controlled, reading or writing to EPICS PVs.</p></li>
+<li><p><strong>Callbacks</strong> do something with the data produced during a scan (fitting, plotting, file-writing, …)</p></li>
+</ul>
+<section id="plans">
+<h2>Plans<a class="headerlink" href="#plans" title="Link to this heading"></a></h2>
+<p>A plan is an <em>iterable</em> of <em>messages</em>. A very simple plan, which doesn’t do anything, is:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bluesky.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">Msg</span>
+
+<span class="n">my_plan</span> <span class="o">=</span> <span class="p">[</span><span class="n">Msg</span><span class="p">(</span><span class="s2">&quot;null&quot;</span><span class="p">)]</span>
+</pre></div>
+</div>
+<p>Where <code class="docutils literal notranslate"><span class="pre">Msg(&quot;null&quot;)</span></code> is an instruction to bluesky (which in this case, does nothing).</p>
+<p>While it’s possible to write bluesky plans as any iterable, in practice plans are usually written
+using python <a class="reference external" href="https://peps.python.org/pep-0255/">generators</a>, using <a class="reference external" href="https://peps.python.org/pep-0380/">python’s
+<code class="docutils literal notranslate"><span class="pre">yield</span> <span class="pre">from</span></code> syntax</a> to delegate to other plans as necessary:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">bluesky.plan_stubs</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">bps</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">plan</span><span class="p">():</span>
+    <span class="k">yield from</span> <span class="n">bps</span><span class="o">.</span><span class="n">null</span><span class="p">()</span>
+</pre></div>
+</div>
+<p><a class="reference internal" href="../dev/troubleshooting.html#where-are-plans-devices"><span class="std std-ref">Instrument-specific bluesky plans</span></a> are defined in each instrument’s <code class="docutils literal notranslate"><span class="pre">inst</span></code> scripts area.</p>
+</section>
+<section id="devices">
+<h2>Devices<a class="headerlink" href="#devices" title="Link to this heading"></a></h2>
+<p>The <a class="reference internal" href="../generated/ibex_bluesky_core.devices.html#module-ibex_bluesky_core.devices" title="ibex_bluesky_core.devices"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ibex_bluesky_core.devices</span></code></a> module provides built-in support for a number of ISIS-specific devices. For example,
+blocks are available as devices:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">ibex_bluesky_core.devices.block</span><span class="w"> </span><span class="kn">import</span> <span class="n">block_r</span><span class="p">,</span> <span class="n">block_mot</span>
+
+<span class="n">mot</span> <span class="o">=</span> <span class="n">block_mot</span><span class="p">(</span><span class="s2">&quot;mot&quot;</span><span class="p">)</span>  <span class="c1"># An IBEX block pointing at a motor</span>
+<span class="n">det</span> <span class="o">=</span> <span class="n">block_r</span><span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="s2">&quot;p5&quot;</span><span class="p">)</span>  <span class="c1"># A readback block with float datatype</span>
+</pre></div>
+</div>
+<p>Block objects provide several mechanisms for configuring write behaviour; see
+<a class="reference internal" href="../generated/ibex_bluesky_core.devices.block.html#ibex_bluesky_core.devices.block.BlockWriteConfig" title="ibex_bluesky_core.devices.block.BlockWriteConfig"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BlockWriteConfig</span></code></a> for detailed options.</p>
+<p>Likewise, the DAE is available as a bluesky device: see <a class="reference internal" href="../devices/dae.html"><span class="std std-doc">the DAE Documentation</span></a>
+for full examples including example configurations.</p>
+<p><a class="reference internal" href="../dev/troubleshooting.html#where-are-plans-devices"><span class="std std-ref">Instrument-specific bluesky device instances</span></a> are defined in each instrument’s <code class="docutils literal notranslate"><span class="pre">inst</span></code> scripts area.</p>
+</section>
+<section id="setting-and-reading-values">
+<h2>Setting and reading values<a class="headerlink" href="#setting-and-reading-values" title="Link to this heading"></a></h2>
+<p>Bluesky provides plan stubs for setting &amp; reading values from bluesky devices: <code class="docutils literal notranslate"><span class="pre">bps.mv()</span></code> and
+<code class="docutils literal notranslate"><span class="pre">bps.rd()</span></code> respectively.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">ibex_bluesky_core.devices.block</span><span class="w"> </span><span class="kn">import</span> <span class="n">BlockMot</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">bluesky.plan_stubs</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">bps</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">multiply_motor_pos_by_2</span><span class="p">(</span><span class="n">mot</span><span class="p">:</span> <span class="n">BlockMot</span><span class="p">):</span>
+    <span class="n">current_value</span> <span class="o">=</span> <span class="k">yield from</span> <span class="n">bps</span><span class="o">.</span><span class="n">rd</span><span class="p">(</span><span class="n">mot</span><span class="p">)</span>
+    <span class="k">yield from</span> <span class="n">bps</span><span class="o">.</span><span class="n">mv</span><span class="p">(</span><span class="n">mot</span><span class="p">,</span> <span class="n">current_value</span> <span class="o">*</span> <span class="mf">2.0</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition danger">
+<p class="admonition-title">Danger</p>
+<p>Notice that we are using <code class="docutils literal notranslate"><span class="pre">bps.rd()</span></code> and <code class="docutils literal notranslate"><span class="pre">bps.mv()</span></code> here, rather than <code class="docutils literal notranslate"><span class="pre">g.cget()</span></code> or <code class="docutils literal notranslate"><span class="pre">g.cset()</span></code>.
+Bare <code class="docutils literal notranslate"><span class="pre">genie</span></code> or <code class="docutils literal notranslate"><span class="pre">inst</span></code> commands <strong>must not</strong> be used in bluesky plans - instead, prefer to use the
+bluesky-native functionality - i.e. plans using <code class="docutils literal notranslate"><span class="pre">yield</span> <span class="pre">from</span></code>.</p>
+<p>Carefully review <a class="reference internal" href="../plan_stubs/external_code.html"><span class="std std-doc">calling external code</span></a> if you do need to call
+external code in a plan.</p>
+<p>If, on the other hand, you need to run a plan as part of a larger script, see
+<a class="reference internal" href="../generated/ibex_bluesky_core.run_engine.html#ibex_bluesky_core.run_engine.run_plan" title="ibex_bluesky_core.run_engine.run_plan"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ibex_bluesky_core.run_engine.run_plan</span></code></a>.</p>
+</div>
+<p>For more details about plan stubs (plan fragments like <code class="docutils literal notranslate"><span class="pre">mv</span></code> and <code class="docutils literal notranslate"><span class="pre">read</span></code>), see the
+<a class="reference external" href="https://blueskyproject.io/bluesky/main/plans.html#stub-plans">bluesky plan stubs documentation</a></p>
+</section>
+<section id="scanning">
+<h2>Scanning<a class="headerlink" href="#scanning" title="Link to this heading"></a></h2>
+<p>Having created some simple devices, those devices can be used in standard bluesky plans:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">ophyd_async.plan_stubs</span><span class="w"> </span><span class="kn">import</span> <span class="n">ensure_connected</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">bluesky.plans</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">bp</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibex_bluesky_core.devices.block</span><span class="w"> </span><span class="kn">import</span> <span class="n">block_r</span><span class="p">,</span> <span class="n">block_mot</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">my_plan</span><span class="p">(</span><span class="n">det_block_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">mot_block_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">start</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">stop</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">num</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+    <span class="n">mot</span> <span class="o">=</span> <span class="n">block_mot</span><span class="p">(</span><span class="n">mot_block_name</span><span class="p">)</span>
+    <span class="n">det</span> <span class="o">=</span> <span class="n">block_r</span><span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="n">det_block_name</span><span class="p">)</span>
+
+    <span class="c1"># Devices connect up-front - this means that plans are generally &quot;fail-fast&quot;, and</span>
+    <span class="c1"># will detect problems such as typos in block names before the whole plan runs.</span>
+    <span class="k">yield from</span> <span class="n">ensure_connected</span><span class="p">(</span><span class="n">det</span><span class="p">,</span> <span class="n">mot</span><span class="p">,</span> <span class="n">force_reconnect</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    
+    <span class="c1"># Delegate to bluesky&#39;s scan plan.</span>
+    <span class="k">yield from</span> <span class="n">bp</span><span class="o">.</span><span class="n">scan</span><span class="p">([</span><span class="n">det</span><span class="p">],</span> <span class="n">mot</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">num</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>For details about plans which are available directly from <code class="docutils literal notranslate"><span class="pre">bluesky</span></code> - like <code class="docutils literal notranslate"><span class="pre">bp.scan</span></code> above - see
+<a class="reference external" href="https://blueskyproject.io/bluesky/main/plans.html#pre-assembled-plans">bluesky’s plan documentation</a>.</p>
+</section>
+<section id="the-runengine">
+<h2>The <code class="docutils literal notranslate"><span class="pre">RunEngine</span></code><a class="headerlink" href="#the-runengine" title="Link to this heading"></a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">RunEngine</span></code> is the central “conductor” in bluesky - it is responsible for reading a plan and
+performing the associated actions on the hardware. To get a run engine instance, use:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">ibex_bluesky_core.run_engine</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_run_engine</span>
+<span class="n">RE</span> <span class="o">=</span> <span class="n">get_run_engine</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>In the IBEX GUI, manually getting a runengine is unnecessary - it is done automatically.</p>
+</div>
+<p>Then execute a plan using the <code class="docutils literal notranslate"><span class="pre">RunEngine</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">RE</span><span class="p">(</span><span class="n">my_plan</span><span class="p">(</span><span class="s2">&quot;det&quot;</span><span class="p">,</span> <span class="s2">&quot;mot&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>Note that typing <code class="docutils literal notranslate"><span class="pre">my_plan(&quot;det&quot;,</span> <span class="pre">&quot;mot&quot;,</span> <span class="pre">0,</span> <span class="pre">10,</span> <span class="pre">5)</span></code> does not do anything by itself.
+That is because <code class="docutils literal notranslate"><span class="pre">my_plan</span></code> is a python generator - which does nothing until iterated.
+To actually execute the plan, it must be passed to the <a class="reference internal" href="../generated/ibex_bluesky_core.run_engine.html#module-ibex_bluesky_core.run_engine" title="ibex_bluesky_core.run_engine"><span class="xref myst py py-mod"><code class="docutils literal notranslate"><span class="pre">RunEngine</span></code></span></a>, which is conventionally
+called <code class="docutils literal notranslate"><span class="pre">RE</span></code>.</p>
+<p>For more detail about the <a class="reference internal" href="../generated/ibex_bluesky_core.run_engine.html#module-ibex_bluesky_core.run_engine" title="ibex_bluesky_core.run_engine"><span class="xref myst py py-mod"><code class="docutils literal notranslate"><span class="pre">RunEngine</span></code></span></a>, see:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../generated/ibex_bluesky_core.run_engine.html#ibex_bluesky_core.run_engine.get_run_engine" title="ibex_bluesky_core.run_engine.get_run_engine"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ibex_bluesky_core.run_engine.get_run_engine</span></code></a></p></li>
+<li><p><a class="reference external" href="https://blueskyproject.io/bluesky/main/tutorial.html#tutorial-run-engine-setup" title="(in bluesky v1.14.7.dev29+gfb2c32466)"><span>The RunEngine</span></a></p></li>
+<li><p><a class="reference external" href="https://blueskyproject.io/bluesky/main/run_engine_api.html" title="(in bluesky v1.14.7.dev29+gfb2c32466)"><span>RunEngine API Documentation</span></a></p></li>
+</ul>
+</section>
+<section id="callbacks">
+<h2>Callbacks<a class="headerlink" href="#callbacks" title="Link to this heading"></a></h2>
+<p>Callbacks are bluesky’s mechanism for listening to data from a scan. Some examples of common callbacks
+are:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../callbacks/file_writing.html"><span class="std std-doc">File writing</span></a></p></li>
+<li><p><a class="reference internal" href="../callbacks/plotting.html"><span class="std std-doc">Plotting</span></a></p></li>
+<li><p><a class="reference internal" href="../callbacks/fitting/fitting.html"><span class="std std-doc">Fitting</span></a></p></li>
+<li><p><a class="reference external" href="https://blueskyproject.io/bluesky/main/callbacks.html#livetable">Live Tables</a></p></li>
+</ul>
+<p>It is possible to use callbacks manually, when executing a plan:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bluesky.callbacks</span><span class="w"> </span><span class="kn">import</span> <span class="n">LiveTable</span>
+
+<span class="n">RE</span><span class="p">(</span><span class="n">my_plan</span><span class="p">(</span><span class="s2">&quot;det&quot;</span><span class="p">,</span> <span class="s2">&quot;mot&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span> <span class="n">LiveTable</span><span class="p">([</span><span class="s2">&quot;mot&quot;</span><span class="p">,</span> <span class="s2">&quot;det&quot;</span><span class="p">]))</span>
+</pre></div>
+</div>
+<p>However, to save typing out callbacks repeatedly, user-specified plans can add callbacks from within a plan, using
+<a class="reference external" href="https://blueskyproject.io/bluesky/main/generated/bluesky.preprocessors.subs_decorator.html#bluesky.preprocessors.subs_decorator" title="(in bluesky v1.14.7.dev29+gfb2c32466)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bluesky.preprocessors.subs_decorator</span></code></a>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">ibex_bluesky_core.devices.block</span><span class="w"> </span><span class="kn">import</span> <span class="n">block_r</span><span class="p">,</span> <span class="n">block_mot</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ophyd_async.plan_stubs</span><span class="w"> </span><span class="kn">import</span> <span class="n">ensure_connected</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">bluesky.preprocessors</span><span class="w"> </span><span class="kn">import</span> <span class="n">subs_decorator</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">bluesky.callbacks</span><span class="w"> </span><span class="kn">import</span> <span class="n">LiveTable</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">bluesky.plans</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">bp</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">my_plan</span><span class="p">(</span><span class="n">det_block_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">mot_block_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">start</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">stop</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">num</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+    <span class="n">mot</span> <span class="o">=</span> <span class="n">block_mot</span><span class="p">(</span><span class="n">mot_block_name</span><span class="p">)</span>
+    <span class="n">det</span> <span class="o">=</span> <span class="n">block_r</span><span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="n">det_block_name</span><span class="p">)</span>
+
+    <span class="nd">@subs_decorator</span><span class="p">([</span>
+      <span class="n">LiveTable</span><span class="p">([</span><span class="n">mot</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">det</span><span class="o">.</span><span class="n">name</span><span class="p">]),</span>
+    <span class="p">])</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_inner</span><span class="p">():</span>
+      <span class="k">yield from</span> <span class="n">ensure_connected</span><span class="p">(</span><span class="n">det</span><span class="p">,</span> <span class="n">mot</span><span class="p">,</span> <span class="n">force_reconnect</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+      <span class="k">yield from</span> <span class="n">bp</span><span class="o">.</span><span class="n">scan</span><span class="p">([</span><span class="n">det</span><span class="p">],</span> <span class="n">mot</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">num</span><span class="p">)</span>
+    <span class="k">yield from</span> <span class="n">_inner</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>The above will show a <a class="reference external" href="https://blueskyproject.io/bluesky/main/callbacks.html#livetable" title="(in bluesky v1.14.7.dev29+gfb2c32466)"><span>LiveTable</span></a> by default, any time <code class="docutils literal notranslate"><span class="pre">my_plan</span></code> is executed. The same mechanism can
+be used to always configure a scan with plots and a fit with a specific type.</p>
+<p>This library includes a standard callbacks collection, <a class="reference internal" href="../generated/ibex_bluesky_core.callbacks.html#ibex_bluesky_core.callbacks.ISISCallbacks" title="ibex_bluesky_core.callbacks.ISISCallbacks"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ISISCallbacks</span></code></a>, which should suit the needs of many simple scans. This includes the ability to fit, plot, add human-readable file output and show a live table of scanned fields. See <a class="reference internal" href="../callbacks/isiscallbacks.html#icc"><span class="std std-ref">ISIS Standard Callbacks (ISISCallbacks)</span></a> on how to use this.</p>
+<p>For more general information on callbacks, see the
+<a class="reference external" href="https://blueskyproject.io/bluesky/main/callbacks.html" title="(in bluesky v1.14.7.dev29+gfb2c32466)"><span class="xref std std-doc">bluesky callbacks documentation</span></a>.</p>
+</section>
+<section id="metadata">
+<h2>Metadata<a class="headerlink" href="#metadata" title="Link to this heading"></a></h2>
+<p>Bluesky provides a number of mechanisms for inserting metadata into a scan. In general, metadata may be any JSON-serialisable object including numbers, strings, lists, dictionaries, and nested combinations of those. The bluesky documentation has an <a class="reference external" href="https://blueskyproject.io/bluesky/main/metadata.html" title="(in bluesky v1.14.7.dev29+gfb2c32466)"><span class="xref std std-doc">extensive description of metadata mechanisms</span></a>, but the main options are summarised below.</p>
+<p><strong>Persistently (for this python session)</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">RE</span><span class="o">.</span><span class="n">md</span><span class="p">[</span><span class="s2">&quot;user&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Tom&quot;</span>
+<span class="n">RE</span><span class="o">.</span><span class="n">md</span><span class="p">[</span><span class="s2">&quot;sample&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;unobtainium&quot;</span>
+</pre></div>
+</div>
+<p><strong>For one <code class="docutils literal notranslate"><span class="pre">RE</span></code> call</strong>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">RE</span><span class="p">(</span><span class="n">some_plan</span><span class="p">(),</span> <span class="n">sample</span><span class="o">=</span><span class="s2">&quot;unobtainium&quot;</span><span class="p">,</span> <span class="n">user</span><span class="o">=</span><span class="s2">&quot;Tom&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Dynamically, within a plan (using <a class="reference external" href="https://blueskyproject.io/bluesky/main/generated/bluesky.preprocessors.inject_md_wrapper.html#bluesky.preprocessors.inject_md_wrapper" title="(in bluesky v1.14.7.dev29+gfb2c32466)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bluesky.preprocessors.inject_md_wrapper</span></code></a>)</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">bluesky.plan_stubs</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">bps</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">bluesky.preprocessors</span><span class="w"> </span><span class="kn">import</span> <span class="n">inject_md_wrapper</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">some_plan</span><span class="p">(</span><span class="n">dae</span><span class="p">):</span>
+    <span class="n">run_number</span> <span class="o">=</span> <span class="k">yield from</span> <span class="n">bps</span><span class="o">.</span><span class="n">rd</span><span class="p">(</span><span class="n">dae</span><span class="o">.</span><span class="n">current_or_next_run_number_str</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">(</span><span class="k">yield from</span> <span class="n">inject_md_wrapper</span><span class="p">(</span><span class="n">subplan</span><span class="p">(),</span> <span class="p">{</span><span class="s2">&quot;run_number&quot;</span><span class="p">:</span> <span class="n">run_number</span><span class="p">}))</span>
+</pre></div>
+</div>
+<p><strong>Dynamically, within a plan (using <a class="reference external" href="https://blueskyproject.io/bluesky/main/generated/bluesky.preprocessors.inject_md_decorator.html#bluesky.preprocessors.inject_md_decorator" title="(in bluesky v1.14.7.dev29+gfb2c32466)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bluesky.preprocessors.inject_md_decorator</span></code></a>)</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">bluesky.plan_stubs</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">bps</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">bluesky.preprocessors</span><span class="w"> </span><span class="kn">import</span> <span class="n">inject_md_decorator</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">some_plan</span><span class="p">(</span><span class="n">dae</span><span class="p">):</span>
+    <span class="n">run_number</span> <span class="o">=</span> <span class="k">yield from</span> <span class="n">bps</span><span class="o">.</span><span class="n">rd</span><span class="p">(</span><span class="n">dae</span><span class="o">.</span><span class="n">current_or_next_run_number_str</span><span class="p">)</span>
+    
+    <span class="nd">@inject_md_decorator</span><span class="p">({</span><span class="s2">&quot;run_number&quot;</span><span class="p">:</span> <span class="n">run_number</span><span class="p">})</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_inner</span><span class="p">():</span>
+        <span class="k">yield from</span> <span class="n">subplan</span><span class="p">()</span>
+
+    <span class="k">yield from</span> <span class="n">_inner</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>In addition to the above mechanisms, many built-in bluesky plans (such as <a class="reference external" href="https://blueskyproject.io/bluesky/main/generated/bluesky.plans.scan.html#bluesky.plans.scan" title="(in bluesky v1.14.7.dev29+gfb2c32466)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bluesky.plans.scan</span></code></a> and <a class="reference internal" href="../generated/ibex_bluesky_core.plans.html#ibex_bluesky_core.plans.scan" title="ibex_bluesky_core.plans.scan"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ibex_bluesky_core.plans.scan</span></code></a>) take an <code class="docutils literal notranslate"><span class="pre">md</span></code> keyword argument, which can also be used to insert additional metadata for one scan.</p>
+</section>
+<section id="see-also">
+<h2>See also<a class="headerlink" href="#see-also" title="Link to this heading"></a></h2>
+<p><strong>Plans &amp; plan-stubs</strong></p>
+<ul class="simple">
+<li><p>Bluesky <a class="reference external" href="https://blueskyproject.io/bluesky/main/plans.html" title="(in bluesky v1.14.7.dev29+gfb2c32466)"><span>Plans</span></a></p></li>
+<li><p>Bluesky <a class="reference external" href="https://blueskyproject.io/bluesky/main/plans.html#stub-plans" title="(in bluesky v1.14.7.dev29+gfb2c32466)"><span>Stub Plans</span></a></p></li>
+<li><p><a class="reference internal" href="../generated/ibex_bluesky_core.plans.html#module-ibex_bluesky_core.plans" title="ibex_bluesky_core.plans"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ibex_bluesky_core.plans</span></code></a></p></li>
+<li><p><a class="reference internal" href="../generated/ibex_bluesky_core.plan_stubs.html#module-ibex_bluesky_core.plan_stubs" title="ibex_bluesky_core.plan_stubs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ibex_bluesky_core.plan_stubs</span></code></a></p></li>
+</ul>
+<p><strong>Callbacks</strong></p>
+<ul class="simple">
+<li><p>Bluesky <a class="reference external" href="https://blueskyproject.io/bluesky/main/callbacks.html" title="(in bluesky v1.14.7.dev29+gfb2c32466)"><span>Live Visualization and Processing</span></a></p></li>
+<li><p><a class="reference internal" href="../generated/ibex_bluesky_core.callbacks.html#module-ibex_bluesky_core.callbacks" title="ibex_bluesky_core.callbacks"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ibex_bluesky_core.callbacks</span></code></a></p></li>
+<li><p><a class="reference internal" href="../callbacks/fitting/fitting.html"><span class="doc">Fitting Callbacks</span></a></p></li>
+</ul>
+<p><strong>Full Examples</strong></p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/ISISComputingGroup/ibex_bluesky_core/tree/main/manual_system_tests">Manual system tests</a> (full,
+runnable example plans)</p></li>
+</ul>
+<p><strong>External documentation</strong></p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://blueskyproject.io/bluesky/main/userindex.html" title="(in bluesky v1.14.7.dev29+gfb2c32466)"><span class="xref std std-doc">bluesky user documentation</span></a></p></li>
+<li><p><a class="reference external" href="https://blueskyproject.io/ophyd-async/v0.16/tutorials.html" title="(in ophyd-async v0.16)"><span class="xref std std-doc">ophyd_async tutorials</span></a></p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../index.html" class="btn btn-neutral float-left" title="ibex_bluesky_core documentation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../devices/blocks.html" class="btn btn-neutral float-right" title="Blocks" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,189 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Centre of Mass &mdash; ibex_bluesky_core 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=dc476284" />
+
+  
+    <link rel="shortcut icon" href="../_static/favicon.svg"/>
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Plotting" href="plotting.html" />
+    <link rel="prev" title="Standard Fitting Models" href="fitting/standard_fits.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #343131" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            ibex_bluesky_core
+              <img src="../_static/logo.svg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/overview.html">Getting started</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Devices</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../devices/blocks.html">Blocks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devices/dae.html">DAE (Data Acquisition Electronics)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Callbacks</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="isiscallbacks.html">ISIS Standard Callbacks (<code class="xref py py-obj docutils literal notranslate"><span class="pre">ISISCallbacks</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="fitting.html">Fits</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Centre of Mass</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plotting.html">Plotting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="file_writing.html">File writing callbacks</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Plans</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../plans/plans.html">General Plans</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plans/reflectometry.html">Reflectometry-specific Plans</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Plan stubs</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/external_code.html">Calling external code (<code class="xref py py-obj docutils literal notranslate"><span class="pre">call_sync</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/matplotlib_helpers.html">Matplotlib helpers (<code class="xref py py-obj docutils literal notranslate"><span class="pre">call_qt_aware</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/plan_wrappers.html">Plan wrappers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/polling.html">Continuous polling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/redefining.html">Redefinition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/user_input.html">User input helpers</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../_api.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../replotting_scans.html">Replaying documents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../architectural_decisions.html">Architectural Decisions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer_information.html">Developer Information</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #343131" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">ibex_bluesky_core</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Centre of Mass</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/ISISComputingGroup/ibex_bluesky_core/blob/main/doc/callbacks/centre_of_mass.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="centre-of-mass">
+<h1>Centre of Mass<a class="headerlink" href="#centre-of-mass" title="Link to this heading"></a></h1>
+<p><a class="reference internal" href="../generated/ibex_bluesky_core.callbacks.html#ibex_bluesky_core.callbacks.CentreOfMass" title="ibex_bluesky_core.callbacks.CentreOfMass"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ibex_bluesky_core.callbacks.CentreOfMass</span></code></a> provides functionality for calculating a specific definition of a “centre of mass”: it computes the centre of mass of a 2-dimensional region bounded by:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">min(x)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">max(x)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">min(y)</span></code></p></li>
+<li><p>Straight-line segments joining <code class="docutils literal notranslate"><span class="pre">(x,</span> <span class="pre">y)</span></code> data points with their nearest neighbours along the x axis</p></li>
+</ul>
+<p><a class="reference internal" href="../generated/ibex_bluesky_core.callbacks.html#ibex_bluesky_core.callbacks.CentreOfMass" title="ibex_bluesky_core.callbacks.CentreOfMass"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CentreOfMass</span></code></a> stores its result in the <a class="reference internal" href="../generated/ibex_bluesky_core.callbacks.html#ibex_bluesky_core.callbacks.CentreOfMass.result" title="ibex_bluesky_core.callbacks.CentreOfMass.result"><code class="xref py py-obj docutils literal notranslate"><span class="pre">result</span></code></a> property.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This will return <strong>different</strong> results from the <code class="docutils literal notranslate"><span class="pre">com</span></code> property available from <a class="reference external" href="https://blueskyproject.io/bluesky/main/callbacks.html#bluesky.callbacks.fitting.PeakStats" title="(in bluesky v1.14.7.dev29+gfb2c32466)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bluesky.callbacks.fitting.PeakStats</span></code></a> in the following cases:</p>
+<ul class="simple">
+<li><p>Points irregularly sampled along the x-axis</p></li>
+<li><p>Points with negative y-values</p></li>
+<li><p>x data which does not monotonically increase</p></li>
+</ul>
+<p>For a detailed comparison of the two implementations, see <a class="reference external" href="https://github.com/bluesky/bluesky/blob/2d6fecd45e8de3a7d53d1c16dcd1a7b8f6f88d69/src/bluesky/tests/test_scientific.py#L142">unit tests written to expose tricky cases</a>.</p>
+</div>
+<p>Given non-continuous arrays of collected data <code class="docutils literal notranslate"><span class="pre">x</span></code> and <code class="docutils literal notranslate"><span class="pre">y</span></code>, <a class="reference internal" href="../generated/ibex_bluesky_core.callbacks.html#ibex_bluesky_core.callbacks.CentreOfMass" title="ibex_bluesky_core.callbacks.CentreOfMass"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CentreOfMass</span></code></a> returns the <code class="docutils literal notranslate"><span class="pre">x</span></code> value of the centre of mass.</p>
+<p>Many of our use cases require that our algorithm follows the following rules:</p>
+<ul class="simple">
+<li><p>Any background on data should not change the centre of mass.</p></li>
+<li><p>The order in which data is received should not change the centre of mass</p></li>
+<li><p>Should support non-constant point spacing without skewing the centre of mass</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Note that this is designed for only <strong>positive</strong> peaks.</p>
+</div>
+<p><a class="reference internal" href="../generated/ibex_bluesky_core.callbacks.html#ibex_bluesky_core.callbacks.CentreOfMass" title="ibex_bluesky_core.callbacks.CentreOfMass"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ibex_bluesky_core.callbacks.CentreOfMass</span></code></a> is included in <a class="reference internal" href="isiscallbacks.html"><span class="doc">our callbacks collection</span></a>.</p>
+<hr class="docutils" />
+<p><strong>Implementation details</strong></p>
+<ol class="arabic simple">
+<li><p>Sort <code class="docutils literal notranslate"><span class="pre">x</span></code> and <code class="docutils literal notranslate"><span class="pre">y</span></code> arrays in respect of <code class="docutils literal notranslate"><span class="pre">x</span></code> ascending. This is so that data can be received in any order.</p></li>
+<li><p>From each <code class="docutils literal notranslate"><span class="pre">y</span></code> element, subtract <code class="docutils literal notranslate"><span class="pre">min(y)</span></code>. This means that any constant background over data is ignored.</p></li>
+<li><p>Decompose the curve into a series of trapezoidal regions, and then further decompose those
+trapezoidal regions into rectangular and triangular regions.</p></li>
+<li><p>Compute centre of mass of the overall shape by composition of each region:</p></li>
+</ol>
+<div class="math notranslate nohighlight">
+\[C_x = \frac{\sum_{i}^{} C_{ix} * A_i}{\sum_{i}^{} A_i}\]</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="fitting/standard_fits.html" class="btn btn-neutral float-left" title="Standard Fitting Models" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="plotting.html" class="btn btn-neutral float-right" title="Plotting" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,180 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>8. Using our own Centre of Mass Callback &mdash; ibex_bluesky_core 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=dc476284" />
+
+  
+    <link rel="shortcut icon" href="../_static/favicon.svg"/>
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="9. Kafka streaming" href="009-kafka-streaming.html" />
+    <link rel="prev" title="7. Output file archiving" href="007-output-file-archiving.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #343131" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            ibex_bluesky_core
+              <img src="../_static/logo.svg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/overview.html">Getting started</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Devices</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../devices/blocks.html">Blocks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devices/dae.html">DAE (Data Acquisition Electronics)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Callbacks</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../callbacks/isiscallbacks.html">ISIS Standard Callbacks (<code class="xref py py-obj docutils literal notranslate"><span class="pre">ISISCallbacks</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../callbacks/fitting.html">Fits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../callbacks/centre_of_mass.html">Centre of Mass</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../callbacks/plotting.html">Plotting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../callbacks/file_writing.html">File writing callbacks</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Plans</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../plans/plans.html">General Plans</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plans/reflectometry.html">Reflectometry-specific Plans</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Plan stubs</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/external_code.html">Calling external code (<code class="xref py py-obj docutils literal notranslate"><span class="pre">call_sync</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/matplotlib_helpers.html">Matplotlib helpers (<code class="xref py py-obj docutils literal notranslate"><span class="pre">call_qt_aware</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/plan_wrappers.html">Plan wrappers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/polling.html">Continuous polling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/redefining.html">Redefinition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/user_input.html">User input helpers</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../_api.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../replotting_scans.html">Replaying documents</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../architectural_decisions.html">Architectural Decisions</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="001-repo-structure.html">1. Repository structure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="002-use-ophyd-async.html">2. Use <code class="docutils literal notranslate"><span class="pre">ophyd-async</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="003-run-in-process.html">3. Run in-process</a></li>
+<li class="toctree-l2"><a class="reference internal" href="004-use-scipp.html">4. Use <code class="docutils literal notranslate"><span class="pre">scipp</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="005-variance-addition.html">5. Variance addition to counts data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="006-where-to-put-code.html">6. Where to put code</a></li>
+<li class="toctree-l2"><a class="reference internal" href="007-output-file-archiving.html">7. Output file archiving</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">8. Using our own Centre of Mass Callback</a></li>
+<li class="toctree-l2"><a class="reference internal" href="009-kafka-streaming.html">9. Kafka streaming</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../developer_information.html">Developer Information</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #343131" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">ibex_bluesky_core</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../architectural_decisions.html">Architectural Decisions</a></li>
+      <li class="breadcrumb-item active">8. Using our own Centre of Mass Callback</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/ISISComputingGroup/ibex_bluesky_core/blob/main/doc/architectural_decisions/008-centre-of-mass.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="using-our-own-centre-of-mass-callback">
+<h1>8. Using our own Centre of Mass Callback<a class="headerlink" href="#using-our-own-centre-of-mass-callback" title="Link to this heading"></a></h1>
+<section id="status">
+<h2>Status<a class="headerlink" href="#status" title="Link to this heading"></a></h2>
+<p>Current</p>
+</section>
+<section id="context">
+<h2>Context<a class="headerlink" href="#context" title="Link to this heading"></a></h2>
+<p>A decision needs to be made about whether to make changes to upstream Bluesky so that their <a class="reference external" href="https://blueskyproject.io/bluesky/main/callbacks.html#bluesky.callbacks.fitting.PeakStats" title="(in bluesky v1.14.7.dev29+gfb2c32466)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bluesky.callbacks.fitting.PeakStats</span></code></a> callback works for us, or we make our own.</p>
+</section>
+<section id="decision">
+<h2>Decision<a class="headerlink" href="#decision" title="Link to this heading"></a></h2>
+<p>We will be making our own <a class="reference internal" href="../generated/ibex_bluesky_core.callbacks.html#ibex_bluesky_core.callbacks.CentreOfMass" title="ibex_bluesky_core.callbacks.CentreOfMass"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CentreOfMass</span></code></a> callback.</p>
+</section>
+<section id="justification-consequences">
+<h2>Justification &amp; Consequences<a class="headerlink" href="#justification-consequences" title="Link to this heading"></a></h2>
+<p><a class="reference external" href="https://github.com/bluesky/bluesky/pull/1878">We attempted to make changes to upstream Bluesky which were rejected</a>, as it adds limits to the functionality of the callback. We also found other limitations with using their callback, such as not being able to have disordered and non-continuous data sent to it without it skewing the calculated value - we need it to work with disordered and non-continuous data as we need to be able to run continuous scans.</p>
+<p>We currently only need to support positive peaks, but in future a toggle could be added to <a class="reference internal" href="../generated/ibex_bluesky_core.callbacks.html#ibex_bluesky_core.callbacks.CentreOfMass" title="ibex_bluesky_core.callbacks.CentreOfMass"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CentreOfMass</span></code></a> to allow for negative peaks.</p>
+<p>This will mean that…</p>
+<ul class="simple">
+<li><p>Our version of the callback will not be supported by Bluesky and may need changes as Bluesky updates.</p></li>
+<li><p>We can have a version of the callback that is made specifically for our use cases.</p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="007-output-file-archiving.html" class="btn btn-neutral float-left" title="7. Output file archiving" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="009-kafka-streaming.html" class="btn btn-neutral float-right" title="9. Kafka streaming" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

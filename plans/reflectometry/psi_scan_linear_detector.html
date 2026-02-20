@@ -1,0 +1,197 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Psi scanning &mdash; ibex_bluesky_core 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=dc476284" />
+
+  
+    <link rel="shortcut icon" href="../../_static/favicon.svg"/>
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Reflectometry parameter scans" href="refl_param_scan.html" />
+    <link rel="prev" title="Detector-mapping alignment" href="detector_mapping_alignment.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #343131" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            ibex_bluesky_core
+              <img src="../../_static/logo.svg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial/overview.html">Getting started</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Devices</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../devices/blocks.html">Blocks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devices/dae.html">DAE (Data Acquisition Electronics)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Callbacks</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../callbacks/isiscallbacks.html">ISIS Standard Callbacks (<code class="xref py py-obj docutils literal notranslate"><span class="pre">ISISCallbacks</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../callbacks/fitting.html">Fits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../callbacks/centre_of_mass.html">Centre of Mass</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../callbacks/plotting.html">Plotting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../callbacks/file_writing.html">File writing callbacks</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Plans</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../plans.html">General Plans</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../reflectometry.html">Reflectometry-specific Plans</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="autoalign.html">Auto-alignment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="detector_mapping_alignment.html">Detector-mapping alignment</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Psi scanning</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#linear-detectors">Linear detectors</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="refl_param_scan.html">Reflectometry parameter scans</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Plan stubs</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../plan_stubs/external_code.html">Calling external code (<code class="xref py py-obj docutils literal notranslate"><span class="pre">call_sync</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../plan_stubs/matplotlib_helpers.html">Matplotlib helpers (<code class="xref py py-obj docutils literal notranslate"><span class="pre">call_qt_aware</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../plan_stubs/plan_wrappers.html">Plan wrappers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../plan_stubs/polling.html">Continuous polling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../plan_stubs/redefining.html">Redefinition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../plan_stubs/user_input.html">User input helpers</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../_api.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../replotting_scans.html">Replaying documents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../architectural_decisions.html">Architectural Decisions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer_information.html">Developer Information</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #343131" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">ibex_bluesky_core</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../reflectometry.html">Reflectometry-specific Plans</a></li>
+      <li class="breadcrumb-item active">Psi scanning</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/ISISComputingGroup/ibex_bluesky_core/blob/main/doc/plans/reflectometry/psi_scan_linear_detector.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="psi-scanning">
+<h1>Psi scanning<a class="headerlink" href="#psi-scanning" title="Link to this heading"></a></h1>
+<p>On a reflectometer, the Psi parameter is a rotation of the sample, side-to-side as viewed from a neutron’s perspective.
+The Psi parameter causes the reflected beam profile, which can be approximated as an elongated ellipse, to be rotated
+when viewed at the detector. Reflectometers want to align the beam such that the beam profile is parallel to detector
+pixels (or, in other words, a horizontal line as seen on the detector).</p>
+<p>Psi does not get <em>redefined</em> to zero when the beam is level, but reflectometers do need to know what value of Psi
+<em>causes</em> the beam to be level. The value of Psi which causes the beam to be level will be different for each sample,
+because of differences in how each sample is mounted.</p>
+<section id="linear-detectors">
+<h2>Linear detectors<a class="headerlink" href="#linear-detectors" title="Link to this heading"></a></h2>
+<p>This section applies to instruments like OFFSPEC and POLREF, which have a 1-D bank of detectors. These pixels are much
+wider than they are tall; representative pixel sizes are <code class="docutils literal notranslate"><span class="pre">0.5</span> <span class="pre">x</span> <span class="pre">50mm</span></code> on OFFSPEC or <code class="docutils literal notranslate"><span class="pre">0.5</span> <span class="pre">x</span> <span class="pre">30mm</span></code> on POLREF.</p>
+<p>A linear pixel configuration means that as Psi is varied, the beam profile reflected off the sample(dark blue) hits a
+different number of detector pixels (light orange):</p>
+<p><img alt="Psi not equal to zero - broad peak" src="../../_images/psi_neq_0.png" /></p>
+<p><img alt="Psi equal to zero - narrow peak" src="../../_images/psi_eq_0.png" /></p>
+<p>For a linear detector, the optimum value of Psi occurs when the beam profile is focused onto the smallest number of
+pixels (when the beam profile is parallel to the pixels).</p>
+<p>A Psi scan on a linear detector is therefore implemented using the following steps:</p>
+<ul class="simple">
+<li><p>Physically scan over Psi</p></li>
+<li><p>At each scan point (implemented by <a class="reference internal" href="../../generated/ibex_bluesky_core.devices.reflectometry.html#ibex_bluesky_core.devices.reflectometry.AngleMappingReducer" title="ibex_bluesky_core.devices.reflectometry.AngleMappingReducer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AngleMappingReducer</span></code></a>:</p>
+<ul>
+<li><p>Count &amp; acquire a spectrum-data map describing the counts in all detector pixels</p></li>
+<li><p>Filter to a range of interesting pixels (for example using <a class="reference internal" href="../../generated/ibex_bluesky_core.utils.html#ibex_bluesky_core.utils.centred_pixel" title="ibex_bluesky_core.utils.centred_pixel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">centred_pixel</span></code></a>)</p></li>
+<li><p>Map those pixels to relative angle, to account for pixel spacing which may not be exactly even between all pixels</p></li>
+<li><p>Optionally divide counts in each pixel by a flood map, to account for different pixel efficiencies</p></li>
+<li><p>Fit angle against counts using a <a class="reference internal" href="../../generated/ibex_bluesky_core.fitting.html#ibex_bluesky_core.fitting.Gaussian" title="ibex_bluesky_core.fitting.Gaussian"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Gaussian</span></code></a> model</p></li>
+<li><p>Return the fit parameters, including <a class="reference internal" href="../../generated/ibex_bluesky_core.devices.reflectometry.html#ibex_bluesky_core.devices.reflectometry.AngleMappingReducer.sigma" title="ibex_bluesky_core.devices.reflectometry.AngleMappingReducer.sigma"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sigma</span></code></a>
+(width) as the data from each scan point</p></li>
+</ul>
+</li>
+<li><p>Plotting the returned sigma (width) parameter at each scan point against the scanned variable, Psi, the optimum value
+of Psi occurs when the width is minimised</p>
+<ul>
+<li><p>This is performed using an <em>outer</em> <a class="reference internal" href="../../generated/ibex_bluesky_core.fitting.html#ibex_bluesky_core.fitting.Gaussian" title="ibex_bluesky_core.fitting.Gaussian"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Gaussian</span></code></a> fit, using standard
+<a class="reference internal" href="../../callbacks/fitting/fitting.html"><span class="doc std std-doc">callbacks and fitting</span></a> infrastructure. This is expected to give a negative
+<a class="reference internal" href="../../generated/ibex_bluesky_core.fitting.html#ibex_bluesky_core.fitting.Gaussian" title="ibex_bluesky_core.fitting.Gaussian"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Gaussian</span></code></a> curve, where the <code class="docutils literal notranslate"><span class="pre">x0</span></code> parameter describes the optimum value of Psi</p></li>
+</ul>
+</li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="detector_mapping_alignment.html" class="btn btn-neutral float-left" title="Detector-mapping alignment" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="refl_param_scan.html" class="btn btn-neutral float-right" title="Reflectometry parameter scans" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

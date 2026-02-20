@@ -1,0 +1,742 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DAE (Data Acquisition Electronics) &mdash; ibex_bluesky_core 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=dc476284" />
+
+  
+    <link rel="shortcut icon" href="../_static/favicon.svg"/>
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="ISIS Standard Callbacks (ISISCallbacks)" href="../callbacks/isiscallbacks.html" />
+    <link rel="prev" title="Blocks" href="blocks.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #343131" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            ibex_bluesky_core
+              <img src="../_static/logo.svg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/overview.html">Getting started</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Devices</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="blocks.html">Blocks</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">DAE (Data Acquisition Electronics)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#example-configurations">Example configurations</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#run-per-point">Run-per-point</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#period-per-point">Period-per-point</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#mapping-to-bluesky-device-model">Mapping to bluesky device model</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#start-of-scan-stage">Start of scan (<code class="docutils literal notranslate"><span class="pre">stage</span></code>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#each-scan-point-trigger">Each scan point (<code class="docutils literal notranslate"><span class="pre">trigger</span></code>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#each-scan-point-read">Each scan point (<code class="docutils literal notranslate"><span class="pre">read</span></code>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#end-of-scan-unstage">End of scan (<code class="docutils literal notranslate"><span class="pre">unstage</span></code>)</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#controllers">Controllers</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#runperpointcontroller"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RunPerPointController</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#periodperpointcontroller"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PeriodPerPointController</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#reducers">Reducers</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#periodgoodframesnormalizer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PeriodGoodFramesNormalizer</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#monitornormalizer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MonitorNormalizer</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#periodspecintegralsreducer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PeriodSpecIntegralsReducer</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#dspacingmappingreducer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DSpacingMappingReducer</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#time-of-flight-and-wavelength-bounding-spectra">Time of Flight and Wavelength Bounding Spectra</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#polarisationasymmetry">Polarisation &amp; Asymmetry</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#waiters">Waiters</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#gooduahwaiter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GoodUahWaiter</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#periodgoodframeswaiter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PeriodGoodFramesWaiter</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#meventswaiter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MEventsWaiter</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#timewaiter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TimeWaiter</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#polarising-dae">Polarising DAE</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#dualrundae"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DualRunDae</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#polarising-reducers">Polarising Reducers</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#multiwavelengthbandnormalizer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MultiWavelengthBandNormalizer</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#polarisationreducer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PolarisationReducer</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#dae-base-class-advanced"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Dae</span></code> (base class, advanced)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#top-level-signals">Top-level signals</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#period-specific-signals">Period-specific signals</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#controlling-the-dae-directly">Controlling the DAE directly</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#additional-begin-run-flags">Additional begin_run flags</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#dae-settings">DAE Settings</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#dae-spectra">DAE Spectra</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Callbacks</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../callbacks/isiscallbacks.html">ISIS Standard Callbacks (<code class="xref py py-obj docutils literal notranslate"><span class="pre">ISISCallbacks</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../callbacks/fitting.html">Fits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../callbacks/centre_of_mass.html">Centre of Mass</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../callbacks/plotting.html">Plotting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../callbacks/file_writing.html">File writing callbacks</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Plans</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../plans/plans.html">General Plans</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plans/reflectometry.html">Reflectometry-specific Plans</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Plan stubs</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/external_code.html">Calling external code (<code class="xref py py-obj docutils literal notranslate"><span class="pre">call_sync</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/matplotlib_helpers.html">Matplotlib helpers (<code class="xref py py-obj docutils literal notranslate"><span class="pre">call_qt_aware</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/plan_wrappers.html">Plan wrappers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/polling.html">Continuous polling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/redefining.html">Redefinition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/user_input.html">User input helpers</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../_api.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../replotting_scans.html">Replaying documents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../architectural_decisions.html">Architectural Decisions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer_information.html">Developer Information</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #343131" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">ibex_bluesky_core</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">DAE (Data Acquisition Electronics)</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/ISISComputingGroup/ibex_bluesky_core/blob/main/doc/devices/dae.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="dae-data-acquisition-electronics">
+<h1>DAE (Data Acquisition Electronics)<a class="headerlink" href="#dae-data-acquisition-electronics" title="Link to this heading"></a></h1>
+<p>The <a class="reference internal" href="../generated/ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.SimpleDae" title="ibex_bluesky_core.devices.simpledae.SimpleDae"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SimpleDae</span></code></a> class is designed to be a configurable DAE object, which will cover the
+majority of DAE use-cases within bluesky.</p>
+<p>This class uses several objects to configure its behaviour:</p>
+<ul class="simple">
+<li><p>The <a class="reference internal" href="../generated/ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.Controller" title="ibex_bluesky_core.devices.simpledae.Controller"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Controller</span></code></a>  is responsible for beginning and ending acquisitions.</p></li>
+<li><p>The <a class="reference internal" href="../generated/ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.Waiter" title="ibex_bluesky_core.devices.simpledae.Waiter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Waiter</span></code></a> is responsible for waiting for an acquisition to be “complete”.</p></li>
+<li><p>The <a class="reference internal" href="../generated/ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.Reducer" title="ibex_bluesky_core.devices.simpledae.Reducer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Reducer</span></code></a> is responsible for publishing data from an acquisition that has
+just been completed.</p></li>
+</ul>
+<p>These pluggable configuration classes mean that <a class="reference internal" href="../generated/ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.SimpleDae" title="ibex_bluesky_core.devices.simpledae.SimpleDae"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SimpleDae</span></code></a> is generic enough to cope with most typical DAE use-cases, for
+example running using either one DAE run per scan point, or one DAE period per scan point.</p>
+<p>For complex use-cases, particularly those where the DAE may need to start and stop multiple
+acquisitions per scan point (e.g. Polarisation measurements), <a class="reference internal" href="../generated/ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.SimpleDae" title="ibex_bluesky_core.devices.simpledae.SimpleDae"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SimpleDae</span></code></a> is unlikely to be
+suitable; instead the <a class="reference internal" href="../generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.Dae" title="ibex_bluesky_core.devices.dae.Dae"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Dae</span></code></a> class should be subclassed directly to allow greater control.</p>
+<section id="example-configurations">
+<h2>Example configurations<a class="headerlink" href="#example-configurations" title="Link to this heading"></a></h2>
+<section id="run-per-point">
+<h3>Run-per-point<a class="headerlink" href="#run-per-point" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibex_bluesky_core.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_pv_prefix</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibex_bluesky_core.devices.simpledae</span><span class="w"> </span><span class="kn">import</span> <span class="n">SimpleDae</span><span class="p">,</span> <span class="n">RunPerPointController</span><span class="p">,</span> <span class="n">PeriodGoodFramesWaiter</span><span class="p">,</span> <span class="n">PeriodGoodFramesNormalizer</span>
+<span class="n">prefix</span> <span class="o">=</span> <span class="n">get_pv_prefix</span><span class="p">()</span>
+<span class="c1"># One DAE run for each scan point, save the runs after each point.</span>
+<span class="n">controller</span> <span class="o">=</span> <span class="n">RunPerPointController</span><span class="p">(</span><span class="n">save_run</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="c1"># Wait for 500 good frames on each run. </span>
+<span class="c1"># Note despite using RunPerPointController here we are still using PeriodGoodFramesWaiter and PeriodGoodFramesNormalizer.</span>
+<span class="n">waiter</span> <span class="o">=</span> <span class="n">PeriodGoodFramesWaiter</span><span class="p">(</span><span class="mi">500</span><span class="p">)</span>
+<span class="c1"># Sum spectra 1..99 inclusive, then normalize by total good frames</span>
+<span class="n">reducer</span> <span class="o">=</span> <span class="n">PeriodGoodFramesNormalizer</span><span class="p">(</span>
+  <span class="n">prefix</span><span class="o">=</span><span class="n">prefix</span><span class="p">,</span>
+  <span class="n">detector_spectra</span><span class="o">=</span><span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">100</span><span class="p">)],</span>
+<span class="p">)</span>
+
+<span class="n">dae</span> <span class="o">=</span> <span class="n">SimpleDae</span><span class="p">(</span>
+  <span class="n">prefix</span><span class="o">=</span><span class="n">prefix</span><span class="p">,</span>
+  <span class="n">controller</span><span class="o">=</span><span class="n">controller</span><span class="p">,</span>
+  <span class="n">waiter</span><span class="o">=</span><span class="n">waiter</span><span class="p">,</span>
+  <span class="n">reducer</span><span class="o">=</span><span class="n">reducer</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="c1"># Can give signals user-friendly names if desired</span>
+<span class="n">controller</span><span class="o">.</span><span class="n">run_number</span><span class="o">.</span><span class="n">set_name</span><span class="p">(</span><span class="s2">&quot;run number&quot;</span><span class="p">)</span>
+<span class="n">reducer</span><span class="o">.</span><span class="n">intensity</span><span class="o">.</span><span class="n">set_name</span><span class="p">(</span><span class="s2">&quot;normalized counts&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="period-per-point">
+<h3>Period-per-point<a class="headerlink" href="#period-per-point" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibex_bluesky_core.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_pv_prefix</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibex_bluesky_core.devices.simpledae</span><span class="w"> </span><span class="kn">import</span> <span class="n">SimpleDae</span><span class="p">,</span> <span class="n">PeriodPerPointController</span><span class="p">,</span> <span class="n">PeriodGoodFramesWaiter</span><span class="p">,</span> <span class="n">PeriodGoodFramesNormalizer</span>
+
+<span class="n">prefix</span> <span class="o">=</span> <span class="n">get_pv_prefix</span><span class="p">()</span>
+<span class="c1"># One DAE period for each scan point, save the runs after the scan.</span>
+<span class="n">controller</span> <span class="o">=</span> <span class="n">PeriodPerPointController</span><span class="p">(</span><span class="n">save_run</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="c1"># Wait for 500 period good frames on each point</span>
+<span class="n">waiter</span> <span class="o">=</span> <span class="n">PeriodGoodFramesWaiter</span><span class="p">(</span><span class="mi">500</span><span class="p">)</span>
+<span class="c1"># Sum spectra 1..99 inclusive, then normalize by period good frames</span>
+<span class="n">reducer</span> <span class="o">=</span> <span class="n">PeriodGoodFramesNormalizer</span><span class="p">(</span>
+  <span class="n">prefix</span><span class="o">=</span><span class="n">prefix</span><span class="p">,</span>
+  <span class="n">detector_spectra</span><span class="o">=</span><span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">100</span><span class="p">)],</span>
+<span class="p">)</span>
+
+<span class="n">dae</span> <span class="o">=</span> <span class="n">SimpleDae</span><span class="p">(</span>
+  <span class="n">prefix</span><span class="o">=</span><span class="n">prefix</span><span class="p">,</span>
+  <span class="n">controller</span><span class="o">=</span><span class="n">controller</span><span class="p">,</span>
+  <span class="n">waiter</span><span class="o">=</span><span class="n">waiter</span><span class="p">,</span>
+  <span class="n">reducer</span><span class="o">=</span><span class="n">reducer</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>You will also need to set up the DAE in advance with enough periods. This can be done from a
+plan, using:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">yield from</span> <span class="n">bps</span><span class="o">.</span><span class="n">mv</span><span class="p">(</span><span class="n">dae</span><span class="o">.</span><span class="n">number_of_periods</span><span class="p">,</span> <span class="n">num_points</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>before starting the scan.</p>
+</div>
+</section>
+</section>
+<section id="mapping-to-bluesky-device-model">
+<h2>Mapping to bluesky device model<a class="headerlink" href="#mapping-to-bluesky-device-model" title="Link to this heading"></a></h2>
+<section id="start-of-scan-stage">
+<h3>Start of scan (<code class="docutils literal notranslate"><span class="pre">stage</span></code>)<a class="headerlink" href="#start-of-scan-stage" title="Link to this heading"></a></h3>
+<p><a class="reference internal" href="../generated/ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.SimpleDae" title="ibex_bluesky_core.devices.simpledae.SimpleDae"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SimpleDae</span></code></a> will call <a class="reference internal" href="../generated/ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.Controller.setup" title="ibex_bluesky_core.devices.simpledae.Controller.setup"><code class="xref py py-obj docutils literal notranslate"><span class="pre">controller.setup()</span></code></a> to allow any pre-scan setup to be done.</p>
+<p>For example, this is where the period-per-point controller object will begin a DAE run.</p>
+</section>
+<section id="each-scan-point-trigger">
+<h3>Each scan point (<code class="docutils literal notranslate"><span class="pre">trigger</span></code>)<a class="headerlink" href="#each-scan-point-trigger" title="Link to this heading"></a></h3>
+<p><a class="reference internal" href="../generated/ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.SimpleDae" title="ibex_bluesky_core.devices.simpledae.SimpleDae"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SimpleDae</span></code></a> will call:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../generated/ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.Controller.start_counting" title="ibex_bluesky_core.devices.simpledae.Controller.start_counting"><code class="xref py py-obj docutils literal notranslate"><span class="pre">controller.start_counting()</span></code></a> to begin counting for a single scan point.</p></li>
+<li><p><a class="reference internal" href="../generated/ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.Waiter.wait" title="ibex_bluesky_core.devices.simpledae.Waiter.wait"><code class="xref py py-obj docutils literal notranslate"><span class="pre">waiter.wait()</span></code></a> to wait for that acquisition to complete</p></li>
+<li><p><a class="reference internal" href="../generated/ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.Controller.stop_counting" title="ibex_bluesky_core.devices.simpledae.Controller.stop_counting"><code class="xref py py-obj docutils literal notranslate"><span class="pre">controller.stop_counting()</span></code></a> to finish counting for a single scan point.</p></li>
+<li><p><a class="reference internal" href="../generated/ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.Reducer.reduce_data" title="ibex_bluesky_core.devices.simpledae.Reducer.reduce_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">reducer.reduce_data()</span></code></a> to do any necessary post-processing on
+the raw DAE data (e.g. normalization)</p></li>
+</ul>
+</section>
+<section id="each-scan-point-read">
+<h3>Each scan point (<code class="docutils literal notranslate"><span class="pre">read</span></code>)<a class="headerlink" href="#each-scan-point-read" title="Link to this heading"></a></h3>
+<p>Any signals marked as “interesting” by the controller, reducer or waiter will be published
+in the top-level documents published when reading the <a class="reference internal" href="../generated/ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.SimpleDae" title="ibex_bluesky_core.devices.simpledae.SimpleDae"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SimpleDae</span></code></a> object.</p>
+<p>These may correspond to EPICS signals directly from the DAE (e.g. good frames), or may be
+soft signals derived at runtime (e.g. normalized intensity).</p>
+<p>This means that the <a class="reference internal" href="../generated/ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.SimpleDae" title="ibex_bluesky_core.devices.simpledae.SimpleDae"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SimpleDae</span></code></a> object is suitable for use as a detector in most bluesky
+plans, and will make an appropriate set of data available in the emitted documents.</p>
+</section>
+<section id="end-of-scan-unstage">
+<h3>End of scan (<code class="docutils literal notranslate"><span class="pre">unstage</span></code>)<a class="headerlink" href="#end-of-scan-unstage" title="Link to this heading"></a></h3>
+<p><a class="reference internal" href="../generated/ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.SimpleDae" title="ibex_bluesky_core.devices.simpledae.SimpleDae"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SimpleDae</span></code></a> will call <a class="reference internal" href="../generated/ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.Controller.teardown" title="ibex_bluesky_core.devices.simpledae.Controller.teardown"><code class="xref py py-obj docutils literal notranslate"><span class="pre">controller.teardown()</span></code></a> to allow any post-scan teardown to be done.</p>
+<p>For example, this is where the period-per-point controller object will end a DAE run.</p>
+</section>
+</section>
+<section id="controllers">
+<h2>Controllers<a class="headerlink" href="#controllers" title="Link to this heading"></a></h2>
+<p>The <a class="reference internal" href="../generated/ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.Controller" title="ibex_bluesky_core.devices.simpledae.Controller"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Controller</span></code></a> class is responsible for starting and stopping acquisitions, in a generic
+way.</p>
+<section id="runperpointcontroller">
+<h3><a class="reference internal" href="../generated/ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.RunPerPointController" title="ibex_bluesky_core.devices.simpledae.RunPerPointController"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RunPerPointController</span></code></a><a class="headerlink" href="#runperpointcontroller" title="Link to this heading"></a></h3>
+<p>This controller starts and stops a new DAE run for each scan point. It can be configured to
+either end runs or abort them on completion.</p>
+<p>This controller causes the following signals to be published by <a class="reference internal" href="../generated/ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.SimpleDae" title="ibex_bluesky_core.devices.simpledae.SimpleDae"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SimpleDae</span></code></a>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">controller.run_number</span></code> - The run number into which data was collected. Only published
+if runs are being saved.</p></li>
+</ul>
+</section>
+<section id="periodperpointcontroller">
+<h3><a class="reference internal" href="../generated/ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.PeriodPerPointController" title="ibex_bluesky_core.devices.simpledae.PeriodPerPointController"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PeriodPerPointController</span></code></a><a class="headerlink" href="#periodperpointcontroller" title="Link to this heading"></a></h3>
+<p>This controller begins a single DAE run at the start of a scan, and then counts into a new
+DAE period for each individual scan point.</p>
+<p>The DAE must be configured with enough periods in advance. This is possible to do from a
+plan as follows:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">bluesky.plan_stubs</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">bps</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">bluesky.plans</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">bp</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibex_bluesky_core.devices.simpledae</span><span class="w"> </span><span class="kn">import</span> <span class="n">SimpleDae</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibex_bluesky_core.devices.block</span><span class="w"> </span><span class="kn">import</span> <span class="n">BlockRw</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">plan</span><span class="p">():</span>
+    <span class="n">dae</span><span class="p">:</span> <span class="n">SimpleDae</span> <span class="o">=</span> <span class="o">...</span>
+    <span class="n">block</span><span class="p">:</span> <span class="n">BlockRw</span> <span class="o">=</span> <span class="o">...</span>
+    <span class="n">num_points</span> <span class="o">=</span> <span class="mi">20</span>
+    <span class="k">yield from</span> <span class="n">bps</span><span class="o">.</span><span class="n">mv</span><span class="p">(</span><span class="n">dae</span><span class="o">.</span><span class="n">number_of_periods</span><span class="p">,</span> <span class="n">num_points</span><span class="p">)</span>
+    <span class="k">yield from</span> <span class="n">bp</span><span class="o">.</span><span class="n">scan</span><span class="p">([</span><span class="n">dae</span><span class="p">],</span> <span class="n">block</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="n">num</span><span class="o">=</span><span class="n">num_points</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The controller causes the following signals to be published by <a class="reference internal" href="../generated/ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.SimpleDae" title="ibex_bluesky_core.devices.simpledae.SimpleDae"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SimpleDae</span></code></a>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">simpledae.period_num</span></code> - the period number into which this scan point was counted.</p></li>
+</ul>
+</section>
+</section>
+<section id="reducers">
+<h2>Reducers<a class="headerlink" href="#reducers" title="Link to this heading"></a></h2>
+<p>A <a class="reference internal" href="../generated/ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.Reducer" title="ibex_bluesky_core.devices.simpledae.Reducer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Reducer</span></code></a> for a <a class="reference internal" href="../generated/ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.SimpleDae" title="ibex_bluesky_core.devices.simpledae.SimpleDae"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SimpleDae</span></code></a> is responsible for publishing any data derived from the raw
+DAE signals. For example, normalizing detector intensities by monitor counts are implemented as a reducer.</p>
+<p>A reducer may produce any number of reduced signals.</p>
+<section id="periodgoodframesnormalizer">
+<h3><a class="reference internal" href="../generated/ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.PeriodGoodFramesNormalizer" title="ibex_bluesky_core.devices.simpledae.PeriodGoodFramesNormalizer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PeriodGoodFramesNormalizer</span></code></a><a class="headerlink" href="#periodgoodframesnormalizer" title="Link to this heading"></a></h3>
+<p>Uses good frames only from the current period.
+This should be used if a controller which counts into multiple periods is being used OR if a
+controller counts into multiple runs.</p>
+<p>Published signals:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">simpledae.period.good_frames</span></code> - the number of good frames reported by the DAE</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">reducer.det_counts</span></code> - summed detector counts for all of the user-provided spectra</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">reducer.intensity</span></code> - normalized intensity (<code class="docutils literal notranslate"><span class="pre">det_counts</span> <span class="pre">/</span> <span class="pre">good_frames</span></code>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">reducer.det_counts_stddev</span></code> - uncertainty (standard deviation) of the summed detector counts</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">reducer.intensity_stddev</span></code> - uncertainty (standard deviation) of the normalised intensity</p></li>
+</ul>
+</section>
+<section id="monitornormalizer">
+<h3><a class="reference internal" href="../generated/ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.MonitorNormalizer" title="ibex_bluesky_core.devices.simpledae.MonitorNormalizer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MonitorNormalizer</span></code></a><a class="headerlink" href="#monitornormalizer" title="Link to this heading"></a></h3>
+<p>This normalizer sums a set of user-defined detector spectra, and then divides by the sum
+of a set of user-defined monitor spectra.</p>
+<p>Published signals:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">reducer.det_counts</span></code> - summed detector counts for the user-provided detector spectra</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">reducer.mon_counts</span></code> - summed monitor counts for the user-provided monitor spectra</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">reducer.intensity</span></code> - normalized intensity (<code class="docutils literal notranslate"><span class="pre">det_counts</span> <span class="pre">/</span> <span class="pre">mon_counts</span></code>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">reducer.det_counts_stddev</span></code> - uncertainty (standard deviation) of the summed detector counts</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">reducer.mon_counts_stddev</span></code> - uncertainty (standard deviation) of the summed monitor counts</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">reducer.intensity_stddev</span></code> - uncertainty (standard deviation) of the normalised intensity</p></li>
+</ul>
+</section>
+<section id="periodspecintegralsreducer">
+<h3><a class="reference internal" href="../generated/ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.PeriodSpecIntegralsReducer" title="ibex_bluesky_core.devices.simpledae.PeriodSpecIntegralsReducer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PeriodSpecIntegralsReducer</span></code></a><a class="headerlink" href="#periodspecintegralsreducer" title="Link to this heading"></a></h3>
+<p>This reducer exposes the raw integrals of the configured detector and monitor spectra, as
+numpy arrays. As a convenience, this reducer additionally publishes scalar sums of detector
+and monitor intensities, and an ‘intensity’ (detector sum divided by monitor sum).</p>
+<p>Published signals:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">reducer.mon_integrals</span></code> - <code class="docutils literal notranslate"><span class="pre">numpy</span></code> array of integrated counts on each configured monitor pixel.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">reducer.det_integrals</span></code> - <code class="docutils literal notranslate"><span class="pre">numpy</span></code> array of integrated counts on each configured detector pixel.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">reducer.mon_sum</span></code> - scalar of integrated counts on each configured monitor.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">reducer.det_sum</span></code> - scalar of integrated counts on each configured detector pixel.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">reducer.intensity</span></code> - detector sum normalized by monitor sum.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">reducer.intensity_stddev</span></code> - standard deviation of normalized intensity.</p></li>
+</ul>
+</section>
+<section id="dspacingmappingreducer">
+<h3><a class="reference internal" href="../generated/ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.DSpacingMappingReducer" title="ibex_bluesky_core.devices.simpledae.DSpacingMappingReducer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DSpacingMappingReducer</span></code></a><a class="headerlink" href="#dspacingmappingreducer" title="Link to this heading"></a></h3>
+<p>This reducer exposes a numpy array of counts against d-spacing at each scan point.
+It requires geometry information for each configured detector pixel:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">l_total</span></code>: the total flight path length between source and detector</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">two_theta</span></code>: the scattering angle</p></li>
+</ul>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>All configured detectors are assumed to use the same time-of-flight boundaries. The results from
+this reducer will be incorrect if this assumption is not true. In practice, detectors are almost
+always configured with the same time-channel boundaries; monitors may have a different set.</p>
+</div>
+<p>The process implemented by this reducer is:</p>
+<ul class="simple">
+<li><p>Read the entire spectrum-data map from the DAE.</p></li>
+<li><p>Convert the time channel boundaries for each pixel into d-spacing, using
+<a class="reference external" href="https://scipp.github.io/scippneutron/generated/modules/scippneutron.conversion.tof.dspacing_from_tof.html#scippneutron.conversion.tof.dspacing_from_tof" title="(in ScippNeutron v0.0.0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">scippneutron.conversion.tof.dspacing_from_tof</span></code></a>, using the provided <code class="docutils literal notranslate"><span class="pre">l_total</span></code> and <code class="docutils literal notranslate"><span class="pre">two_theta</span></code>
+geometry information for each pixel.</p></li>
+<li><p>Rebin all pixels into a consistent, user-specified, set of d-spacing bins.</p></li>
+<li><p>Sum over all pixels to get a 1-d array of counts against d-spacing.</p></li>
+</ul>
+<p>The resulting array represents total counts that were measured by <em>any</em> detector in the given d-spacing
+bin. These counts may be fractional due to rebinning.</p>
+<p>Published signals:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">reducer.dspacing</span></code> - <code class="docutils literal notranslate"><span class="pre">numpy</span></code> array of counts in each d-spacing bin.</p></li>
+</ul>
+</section>
+<section id="time-of-flight-and-wavelength-bounding-spectra">
+<h3>Time of Flight and Wavelength Bounding Spectra<a class="headerlink" href="#time-of-flight-and-wavelength-bounding-spectra" title="Link to this heading"></a></h3>
+<p>Scalar Normalizers (such as
+<a class="reference internal" href="../generated/ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.PeriodGoodFramesNormalizer" title="ibex_bluesky_core.devices.simpledae.PeriodGoodFramesNormalizer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PeriodGoodFramesNormalizer</span></code></a> or
+<a class="reference internal" href="../generated/ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.GoodFramesNormalizer" title="ibex_bluesky_core.devices.simpledae.GoodFramesNormalizer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GoodFramesNormalizer</span></code></a>) can be passed a
+summing function which can optionally sum spectra between provided time of flight or wavelength bounds.</p>
+<p>Monitor Normalizers, which have both monitors and detectors, can be passed a summing function for each of
+these components independently, e.g. the detector can use time of flight while the monitor uses wavelength.
+<a class="reference internal" href="../generated/ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.tof_bounded_spectra" title="ibex_bluesky_core.devices.simpledae.tof_bounded_spectra"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tof_bounded_spectra</span></code></a>
+assumes that all pixels being summed share the same flight-path length. Where two separate
+instances of <a class="reference internal" href="../generated/ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.tof_bounded_spectra" title="ibex_bluesky_core.devices.simpledae.tof_bounded_spectra"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tof_bounded_spectra</span></code></a> are used,
+such as in <a class="reference internal" href="../generated/ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.MonitorNormalizer" title="ibex_bluesky_core.devices.simpledae.MonitorNormalizer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MonitorNormalizer</span></code></a>,
+these may have different flight path lengths from each other.</p>
+<p>Here is an example showing creating a scalar normalizer with time of flight bounds from 15000 to 25000 μs,
+and summing 2 detectors, using
+<a class="reference internal" href="../generated/ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.PeriodGoodFramesNormalizer" title="ibex_bluesky_core.devices.simpledae.PeriodGoodFramesNormalizer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PeriodGoodFramesNormalizer</span></code></a>
+as a reducer and passing
+<a class="reference internal" href="../generated/ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.tof_bounded_spectra" title="ibex_bluesky_core.devices.simpledae.tof_bounded_spectra"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tof_bounded_spectra</span></code></a>
+as the summation function:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">scipp</span>
+
+<span class="n">bounds</span><span class="o">=</span><span class="n">scipp</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">dims</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;tof&quot;</span><span class="p">],</span> <span class="n">values</span><span class="o">=</span><span class="p">[</span><span class="mf">15000.0</span><span class="p">,</span> <span class="mf">25000.0</span><span class="p">],</span> <span class="n">unit</span><span class="o">=</span><span class="n">scipp</span><span class="o">.</span><span class="n">units</span><span class="o">.</span><span class="n">us</span><span class="p">)</span>
+
+<span class="n">reducer</span> <span class="o">=</span> <span class="n">PeriodGoodFramesNormalizer</span><span class="p">(</span>
+    <span class="n">prefix</span><span class="o">=</span><span class="n">get_pv_prefix</span><span class="p">(),</span>
+    <span class="n">detector_spectra</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span>
+    <span class="n">summer</span><span class="o">=</span><span class="n">tof_bounded_spectra</span><span class="p">(</span><span class="n">bounds</span><span class="p">)</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>Here is an example with wavelength bounding, using
+<a class="reference internal" href="../generated/ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.wavelength_bounded_spectra" title="ibex_bluesky_core.devices.simpledae.wavelength_bounded_spectra"><code class="xref py py-obj docutils literal notranslate"><span class="pre">wavelength_bounded_spectra</span></code></a>
+used to sum the monitor component, and time of flight bounding for the detector summing spectra:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">scipp</span>
+
+<span class="n">wavelength_bounds</span> <span class="o">=</span> <span class="n">scipp</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">dims</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;tof&quot;</span><span class="p">],</span> <span class="n">values</span><span class="o">=</span><span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">5.1</span><span class="p">],</span> <span class="n">unit</span><span class="o">=</span><span class="n">scipp</span><span class="o">.</span><span class="n">units</span><span class="o">.</span><span class="n">angstrom</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;float64&quot;</span><span class="p">)</span>
+<span class="n">total_flight_path_length</span> <span class="o">=</span> <span class="n">scipp</span><span class="o">.</span><span class="n">scalar</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="mf">85.0</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">sc</span><span class="o">.</span><span class="n">units</span><span class="o">.</span><span class="n">m</span><span class="p">),</span>
+<span class="n">tof_bounds</span> <span class="o">=</span> <span class="n">scipp</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">dims</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;tof&quot;</span><span class="p">],</span> <span class="n">values</span><span class="o">=</span><span class="p">[</span><span class="mi">15000</span><span class="p">,</span> <span class="mi">25000</span><span class="p">],</span> <span class="n">unit</span><span class="o">=</span><span class="n">scipp</span><span class="o">.</span><span class="n">units</span><span class="o">.</span><span class="n">us</span><span class="p">)</span>
+
+<span class="n">reducer</span> <span class="o">=</span> <span class="n">MonitorNormalizer</span><span class="p">(</span>
+    <span class="n">prefix</span><span class="o">=</span><span class="n">get_pv_prefix</span><span class="p">(),</span>
+    <span class="n">detector_spectra</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+    <span class="n">monitor_spectra</span><span class="o">=</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>
+    <span class="n">detector_summer</span><span class="o">=</span><span class="n">wavelength_bounded_spectra</span><span class="p">(</span><span class="n">wavelength_bounds</span><span class="p">,</span> <span class="n">total_flight_path_length</span><span class="p">),</span>
+    <span class="n">monitor_summer</span><span class="o">=</span><span class="n">tof_bounded_spectra</span><span class="p">(</span><span class="n">tof_bounds</span><span class="p">)</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>In either case, the bounds are passed as a scipp array, which needs a <code class="docutils literal notranslate"><span class="pre">dims</span></code> attribute, <code class="docutils literal notranslate"><span class="pre">values</span></code> passed
+as a list, and <code class="docutils literal notranslate"><span class="pre">units</span></code> (μs/microseconds for time of flight bounding, and angstrom for wavelength bounding)</p>
+<p>If you don’t specify either of these options, they will default to summing over the entire spectrum.</p>
+</section>
+<section id="polarisationasymmetry">
+<h3>Polarisation &amp; Asymmetry<a class="headerlink" href="#polarisationasymmetry" title="Link to this heading"></a></h3>
+<p>A helper method, <a class="reference internal" href="../generated/ibex_bluesky_core.utils.html#ibex_bluesky_core.utils.calculate_polarisation" title="ibex_bluesky_core.utils.calculate_polarisation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">calculate_polarisation</span></code></a>, is provided
+for calculating the quantity <span class="math notranslate nohighlight">\(\frac{a-\alpha b}{a+\alpha b}\)</span>, where <span class="math notranslate nohighlight">\(\alpha\)</span> is a scalar constant which is
+assumed not to have a variance.
+This quantity is used, for example, in neutron polarisation measurements, and in calculating asymmetry for muon measurements.</p>
+<p>For this expression, scipp’s default uncertainty propagation rules cannot be used as the uncertainties on
+<span class="math notranslate nohighlight">\((a-\alpha b)\)</span> are correlated with those of <span class="math notranslate nohighlight">\((a+\alpha b)\)</span> in the division step - but
+<a class="reference external" href="https://scipp.github.io/reference/error-propagation.html" title="(in Scipp v26.2.0)"><span class="xref std std-doc">scipp’s uncertainty propagation mechanism</span></a> assumes
+uncorrelated data. This helper method calculates
+the uncertainties following linear error propagation theory, using the partial derivatives of the above expression:</p>
+<div class="math notranslate nohighlight">
+\[ \begin{align}\begin{aligned}\frac{\delta}{\delta a}(\frac{a - \alpha b}{a + \alpha b}) = \frac{2b\alpha}{(a+b\alpha)^2}\\\frac{\delta}{\delta b}(\frac{a - \alpha b}{a + \alpha b}) = -\frac{2a\alpha}{(a+b\alpha)^2}\\\sigma^2_f = (\frac{\delta f}{\delta a})^2 \sigma^2_a + (\frac{\delta f}{\delta b})^2 \sigma^2_b\end{aligned}\end{align} \]</div>
+<p>The polarisation function provided will calculate the polarisation between two values, <span class="math notranslate nohighlight">\(a\)</span> and <span class="math notranslate nohighlight">\(b\)</span>, which
+have different interpretations based on the instrument context:</p>
+<p><strong>SANS Instruments (e.g., LARMOR) &amp; Reflectometry Instruments (e.g. POLREF)</strong></p>
+<p><span class="math notranslate nohighlight">\(a\)</span> &amp; <span class="math notranslate nohighlight">\(b\)</span> represent intensity (detector counts over monitor counts) before and after switching a
+spin-flipper device. This is implemented by
+<a class="reference internal" href="../generated/ibex_bluesky_core.devices.polarisingdae.html#ibex_bluesky_core.devices.polarisingdae.PolarisationReducer" title="ibex_bluesky_core.devices.polarisingdae.PolarisationReducer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PolarisationReducer</span></code></a>.
+For this use case, <span class="math notranslate nohighlight">\(\alpha\)</span> is always equal to <span class="math notranslate nohighlight">\(1\)</span>.</p>
+<p><strong>Muon Instruments</strong></p>
+<p>A and B refer to Measurements from different detector banks. Muon instruments use the additional <span class="math notranslate nohighlight">\(\alpha\)</span>
+term, which might not be equal to <span class="math notranslate nohighlight">\(1\)</span>. A reducer which exposes muon spin asymmetry as a measured quantity
+is implemented by the <a class="reference internal" href="../generated/ibex_bluesky_core.devices.muon.html#ibex_bluesky_core.devices.muon.MuonAsymmetryReducer" title="ibex_bluesky_core.devices.muon.MuonAsymmetryReducer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MuonAsymmetryReducer</span></code></a> class.</p>
+</section>
+</section>
+<section id="waiters">
+<h2>Waiters<a class="headerlink" href="#waiters" title="Link to this heading"></a></h2>
+<p>A <a class="reference internal" href="../generated/ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.Waiter" title="ibex_bluesky_core.devices.simpledae.Waiter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Waiter</span></code></a> defines an arbitrary strategy for how long to count at each point.</p>
+<p>Some waiters may be very simple, such as waiting for a fixed amount of time or for a number
+of good frames or microamp-hours. However, it is also possible to define much more
+sophisticated waiters, for example waiting until sufficient statistics have been collected.</p>
+<section id="gooduahwaiter">
+<h3><a class="reference internal" href="../generated/ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.GoodUahWaiter" title="ibex_bluesky_core.devices.simpledae.GoodUahWaiter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GoodUahWaiter</span></code></a><a class="headerlink" href="#gooduahwaiter" title="Link to this heading"></a></h3>
+<p>Waits for a user-specified number of microamp-hours.</p>
+<p>Published signals:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">simpledae.good_uah</span></code> - actual good uAh for this run.</p></li>
+</ul>
+</section>
+<section id="periodgoodframeswaiter">
+<h3><a class="reference internal" href="../generated/ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.PeriodGoodFramesWaiter" title="ibex_bluesky_core.devices.simpledae.PeriodGoodFramesWaiter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PeriodGoodFramesWaiter</span></code></a><a class="headerlink" href="#periodgoodframeswaiter" title="Link to this heading"></a></h3>
+<p>Waits for a user-specified number of good frames (in the current period) - this should be used even if the controller is splitting up points into separate runs.</p>
+<p>Published signals:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">simpledae.period.good_frames</span></code> - actual period good frames for this run.</p></li>
+</ul>
+</section>
+<section id="meventswaiter">
+<h3><a class="reference internal" href="../generated/ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.MEventsWaiter" title="ibex_bluesky_core.devices.simpledae.MEventsWaiter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MEventsWaiter</span></code></a><a class="headerlink" href="#meventswaiter" title="Link to this heading"></a></h3>
+<p>Waits for a user-specified number of millions of events</p>
+<p>Published signals:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">simpledae.m_events</span></code> - actual period good frames for this run.</p></li>
+</ul>
+</section>
+<section id="timewaiter">
+<h3><a class="reference internal" href="../generated/ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.TimeWaiter" title="ibex_bluesky_core.devices.simpledae.TimeWaiter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TimeWaiter</span></code></a><a class="headerlink" href="#timewaiter" title="Link to this heading"></a></h3>
+<p>Waits for a user-specified time duration, irrespective of DAE state.</p>
+<p>Does not publish any additional signals.</p>
+</section>
+</section>
+<section id="polarising-dae">
+<h2>Polarising DAE<a class="headerlink" href="#polarising-dae" title="Link to this heading"></a></h2>
+<p>The polarising DAE provides specialised functionality for taking data whilst taking into account the polarity of the beam.</p>
+<section id="dualrundae">
+<h3><a class="reference internal" href="../generated/ibex_bluesky_core.devices.polarisingdae.html#ibex_bluesky_core.devices.polarisingdae.DualRunDae" title="ibex_bluesky_core.devices.polarisingdae.DualRunDae"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DualRunDae</span></code></a><a class="headerlink" href="#dualrundae" title="Link to this heading"></a></h3>
+<p><a class="reference internal" href="../generated/ibex_bluesky_core.devices.polarisingdae.html#ibex_bluesky_core.devices.polarisingdae.DualRunDae" title="ibex_bluesky_core.devices.polarisingdae.DualRunDae"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DualRunDae</span></code></a> is a more specialized version of <a class="reference internal" href="../generated/ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.SimpleDae" title="ibex_bluesky_core.devices.simpledae.SimpleDae"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SimpleDae</span></code></a>, designed specifically for taking polarisation measurements. It requires a flipper device and uses it to flip from one neutron state to the other between runs.</p>
+<p>Key features:</p>
+<ul class="simple">
+<li><p>Controls a flipper device to switch between neutron states</p></li>
+<li><p>Handles three separate reduction strategies</p>
+<ul>
+<li><p>Up &amp; Down Reducers, which run after each run</p></li>
+<li><p>Main reducer, which runs after everything else</p></li>
+</ul>
+</li>
+</ul>
+<p>A utility constructor, <a class="reference internal" href="../generated/ibex_bluesky_core.devices.polarisingdae.html#ibex_bluesky_core.devices.polarisingdae.polarising_dae" title="ibex_bluesky_core.devices.polarisingdae.polarising_dae"><code class="xref py py-obj docutils literal notranslate"><span class="pre">polarising_dae</span></code></a>, is available, which creates a <a class="reference internal" href="../generated/ibex_bluesky_core.devices.polarisingdae.html#ibex_bluesky_core.devices.polarisingdae.DualRunDae" title="ibex_bluesky_core.devices.polarisingdae.DualRunDae"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DualRunDae</span></code></a> instance with wavelength-binned normalisation and polarisation calculation capabilities.</p>
+<p>The following is how you may want to use <a class="reference internal" href="../generated/ibex_bluesky_core.devices.polarisingdae.html#ibex_bluesky_core.devices.polarisingdae.polarising_dae" title="ibex_bluesky_core.devices.polarisingdae.polarising_dae"><code class="xref py py-obj docutils literal notranslate"><span class="pre">polarising_dae</span></code></a>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">scipp</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sc</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibex_bluesky_core.devices.block</span><span class="w"> </span><span class="kn">import</span> <span class="n">block_rw</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibex_bluesky_core.devices.polarisingdae</span><span class="w"> </span><span class="kn">import</span> <span class="n">polarising_dae</span>
+
+<span class="n">flipper</span> <span class="o">=</span> <span class="n">block_rw</span><span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="s2">&quot;alice&quot;</span><span class="p">)</span>
+<span class="n">wavelength_interval</span> <span class="o">=</span> <span class="n">sc</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">dims</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;tof&quot;</span><span class="p">],</span> <span class="n">values</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">9999999999.0</span><span class="p">],</span> <span class="n">unit</span><span class="o">=</span><span class="n">sc</span><span class="o">.</span><span class="n">units</span><span class="o">.</span><span class="n">angstrom</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;float64&quot;</span><span class="p">)</span> <span class="c1"># Creates a wavelength interval of the whole sprectrum</span>
+<span class="n">total_flight_path_length</span> <span class="o">=</span> <span class="n">sc</span><span class="o">.</span><span class="n">scalar</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">sc</span><span class="o">.</span><span class="n">units</span><span class="o">.</span><span class="n">m</span><span class="p">)</span>
+
+<span class="n">dae</span> <span class="o">=</span> <span class="n">polarising_dae</span><span class="p">(</span><span class="n">det_pixels</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">frames</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">movable</span><span class="o">=</span><span class="n">flipper</span><span class="p">,</span> <span class="n">movable_states</span><span class="o">=</span><span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">],</span> <span class="n">intervals</span><span class="o">=</span><span class="p">[</span><span class="n">wavelength_interval</span><span class="p">],</span> <span class="n">total_flight_path_length</span><span class="o">=</span><span class="n">total_flight_path_length</span><span class="p">,</span> <span class="n">monitor</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Notice how you must define what the <code class="docutils literal notranslate"><span class="pre">flipper_states</span></code> are to the polarising dae. This is so that it knows what to assign to the <code class="docutils literal notranslate"><span class="pre">flipper</span></code> device to move it to the “up state” and “down state”.</p>
+</div>
+</section>
+<section id="polarising-reducers">
+<h3>Polarising Reducers<a class="headerlink" href="#polarising-reducers" title="Link to this heading"></a></h3>
+<section id="multiwavelengthbandnormalizer">
+<h4><a class="reference internal" href="../generated/ibex_bluesky_core.devices.polarisingdae.html#ibex_bluesky_core.devices.polarisingdae.MultiWavelengthBandNormalizer" title="ibex_bluesky_core.devices.polarisingdae.MultiWavelengthBandNormalizer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MultiWavelengthBandNormalizer</span></code></a><a class="headerlink" href="#multiwavelengthbandnormalizer" title="Link to this heading"></a></h4>
+<p><a class="reference internal" href="../generated/ibex_bluesky_core.devices.polarisingdae.html#ibex_bluesky_core.devices.polarisingdae.MultiWavelengthBandNormalizer" title="ibex_bluesky_core.devices.polarisingdae.MultiWavelengthBandNormalizer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MultiWavelengthBandNormalizer</span></code></a> sums wavelength-bounded spectra and normalises by monitor intensity.</p>
+<p>Published signals:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">wavelength_bands</span></code>: DeviceVector containing wavelength band measurements</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">det_counts</span></code>: detector counts in the wavelength band</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">mon_counts</span></code>: monitor counts in the wavelength band</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">intensity</span></code>: normalised intensity in the wavelength band</p></li>
+<li><p>Associated uncertainty measurements for each value</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="polarisationreducer">
+<h4><a class="reference internal" href="../generated/ibex_bluesky_core.devices.polarisingdae.html#ibex_bluesky_core.devices.polarisingdae.PolarisationReducer" title="ibex_bluesky_core.devices.polarisingdae.PolarisationReducer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PolarisationReducer</span></code></a><a class="headerlink" href="#polarisationreducer" title="Link to this heading"></a></h4>
+<p><a class="reference internal" href="../generated/ibex_bluesky_core.devices.polarisingdae.html#ibex_bluesky_core.devices.polarisingdae.PolarisationReducer" title="ibex_bluesky_core.devices.polarisingdae.PolarisationReducer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PolarisationReducer</span></code></a> calculates polarisation from ‘spin-up’ and ‘spin-down’ states of a polarising DAE. Uses the <a class="reference internal" href="#polarisationasymmetry">polarisation algorithm</a>.</p>
+<p>Published signals:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">wavelength_bands</span></code>: DeviceVector containing polarisation measurements</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">polarisation</span></code>: The calculated polarisation value for that wavelength band</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">polarisation_ratio</span></code>: Ratio between up and down states for that wavelength band</p></li>
+<li><p>Associated uncertainty measurements for each value</p></li>
+</ul>
+</li>
+</ul>
+</section>
+</section>
+</section>
+<hr class="docutils" />
+<section id="dae-base-class-advanced">
+<h2><a class="reference internal" href="../generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.Dae" title="ibex_bluesky_core.devices.dae.Dae"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Dae</span></code></a> (base class, advanced)<a class="headerlink" href="#dae-base-class-advanced" title="Link to this heading"></a></h2>
+<p><a class="reference internal" href="../generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.Dae" title="ibex_bluesky_core.devices.dae.Dae"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Dae</span></code></a> is the principal class in <code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core</span></code> which exposes configuration settings
+and controls from the ISIS data acquisition electronics (DAE). <a class="reference internal" href="../generated/ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.SimpleDae" title="ibex_bluesky_core.devices.simpledae.SimpleDae"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SimpleDae</span></code></a> derives from
+DAE, so all of the signals available on <a class="reference internal" href="../generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.Dae" title="ibex_bluesky_core.devices.dae.Dae"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Dae</span></code></a> are also available on <a class="reference internal" href="../generated/ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.SimpleDae" title="ibex_bluesky_core.devices.simpledae.SimpleDae"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SimpleDae</span></code></a>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The <a class="reference internal" href="../generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.Dae" title="ibex_bluesky_core.devices.dae.Dae"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Dae</span></code></a> class is not intended to be used directly in scans - it is a low-level class
+which directly exposes functionality from the DAE, but has no scanning functionality by
+itself.</p>
+<p>It is intended that this object is only used directly when:</p>
+<ul class="simple">
+<li><p>Configuring DAE settings within a plan.</p></li>
+<li><p>For advanced use-cases, if arbitrary DAE control is required from a plan - but note
+that it will usually be better to implement functionality at the device level rather
+than the plan level.</p></li>
+</ul>
+<p>For other use-cases, a user-facing DAE class such as <a class="reference internal" href="../generated/ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.SimpleDae" title="ibex_bluesky_core.devices.simpledae.SimpleDae"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SimpleDae</span></code></a> is likely to be more
+appropriate to use as a detector in a scan - this class cannot be used by itself.</p>
+</div>
+<section id="top-level-signals">
+<h3>Top-level signals<a class="headerlink" href="#top-level-signals" title="Link to this heading"></a></h3>
+<p>Some DAE parameters, particularly metadata parameters, are exposed as simple signals,
+for example <code class="docutils literal notranslate"><span class="pre">dae.title</span></code> or <code class="docutils literal notranslate"><span class="pre">dae.good_uah</span></code>.</p>
+<p>These signals are directly readable and settable from plans:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">bluesky.plan_stubs</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">bps</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibex_bluesky_core.devices.dae</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dae</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">plan</span><span class="p">(</span><span class="n">dae</span><span class="p">:</span> <span class="n">Dae</span><span class="p">):</span>
+    <span class="n">current_title</span> <span class="o">=</span> <span class="k">yield from</span> <span class="n">bps</span><span class="o">.</span><span class="n">rd</span><span class="p">(</span><span class="n">dae</span><span class="o">.</span><span class="n">title</span><span class="p">)</span>
+    <span class="k">yield from</span> <span class="n">bps</span><span class="o">.</span><span class="n">mv</span><span class="p">(</span><span class="n">dae</span><span class="o">.</span><span class="n">title</span><span class="p">,</span> <span class="s2">&quot;new title&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="period-specific-signals">
+<h3>Period-specific signals<a class="headerlink" href="#period-specific-signals" title="Link to this heading"></a></h3>
+<p>For signals which apply to the current period, see <a class="reference internal" href="../generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.DaePeriod" title="ibex_bluesky_core.devices.dae.DaePeriod"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dae.period</span></code></a>, which contains signals
+such as <code class="docutils literal notranslate"><span class="pre">dae.period.good_uah</span></code> (the number of good microamp-hours collected in the current period).</p>
+</section>
+<section id="controlling-the-dae-directly">
+<h3>Controlling the DAE directly<a class="headerlink" href="#controlling-the-dae-directly" title="Link to this heading"></a></h3>
+<p>It is possible to control the DAE directly using the signals provided by <a class="reference internal" href="../generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.DaeControls" title="ibex_bluesky_core.devices.dae.DaeControls"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dae.controls</span></code></a>.</p>
+<p>The intention is that these signals should be used by higher-level <em>devices</em>, rather than being
+used by plans directly.</p>
+</section>
+<section id="additional-begin-run-flags">
+<h3>Additional begin_run flags<a class="headerlink" href="#additional-begin-run-flags" title="Link to this heading"></a></h3>
+<p>Options on begin, for example beginning a run in paused mode, can be specified
+using the <a class="reference internal" href="../generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.BeginRunEx" title="ibex_bluesky_core.devices.dae.BeginRunEx"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dae.controls.begin_run_ex</span></code></a> signal.</p>
+<p>Unlike the standard <code class="docutils literal notranslate"><span class="pre">begin_run</span></code> signal, this needs to be <code class="docutils literal notranslate"><span class="pre">set()</span></code> rather than simply
+<code class="docutils literal notranslate"><span class="pre">trigger()</span></code>ed, the value on set is a combination of flags from <a class="reference internal" href="../generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.BeginRunExBits" title="ibex_bluesky_core.devices.dae.BeginRunExBits"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BeginRunExBits</span></code></a>.</p>
+</section>
+<section id="dae-settings">
+<h3>DAE Settings<a class="headerlink" href="#dae-settings" title="Link to this heading"></a></h3>
+<p>Many signals on the DAE are only available as composite signals - this includes most DAE
+configuration parameters which are available under the “experiment setup” tab in IBEX, for
+example wiring/detector/spectra tables, TCB settings, or vetoes.</p>
+<p>The classes implemented in this way are:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.DaeTCBSettings" title="ibex_bluesky_core.devices.dae.DaeTCBSettings"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dae.tcb_settings</span></code></a></p>
+<ul>
+<li><p>Parameters which appear under the “time channels” tab in IBEX</p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="../generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.DaeSettings" title="ibex_bluesky_core.devices.dae.DaeSettings"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dae.dae_settings</span></code></a></p>
+<ul>
+<li><p>Parameters which appear under the “data acquisition” tab in IBEX</p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="../generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.DaePeriodSettings" title="ibex_bluesky_core.devices.dae.DaePeriodSettings"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dae.period_settings</span></code></a>:</p>
+<ul>
+<li><p>Parameters which appear under the “periods” tab in IBEX</p></li>
+</ul>
+</li>
+</ul>
+<p>To read or change these settings from plans, use the associated data classes, which are
+suffixed with <code class="docutils literal notranslate"><span class="pre">Data</span></code> (e.g. <a class="reference internal" href="../generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.DaeSettingsData" title="ibex_bluesky_core.devices.dae.DaeSettingsData"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DaeSettingsData</span></code></a> is the data class corresponding to <a class="reference internal" href="../generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.DaeSettings" title="ibex_bluesky_core.devices.dae.DaeSettings"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DaeSettings</span></code></a>):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">bluesky.plan_stubs</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">bps</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibex_bluesky_core.devices.dae</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dae</span><span class="p">,</span> <span class="n">DaeSettingsData</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">plan</span><span class="p">(</span><span class="n">dae</span><span class="p">:</span> <span class="n">Dae</span><span class="p">):</span>
+  <span class="c1"># On read, settings are returned together as an instance of a dataclass.</span>
+  <span class="n">current_settings</span><span class="p">:</span> <span class="n">DaeSettingsData</span> <span class="o">=</span> <span class="k">yield from</span> <span class="n">bps</span><span class="o">.</span><span class="n">rd</span><span class="p">(</span><span class="n">dae</span><span class="o">.</span><span class="n">dae_settings</span><span class="p">)</span>
+  <span class="n">wiring_table</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">current_settings</span><span class="o">.</span><span class="n">wiring_filepath</span>
+
+  <span class="c1"># On set, any unprovided settings are left unchanged.</span>
+  <span class="k">yield from</span> <span class="n">bps</span><span class="o">.</span><span class="n">mv</span><span class="p">(</span><span class="n">dae</span><span class="o">.</span><span class="n">dae_settings</span><span class="p">,</span> <span class="n">DaeSettingsData</span><span class="p">(</span>
+    <span class="n">wiring_filepath</span><span class="o">=</span><span class="s2">&quot;a_new_wiring_table.dat&quot;</span><span class="p">,</span>
+    <span class="n">spectra_filepath</span><span class="o">=</span><span class="s2">&quot;a_new_spectra_table.dat&quot;</span>
+  <span class="p">))</span>
+</pre></div>
+</div>
+</section>
+<section id="dae-spectra">
+<h3>DAE Spectra<a class="headerlink" href="#dae-spectra" title="Link to this heading"></a></h3>
+<p>Raw spectra are provided by the <a class="reference internal" href="../generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.DaeSpectra" title="ibex_bluesky_core.devices.dae.DaeSpectra"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DaeSpectra</span></code></a> class. Not all spectra are automatically available
+on the base DAE object - user classes will define the specific set of spectra which they are
+interested in.</p>
+<p>A <a class="reference internal" href="../generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.DaeSpectra" title="ibex_bluesky_core.devices.dae.DaeSpectra"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DaeSpectra</span></code></a> object provides 3 arrays:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">tof</span></code> (x-axis): time of flight.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">counts</span></code> (y-axis): number of counts</p>
+<ul>
+<li><p>Suitable for summing counts</p></li>
+<li><p>Will give a discontinuous plot if plotted directly and bin widths are non-uniform.</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">counts_per_time</span></code> (y-axis): number of counts normalized by bin width</p>
+<ul>
+<li><p>Not suitable for summing counts directly</p></li>
+<li><p>Gives a continuous plot when plotted against x directly.</p></li>
+</ul>
+</li>
+</ul>
+<p>The <a class="reference internal" href="../generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.Dae" title="ibex_bluesky_core.devices.dae.Dae"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Dae</span></code></a> base class does not provide any spectra by default. User-level classes should specify
+the set of spectra which they are interested in.</p>
+<p>Spectra can be summed between two bounds based on time of flight bounds, or wavelength bounds, for both detector and monitor normalizers.</p>
+<p>Scalar Normalizers (for example <a class="reference internal" href="../generated/ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.PeriodGoodFramesNormalizer" title="ibex_bluesky_core.devices.simpledae.PeriodGoodFramesNormalizer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PeriodGoodFramesNormalizer</span></code></a>) accept a <code class="docutils literal notranslate"><span class="pre">detector_summer</span></code> argument; this may sum counts using time of flight bounds (using <a class="reference internal" href="../generated/ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.tof_bounded_spectra" title="ibex_bluesky_core.devices.simpledae.tof_bounded_spectra"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tof_bounded_spectra</span></code></a>),
+or wavelength bounds (using <a class="reference internal" href="../generated/ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.wavelength_bounded_spectra" title="ibex_bluesky_core.devices.simpledae.wavelength_bounded_spectra"><code class="xref py py-obj docutils literal notranslate"><span class="pre">wavelength_bounded_spectra</span></code></a>).
+<a class="reference internal" href="../generated/ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.MonitorNormalizer" title="ibex_bluesky_core.devices.simpledae.MonitorNormalizer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MonitorNormalizer</span></code></a>
+additionally accepts a <code class="docutils literal notranslate"><span class="pre">monitor_summer</span></code> argument, with equivalent functionality.
+The default behaviour is to use the full time-of-flight range specified in the DAE configuration in IBEX.</p>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="blocks.html" class="btn btn-neutral float-left" title="Blocks" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../callbacks/isiscallbacks.html" class="btn btn-neutral float-right" title="ISIS Standard Callbacks (ISISCallbacks)" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

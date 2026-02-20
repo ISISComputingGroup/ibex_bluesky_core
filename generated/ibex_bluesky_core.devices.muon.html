@@ -1,0 +1,251 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ibex_bluesky_core.devices.muon &mdash; ibex_bluesky_core 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=dc476284" />
+
+  
+    <link rel="shortcut icon" href="../_static/favicon.svg"/>
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="ibex_bluesky_core.devices.polarisingdae" href="ibex_bluesky_core.devices.polarisingdae.html" />
+    <link rel="prev" title="ibex_bluesky_core.devices.dae" href="ibex_bluesky_core.devices.dae.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #343131" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            ibex_bluesky_core
+              <img src="../_static/logo.svg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/overview.html">Getting started</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Devices</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../devices/blocks.html">Blocks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devices/dae.html">DAE (Data Acquisition Electronics)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Callbacks</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../callbacks/isiscallbacks.html">ISIS Standard Callbacks (<code class="xref py py-obj docutils literal notranslate"><span class="pre">ISISCallbacks</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../callbacks/fitting.html">Fits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../callbacks/centre_of_mass.html">Centre of Mass</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../callbacks/plotting.html">Plotting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../callbacks/file_writing.html">File writing callbacks</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Plans</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../plans/plans.html">General Plans</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plans/reflectometry.html">Reflectometry-specific Plans</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Plan stubs</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/external_code.html">Calling external code (<code class="xref py py-obj docutils literal notranslate"><span class="pre">call_sync</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/matplotlib_helpers.html">Matplotlib helpers (<code class="xref py py-obj docutils literal notranslate"><span class="pre">call_qt_aware</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/plan_wrappers.html">Plan wrappers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/polling.html">Continuous polling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/redefining.html">Redefinition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/user_input.html">User input helpers</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../_api.html">API</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="ibex_bluesky_core.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core</span></code></a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="ibex_bluesky_core.callbacks.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.callbacks</span></code></a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="ibex_bluesky_core.devices.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.devices</span></code></a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="ibex_bluesky_core.devices.block.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.devices.block</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ibex_bluesky_core.devices.dae.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.devices.dae</span></code></a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.devices.muon</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ibex_bluesky_core.devices.polarisingdae.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.devices.polarisingdae</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ibex_bluesky_core.devices.reflectometry.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.devices.reflectometry</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ibex_bluesky_core.devices.simpledae.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.devices.simpledae</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="ibex_bluesky_core.fitting.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.fitting</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ibex_bluesky_core.log.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.log</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ibex_bluesky_core.plan_stubs.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.plan_stubs</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ibex_bluesky_core.plans.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.plans</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ibex_bluesky_core.preprocessors.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.preprocessors</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ibex_bluesky_core.run_engine.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.run_engine</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ibex_bluesky_core.utils.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.utils</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ibex_bluesky_core.version.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.version</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../replotting_scans.html">Replaying documents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../architectural_decisions.html">Architectural Decisions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer_information.html">Developer Information</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #343131" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">ibex_bluesky_core</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../_api.html">API</a></li>
+          <li class="breadcrumb-item"><a href="ibex_bluesky_core.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core</span></code></a></li>
+          <li class="breadcrumb-item"><a href="ibex_bluesky_core.devices.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.devices</span></code></a></li>
+      <li class="breadcrumb-item active"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.devices.muon</span></code></li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/ISISComputingGroup/ibex_bluesky_core/blob/main/doc/generated/ibex_bluesky_core.devices.muon.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-ibex_bluesky_core.devices.muon">
+<span id="ibex-bluesky-core-devices-muon"></span><h1><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.devices.muon</span></code><a class="headerlink" href="#module-ibex_bluesky_core.devices.muon" title="Link to this heading"></a></h1>
+<p>Muon-specific bluesky devices and utilities.</p>
+<p class="rubric">Members</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ibex_bluesky_core.devices.muon.MuonAsymmetryReducer" title="ibex_bluesky_core.devices.muon.MuonAsymmetryReducer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MuonAsymmetryReducer</span></code></a></p></td>
+<td><p>Create a new Muon asymmetry reducer.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#ibex_bluesky_core.devices.muon.damped_oscillator" title="ibex_bluesky_core.devices.muon.damped_oscillator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">damped_oscillator</span></code></a></p></td>
+<td><p>Equation for a damped oscillator with an offset, as a function of time <span class="math notranslate nohighlight">\(t\)</span>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ibex_bluesky_core.devices.muon.double_damped_oscillator" title="ibex_bluesky_core.devices.muon.double_damped_oscillator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">double_damped_oscillator</span></code></a></p></td>
+<td><p>Equation for two damped oscillators with an offset, as a function of time <span class="math notranslate nohighlight">\(t\)</span>.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py class">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.muon.MuonAsymmetryReducer">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ibex_bluesky_core.devices.muon.</span></span><span class="sig-name descname"><span class="pre">MuonAsymmetryReducer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">forward_detectors</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><span class="pre">ndarray</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.dtype.html#numpy.dtype" title="(in NumPy v2.4)"><span class="pre">dtype</span></a><span class="p"><span class="pre">[</span></span><span class="pre">int32</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backward_detectors</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><span class="pre">ndarray</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.dtype.html#numpy.dtype" title="(in NumPy v2.4)"><span class="pre">dtype</span></a><span class="p"><span class="pre">[</span></span><span class="pre">int32</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_bin_edges</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://scipp.github.io/generated/classes/scipp.Variable.html#scipp.Variable" title="(in Scipp v26.2.0)"><span class="pre">Variable</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://lmfit.github.io/lmfit-py/model.html#lmfit.model.Model" title="(in lmfit v1.3.4)"><span class="pre">Model</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">fit_parameters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://lmfit.github.io/lmfit-py/parameters.html#lmfit.parameter.Parameters" title="(in lmfit v1.3.4)"><span class="pre">Parameters</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ibex_bluesky_core/devices/muon.html#MuonAsymmetryReducer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibex_bluesky_core.devices.muon.MuonAsymmetryReducer" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.Reducer" title="ibex_bluesky_core.devices.simpledae._strategies.Reducer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Reducer</span></code></a>, <a class="reference external" href="https://blueskyproject.io/ophyd-async/v0.16/_api/ophyd_async/ophyd_async.core.html#ophyd_async.core.StandardReadable" title="(in ophyd-async v0.16)"><code class="xref py py-class docutils literal notranslate"><span class="pre">StandardReadable</span></code></a></p>
+<p>Create a new Muon asymmetry reducer.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>prefix</strong> – PV prefix for the
+<a class="reference internal" href="ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.SimpleDae" title="ibex_bluesky_core.devices.simpledae.SimpleDae"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SimpleDae</span></code></a>.</p></li>
+<li><p><strong>forward_detectors</strong> – numpy <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.array.html#numpy.array" title="(in NumPy v2.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code></a> of detector
+spectra to select for forward-scattering.
+For example, <code class="docutils literal notranslate"><span class="pre">np.array([1,</span> <span class="pre">2,</span> <span class="pre">3])</span></code> selects spectra 1-3 inclusive.
+All detectors in this list are assumed to have the same time
+channel boundaries.</p></li>
+<li><p><strong>backward_detectors</strong> – numpy <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.array.html#numpy.array" title="(in NumPy v2.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code></a> of detector
+spectra to select for backward-scattering.</p></li>
+<li><p><strong>alpha</strong> – Scaling factor used in asymmetry calculation, applied to backward detector
+counts. Defaults to 1.</p></li>
+<li><p><strong>time_bin_edges</strong> – Optional scipp <a class="reference external" href="https://scipp.github.io/generated/classes/scipp.Variable.html#scipp.Variable" title="(in Scipp v26.2.0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Variable</span></code></a>
+describing bin-edges for rebinning the data before fitting.
+This must be bin edge coordinates, aligned along a scipp dimension label of
+“tof”, have a unit of time, for example nanoseconds, and must be strictly ascending.
+Use <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a> to not apply any rebinning to the data.</p></li>
+<li><p><strong>model</strong> – <a class="reference external" href="https://lmfit.github.io/lmfit-py/model.html#lmfit.model.Model" title="(in lmfit v1.3.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">lmfit.model.Model</span></code></a> object describing the model to fit to
+the muon data. The independent variable must be <span class="math notranslate nohighlight">\(t\)</span> (time, in nanoseconds).</p></li>
+<li><p><strong>fit_parameters</strong> – <a class="reference external" href="https://lmfit.github.io/lmfit-py/parameters.html#lmfit.parameter.Parameters" title="(in lmfit v1.3.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">lmfit.parameter.Parameters</span></code></a> object describing
+the initial parameters (and constraints) for each fit parameter.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.muon.MuonAsymmetryReducer.additional_readable_signals">
+<span class="sig-name descname"><span class="pre">additional_readable_signals</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dae</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.Dae" title="ibex_bluesky_core.devices.dae.Dae"><span class="pre">Dae</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://blueskyproject.io/ophyd-async/v0.16/_api/ophyd_async/ophyd_async.core.html#ophyd_async.core.Device" title="(in ophyd-async v0.16)"><span class="pre">Device</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/ibex_bluesky_core/devices/muon.html#MuonAsymmetryReducer.additional_readable_signals"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibex_bluesky_core.devices.muon.MuonAsymmetryReducer.additional_readable_signals" title="Link to this definition"></a></dt>
+<dd><p>Publish interesting signals derived or used by this reducer.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.muon.MuonAsymmetryReducer.reduce_data">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">reduce_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dae</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.Dae" title="ibex_bluesky_core.devices.dae.Dae"><span class="pre">Dae</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/ibex_bluesky_core/devices/muon.html#MuonAsymmetryReducer.reduce_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibex_bluesky_core.devices.muon.MuonAsymmetryReducer.reduce_data" title="Link to this definition"></a></dt>
+<dd><p>Fitting asymmetry to a set of DAE data.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.muon.damped_oscillator">
+<span class="sig-prename descclassname"><span class="pre">ibex_bluesky_core.devices.muon.</span></span><span class="sig-name descname"><span class="pre">damped_oscillator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><span class="pre">ndarray</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.dtype.html#numpy.dtype" title="(in NumPy v2.4)"><span class="pre">dtype</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.floating" title="(in NumPy v2.4)"><span class="pre">floating</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">B</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">A_0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">omega_0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">phi_0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">lambda_0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><span class="pre">ndarray</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.dtype.html#numpy.dtype" title="(in NumPy v2.4)"><span class="pre">dtype</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.floating" title="(in NumPy v2.4)"><span class="pre">floating</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/ibex_bluesky_core/devices/muon.html#damped_oscillator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibex_bluesky_core.devices.muon.damped_oscillator" title="Link to this definition"></a></dt>
+<dd><p>Equation for a damped oscillator with an offset, as a function of time <span class="math notranslate nohighlight">\(t\)</span>.</p>
+<div class="math notranslate nohighlight">
+\[B + A_0 \cos(\omega_0 t + \phi_0) e^{-\lambda_0 t}\]</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.muon.double_damped_oscillator">
+<span class="sig-prename descclassname"><span class="pre">ibex_bluesky_core.devices.muon.</span></span><span class="sig-name descname"><span class="pre">double_damped_oscillator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><span class="pre">ndarray</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.dtype.html#numpy.dtype" title="(in NumPy v2.4)"><span class="pre">dtype</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.floating" title="(in NumPy v2.4)"><span class="pre">floating</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">B</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">A_0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">omega_0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">phi_0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">lambda_0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">A_1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">omega_1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">phi_1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">lambda_1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><span class="pre">ndarray</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.dtype.html#numpy.dtype" title="(in NumPy v2.4)"><span class="pre">dtype</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.floating" title="(in NumPy v2.4)"><span class="pre">floating</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/ibex_bluesky_core/devices/muon.html#double_damped_oscillator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibex_bluesky_core.devices.muon.double_damped_oscillator" title="Link to this definition"></a></dt>
+<dd><p>Equation for two damped oscillators with an offset, as a function of time <span class="math notranslate nohighlight">\(t\)</span>.</p>
+<div class="math notranslate nohighlight">
+\[B + A_0 \cos(\omega_0 t + \phi_0) e^{-\lambda_0 t}
+    + A_1 \cos(\omega_1 t + \phi_1) e^{-\lambda_1 t}\]</div>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="ibex_bluesky_core.devices.dae.html" class="btn btn-neutral float-left" title="ibex_bluesky_core.devices.dae" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="ibex_bluesky_core.devices.polarisingdae.html" class="btn btn-neutral float-right" title="ibex_bluesky_core.devices.polarisingdae" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

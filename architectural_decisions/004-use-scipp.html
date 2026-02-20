@@ -1,0 +1,232 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>4. Use scipp &mdash; ibex_bluesky_core 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=dc476284" />
+
+  
+    <link rel="shortcut icon" href="../_static/favicon.svg"/>
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="5. Variance addition to counts data" href="005-variance-addition.html" />
+    <link rel="prev" title="3. Run in-process" href="003-run-in-process.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #343131" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            ibex_bluesky_core
+              <img src="../_static/logo.svg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/overview.html">Getting started</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Devices</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../devices/blocks.html">Blocks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devices/dae.html">DAE (Data Acquisition Electronics)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Callbacks</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../callbacks/isiscallbacks.html">ISIS Standard Callbacks (<code class="xref py py-obj docutils literal notranslate"><span class="pre">ISISCallbacks</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../callbacks/fitting.html">Fits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../callbacks/centre_of_mass.html">Centre of Mass</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../callbacks/plotting.html">Plotting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../callbacks/file_writing.html">File writing callbacks</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Plans</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../plans/plans.html">General Plans</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plans/reflectometry.html">Reflectometry-specific Plans</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Plan stubs</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/external_code.html">Calling external code (<code class="xref py py-obj docutils literal notranslate"><span class="pre">call_sync</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/matplotlib_helpers.html">Matplotlib helpers (<code class="xref py py-obj docutils literal notranslate"><span class="pre">call_qt_aware</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/plan_wrappers.html">Plan wrappers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/polling.html">Continuous polling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/redefining.html">Redefinition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/user_input.html">User input helpers</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../_api.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../replotting_scans.html">Replaying documents</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../architectural_decisions.html">Architectural Decisions</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="001-repo-structure.html">1. Repository structure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="002-use-ophyd-async.html">2. Use <code class="docutils literal notranslate"><span class="pre">ophyd-async</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="003-run-in-process.html">3. Run in-process</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">4. Use <code class="docutils literal notranslate"><span class="pre">scipp</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="005-variance-addition.html">5. Variance addition to counts data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="006-where-to-put-code.html">6. Where to put code</a></li>
+<li class="toctree-l2"><a class="reference internal" href="007-output-file-archiving.html">7. Output file archiving</a></li>
+<li class="toctree-l2"><a class="reference internal" href="008-centre-of-mass.html">8. Using our own Centre of Mass Callback</a></li>
+<li class="toctree-l2"><a class="reference internal" href="009-kafka-streaming.html">9. Kafka streaming</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../developer_information.html">Developer Information</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #343131" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">ibex_bluesky_core</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../architectural_decisions.html">Architectural Decisions</a></li>
+      <li class="breadcrumb-item active">4. Use <code class="docutils literal notranslate"><span class="pre">scipp</span></code></li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/ISISComputingGroup/ibex_bluesky_core/blob/main/doc/architectural_decisions/004-use-scipp.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="use-scipp">
+<h1>4. Use <code class="docutils literal notranslate"><span class="pre">scipp</span></code><a class="headerlink" href="#use-scipp" title="Link to this heading"></a></h1>
+<section id="status">
+<h2>Status<a class="headerlink" href="#status" title="Link to this heading"></a></h2>
+<p>Current</p>
+</section>
+<section id="context">
+<h2>Context<a class="headerlink" href="#context" title="Link to this heading"></a></h2>
+<p>We need to choose a library which helps us to transform “raw” neutron or muon data from the DAE, into processed
+quantities that we scan over.</p>
+<p>Desirable features include:</p>
+<ul class="simple">
+<li><p>Uncertainty propagation, following standard uncertainty propagation rules. While this could apply to any data in
+principle, it will be especially relevant for neutron/muon counts data.</p></li>
+<li><p>Unit handling &amp; conversions</p>
+<ul>
+<li><p>Simple unit conversions, like microns to millimetres.</p></li>
+<li><p>Neutron-specific unit conversions, like time-of-flight to wavelength</p></li>
+</ul>
+</li>
+<li><p>Ability to handle the typical types of data we would acquire from the DAE and process as part of a scan:</p>
+<ul>
+<li><p>Histograms of neutron/muon counts</p></li>
+<li><p>N-dimensional arrays</p></li>
+<li><p>Event-mode data (in future)</p></li>
+</ul>
+</li>
+</ul>
+<p>Candidate solutions include:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">mantid</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">scipp</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">uncertainties</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">numpy</span></code> + home-grown uncertainty-propagation</p></li>
+</ul>
+</section>
+<section id="decision">
+<h2>Decision<a class="headerlink" href="#decision" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Default to using <code class="docutils literal notranslate"><span class="pre">scipp</span></code> for most cases</p></li>
+<li><p>Explore using <code class="docutils literal notranslate"><span class="pre">mantid</span></code> via autoreduction APIs, where we need to do more complex reductions</p></li>
+</ul>
+</section>
+<section id="justification-consequences">
+<h2>Justification &amp; Consequences<a class="headerlink" href="#justification-consequences" title="Link to this heading"></a></h2>
+<section id="numpy">
+<h3><code class="docutils literal notranslate"><span class="pre">numpy</span></code><a class="headerlink" href="#numpy" title="Link to this heading"></a></h3>
+<p>Using <code class="docutils literal notranslate"><span class="pre">numpy</span></code> by itself is eliminated on the basis that we would need to write our own uncertainty-propagation code,
+which is error prone.</p>
+<p><code class="docutils literal notranslate"><span class="pre">numpy</span></code> by itself may still be used in places where uncertainty propagation is not needed.</p>
+</section>
+<section id="uncertainties">
+<h3><code class="docutils literal notranslate"><span class="pre">uncertainties</span></code><a class="headerlink" href="#uncertainties" title="Link to this heading"></a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">uncertainties</span></code> package tracks correlations so may have bad scaling on “large” arrays, where correlation matrices
+can become large in some cases. Would need to be combined with another library, e.g. <code class="docutils literal notranslate"><span class="pre">pint</span></code>, in order to also support
+physical units. No neutron-specific functionality.</p>
+</section>
+<section id="mantid">
+<h3><code class="docutils literal notranslate"><span class="pre">mantid</span></code><a class="headerlink" href="#mantid" title="Link to this heading"></a></h3>
+<p>Mantid is not easily installable (e.g. via <code class="docutils literal notranslate"><span class="pre">pip</span></code> at present).</p>
+<p>While we have a way to call out to mantid via a REST API, initial tests have shown that the latency of this approach
+is around 15 seconds. This means it is unsuitable for many types of scans, for example alignment scans, where count
+times are far lower than 15 seconds.</p>
+<p>However, for complex reductions, we should still consider the option of passing data out to mantid. This is especially
+true if reductions depend significantly on instrument geometry, on instrument-specific corrections, or on other details
+for which mantid is best-equipped to deal with.</p>
+<p>Calling out to mantid via an API should also be considered if a reduction step may use significant compute resource.</p>
+</section>
+<section id="scipp">
+<h3><code class="docutils literal notranslate"><span class="pre">scipp</span></code><a class="headerlink" href="#scipp" title="Link to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">scipp</span></code> will be our default way of taking raw data from the DAE and processing it into a scanned-over quantity.</p>
+<p>However, in cases where the reduction is expensive (in terms of compute cost) or complex (either implementation, or
+in terms of required knowledge of geometry/instrument-specific corrections), then we should consider using mantid via
+the autoreduction API in those cases instead.</p>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="003-run-in-process.html" class="btn btn-neutral float-left" title="3. Run in-process" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="005-variance-addition.html" class="btn btn-neutral float-right" title="5. Variance addition to counts data" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

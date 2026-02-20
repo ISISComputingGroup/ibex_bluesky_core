@@ -1,0 +1,894 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ibex_bluesky_core.devices.dae &mdash; ibex_bluesky_core 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css?v=dc476284" />
+
+  
+    <link rel="shortcut icon" href="../../../_static/favicon.svg"/>
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+      <script type="module">import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11.12.1/dist/mermaid.esm.min.mjs";
+
+
+
+
+
+const initStyles = () => {
+    const defaultStyle = document.createElement('style');
+    defaultStyle.textContent = `pre.mermaid {
+    /* Same as .mermaid-container > pre */
+    display: block;
+    width: 100%;
+}
+
+pre.mermaid > svg {
+    /* Same as .mermaid-container > pre > svg */
+    height: 500px;
+    width: 100%;
+    max-width: 100% !important;
+}`;
+    document.head.appendChild(defaultStyle);
+
+    const fullscreenStyle = document.createElement('style');
+    fullscreenStyle.textContent = `.mermaid-container {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+}
+
+.mermaid-container > pre {
+    display: block;
+    width: 100%;
+}
+
+.mermaid-container > pre > svg {
+    height: 500px;
+    width: 100%;
+    max-width: 100% !important;
+}
+
+.mermaid-fullscreen-btn {
+    width: 28px;
+    height: 28px;
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid rgba(0, 0, 0, 0.3);
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    font-size: 14px;
+    line-height: 1;
+    padding: 0;
+    color: #333;
+}
+
+.mermaid-fullscreen-btn:hover {
+    opacity: 100% !important;
+    background: rgba(255, 255, 255, 1);
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+    transform: scale(1.1);
+}
+
+.mermaid-fullscreen-btn.dark-theme {
+    background: rgba(50, 50, 50, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: #e0e0e0;
+}
+
+.mermaid-fullscreen-btn.dark-theme:hover {
+    background: rgba(60, 60, 60, 1);
+    box-shadow: 0 3px 10px rgba(255, 255, 255, 0.2);
+}
+
+.mermaid-fullscreen-modal {
+    display: none;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 95vw;
+    height: 100vh;
+    background: rgba(255, 255, 255, 0.98);
+    z-index: 9999;
+    padding: 20px;
+    overflow: auto;
+}
+
+.mermaid-fullscreen-modal.dark-theme {
+    background: rgba(0, 0, 0, 0.98);
+}
+
+.mermaid-fullscreen-modal.active {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mermaid-container-fullscreen {
+    position: relative;
+    width: 95vw;
+    height: 90vh;
+    max-width: 95vw;
+    max-height: 90vh;
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    overflow: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mermaid-container-fullscreen.dark-theme {
+    background: #1a1a1a;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
+}
+
+.mermaid-container-fullscreen pre.mermaid {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mermaid-container-fullscreen .mermaid svg {
+    height: 100% !important;
+    width: 100% !important;
+    cursor: grab;
+}
+
+.mermaid-fullscreen-close {
+    position: fixed !important;
+    top: 20px !important;
+    right: 20px !important;
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    border-radius: 50%;
+    cursor: pointer;
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    transition: all 0.2s;
+    font-size: 24px;
+    line-height: 1;
+    color: #333;
+}
+
+.mermaid-fullscreen-close:hover {
+    background: white;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+    transform: scale(1.1);
+}
+
+.mermaid-fullscreen-close.dark-theme {
+    background: rgba(50, 50, 50, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #e0e0e0;
+}
+
+.mermaid-fullscreen-close.dark-theme:hover {
+    background: rgba(60, 60, 60, 1);
+    box-shadow: 0 6px 16px rgba(255, 255, 255, 0.2);
+}
+
+.mermaid-fullscreen-modal .mermaid-fullscreen-btn {
+    display: none !important;
+}`;
+    document.head.appendChild(fullscreenStyle);
+}
+
+// Detect if page has dark background
+const isDarkTheme = () => {
+    // We use a set of heuristics:
+    // 1. Check for common dark mode classes or attributes
+    // 2. Check computed background color brightness
+    if (document.documentElement.classList.contains('dark') ||
+        document.documentElement.getAttribute('data-theme') === 'dark' ||
+        document.body.classList.contains('dark') ||
+        document.body.getAttribute('data-theme') === 'dark') {
+        // console.log("Dark theme detected via class/attribute");
+        return true;
+    }
+    if (document.documentElement.classList.contains('light') ||
+        document.documentElement.getAttribute('data-theme') === 'light' ||
+        document.body.classList.contains('light') ||
+        document.body.getAttribute('data-theme') === 'light') {
+        // console.log("Light theme detected via class/attribute");
+        return false;
+    }
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        // console.log("Dark theme detected via prefers-color-scheme");
+        return true;
+    }
+    const bgColor = window.getComputedStyle(document.body).backgroundColor;
+    const match = bgColor.match(/rgb\((\d+),\s*(\d+),\s*(\d+)/);
+    if (match) {
+        const r = parseInt(match[1]);
+        const g = parseInt(match[2]);
+        const b = parseInt(match[3]);
+        const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+        // console.log("Background color brightness:", brightness);
+        return brightness < 128;
+    }
+    // console.log("No dark or light theme detected, defaulting to light theme");
+    return false;
+};
+
+let darkTheme = isDarkTheme();
+let modal = null;
+let modalContent = null;
+let previousScrollOffset = [window.scrollX, window.scrollY];
+
+const runMermaid = async (rerun) => {
+    console.log("Running mermaid diagrams, rerun =", rerun);
+    // clear all existing mermaid charts
+    let all_mermaids = document.querySelectorAll(".mermaid");
+
+    if (rerun) {
+        all_mermaids.forEach((el) => {
+            if(!el.hasAttribute("data-original-code")) {
+                // store original code
+                // console.log(`Storing original code for first run: `, el.innerHTML);
+                el.setAttribute('data-original-code', el.innerHTML);
+            }
+            if(el.getAttribute("data-processed") === "true") {
+                // remove and restore original
+                el.removeAttribute("data-processed");
+                // console.log(`Restoring original code for re-run: `, el.getAttribute('data-original-code'));
+                el.innerHTML = el.getAttribute('data-original-code');
+            } else {
+                // store original code
+                // console.log(`Storing original code for re-run: `, el.innerHTML);
+                el.setAttribute('data-original-code', el.innerHTML);
+            }
+        });
+        await mermaid.run();
+    }
+
+    all_mermaids = document.querySelectorAll(".mermaid");
+    const mermaids_processed = document.querySelectorAll(".mermaid[data-processed='true']");
+
+    if ("True" === "True") {
+        const mermaids_to_add_zoom = -1 === -1 ? all_mermaids.length : -1;
+        if(mermaids_to_add_zoom > 0) {
+            var svgs = d3.selectAll(".mermaid svg");
+            if(all_mermaids.length !== mermaids_processed.length) {
+                setTimeout(() => runMermaid(false), 200);
+                return;
+            } else if(svgs.size() !== mermaids_to_add_zoom) {
+                setTimeout(() => runMermaid(false), 200);
+                return;
+            } else {
+                svgs.each(function() {
+                    var svg = d3.select(this);
+                    svg.html("<g class='wrapper'>" + svg.html() + "</g>");
+                    var inner = svg.select("g");
+                    var zoom = d3.zoom().on("zoom", function(event) {
+                        inner.attr("transform", event.transform);
+                    });
+                    svg.call(zoom);
+                });
+            }
+        }
+    } else if(all_mermaids.length !== mermaids_processed.length) {
+        // Wait for mermaid to process all diagrams
+        setTimeout(() => runMermaid(false), 200);
+        return;
+    }
+
+    // Stop here if not adding fullscreen capability
+    if ("True" !== "True") return;
+
+    if (modal !== null ) {
+        // Destroy existing modal
+        modal.remove();
+        modal = null;
+        modalContent = null;
+    }
+
+    modal = document.createElement('div');
+    modal.className = 'mermaid-fullscreen-modal' + (darkTheme ? ' dark-theme' : '');
+    modal.setAttribute('role', 'dialog');
+    modal.setAttribute('aria-modal', 'true');
+    modal.setAttribute('aria-label', 'Fullscreen diagram viewer');
+    modal.innerHTML = `
+        <button class="mermaid-fullscreen-close${darkTheme ? ' dark-theme' : ''}" aria-label="Close fullscreen">✕</button>
+        <div class="mermaid-container-fullscreen${darkTheme ? ' dark-theme' : ''}"></div>
+    `;
+    document.body.appendChild(modal);
+
+    modalContent = modal.querySelector('.mermaid-container-fullscreen');
+    const closeBtn = modal.querySelector('.mermaid-fullscreen-close');
+
+    const closeModal = () => {
+        modal.classList.remove('active');
+        modalContent.innerHTML = '';
+        document.body.style.overflow = ''
+        window.scrollTo({left: previousScrollOffset[0], top: previousScrollOffset[1], behavior: 'instant'});
+    };
+
+    closeBtn.addEventListener('click', closeModal);
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) closeModal();
+    });
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && modal.classList.contains('active')) {
+            closeModal();
+        }
+    });
+
+    document.querySelectorAll('.mermaid').forEach((mermaidDiv) => {
+        if (mermaidDiv.parentNode.classList.contains('mermaid-container') ||
+            mermaidDiv.closest('.mermaid-fullscreen-modal')) {
+            // Already processed, adjust button class if needed
+            const existingBtn = mermaidDiv.parentNode.querySelector('.mermaid-fullscreen-btn');
+            if (existingBtn) {
+                existingBtn.className = 'mermaid-fullscreen-btn' + (darkTheme ? ' dark-theme' : '');
+            }
+            return;
+        }
+
+        const container = document.createElement('div');
+        container.className = 'mermaid-container';
+        mermaidDiv.parentNode.insertBefore(container, mermaidDiv);
+        container.appendChild(mermaidDiv);
+
+        const fullscreenBtn = document.createElement('button');
+        fullscreenBtn.className = 'mermaid-fullscreen-btn' + (darkTheme ? ' dark-theme' : '');
+        fullscreenBtn.setAttribute('aria-label', 'View diagram in fullscreen');
+        fullscreenBtn.textContent = '⛶';
+        fullscreenBtn.style.opacity = '50%';
+
+        // Calculate dynamic position based on diagram's margin and padding
+        const diagramStyle = window.getComputedStyle(mermaidDiv);
+        const marginTop = parseFloat(diagramStyle.marginTop) || 0;
+        const marginRight = parseFloat(diagramStyle.marginRight) || 0;
+        const paddingTop = parseFloat(diagramStyle.paddingTop) || 0;
+        const paddingRight = parseFloat(diagramStyle.paddingRight) || 0;
+        fullscreenBtn.style.top = `${marginTop + paddingTop + 4}px`;
+        fullscreenBtn.style.right = `${marginRight + paddingRight + 4}px`;
+
+        fullscreenBtn.addEventListener('click', () => {
+            previousScrollOffset = [window.scroll, window.scrollY];
+            const clone = mermaidDiv.cloneNode(true);
+            modalContent.innerHTML = '';
+            modalContent.appendChild(clone);
+
+            const svg = clone.querySelector('svg');
+            if (svg) {
+                svg.removeAttribute('width');
+                svg.removeAttribute('height');
+                svg.style.width = '100%';
+                svg.style.height = 'auto';
+                svg.style.maxWidth = '100%';
+                svg.style.sdisplay = 'block';
+
+                if ("True" === "True") {
+                    setTimeout(() => {
+                        const g = svg.querySelector('g');
+                        if (g) {
+                            var svgD3 = d3.select(svg);
+                            svgD3.html("<g class='wrapper'>" + svgD3.html() + "</g>");
+                            var inner = svgD3.select("g");
+                            var zoom = d3.zoom().on("zoom", function(event) {
+                                inner.attr("transform", event.transform);
+                            });
+                            svgD3.call(zoom);
+                        }
+                    }, 100);
+                }
+            }
+
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        });
+        container.appendChild(fullscreenBtn);
+    });
+};
+
+const load = async () => {
+    initStyles();
+
+    await runMermaid(true);
+
+    const reRunIfThemeChanges = async () => {
+        const newDarkTheme = isDarkTheme();
+        if (newDarkTheme !== darkTheme) {
+            darkTheme = newDarkTheme;
+            console.log("Theme change detected, re-running mermaid with", darkTheme ? "dark" : "default", "theme");
+            await mermaid.initialize(
+                {...JSON.parse(
+                    `{"startOnLoad": false}`
+                ),
+                ...{ darkMode: darkTheme, theme: darkTheme ? 'dark' : 'default' },
+                }
+            );
+            await runMermaid(true);
+        }
+    };
+
+    // Update theme classes when theme changes
+    const themeObserver = new MutationObserver(reRunIfThemeChanges);
+    themeObserver.observe(document.documentElement, {
+        attributes: true,
+        attributeFilter: ['class', 'style', 'data-theme']
+    });
+    themeObserver.observe(document.body, {
+        attributes: true,
+        attributeFilter: ['class', 'style', 'data-theme']
+    });
+};
+
+
+
+
+
+console.log("Initializing mermaid with", darkTheme ? "dark" : "default", "theme");
+mermaid.initialize(
+    {...JSON.parse(
+        `{"startOnLoad": false}`
+    ),
+    ...{ darkMode: darkTheme, theme: darkTheme ? 'dark' : 'default' },
+    }
+);
+
+window.addEventListener("load", load);</script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #343131" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            ibex_bluesky_core
+              <img src="../../../_static/logo.svg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../tutorial/overview.html">Getting started</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Devices</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../devices/blocks.html">Blocks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../devices/dae.html">DAE (Data Acquisition Electronics)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Callbacks</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../callbacks/isiscallbacks.html">ISIS Standard Callbacks (<code class="xref py py-obj docutils literal notranslate"><span class="pre">ISISCallbacks</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../callbacks/fitting.html">Fits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../callbacks/centre_of_mass.html">Centre of Mass</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../callbacks/plotting.html">Plotting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../callbacks/file_writing.html">File writing callbacks</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Plans</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../plans/plans.html">General Plans</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../plans/reflectometry.html">Reflectometry-specific Plans</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Plan stubs</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../plan_stubs/external_code.html">Calling external code (<code class="xref py py-obj docutils literal notranslate"><span class="pre">call_sync</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../plan_stubs/matplotlib_helpers.html">Matplotlib helpers (<code class="xref py py-obj docutils literal notranslate"><span class="pre">call_qt_aware</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../plan_stubs/plan_wrappers.html">Plan wrappers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../plan_stubs/polling.html">Continuous polling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../plan_stubs/redefining.html">Redefinition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../plan_stubs/user_input.html">User input helpers</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../_api.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../replotting_scans.html">Replaying documents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../architectural_decisions.html">Architectural Decisions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../developer_information.html">Developer Information</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #343131" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">ibex_bluesky_core</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+          <li class="breadcrumb-item"><a href="../devices.html">ibex_bluesky_core.devices</a></li>
+      <li class="breadcrumb-item active">ibex_bluesky_core.devices.dae</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for ibex_bluesky_core.devices.dae</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Low-level bluesky device interface to the DAE.&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Generic</span><span class="p">,</span> <span class="n">TypeVar</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy.typing</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">npt</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">bluesky.protocols</span><span class="w"> </span><span class="kn">import</span> <span class="n">Movable</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="kn">import</span> <span class="n">int32</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ophyd_async.core</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">Array1D</span><span class="p">,</span>
+    <span class="n">AsyncStatus</span><span class="p">,</span>
+    <span class="n">SignalDatatype</span><span class="p">,</span>
+    <span class="n">SignalR</span><span class="p">,</span>
+    <span class="n">SignalRW</span><span class="p">,</span>
+    <span class="n">SignalW</span><span class="p">,</span>
+    <span class="n">StandardReadable</span><span class="p">,</span>
+    <span class="n">StandardReadableFormat</span><span class="p">,</span>
+    <span class="n">StrictEnum</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ophyd_async.epics.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">epics_signal_r</span><span class="p">,</span> <span class="n">epics_signal_rw</span><span class="p">,</span> <span class="n">epics_signal_w</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibex_bluesky_core.devices</span><span class="w"> </span><span class="kn">import</span> <span class="n">isis_epics_signal_rw</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibex_bluesky_core.devices.dae._controls</span><span class="w"> </span><span class="kn">import</span> <span class="n">BeginRunEx</span><span class="p">,</span> <span class="n">BeginRunExBits</span><span class="p">,</span> <span class="n">DaeControls</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibex_bluesky_core.devices.dae._event_mode</span><span class="w"> </span><span class="kn">import</span> <span class="n">DaeEventMode</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibex_bluesky_core.devices.dae._monitor</span><span class="w"> </span><span class="kn">import</span> <span class="n">DaeMonitor</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibex_bluesky_core.devices.dae._period</span><span class="w"> </span><span class="kn">import</span> <span class="n">DaePeriod</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibex_bluesky_core.devices.dae._period_settings</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">DaePeriodSettings</span><span class="p">,</span>
+    <span class="n">DaePeriodSettingsData</span><span class="p">,</span>
+    <span class="n">PeriodSource</span><span class="p">,</span>
+    <span class="n">PeriodType</span><span class="p">,</span>
+    <span class="n">SinglePeriodSettings</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibex_bluesky_core.devices.dae._settings</span><span class="w"> </span><span class="kn">import</span> <span class="n">DaeSettings</span><span class="p">,</span> <span class="n">DaeSettingsData</span><span class="p">,</span> <span class="n">DaeTimingSource</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibex_bluesky_core.devices.dae._spectra</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">DaeSpectra</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibex_bluesky_core.devices.dae._tcb_settings</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">DaeTCBSettings</span><span class="p">,</span>
+    <span class="n">DaeTCBSettingsData</span><span class="p">,</span>
+    <span class="n">TCBCalculationMethod</span><span class="p">,</span>
+    <span class="n">TCBTimeUnit</span><span class="p">,</span>
+    <span class="n">TimeRegime</span><span class="p">,</span>
+    <span class="n">TimeRegimeMode</span><span class="p">,</span>
+    <span class="n">TimeRegimeRow</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;BeginRunEx&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;BeginRunExBits&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Dae&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;DaeCheckingSignal&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;DaeControls&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;DaeEventMode&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;DaeMonitor&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;DaePeriod&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;DaePeriodSettings&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;DaePeriodSettingsData&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;DaeSettings&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;DaeSettingsData&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;DaeSpectra&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;DaeTCBSettings&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;DaeTCBSettingsData&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;DaeTimingSource&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;PeriodSource&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;PeriodType&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;RunstateEnum&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;SinglePeriodSettings&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;TCBCalculationMethod&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;TCBTimeUnit&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;TimeRegime&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;TimeRegimeMode&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;TimeRegimeRow&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+
+<span class="n">T</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;T&quot;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="n">SignalDatatype</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="DaeCheckingSignal">
+<a class="viewcode-back" href="../../../generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.DaeCheckingSignal">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">DaeCheckingSignal</span><span class="p">(</span><span class="n">StandardReadable</span><span class="p">,</span> <span class="n">Movable</span><span class="p">[</span><span class="n">T</span><span class="p">],</span> <span class="n">Generic</span><span class="p">[</span><span class="n">T</span><span class="p">]):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Device that wraps a signal and checks the result of a set.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">datatype</span><span class="p">:</span> <span class="nb">type</span><span class="p">[</span><span class="n">T</span><span class="p">],</span> <span class="n">prefix</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Device that wraps a signal and checks the result of a set.</span>
+
+<span class="sd">        This ensures that the DAE has accepted a configuration change, ensuring that</span>
+<span class="sd">        runs are not accidentally started in an unwanted configuration if the DAE does</span>
+<span class="sd">        not accept new settings.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            datatype: The datatype of the signal.</span>
+<span class="sd">            prefix: The PV address of the signal.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">prefix</span> <span class="o">=</span> <span class="n">prefix</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_children_as_readables</span><span class="p">(</span><span class="n">StandardReadableFormat</span><span class="o">.</span><span class="n">HINTED_SIGNAL</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">signal</span> <span class="o">=</span> <span class="n">isis_epics_signal_rw</span><span class="p">(</span><span class="n">datatype</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">prefix</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="DaeCheckingSignal.set">
+<a class="viewcode-back" href="../../../generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.DaeCheckingSignal.set">[docs]</a>
+    <span class="nd">@AsyncStatus</span><span class="o">.</span><span class="n">wrap</span>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">set</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">T</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set and check a signal.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            value: the value to set.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            OSError: If the signal failed to be set to the specified value.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+        <span class="n">actual_value</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">get_value</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="o">!=</span> <span class="n">actual_value</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">OSError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Signal </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">prefix</span><span class="si">}</span><span class="s2"> could not be set to </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">, actual value was </span><span class="si">{</span><span class="n">actual_value</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="RunstateEnum">
+<a class="viewcode-back" href="../../../generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.RunstateEnum">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">RunstateEnum</span><span class="p">(</span><span class="n">StrictEnum</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The run state.&quot;&quot;&quot;</span>
+
+    <span class="n">PROCESSING</span> <span class="o">=</span> <span class="s2">&quot;PROCESSING&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Processing state.&quot;&quot;&quot;</span>
+    <span class="n">SETUP</span> <span class="o">=</span> <span class="s2">&quot;SETUP&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Setup (idle) state.&quot;&quot;&quot;</span>
+    <span class="n">RUNNING</span> <span class="o">=</span> <span class="s2">&quot;RUNNING&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Running state.&quot;&quot;&quot;</span>
+    <span class="n">PAUSED</span> <span class="o">=</span> <span class="s2">&quot;PAUSED&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Paused state.&quot;&quot;&quot;</span>
+    <span class="n">WAITING</span> <span class="o">=</span> <span class="s2">&quot;WAITING&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Waiting state (running blocked by run control).&quot;&quot;&quot;</span>
+    <span class="n">VETOING</span> <span class="o">=</span> <span class="s2">&quot;VETOING&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Vetoing state (running blocked by hardware signal).&quot;&quot;&quot;</span>
+    <span class="n">ENDING</span> <span class="o">=</span> <span class="s2">&quot;ENDING&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Ending state.&quot;&quot;&quot;</span>
+    <span class="n">SAVING</span> <span class="o">=</span> <span class="s2">&quot;SAVING&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Saving state.&quot;&quot;&quot;</span>
+    <span class="n">RESUMING</span> <span class="o">=</span> <span class="s2">&quot;RESUMING&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Resuming state.&quot;&quot;&quot;</span>
+    <span class="n">PAUSING</span> <span class="o">=</span> <span class="s2">&quot;PAUSING&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Pausing state.&quot;&quot;&quot;</span>
+    <span class="n">BEGINNING</span> <span class="o">=</span> <span class="s2">&quot;BEGINNING&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Beginning state.&quot;&quot;&quot;</span>
+    <span class="n">ABORTING</span> <span class="o">=</span> <span class="s2">&quot;ABORTING&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Aborting state.&quot;&quot;&quot;</span>
+    <span class="n">UPDATING</span> <span class="o">=</span> <span class="s2">&quot;UPDATING&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Updating state.&quot;&quot;&quot;</span>
+    <span class="n">STORING</span> <span class="o">=</span> <span class="s2">&quot;STORING&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Storing state.&quot;&quot;&quot;</span>
+    <span class="n">CHANGING</span> <span class="o">=</span> <span class="s2">&quot;CHANGING&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Changing state.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a string representation of the enum value.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="Dae">
+<a class="viewcode-back" href="../../../generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.Dae">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Dae</span><span class="p">(</span><span class="n">StandardReadable</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Device representing the ISIS data acquisition electronics.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prefix</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;DAE&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Device representing the full interface to the ISIS data acquisition electronics.</span>
+
+<span class="sd">        .. warning::</span>
+
+<span class="sd">            This class exposes underlying DAE functionality behaviour to bluesky, but has no</span>
+<span class="sd">            configured behaviour. A raw ``Dae`` object is therefore unsuitable for use in a scan.</span>
+
+<span class="sd">            To use the DAE in a scan, use a subclass such as</span>
+<span class="sd">            :py:obj:`~ibex_bluesky_core.devices.simpledae.SimpleDae`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">dae_prefix</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">prefix</span><span class="si">}</span><span class="s2">DAE:&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_prefix</span> <span class="o">=</span> <span class="n">prefix</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">good_uah</span><span class="p">:</span> <span class="n">SignalR</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="n">epics_signal_r</span><span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">dae_prefix</span><span class="si">}</span><span class="s2">GOODUAH&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">count_rate</span><span class="p">:</span> <span class="n">SignalR</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="n">epics_signal_r</span><span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">dae_prefix</span><span class="si">}</span><span class="s2">COUNTRATE&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">m_events</span><span class="p">:</span> <span class="n">SignalR</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="n">epics_signal_r</span><span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">dae_prefix</span><span class="si">}</span><span class="s2">MEVENTS&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sim_mode</span><span class="p">:</span> <span class="n">SignalR</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="n">epics_signal_r</span><span class="p">(</span><span class="nb">bool</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">dae_prefix</span><span class="si">}</span><span class="s2">SIM_MODE&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">neutron_proton_ratio</span><span class="p">:</span> <span class="n">SignalR</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="n">epics_signal_r</span><span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">dae_prefix</span><span class="si">}</span><span class="s2">NPRATIO&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">good_frames</span><span class="p">:</span> <span class="n">SignalR</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">epics_signal_r</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">dae_prefix</span><span class="si">}</span><span class="s2">GOODFRAMES&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">raw_frames</span><span class="p">:</span> <span class="n">SignalR</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">epics_signal_r</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">dae_prefix</span><span class="si">}</span><span class="s2">RAWFRAMES&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">total_counts</span><span class="p">:</span> <span class="n">SignalR</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">epics_signal_r</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">dae_prefix</span><span class="si">}</span><span class="s2">TOTALCOUNTS&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Beware that this increments just after a run is ended. So it is generally not correct to</span>
+        <span class="c1"># read this just after a DAE run has been ended().</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_or_next_run_number</span><span class="p">:</span> <span class="n">SignalR</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">epics_signal_r</span><span class="p">(</span>
+            <span class="nb">int</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">dae_prefix</span><span class="si">}</span><span class="s2">IRUNNUMBER&quot;</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_or_next_run_number_str</span><span class="p">:</span> <span class="n">SignalR</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">epics_signal_r</span><span class="p">(</span>
+            <span class="nb">str</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">dae_prefix</span><span class="si">}</span><span class="s2">RUNNUMBER&quot;</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">cycle_number</span><span class="p">:</span> <span class="n">SignalR</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">epics_signal_r</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">dae_prefix</span><span class="si">}</span><span class="s2">ISISCYCLE&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inst_name</span><span class="p">:</span> <span class="n">SignalR</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">epics_signal_r</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">dae_prefix</span><span class="si">}</span><span class="s2">INSTNAME&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">run_start_time</span><span class="p">:</span> <span class="n">SignalR</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">epics_signal_r</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">dae_prefix</span><span class="si">}</span><span class="s2">STARTTIME&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">run_duration</span><span class="p">:</span> <span class="n">SignalR</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">epics_signal_r</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">dae_prefix</span><span class="si">}</span><span class="s2">RUNDURATION&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_time_channels</span><span class="p">:</span> <span class="n">SignalR</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">epics_signal_r</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">dae_prefix</span><span class="si">}</span><span class="s2">NUMTIMECHANNELS&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_spectra</span><span class="p">:</span> <span class="n">SignalR</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">epics_signal_r</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">dae_prefix</span><span class="si">}</span><span class="s2">NUMSPECTRA&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">period</span> <span class="o">=</span> <span class="n">DaePeriod</span><span class="p">(</span><span class="n">dae_prefix</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">period_num</span><span class="p">:</span> <span class="n">SignalRW</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">isis_epics_signal_rw</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">dae_prefix</span><span class="si">}</span><span class="s2">PERIOD&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">number_of_periods</span><span class="p">:</span> <span class="n">DaeCheckingSignal</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">DaeCheckingSignal</span><span class="p">(</span>
+            <span class="nb">int</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">dae_prefix</span><span class="si">}</span><span class="s2">NUMPERIODS&quot;</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_periods</span><span class="p">:</span> <span class="n">SignalR</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">epics_signal_r</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">dae_prefix</span><span class="si">}</span><span class="s2">NUMPERIODS:MAX&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">dae_settings</span> <span class="o">=</span> <span class="n">DaeSettings</span><span class="p">(</span><span class="n">dae_prefix</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">period_settings</span> <span class="o">=</span> <span class="n">DaePeriodSettings</span><span class="p">(</span><span class="n">dae_prefix</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tcb_settings</span> <span class="o">=</span> <span class="n">DaeTCBSettings</span><span class="p">(</span><span class="n">dae_prefix</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">raw_spectra_integrals</span><span class="p">:</span> <span class="n">SignalR</span><span class="p">[</span><span class="n">Array1D</span><span class="p">[</span><span class="n">int32</span><span class="p">]]</span> <span class="o">=</span> <span class="n">epics_signal_r</span><span class="p">(</span>
+            <span class="n">Array1D</span><span class="p">[</span><span class="n">int32</span><span class="p">],</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">dae_prefix</span><span class="si">}</span><span class="s2">SPECINTEGRALS&quot;</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">raw_spectra_integrals_nord</span><span class="p">:</span> <span class="n">SignalR</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">epics_signal_r</span><span class="p">(</span>
+            <span class="nb">int</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">dae_prefix</span><span class="si">}</span><span class="s2">SPECINTEGRALS.NORD&quot;</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">raw_spec_data</span><span class="p">:</span> <span class="n">SignalR</span><span class="p">[</span><span class="n">Array1D</span><span class="p">[</span><span class="n">int32</span><span class="p">]]</span> <span class="o">=</span> <span class="n">epics_signal_r</span><span class="p">(</span>
+            <span class="n">Array1D</span><span class="p">[</span><span class="n">int32</span><span class="p">],</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">dae_prefix</span><span class="si">}</span><span class="s2">SPECDATA&quot;</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">raw_spec_data_proc</span><span class="p">:</span> <span class="n">SignalW</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">epics_signal_w</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">dae_prefix</span><span class="si">}</span><span class="s2">SPECDATA.PROC&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">raw_spec_data_nord</span><span class="p">:</span> <span class="n">SignalR</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">epics_signal_r</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">dae_prefix</span><span class="si">}</span><span class="s2">SPECDATA.NORD&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">monitor</span> <span class="o">=</span> <span class="n">DaeMonitor</span><span class="p">(</span><span class="n">dae_prefix</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">event_mode</span> <span class="o">=</span> <span class="n">DaeEventMode</span><span class="p">(</span><span class="n">dae_prefix</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">beam_current</span><span class="p">:</span> <span class="n">SignalR</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="n">epics_signal_r</span><span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">dae_prefix</span><span class="si">}</span><span class="s2">BEAMCURRENT&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">total_uamps</span><span class="p">:</span> <span class="n">SignalR</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="n">epics_signal_r</span><span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">dae_prefix</span><span class="si">}</span><span class="s2">TOTALUAMPS&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">run_state</span><span class="p">:</span> <span class="n">SignalR</span><span class="p">[</span><span class="n">RunstateEnum</span><span class="p">]</span> <span class="o">=</span> <span class="n">epics_signal_r</span><span class="p">(</span>
+            <span class="n">RunstateEnum</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">dae_prefix</span><span class="si">}</span><span class="s2">RUNSTATE&quot;</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">title</span><span class="p">:</span> <span class="n">SignalRW</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">isis_epics_signal_rw</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">dae_prefix</span><span class="si">}</span><span class="s2">TITLE&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">show_title_and_users</span><span class="p">:</span> <span class="n">SignalRW</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="n">epics_signal_rw</span><span class="p">(</span>
+            <span class="nb">bool</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">dae_prefix</span><span class="si">}</span><span class="s2">TITLE:DISPLAY&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">dae_prefix</span><span class="si">}</span><span class="s2">TITLE:DISPLAY&quot;</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">users</span><span class="p">:</span> <span class="n">SignalRW</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">isis_epics_signal_rw</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">dae_prefix</span><span class="si">}</span><span class="s2">_USERNAME&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rb_number</span><span class="p">:</span> <span class="n">SignalRW</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">isis_epics_signal_rw</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">dae_prefix</span><span class="si">}</span><span class="s2">_RBNUMBER&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">controls</span><span class="p">:</span> <span class="n">DaeControls</span> <span class="o">=</span> <span class="n">DaeControls</span><span class="p">(</span><span class="n">dae_prefix</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">autosave_freq</span><span class="p">:</span> <span class="n">SignalRW</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">isis_epics_signal_rw</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">dae_prefix</span><span class="si">}</span><span class="s2">AUTOSAVE:FREQ&quot;</span><span class="p">)</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get string representation of this class for debugging.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">(name=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">, prefix=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_prefix</span><span class="si">}</span><span class="s2">)&quot;</span>
+
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_trigger_and_get_raw_specdata</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get a raw, 1-dimensional, spectrum-data array.</span>
+
+<span class="sd">        This array includes all periods, all spectra (including the &quot;junk&quot; spectrum 0), and all</span>
+<span class="sd">        time channels (including the &quot;junk&quot; time-channel 0).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">controls</span><span class="o">.</span><span class="n">update_run</span><span class="o">.</span><span class="n">trigger</span><span class="p">()</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">raw_spec_data_proc</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="p">(</span><span class="n">raw_data</span><span class="p">,</span> <span class="n">nord</span><span class="p">)</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">raw_spec_data</span><span class="o">.</span><span class="n">get_value</span><span class="p">(),</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">raw_spec_data_nord</span><span class="o">.</span><span class="n">get_value</span><span class="p">(),</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">raw_data</span><span class="p">[:</span><span class="n">nord</span><span class="p">]</span>
+
+<div class="viewcode-block" id="Dae.trigger_and_get_specdata">
+<a class="viewcode-back" href="../../../generated/ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.Dae.trigger_and_get_specdata">[docs]</a>
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">trigger_and_get_specdata</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">detectors</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">]</span> <span class="o">|</span> <span class="nb">slice</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get a correctly-shaped spectrum-data array.</span>
+
+<span class="sd">        This array will have shape (``num_spectra``, ``num_time_channels``).</span>
+
+<span class="sd">        If detectors is a slice or an array, the number of detectors will be</span>
+<span class="sd">        given by that slice or array. If detectors is None, all detectors,</span>
+<span class="sd">        including the &quot;junk&quot; detector 0, will be included.</span>
+
+<span class="sd">        The number of spectra will be determined by the current DAE TCB</span>
+<span class="sd">        settings. The returned array will not include the &quot;junk&quot; time-channel 0.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            detectors: a numpy array or slice describing detectors to get data from.</span>
+<span class="sd">                Default is all detectors.</span>
+<span class="sd">                Pass ``np.array([1])`` to select detector 1.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">detectors</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">detectors</span> <span class="o">=</span> <span class="nb">slice</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+
+        <span class="p">(</span>
+            <span class="n">raw_data</span><span class="p">,</span>
+            <span class="n">num_periods</span><span class="p">,</span>
+            <span class="n">num_spectra</span><span class="p">,</span>
+            <span class="n">num_time_channels</span><span class="p">,</span>
+            <span class="n">period</span><span class="p">,</span>
+        <span class="p">)</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_trigger_and_get_raw_specdata</span><span class="p">(),</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">number_of_periods</span><span class="o">.</span><span class="n">signal</span><span class="o">.</span><span class="n">get_value</span><span class="p">(),</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">num_spectra</span><span class="o">.</span><span class="n">get_value</span><span class="p">(),</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">num_time_channels</span><span class="o">.</span><span class="n">get_value</span><span class="p">(),</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">period_num</span><span class="o">.</span><span class="n">get_value</span><span class="p">(),</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Raw data includes time channel 0, which contains &quot;junk&quot; data.</span>
+        <span class="c1"># It gets unconditionally chopped out.</span>
+        <span class="c1"># Spectrum 0 is also present.</span>
+        <span class="c1"># This is left so that passing detectors=[1] selects spectrum 1.</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">raw_data</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">num_periods</span><span class="p">,</span> <span class="n">num_spectra</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">num_time_channels</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">data</span><span class="p">[</span><span class="n">period</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">detectors</span><span class="p">,</span> <span class="mi">1</span><span class="p">:]</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,315 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ibex_bluesky_core.devices.polarisingdae &mdash; ibex_bluesky_core 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=dc476284" />
+
+  
+    <link rel="shortcut icon" href="../_static/favicon.svg"/>
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="ibex_bluesky_core.devices.reflectometry" href="ibex_bluesky_core.devices.reflectometry.html" />
+    <link rel="prev" title="ibex_bluesky_core.devices.muon" href="ibex_bluesky_core.devices.muon.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #343131" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            ibex_bluesky_core
+              <img src="../_static/logo.svg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/overview.html">Getting started</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Devices</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../devices/blocks.html">Blocks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devices/dae.html">DAE (Data Acquisition Electronics)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Callbacks</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../callbacks/isiscallbacks.html">ISIS Standard Callbacks (<code class="xref py py-obj docutils literal notranslate"><span class="pre">ISISCallbacks</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../callbacks/fitting.html">Fits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../callbacks/centre_of_mass.html">Centre of Mass</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../callbacks/plotting.html">Plotting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../callbacks/file_writing.html">File writing callbacks</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Plans</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../plans/plans.html">General Plans</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plans/reflectometry.html">Reflectometry-specific Plans</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Plan stubs</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/external_code.html">Calling external code (<code class="xref py py-obj docutils literal notranslate"><span class="pre">call_sync</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/matplotlib_helpers.html">Matplotlib helpers (<code class="xref py py-obj docutils literal notranslate"><span class="pre">call_qt_aware</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/plan_wrappers.html">Plan wrappers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/polling.html">Continuous polling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/redefining.html">Redefinition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/user_input.html">User input helpers</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../_api.html">API</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="ibex_bluesky_core.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core</span></code></a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="ibex_bluesky_core.callbacks.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.callbacks</span></code></a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="ibex_bluesky_core.devices.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.devices</span></code></a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="ibex_bluesky_core.devices.block.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.devices.block</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ibex_bluesky_core.devices.dae.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.devices.dae</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ibex_bluesky_core.devices.muon.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.devices.muon</span></code></a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.devices.polarisingdae</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ibex_bluesky_core.devices.reflectometry.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.devices.reflectometry</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ibex_bluesky_core.devices.simpledae.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.devices.simpledae</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="ibex_bluesky_core.fitting.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.fitting</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ibex_bluesky_core.log.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.log</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ibex_bluesky_core.plan_stubs.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.plan_stubs</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ibex_bluesky_core.plans.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.plans</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ibex_bluesky_core.preprocessors.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.preprocessors</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ibex_bluesky_core.run_engine.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.run_engine</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ibex_bluesky_core.utils.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.utils</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ibex_bluesky_core.version.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.version</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../replotting_scans.html">Replaying documents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../architectural_decisions.html">Architectural Decisions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer_information.html">Developer Information</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #343131" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">ibex_bluesky_core</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../_api.html">API</a></li>
+          <li class="breadcrumb-item"><a href="ibex_bluesky_core.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core</span></code></a></li>
+          <li class="breadcrumb-item"><a href="ibex_bluesky_core.devices.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.devices</span></code></a></li>
+      <li class="breadcrumb-item active"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.devices.polarisingdae</span></code></li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/ISISComputingGroup/ibex_bluesky_core/blob/main/doc/generated/ibex_bluesky_core.devices.polarisingdae.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-ibex_bluesky_core.devices.polarisingdae">
+<span id="ibex-bluesky-core-devices-polarisingdae"></span><h1><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.devices.polarisingdae</span></code><a class="headerlink" href="#module-ibex_bluesky_core.devices.polarisingdae" title="Link to this heading"></a></h1>
+<p>Specialised DAE interface for polarisation measurements.</p>
+<p class="rubric">Members</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ibex_bluesky_core.devices.polarisingdae.DualRunDae" title="ibex_bluesky_core.devices.polarisingdae.DualRunDae"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DualRunDae</span></code></a></p></td>
+<td><p>Initialise a DualRunDae.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#ibex_bluesky_core.devices.polarisingdae.polarising_dae" title="ibex_bluesky_core.devices.polarisingdae.polarising_dae"><code class="xref py py-obj docutils literal notranslate"><span class="pre">polarising_dae</span></code></a></p></td>
+<td><p>Create a Polarising DAE which uses wavelength binning and calculates polarisation.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py class">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.polarisingdae.DualRunDae">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ibex_bluesky_core.devices.polarisingdae.</span></span><span class="sig-name descname"><span class="pre">DualRunDae</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'DAE'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">controller</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">TController_co</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">waiter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">TWaiter_co</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reducer_final</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">TPReducer_co</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reducer_up</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">TMWBReducer_co</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reducer_down</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">TMWBReducer_co</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">movable</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://blueskyproject.io/ophyd-async/v0.16/_api/ophyd_async/ophyd_async.core.html#ophyd_async.core.AsyncMovable" title="(in ophyd-async v0.16)"><span class="pre">AsyncMovable</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">movable_states</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ibex_bluesky_core/devices/polarisingdae.html#DualRunDae"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibex_bluesky_core.devices.polarisingdae.DualRunDae" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.Dae" title="ibex_bluesky_core.devices.dae.Dae"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dae</span></code></a>, <a class="reference external" href="https://blueskyproject.io/bluesky/main/hardware.html#bluesky.protocols.Triggerable" title="(in bluesky v1.14.7.dev29+gfb2c32466)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Triggerable</span></code></a>, <a class="reference external" href="https://blueskyproject.io/ophyd-async/v0.16/_api/ophyd_async/ophyd_async.core.html#ophyd_async.core.AsyncStageable" title="(in ophyd-async v0.16)"><code class="xref py py-class docutils literal notranslate"><span class="pre">AsyncStageable</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Generic" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Generic</span></code></a>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">TController_co</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">TWaiter_co</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">TPReducer_co</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">TMWBReducer_co</span></code>]</p>
+<p>Initialise a DualRunDae.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>prefix</strong> – the PV prefix of the instrument being controlled.</p></li>
+<li><p><strong>name</strong> – A friendly name for this DAE object.</p></li>
+<li><p><strong>controller</strong> – A DAE control strategy, defines how the DAE begins and ends data acquisition
+Pre-defined strategies in the ibex_bluesky_core.devices.controllers module</p></li>
+<li><p><strong>waiter</strong> – A waiting strategy, defines how the DAE waits for an acquisition to be complete
+Pre-defined strategies in the ibex_bluesky_core.devices.waiters module</p></li>
+<li><p><strong>reducer_final</strong> – A data reduction strategy. It will be triggered once after the two runs.</p></li>
+<li><p><strong>reducer_up</strong> – A data reduction strategy. Triggers once after the first run completes.</p></li>
+<li><p><strong>reducer_down</strong> – A data reduction strategy. Triggers once after the second run completes.</p></li>
+<li><p><strong>movable</strong> – A device which will be changed at the start of the first run and between runs.</p></li>
+<li><p><strong>movable_states</strong> – A tuple of two floats, the states to set at the start and between runs.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.polarisingdae.DualRunDae.stage">
+<span class="sig-name descname"><span class="pre">stage</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/ibex_bluesky_core/devices/polarisingdae.html#DualRunDae.stage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibex_bluesky_core.devices.polarisingdae.DualRunDae.stage" title="Link to this definition"></a></dt>
+<dd><p>Pre-scan setup. Delegate to the controller.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.polarisingdae.DualRunDae.trigger">
+<span class="sig-name descname"><span class="pre">trigger</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/ibex_bluesky_core/devices/polarisingdae.html#DualRunDae.trigger"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibex_bluesky_core.devices.polarisingdae.DualRunDae.trigger" title="Link to this definition"></a></dt>
+<dd><p>Take a single measurement and prepare it for later reading.</p>
+<p>This waits for the acquisition and any defined reduction to be complete, such that
+after this coroutine completes, all relevant data is available via read()</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.polarisingdae.DualRunDae.unstage">
+<span class="sig-name descname"><span class="pre">unstage</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/ibex_bluesky_core/devices/polarisingdae.html#DualRunDae.unstage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibex_bluesky_core.devices.polarisingdae.DualRunDae.unstage" title="Link to this definition"></a></dt>
+<dd><p>Post-scan teardown, delegate to the controller.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.polarisingdae.MultiWavelengthBandNormalizer">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ibex_bluesky_core.devices.polarisingdae.</span></span><span class="sig-name descname"><span class="pre">MultiWavelengthBandNormalizer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prefix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">detector_spectra</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Sequence" title="(in Python v3.14)"><span class="pre">Sequence</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">monitor_spectra</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Sequence" title="(in Python v3.14)"><span class="pre">Sequence</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sum_wavelength_bands</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable" title="(in Python v3.14)"><span class="pre">Callable</span></a><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Collection" title="(in Python v3.14)"><span class="pre">Collection</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.DaeSpectra" title="ibex_bluesky_core.devices.dae._spectra.DaeSpectra"><span class="pre">DaeSpectra</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Awaitable" title="(in Python v3.14)"><span class="pre">Awaitable</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://scipp.github.io/generated/classes/scipp.Variable.html#scipp.Variable" title="(in Scipp v26.2.0)"><span class="pre">Variable</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://scipp.github.io/generated/classes/scipp.DataArray.html#scipp.DataArray" title="(in Scipp v26.2.0)"><span class="pre">DataArray</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ibex_bluesky_core/devices/polarisingdae/_reducers.html#MultiWavelengthBandNormalizer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibex_bluesky_core.devices.polarisingdae.MultiWavelengthBandNormalizer" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.Reducer" title="ibex_bluesky_core.devices.simpledae._strategies.Reducer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Reducer</span></code></a>, <a class="reference external" href="https://blueskyproject.io/ophyd-async/v0.16/_api/ophyd_async/ophyd_async.core.html#ophyd_async.core.StandardReadable" title="(in ophyd-async v0.16)"><code class="xref py py-class docutils literal notranslate"><span class="pre">StandardReadable</span></code></a></p>
+<p>Init.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>prefix</strong> – the PV prefix of the instrument to get spectra from (e.g. IN:DEMO:)</p></li>
+<li><p><strong>detector_spectra</strong> – a sequence of spectra numbers (detectors) to sum.</p></li>
+<li><p><strong>monitor_spectra</strong> – a sequence of spectra numbers (monitors) to sum.</p></li>
+<li><p><strong>sum_wavelength_bands</strong> – takes a sequence of summing functions, each of which takes
+spectra objects and returns a scipp scalar describing the detector intensity.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.polarisingdae.MultiWavelengthBandNormalizer.additional_readable_signals">
+<span class="sig-name descname"><span class="pre">additional_readable_signals</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dae</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.Dae" title="ibex_bluesky_core.devices.dae.Dae"><span class="pre">Dae</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://blueskyproject.io/ophyd-async/v0.16/_api/ophyd_async/ophyd_async.core.html#ophyd_async.core.Device" title="(in ophyd-async v0.16)"><span class="pre">Device</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/ibex_bluesky_core/devices/polarisingdae/_reducers.html#MultiWavelengthBandNormalizer.additional_readable_signals"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibex_bluesky_core.devices.polarisingdae.MultiWavelengthBandNormalizer.additional_readable_signals" title="Link to this definition"></a></dt>
+<dd><p>Publish interesting signals derived or used by this reducer.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.polarisingdae.MultiWavelengthBandNormalizer.reduce_data">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">reduce_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dae</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.Dae" title="ibex_bluesky_core.devices.dae.Dae"><span class="pre">Dae</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/ibex_bluesky_core/devices/polarisingdae/_reducers.html#MultiWavelengthBandNormalizer.reduce_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibex_bluesky_core.devices.polarisingdae.MultiWavelengthBandNormalizer.reduce_data" title="Link to this definition"></a></dt>
+<dd><p>Apply the normalisation.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.polarisingdae.PolarisationReducer">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ibex_bluesky_core.devices.polarisingdae.</span></span><span class="sig-name descname"><span class="pre">PolarisationReducer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">intervals</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://scipp.github.io/generated/classes/scipp.Variable.html#scipp.Variable" title="(in Scipp v26.2.0)"><span class="pre">Variable</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reducer_up</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#ibex_bluesky_core.devices.polarisingdae.MultiWavelengthBandNormalizer" title="ibex_bluesky_core.devices.polarisingdae._reducers.MultiWavelengthBandNormalizer"><span class="pre">MultiWavelengthBandNormalizer</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">reducer_down</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#ibex_bluesky_core.devices.polarisingdae.MultiWavelengthBandNormalizer" title="ibex_bluesky_core.devices.polarisingdae._reducers.MultiWavelengthBandNormalizer"><span class="pre">MultiWavelengthBandNormalizer</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ibex_bluesky_core/devices/polarisingdae/_reducers.html#PolarisationReducer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibex_bluesky_core.devices.polarisingdae.PolarisationReducer" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.Reducer" title="ibex_bluesky_core.devices.simpledae._strategies.Reducer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Reducer</span></code></a>, <a class="reference external" href="https://blueskyproject.io/ophyd-async/v0.16/_api/ophyd_async/ophyd_async.core.html#ophyd_async.core.StandardReadable" title="(in ophyd-async v0.16)"><code class="xref py py-class docutils literal notranslate"><span class="pre">StandardReadable</span></code></a></p>
+<p>Init.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>intervals</strong> – a sequence of scipp describing the wavelength intervals over which
+to calculate polarisation.</p></li>
+<li><p><strong>reducer_up</strong> – A data reduction strategy, defines the post-processing on raw DAE data.
+Used to retrieve intensity values from the up-spin state.</p></li>
+<li><p><strong>reducer_down</strong> – A data reduction strategy, defines the post-processing on raw DAE data.
+Used to retrieve intensity values from the down-spin state.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.polarisingdae.PolarisationReducer.additional_readable_signals">
+<span class="sig-name descname"><span class="pre">additional_readable_signals</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dae</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.Dae" title="ibex_bluesky_core.devices.dae.Dae"><span class="pre">Dae</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://blueskyproject.io/ophyd-async/v0.16/_api/ophyd_async/ophyd_async.core.html#ophyd_async.core.Device" title="(in ophyd-async v0.16)"><span class="pre">Device</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/ibex_bluesky_core/devices/polarisingdae/_reducers.html#PolarisationReducer.additional_readable_signals"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibex_bluesky_core.devices.polarisingdae.PolarisationReducer.additional_readable_signals" title="Link to this definition"></a></dt>
+<dd><p>Publish interesting signals derived or used by this reducer.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.polarisingdae.PolarisationReducer.reduce_data">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">reduce_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dae</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.Dae" title="ibex_bluesky_core.devices.dae.Dae"><span class="pre">Dae</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/ibex_bluesky_core/devices/polarisingdae/_reducers.html#PolarisationReducer.reduce_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibex_bluesky_core.devices.polarisingdae.PolarisationReducer.reduce_data" title="Link to this definition"></a></dt>
+<dd><p>Apply the polarisation.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.polarisingdae.polarising_dae">
+<span class="sig-prename descclassname"><span class="pre">ibex_bluesky_core.devices.polarisingdae.</span></span><span class="sig-name descname"><span class="pre">polarising_dae</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">det_pixels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frames</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">movable</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://blueskyproject.io/ophyd-async/v0.16/_api/ophyd_async/ophyd_async.core.html#ophyd_async.core.AsyncMovable" title="(in ophyd-async v0.16)"><span class="pre">AsyncMovable</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">movable_states</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">intervals</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://scipp.github.io/generated/classes/scipp.Variable.html#scipp.Variable" title="(in Scipp v26.2.0)"><span class="pre">Variable</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">total_flight_path_length</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://scipp.github.io/generated/classes/scipp.Variable.html#scipp.Variable" title="(in Scipp v26.2.0)"><span class="pre">Variable</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">periods</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">monitor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_run</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#ibex_bluesky_core.devices.polarisingdae.DualRunDae" title="ibex_bluesky_core.devices.polarisingdae.DualRunDae"><span class="pre">DualRunDae</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.Controller" title="ibex_bluesky_core.devices.simpledae._strategies.Controller"><span class="pre">Controller</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.Waiter" title="ibex_bluesky_core.devices.simpledae._strategies.Waiter"><span class="pre">Waiter</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#ibex_bluesky_core.devices.polarisingdae.PolarisationReducer" title="ibex_bluesky_core.devices.polarisingdae._reducers.PolarisationReducer"><span class="pre">PolarisationReducer</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#ibex_bluesky_core.devices.polarisingdae.MultiWavelengthBandNormalizer" title="ibex_bluesky_core.devices.polarisingdae._reducers.MultiWavelengthBandNormalizer"><span class="pre">MultiWavelengthBandNormalizer</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/ibex_bluesky_core/devices/polarisingdae.html#polarising_dae"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibex_bluesky_core.devices.polarisingdae.polarising_dae" title="Link to this definition"></a></dt>
+<dd><p>Create a Polarising DAE which uses wavelength binning and calculates polarisation.</p>
+<p>This is a different version of monitor_normalising_dae, with a more complex set of strategies.
+While already normalising using a monitor and waiting for frames, it requires a movable device
+to be provided and will change the movable between two neutron states between runs. It uses
+wavelength-bounded binning, and on completion of the two runs will calculate polarisation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>det_pixels</strong> – list of detector pixel to use for scanning.</p></li>
+<li><p><strong>frames</strong> – number of frames to wait for.</p></li>
+<li><p><strong>movable</strong> – A device which can be used to change the neutron state between runs.</p></li>
+<li><p><strong>movable_states</strong> – A tuple of two floats, the neutron states to be set between runs.</p></li>
+<li><p><strong>intervals</strong> – list of wavelength intervals to use for binning.</p></li>
+<li><p><strong>total_flight_path_length</strong> – total flight path length of the neutron beam
+from monitor to detector.</p></li>
+<li><p><strong>periods</strong> – whether or not to use software periods.</p></li>
+<li><p><strong>monitor</strong> – the monitor spectra number.</p></li>
+<li><p><strong>save_run</strong> – whether or not to save the run of the DAE.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="ibex_bluesky_core.devices.muon.html" class="btn btn-neutral float-left" title="ibex_bluesky_core.devices.muon" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="ibex_bluesky_core.devices.reflectometry.html" class="btn btn-neutral float-right" title="ibex_bluesky_core.devices.reflectometry" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

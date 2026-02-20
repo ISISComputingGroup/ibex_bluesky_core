@@ -1,0 +1,353 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ibex_bluesky_core.plans.reflectometry &mdash; ibex_bluesky_core 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=dc476284" />
+
+  
+    <link rel="shortcut icon" href="../_static/favicon.svg"/>
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="ibex_bluesky_core.preprocessors" href="ibex_bluesky_core.preprocessors.html" />
+    <link rel="prev" title="ibex_bluesky_core.plans" href="ibex_bluesky_core.plans.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #343131" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            ibex_bluesky_core
+              <img src="../_static/logo.svg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/overview.html">Getting started</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Devices</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../devices/blocks.html">Blocks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devices/dae.html">DAE (Data Acquisition Electronics)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Callbacks</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../callbacks/isiscallbacks.html">ISIS Standard Callbacks (<code class="xref py py-obj docutils literal notranslate"><span class="pre">ISISCallbacks</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../callbacks/fitting.html">Fits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../callbacks/centre_of_mass.html">Centre of Mass</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../callbacks/plotting.html">Plotting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../callbacks/file_writing.html">File writing callbacks</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Plans</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../plans/plans.html">General Plans</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plans/reflectometry.html">Reflectometry-specific Plans</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Plan stubs</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/external_code.html">Calling external code (<code class="xref py py-obj docutils literal notranslate"><span class="pre">call_sync</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/matplotlib_helpers.html">Matplotlib helpers (<code class="xref py py-obj docutils literal notranslate"><span class="pre">call_qt_aware</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/plan_wrappers.html">Plan wrappers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/polling.html">Continuous polling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/redefining.html">Redefinition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/user_input.html">User input helpers</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../_api.html">API</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="ibex_bluesky_core.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core</span></code></a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="ibex_bluesky_core.callbacks.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.callbacks</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ibex_bluesky_core.devices.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.devices</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ibex_bluesky_core.fitting.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.fitting</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ibex_bluesky_core.log.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.log</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ibex_bluesky_core.plan_stubs.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.plan_stubs</span></code></a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="ibex_bluesky_core.plans.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.plans</span></code></a><ul class="current">
+<li class="toctree-l4 current"><a class="current reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.plans.reflectometry</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="ibex_bluesky_core.preprocessors.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.preprocessors</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ibex_bluesky_core.run_engine.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.run_engine</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ibex_bluesky_core.utils.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.utils</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ibex_bluesky_core.version.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.version</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../replotting_scans.html">Replaying documents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../architectural_decisions.html">Architectural Decisions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer_information.html">Developer Information</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #343131" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">ibex_bluesky_core</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../_api.html">API</a></li>
+          <li class="breadcrumb-item"><a href="ibex_bluesky_core.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core</span></code></a></li>
+          <li class="breadcrumb-item"><a href="ibex_bluesky_core.plans.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.plans</span></code></a></li>
+      <li class="breadcrumb-item active"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.plans.reflectometry</span></code></li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/ISISComputingGroup/ibex_bluesky_core/blob/main/doc/generated/ibex_bluesky_core.plans.reflectometry.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-ibex_bluesky_core.plans.reflectometry">
+<span id="ibex-bluesky-core-plans-reflectometry"></span><h1><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.plans.reflectometry</span></code><a class="headerlink" href="#module-ibex_bluesky_core.plans.reflectometry" title="Link to this heading"></a></h1>
+<p>Plans specific to Reflectometry beamlines.</p>
+<p class="rubric">Members</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ibex_bluesky_core.plans.reflectometry.refl_adaptive_scan" title="ibex_bluesky_core.plans.reflectometry.refl_adaptive_scan"><code class="xref py py-obj docutils literal notranslate"><span class="pre">refl_adaptive_scan</span></code></a></p></td>
+<td><p>Perform an adaptive scan over a reflectometry parameter.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#ibex_bluesky_core.plans.reflectometry.refl_scan" title="ibex_bluesky_core.plans.reflectometry.refl_scan"><code class="xref py py-obj docutils literal notranslate"><span class="pre">refl_scan</span></code></a></p></td>
+<td><p>Scan over a reflectometry parameter.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py class">
+<dt class="sig sig-object py" id="ibex_bluesky_core.plans.reflectometry.DetMapAlignResult">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ibex_bluesky_core.plans.reflectometry.</span></span><span class="sig-name descname"><span class="pre">DetMapAlignResult</span></span><a class="reference internal" href="../_modules/ibex_bluesky_core/plans/reflectometry/_det_map_align.html#DetMapAlignResult"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibex_bluesky_core.plans.reflectometry.DetMapAlignResult" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.TypedDict" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypedDict</span></code></a></p>
+<p>Result from mapping alignment plan.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibex_bluesky_core.plans.reflectometry.DetMapAlignResult.angle_fit">
+<span class="sig-name descname"><span class="pre">angle_fit</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://lmfit.github.io/lmfit-py/model.html#lmfit.model.ModelResult" title="(in lmfit v1.3.4)"><span class="pre">ModelResult</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></em><a class="headerlink" href="#ibex_bluesky_core.plans.reflectometry.DetMapAlignResult.angle_fit" title="Link to this definition"></a></dt>
+<dd><p>A <a class="reference external" href="https://lmfit.github.io/lmfit-py/model.html#lmfit.model.ModelResult" title="(in lmfit v1.3.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">lmfit.model.ModelResult</span></code></a> object describing the angle fit.</p>
+<p>If the fit failed, will instead be <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a>.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibex_bluesky_core.plans.reflectometry.DetMapAlignResult.height_fit">
+<span class="sig-name descname"><span class="pre">height_fit</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://lmfit.github.io/lmfit-py/model.html#lmfit.model.ModelResult" title="(in lmfit v1.3.4)"><span class="pre">ModelResult</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></em><a class="headerlink" href="#ibex_bluesky_core.plans.reflectometry.DetMapAlignResult.height_fit" title="Link to this definition"></a></dt>
+<dd><p>A <a class="reference external" href="https://lmfit.github.io/lmfit-py/model.html#lmfit.model.ModelResult" title="(in lmfit v1.3.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">lmfit.model.ModelResult</span></code></a> object describing the height fit.</p>
+<p>If the fit failed, will instead be <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a>.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ibex_bluesky_core.plans.reflectometry.angle_scan_plan">
+<span class="sig-prename descclassname"><span class="pre">ibex_bluesky_core.plans.reflectometry.</span></span><span class="sig-name descname"><span class="pre">angle_scan_plan</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dae</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.SimpleDae" title="ibex_bluesky_core.devices.simpledae.SimpleDae"><span class="pre">SimpleDae</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.PeriodPerPointController" title="ibex_bluesky_core.devices.simpledae._controllers.PeriodPerPointController"><span class="pre">PeriodPerPointController</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.Waiter" title="ibex_bluesky_core.devices.simpledae._strategies.Waiter"><span class="pre">Waiter</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.PeriodSpecIntegralsReducer" title="ibex_bluesky_core.devices.simpledae._reducers.PeriodSpecIntegralsReducer"><span class="pre">PeriodSpecIntegralsReducer</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">angle_map</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><span class="pre">ndarray</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.dtype.html#numpy.dtype" title="(in NumPy v2.4)"><span class="pre">dtype</span></a><span class="p"><span class="pre">[</span></span><span class="pre">float64</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flood</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://scipp.github.io/generated/classes/scipp.Variable.html#scipp.Variable" title="(in Scipp v26.2.0)"><span class="pre">Variable</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">md</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Generator" title="(in Python v3.14)"><span class="pre">Generator</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://blueskyproject.io/bluesky/main/generated/bluesky.utils.Msg.html#bluesky.utils.Msg" title="(in bluesky v1.14.7.dev29+gfb2c32466)"><span class="pre">Msg</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://lmfit.github.io/lmfit-py/model.html#lmfit.model.ModelResult" title="(in lmfit v1.3.4)"><span class="pre">ModelResult</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/ibex_bluesky_core/plans/reflectometry/_det_map_align.html#angle_scan_plan"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibex_bluesky_core.plans.reflectometry.angle_scan_plan" title="Link to this definition"></a></dt>
+<dd><p>Reflectometry detector-mapping angle alignment plan.</p>
+<p>This plan does not move any axes, but takes a single DAE measurement at the current
+position. It processes this single DAE measurement to produce an angle scan, mapping
+the detector intensity against angular pixel position.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dae</strong> – The DAE to acquire from</p></li>
+<li><p><strong>angle_map</strong> – a numpy array, with the same shape as detectors,
+describing the detector angle of each detector pixel</p></li>
+<li><p><strong>flood</strong> – Optional scipp data array describing a flood-correction.
+This array should be aligned along a “spectrum” dimension; counts are
+divided by this array before being used in fits. This is used to
+normalise the intensities detected by each detector pixel.</p></li>
+<li><p><strong>md</strong> – Arbitrary metadata to include in this scan.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ibex_bluesky_core.plans.reflectometry.height_and_angle_scan_plan">
+<span class="sig-prename descclassname"><span class="pre">ibex_bluesky_core.plans.reflectometry.</span></span><span class="sig-name descname"><span class="pre">height_and_angle_scan_plan</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dae</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.SimpleDae" title="ibex_bluesky_core.devices.simpledae.SimpleDae"><span class="pre">SimpleDae</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.PeriodPerPointController" title="ibex_bluesky_core.devices.simpledae._controllers.PeriodPerPointController"><span class="pre">PeriodPerPointController</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.Waiter" title="ibex_bluesky_core.devices.simpledae._strategies.Waiter"><span class="pre">Waiter</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.PeriodSpecIntegralsReducer" title="ibex_bluesky_core.devices.simpledae._reducers.PeriodSpecIntegralsReducer"><span class="pre">PeriodSpecIntegralsReducer</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">height</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">NamedMovable</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">stop</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">num</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">angle_map</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><span class="pre">ndarray</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.dtype.html#numpy.dtype" title="(in NumPy v2.4)"><span class="pre">dtype</span></a><span class="p"><span class="pre">[</span></span><span class="pre">float64</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rel</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flood</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://scipp.github.io/generated/classes/scipp.Variable.html#scipp.Variable" title="(in Scipp v26.2.0)"><span class="pre">Variable</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">md</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Generator" title="(in Python v3.14)"><span class="pre">Generator</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://blueskyproject.io/bluesky/main/generated/bluesky.utils.Msg.html#bluesky.utils.Msg" title="(in bluesky v1.14.7.dev29+gfb2c32466)"><span class="pre">Msg</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#ibex_bluesky_core.plans.reflectometry.DetMapAlignResult" title="ibex_bluesky_core.plans.reflectometry._det_map_align.DetMapAlignResult"><span class="pre">DetMapAlignResult</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/ibex_bluesky_core/plans/reflectometry/_det_map_align.html#height_and_angle_scan_plan"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibex_bluesky_core.plans.reflectometry.height_and_angle_scan_plan" title="Link to this definition"></a></dt>
+<dd><p>Reflectometry detector-mapping simultaneous height &amp; angle alignment plan.</p>
+<p>This plan does a step scan over the specified height axis, taking <em>num</em> measurements
+from the DAE, evenly spaced between <em>start</em> and <em>stop</em>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dae</strong> – The DAE to acquire from</p></li>
+<li><p><strong>height</strong> – A bluesky Movable corresponding to a height stage</p></li>
+<li><p><strong>start</strong> – start point for scan</p></li>
+<li><p><strong>stop</strong> – stop point for scan</p></li>
+<li><p><strong>num</strong> – how many points to measure</p></li>
+<li><p><strong>angle_map</strong> – a numpy array, with the same shape as detectors,
+describing the detector angle of each detector pixel</p></li>
+<li><p><strong>rel</strong> – whether this scan should be absolute (default) or relative</p></li>
+<li><p><strong>flood</strong> – Optional scipp data array describing a flood-correction.
+This array should be aligned along a “spectrum” dimension; counts are
+divided by this array before being used in fits. This is used to
+normalise the intensities detected by each detector pixel.</p></li>
+<li><p><strong>md</strong> – Arbitrary metadata to include in this scan.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A dictionary containing the fit results from Gaussian height and angle fits.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ibex_bluesky_core.plans.reflectometry.optimise_axis_against_intensity">
+<span class="sig-prename descclassname"><span class="pre">ibex_bluesky_core.plans.reflectometry.</span></span><span class="sig-name descname"><span class="pre">optimise_axis_against_intensity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dae</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.SimpleDae" title="ibex_bluesky_core.devices.simpledae.SimpleDae"><span class="pre">SimpleDae</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">alignment_param</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">NamedMovable</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fit_method</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="ibex_bluesky_core.fitting.html#ibex_bluesky_core.fitting.FitMethod" title="ibex_bluesky_core.fitting.FitMethod"><span class="pre">FitMethod</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">fit_param</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">rel_scan_ranges</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_points</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">periods</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_run</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">problem_found_plan</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable" title="(in Python v3.14)"><span class="pre">Callable</span></a><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Generator" title="(in Python v3.14)"><span class="pre">Generator</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://blueskyproject.io/bluesky/main/generated/bluesky.utils.Msg.html#bluesky.utils.Msg" title="(in bluesky v1.14.7.dev29+gfb2c32466)"><span class="pre">Msg</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_good_fit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable" title="(in Python v3.14)"><span class="pre">Callable</span></a><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://lmfit.github.io/lmfit-py/model.html#lmfit.model.ModelResult" title="(in lmfit v1.3.4)"><span class="pre">ModelResult</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Generator" title="(in Python v3.14)"><span class="pre">Generator</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://blueskyproject.io/bluesky/main/generated/bluesky.utils.Msg.html#bluesky.utils.Msg" title="(in bluesky v1.14.7.dev29+gfb2c32466)"><span class="pre">Msg</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="ibex_bluesky_core.callbacks.html#ibex_bluesky_core.callbacks.ISISCallbacks" title="ibex_bluesky_core.callbacks.ISISCallbacks"><span class="pre">ISISCallbacks</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/ibex_bluesky_core/plans/reflectometry/_autoalign.html#optimise_axis_against_intensity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibex_bluesky_core.plans.reflectometry.optimise_axis_against_intensity" title="Link to this definition"></a></dt>
+<dd><p>Optimise a motor/device to the intensity of the beam.</p>
+<p>Scan between two symmetrical points relative to alignment_param’s current motor position,
+to find where the optimal point is depending on fit_param, and move to it,
+then optionally repeat the process for a smaller range and higher granularity.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This plan does not redefine the position of the movable as zero - that should
+be done in caller plans</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dae</strong> (<a class="reference internal" href="ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.SimpleDae" title="ibex_bluesky_core.devices.simpledae.SimpleDae"><em>SimpleDae</em></a>) – A readable signal that represents beam intensity.</p></li>
+<li><p><strong>alignment_param</strong> (<em>AlignmentParam</em>) – The alignment parameter to be scanned over and optimised.</p></li>
+<li><p><strong>fit_method</strong> (<a class="reference internal" href="ibex_bluesky_core.fitting.html#ibex_bluesky_core.fitting.FitMethod" title="ibex_bluesky_core.fitting.FitMethod"><em>FitMethod</em></a>) – The relationship to expect between the alignment parameter
+and the beam. e.g Gaussian.</p></li>
+<li><p><strong>fit_param</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a>) – Which property of fit_method you aim to optimise. e.g centre (x0)
+of a Gaussian. See <a class="reference internal" href="ibex_bluesky_core.fitting.html#module-ibex_bluesky_core.fitting" title="ibex_bluesky_core.fitting"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ibex_bluesky_core.fitting</span></code></a> for the possible options
+for each fitting method.</p></li>
+<li><p><strong>rel_scan_ranges</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>]</em>) – Scan range relative to the current motor position.
+If the list has more than one element then it will rescan for each range.
+Scans between mot_pos - rel_scan_range / 2 -&gt; mot_pos + rel_scan_range / 2</p></li>
+<li><p><strong>num_points</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – The number of points across the scan. Defaults to 10.</p></li>
+<li><p><strong>periods</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – Are DAE periods being used. Defaults to True.</p></li>
+<li><p><strong>save_run</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a>) – Should runs be saved. Defaults to True.</p></li>
+<li><p><strong>problem_found_plan</strong> (<em>Callable</em><em>[</em><em>[</em><em>]</em><em>, </em><em>Generator</em><em>[</em><em>Msg</em><em>, </em><em>None</em><em>, </em><em>None</em><em>]</em><em>] </em><em>| </em><em>None</em>) – A plan, called if optimised value is not found to be
+sensible.</p></li>
+<li><p><strong>is_good_fit</strong> (<em>Callable</em><em>[</em><em>[</em><em>ModelResult</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><em>float</em></a><em>]</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><em>bool</em></a><em>] </em><em>| </em><em>None</em>) – User provided checks on the
+optimised value, must return True if result is sensible.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Instance of <a class="reference internal" href="ibex_bluesky_core.callbacks.html#ibex_bluesky_core.callbacks.ISISCallbacks" title="ibex_bluesky_core.callbacks.ISISCallbacks"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ibex_bluesky_core.callbacks.ISISCallbacks</span></code></a>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ibex_bluesky_core.plans.reflectometry.refl_adaptive_scan">
+<span class="sig-prename descclassname"><span class="pre">ibex_bluesky_core.plans.reflectometry.</span></span><span class="sig-name descname"><span class="pre">refl_adaptive_scan</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">param</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">stop</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_step</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_step</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_delta</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">frames</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">det</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">mon</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="ibex_bluesky_core.fitting.html#ibex_bluesky_core.fitting.FitMethod" title="ibex_bluesky_core.fitting.FitMethod"><span class="pre">FitMethod</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pixel_range</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">periods</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_run</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rel</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">md</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Generator" title="(in Python v3.14)"><span class="pre">Generator</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://blueskyproject.io/bluesky/main/generated/bluesky.utils.Msg.html#bluesky.utils.Msg" title="(in bluesky v1.14.7.dev29+gfb2c32466)"><span class="pre">Msg</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="ibex_bluesky_core.callbacks.html#ibex_bluesky_core.callbacks.ISISCallbacks" title="ibex_bluesky_core.callbacks.ISISCallbacks"><span class="pre">ISISCallbacks</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/ibex_bluesky_core/plans/reflectometry.html#refl_adaptive_scan"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibex_bluesky_core.plans.reflectometry.refl_adaptive_scan" title="Link to this definition"></a></dt>
+<dd><p>Perform an adaptive scan over a reflectometry parameter.</p>
+<p>This is a wrapper around <a class="reference internal" href="ibex_bluesky_core.plans.html#ibex_bluesky_core.plans.adaptive_scan" title="ibex_bluesky_core.plans.adaptive_scan"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ibex_bluesky_core.plans.adaptive_scan</span></code></a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>param</strong> – The parameter to scan.</p></li>
+<li><p><strong>start</strong> – The initial setpoint.</p></li>
+<li><p><strong>stop</strong> – The final setpoint.</p></li>
+<li><p><strong>min_step</strong> – the minimum step size to plot</p></li>
+<li><p><strong>max_step</strong> – the maximum step size to plot</p></li>
+<li><p><strong>target_delta</strong> – desired fractional change in detector signal between steps</p></li>
+<li><p><strong>frames</strong> – the number of frames to wait for.</p></li>
+<li><p><strong>det</strong> – the detector spectra to use.</p></li>
+<li><p><strong>mon</strong> – the monitor spectra to use.</p></li>
+<li><p><strong>pixel_range</strong> – the range of pixels to scan over, using <cite>det</cite> as a centred pixel.</p></li>
+<li><p><strong>model</strong> – the fit method to use.</p></li>
+<li><p><strong>periods</strong> – whether to use periods.</p></li>
+<li><p><strong>save_run</strong> – whether to save the run of the scan.</p></li>
+<li><p><strong>rel</strong> – whether to use a relative scan around the current position.</p></li>
+<li><p><strong>md</strong> – Arbitrary metadata to include in this scan.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>An <a class="reference internal" href="ibex_bluesky_core.callbacks.html#ibex_bluesky_core.callbacks.ISISCallbacks" title="ibex_bluesky_core.callbacks.ISISCallbacks"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ibex_bluesky_core.callbacks.ISISCallbacks</span></code></a> instance.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ibex_bluesky_core.plans.reflectometry.refl_scan">
+<span class="sig-prename descclassname"><span class="pre">ibex_bluesky_core.plans.reflectometry.</span></span><span class="sig-name descname"><span class="pre">refl_scan</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">param</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">stop</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">num</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">frames</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">det</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">mon</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="ibex_bluesky_core.fitting.html#ibex_bluesky_core.fitting.FitMethod" title="ibex_bluesky_core.fitting.FitMethod"><span class="pre">FitMethod</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pixel_range</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">periods</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_run</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rel</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">md</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Generator" title="(in Python v3.14)"><span class="pre">Generator</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://blueskyproject.io/bluesky/main/generated/bluesky.utils.Msg.html#bluesky.utils.Msg" title="(in bluesky v1.14.7.dev29+gfb2c32466)"><span class="pre">Msg</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="ibex_bluesky_core.callbacks.html#ibex_bluesky_core.callbacks.ISISCallbacks" title="ibex_bluesky_core.callbacks.ISISCallbacks"><span class="pre">ISISCallbacks</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/ibex_bluesky_core/plans/reflectometry.html#refl_scan"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibex_bluesky_core.plans.reflectometry.refl_scan" title="Link to this definition"></a></dt>
+<dd><p>Scan over a reflectometry parameter.</p>
+<p>This is a wrapper around <a class="reference internal" href="ibex_bluesky_core.plans.html#ibex_bluesky_core.plans.scan" title="ibex_bluesky_core.plans.scan"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ibex_bluesky_core.plans.scan</span></code></a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>param</strong> – the reflectometry parameter.</p></li>
+<li><p><strong>start</strong> – the starting setpoint of the parameter.</p></li>
+<li><p><strong>stop</strong> – the final setpoint of the parameter.</p></li>
+<li><p><strong>num</strong> – the number of points to scan.</p></li>
+<li><p><strong>frames</strong> – the number of frames to wait for.</p></li>
+<li><p><strong>det</strong> – the detector spectra to use.</p></li>
+<li><p><strong>mon</strong> – the monitor spectra to use.</p></li>
+<li><p><strong>pixel_range</strong> – the range of pixels to scan over, using <cite>det</cite> as a centred pixel.</p></li>
+<li><p><strong>model</strong> – the model to use.</p></li>
+<li><p><strong>periods</strong> – whether to use periods.</p></li>
+<li><p><strong>save_run</strong> – whether to save the run of the scan.</p></li>
+<li><p><strong>rel</strong> – whether to use a relative scan around the current position.</p></li>
+<li><p><strong>md</strong> – Arbitrary metadata to include in this scan.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>An <a class="reference internal" href="ibex_bluesky_core.callbacks.html#ibex_bluesky_core.callbacks.ISISCallbacks" title="ibex_bluesky_core.callbacks.ISISCallbacks"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ibex_bluesky_core.callbacks.ISISCallbacks</span></code></a> instance.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="ibex_bluesky_core.plans.html" class="btn btn-neutral float-left" title="ibex_bluesky_core.plans" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="ibex_bluesky_core.preprocessors.html" class="btn btn-neutral float-right" title="ibex_bluesky_core.preprocessors" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

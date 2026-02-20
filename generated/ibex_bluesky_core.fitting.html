@@ -1,0 +1,410 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ibex_bluesky_core.fitting &mdash; ibex_bluesky_core 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=dc476284" />
+
+  
+    <link rel="shortcut icon" href="../_static/favicon.svg"/>
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="ibex_bluesky_core.log" href="ibex_bluesky_core.log.html" />
+    <link rel="prev" title="ibex_bluesky_core.devices.simpledae" href="ibex_bluesky_core.devices.simpledae.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #343131" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            ibex_bluesky_core
+              <img src="../_static/logo.svg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/overview.html">Getting started</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Devices</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../devices/blocks.html">Blocks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devices/dae.html">DAE (Data Acquisition Electronics)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Callbacks</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../callbacks/isiscallbacks.html">ISIS Standard Callbacks (<code class="xref py py-obj docutils literal notranslate"><span class="pre">ISISCallbacks</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../callbacks/fitting.html">Fits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../callbacks/centre_of_mass.html">Centre of Mass</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../callbacks/plotting.html">Plotting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../callbacks/file_writing.html">File writing callbacks</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Plans</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../plans/plans.html">General Plans</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plans/reflectometry.html">Reflectometry-specific Plans</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Plan stubs</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/external_code.html">Calling external code (<code class="xref py py-obj docutils literal notranslate"><span class="pre">call_sync</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/matplotlib_helpers.html">Matplotlib helpers (<code class="xref py py-obj docutils literal notranslate"><span class="pre">call_qt_aware</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/plan_wrappers.html">Plan wrappers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/polling.html">Continuous polling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/redefining.html">Redefinition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/user_input.html">User input helpers</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../_api.html">API</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="ibex_bluesky_core.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core</span></code></a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="ibex_bluesky_core.callbacks.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.callbacks</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ibex_bluesky_core.devices.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.devices</span></code></a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.fitting</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ibex_bluesky_core.log.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.log</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ibex_bluesky_core.plan_stubs.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.plan_stubs</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ibex_bluesky_core.plans.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.plans</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ibex_bluesky_core.preprocessors.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.preprocessors</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ibex_bluesky_core.run_engine.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.run_engine</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ibex_bluesky_core.utils.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.utils</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ibex_bluesky_core.version.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.version</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../replotting_scans.html">Replaying documents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../architectural_decisions.html">Architectural Decisions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer_information.html">Developer Information</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #343131" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">ibex_bluesky_core</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../_api.html">API</a></li>
+          <li class="breadcrumb-item"><a href="ibex_bluesky_core.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core</span></code></a></li>
+      <li class="breadcrumb-item active"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.fitting</span></code></li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/ISISComputingGroup/ibex_bluesky_core/blob/main/doc/generated/ibex_bluesky_core.fitting.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-ibex_bluesky_core.fitting">
+<span id="ibex-bluesky-core-fitting"></span><h1><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.fitting</span></code><a class="headerlink" href="#module-ibex_bluesky_core.fitting" title="Link to this heading"></a></h1>
+<p>Fitting methods used by the LiveFit callback.</p>
+<p class="rubric">Members</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ibex_bluesky_core.fitting.DampedOsc" title="ibex_bluesky_core.fitting.DampedOsc"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DampedOsc</span></code></a></p></td>
+<td><p>Damped Oscillator Fitting.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#ibex_bluesky_core.fitting.ERF" title="ibex_bluesky_core.fitting.ERF"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ERF</span></code></a></p></td>
+<td><p>Error Function Fitting.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ibex_bluesky_core.fitting.ERFC" title="ibex_bluesky_core.fitting.ERFC"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ERFC</span></code></a></p></td>
+<td><p>Complementary Error Function Fitting.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#ibex_bluesky_core.fitting.Fit" title="ibex_bluesky_core.fitting.Fit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Fit</span></code></a></p></td>
+<td><p>Base class for all fits.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ibex_bluesky_core.fitting.FitMethod" title="ibex_bluesky_core.fitting.FitMethod"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FitMethod</span></code></a></p></td>
+<td><p>Tell <a class="reference internal" href="ibex_bluesky_core.callbacks.html#ibex_bluesky_core.callbacks.LiveFit" title="ibex_bluesky_core.callbacks.LiveFit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LiveFit</span></code></a> how to fit to data points.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#ibex_bluesky_core.fitting.Gaussian" title="ibex_bluesky_core.fitting.Gaussian"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Gaussian</span></code></a></p></td>
+<td><p>Gaussian Fitting.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ibex_bluesky_core.fitting.Linear" title="ibex_bluesky_core.fitting.Linear"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Linear</span></code></a></p></td>
+<td><p>Linear Fitting.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#ibex_bluesky_core.fitting.Lorentzian" title="ibex_bluesky_core.fitting.Lorentzian"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Lorentzian</span></code></a></p></td>
+<td><p>Lorentzian Fitting.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ibex_bluesky_core.fitting.MuonMomentum" title="ibex_bluesky_core.fitting.MuonMomentum"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MuonMomentum</span></code></a></p></td>
+<td><p>Muon momentum fitting.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#ibex_bluesky_core.fitting.NegativeTrapezoid" title="ibex_bluesky_core.fitting.NegativeTrapezoid"><code class="xref py py-obj docutils literal notranslate"><span class="pre">NegativeTrapezoid</span></code></a></p></td>
+<td><p>Negative Trapezoid Fitting.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ibex_bluesky_core.fitting.Polynomial" title="ibex_bluesky_core.fitting.Polynomial"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Polynomial</span></code></a></p></td>
+<td><p>Polynomial Fitting.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#ibex_bluesky_core.fitting.SlitScan" title="ibex_bluesky_core.fitting.SlitScan"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SlitScan</span></code></a></p></td>
+<td><p>Slit Scan Fitting.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ibex_bluesky_core.fitting.TopHat" title="ibex_bluesky_core.fitting.TopHat"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TopHat</span></code></a></p></td>
+<td><p>Top Hat Fitting.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#ibex_bluesky_core.fitting.Trapezoid" title="ibex_bluesky_core.fitting.Trapezoid"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Trapezoid</span></code></a></p></td>
+<td><p>Trapezoid Fitting.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py class">
+<dt class="sig sig-object py" id="ibex_bluesky_core.fitting.DampedOsc">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ibex_bluesky_core.fitting.</span></span><span class="sig-name descname"><span class="pre">DampedOsc</span></span><a class="reference internal" href="../_modules/ibex_bluesky_core/fitting.html#DampedOsc"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibex_bluesky_core.fitting.DampedOsc" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ibex_bluesky_core.fitting.Fit" title="ibex_bluesky_core.fitting.Fit"><code class="xref py py-class docutils literal notranslate"><span class="pre">Fit</span></code></a></p>
+<p>Damped Oscillator Fitting.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="../callbacks/fitting/standard_fits.html#fit-damped-osc"><span class="std std-ref">Damped Oscillator (DampedOsc)</span></a> model and parameter descriptions</p>
+</div>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="ibex_bluesky_core.fitting.ERF">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ibex_bluesky_core.fitting.</span></span><span class="sig-name descname"><span class="pre">ERF</span></span><a class="reference internal" href="../_modules/ibex_bluesky_core/fitting.html#ERF"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibex_bluesky_core.fitting.ERF" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ibex_bluesky_core.fitting.Fit" title="ibex_bluesky_core.fitting.Fit"><code class="xref py py-class docutils literal notranslate"><span class="pre">Fit</span></code></a></p>
+<p>Error Function Fitting.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="../callbacks/fitting/standard_fits.html#fit-erf"><span class="std std-ref">Error Function (ERF)</span></a> model and parameter descriptions</p>
+</div>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="ibex_bluesky_core.fitting.ERFC">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ibex_bluesky_core.fitting.</span></span><span class="sig-name descname"><span class="pre">ERFC</span></span><a class="reference internal" href="../_modules/ibex_bluesky_core/fitting.html#ERFC"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibex_bluesky_core.fitting.ERFC" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ibex_bluesky_core.fitting.Fit" title="ibex_bluesky_core.fitting.Fit"><code class="xref py py-class docutils literal notranslate"><span class="pre">Fit</span></code></a></p>
+<p>Complementary Error Function Fitting.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="../callbacks/fitting/standard_fits.html#fit-erfc"><span class="std std-ref">Complementary Error Function (ERFC)</span></a> model and parameter descriptions</p>
+</div>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="ibex_bluesky_core.fitting.Fit">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ibex_bluesky_core.fitting.</span></span><span class="sig-name descname"><span class="pre">Fit</span></span><a class="reference internal" href="../_modules/ibex_bluesky_core/fitting.html#Fit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibex_bluesky_core.fitting.Fit" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/abc.html#abc.ABC" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></a></p>
+<p>Base class for all fits.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="ibex_bluesky_core.fitting.Fit.fit">
+<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#ibex_bluesky_core.fitting.FitMethod" title="ibex_bluesky_core.fitting.FitMethod"><span class="pre">FitMethod</span></a></span></span><a class="reference internal" href="../_modules/ibex_bluesky_core/fitting.html#Fit.fit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibex_bluesky_core.fitting.Fit.fit" title="Link to this definition"></a></dt>
+<dd><p>Return a FitMethod given model and guess functions to pass to LiveFit.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ibex_bluesky_core.fitting.Fit.guess">
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">guess</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable" title="(in Python v3.14)"><span class="pre">Callable</span></a><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><span class="pre">ndarray</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.dtype.html#numpy.dtype" title="(in NumPy v2.4)"><span class="pre">dtype</span></a><span class="p"><span class="pre">[</span></span><span class="pre">float64</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><span class="pre">ndarray</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.dtype.html#numpy.dtype" title="(in NumPy v2.4)"><span class="pre">dtype</span></a><span class="p"><span class="pre">[</span></span><span class="pre">float64</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://lmfit.github.io/lmfit-py/parameters.html#lmfit.parameter.Parameter" title="(in lmfit v1.3.4)"><span class="pre">Parameter</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/ibex_bluesky_core/fitting.html#Fit.guess"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibex_bluesky_core.fitting.Fit.guess" title="Link to this definition"></a></dt>
+<dd><p>Outline base guessing method.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>*args</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Any extra parameters required for fitting.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Guess function
+(x-values: <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a>, y-values: <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a>
+-&gt; parameters: <code class="docutils literal notranslate"><span class="pre">Dict[str,</span> <span class="pre">lmfit.Parameter]</span></code>)</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(in Python v3.14)"><em>Callable</em></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ibex_bluesky_core.fitting.Fit.model">
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://lmfit.github.io/lmfit-py/model.html#lmfit.model.Model" title="(in lmfit v1.3.4)"><span class="pre">Model</span></a></span></span><a class="reference internal" href="../_modules/ibex_bluesky_core/fitting.html#Fit.model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibex_bluesky_core.fitting.Fit.model" title="Link to this definition"></a></dt>
+<dd><p>Outline base model function.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>*args</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><em>int</em></a>) – Any extra parameters required for fitting.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Model function, which takes
+x-values as a <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a>, parameters as <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a>
+or <a class="reference external" href="https://numpy.org/doc/stable/reference/arrays.scalars.html#numpy.float64" title="(in NumPy v2.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.float64</span></code></a>, and returns y-values as a <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://lmfit.github.io/lmfit-py/model.html#lmfit.model.Model" title="(in lmfit v1.3.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">lmfit.model.Model</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="ibex_bluesky_core.fitting.FitMethod">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ibex_bluesky_core.fitting.</span></span><span class="sig-name descname"><span class="pre">FitMethod</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://lmfit.github.io/lmfit-py/model.html#lmfit.model.Model" title="(in lmfit v1.3.4)"><span class="pre">Model</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable" title="(in Python v3.14)"><span class="pre">Callable</span></a><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><span class="pre">ndarray</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.dtype.html#numpy.dtype" title="(in NumPy v2.4)"><span class="pre">dtype</span></a><span class="p"><span class="pre">[</span></span><span class="pre">float64</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><span class="pre">ndarray</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.dtype.html#numpy.dtype" title="(in NumPy v2.4)"><span class="pre">dtype</span></a><span class="p"><span class="pre">[</span></span><span class="pre">float64</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">guess</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable" title="(in Python v3.14)"><span class="pre">Callable</span></a><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><span class="pre">ndarray</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.dtype.html#numpy.dtype" title="(in NumPy v2.4)"><span class="pre">dtype</span></a><span class="p"><span class="pre">[</span></span><span class="pre">float64</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><span class="pre">ndarray</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.dtype.html#numpy.dtype" title="(in NumPy v2.4)"><span class="pre">dtype</span></a><span class="p"><span class="pre">[</span></span><span class="pre">float64</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://lmfit.github.io/lmfit-py/parameters.html#lmfit.parameter.Parameter" title="(in lmfit v1.3.4)"><span class="pre">Parameter</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ibex_bluesky_core/fitting.html#FitMethod"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibex_bluesky_core.fitting.FitMethod" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Tell <a class="reference internal" href="ibex_bluesky_core.callbacks.html#ibex_bluesky_core.callbacks.LiveFit" title="ibex_bluesky_core.callbacks.LiveFit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LiveFit</span></code></a> how to fit to data points.</p>
+<p>Contains a model function and a guess function.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model</strong> – The model function to use.</p></li>
+<li><p><strong>guess</strong> – The guess function to use.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="ibex_bluesky_core.fitting.Gaussian">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ibex_bluesky_core.fitting.</span></span><span class="sig-name descname"><span class="pre">Gaussian</span></span><a class="reference internal" href="../_modules/ibex_bluesky_core/fitting.html#Gaussian"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibex_bluesky_core.fitting.Gaussian" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ibex_bluesky_core.fitting.Fit" title="ibex_bluesky_core.fitting.Fit"><code class="xref py py-class docutils literal notranslate"><span class="pre">Fit</span></code></a></p>
+<p>Gaussian Fitting.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="../callbacks/fitting/standard_fits.html#fit-gaussian"><span class="std std-ref">Gaussian</span></a> model and parameter descriptions</p>
+</div>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="ibex_bluesky_core.fitting.Linear">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ibex_bluesky_core.fitting.</span></span><span class="sig-name descname"><span class="pre">Linear</span></span><a class="reference internal" href="../_modules/ibex_bluesky_core/fitting.html#Linear"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibex_bluesky_core.fitting.Linear" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ibex_bluesky_core.fitting.Fit" title="ibex_bluesky_core.fitting.Fit"><code class="xref py py-class docutils literal notranslate"><span class="pre">Fit</span></code></a></p>
+<p>Linear Fitting.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="../callbacks/fitting/standard_fits.html#fit-linear"><span class="std std-ref">Linear</span></a> model and parameter descriptions</p>
+</div>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="ibex_bluesky_core.fitting.Lorentzian">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ibex_bluesky_core.fitting.</span></span><span class="sig-name descname"><span class="pre">Lorentzian</span></span><a class="reference internal" href="../_modules/ibex_bluesky_core/fitting.html#Lorentzian"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibex_bluesky_core.fitting.Lorentzian" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ibex_bluesky_core.fitting.Fit" title="ibex_bluesky_core.fitting.Fit"><code class="xref py py-class docutils literal notranslate"><span class="pre">Fit</span></code></a></p>
+<p>Lorentzian Fitting.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="../callbacks/fitting/standard_fits.html#fit-lorentzian"><span class="std std-ref">Lorentzian</span></a> model and parameter descriptions</p>
+</div>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="ibex_bluesky_core.fitting.MuonMomentum">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ibex_bluesky_core.fitting.</span></span><span class="sig-name descname"><span class="pre">MuonMomentum</span></span><a class="reference internal" href="../_modules/ibex_bluesky_core/fitting.html#MuonMomentum"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibex_bluesky_core.fitting.MuonMomentum" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ibex_bluesky_core.fitting.Fit" title="ibex_bluesky_core.fitting.Fit"><code class="xref py py-class docutils literal notranslate"><span class="pre">Fit</span></code></a></p>
+<p>Muon momentum fitting.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="../callbacks/fitting/standard_fits.html#fit-muon-momentum"><span class="std std-ref">Muon Momentum (MuonMomentum)</span></a> model and parameter descriptions</p>
+</div>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="ibex_bluesky_core.fitting.NegativeTrapezoid">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ibex_bluesky_core.fitting.</span></span><span class="sig-name descname"><span class="pre">NegativeTrapezoid</span></span><a class="reference internal" href="../_modules/ibex_bluesky_core/fitting.html#NegativeTrapezoid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibex_bluesky_core.fitting.NegativeTrapezoid" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ibex_bluesky_core.fitting.Fit" title="ibex_bluesky_core.fitting.Fit"><code class="xref py py-class docutils literal notranslate"><span class="pre">Fit</span></code></a></p>
+<p>Negative Trapezoid Fitting.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="../callbacks/fitting/standard_fits.html#fit-neg-trapezoid"><span class="std std-ref">NegativeTrapezoid</span></a> model and parameter descriptions</p>
+</div>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="ibex_bluesky_core.fitting.Polynomial">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ibex_bluesky_core.fitting.</span></span><span class="sig-name descname"><span class="pre">Polynomial</span></span><a class="reference internal" href="../_modules/ibex_bluesky_core/fitting.html#Polynomial"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibex_bluesky_core.fitting.Polynomial" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ibex_bluesky_core.fitting.Fit" title="ibex_bluesky_core.fitting.Fit"><code class="xref py py-class docutils literal notranslate"><span class="pre">Fit</span></code></a></p>
+<p>Polynomial Fitting.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="../callbacks/fitting/standard_fits.html#fit-polynomial"><span class="std std-ref">Polynomial</span></a> model and parameter descriptions</p>
+</div>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="ibex_bluesky_core.fitting.SlitScan">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ibex_bluesky_core.fitting.</span></span><span class="sig-name descname"><span class="pre">SlitScan</span></span><a class="reference internal" href="../_modules/ibex_bluesky_core/fitting.html#SlitScan"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibex_bluesky_core.fitting.SlitScan" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ibex_bluesky_core.fitting.Fit" title="ibex_bluesky_core.fitting.Fit"><code class="xref py py-class docutils literal notranslate"><span class="pre">Fit</span></code></a></p>
+<p>Slit Scan Fitting.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="../callbacks/fitting/standard_fits.html#fit-slitscan"><span class="std std-ref">Slit Scan (SlitScan)</span></a> model and parameter descriptions</p>
+</div>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="ibex_bluesky_core.fitting.TopHat">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ibex_bluesky_core.fitting.</span></span><span class="sig-name descname"><span class="pre">TopHat</span></span><a class="reference internal" href="../_modules/ibex_bluesky_core/fitting.html#TopHat"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibex_bluesky_core.fitting.TopHat" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ibex_bluesky_core.fitting.Fit" title="ibex_bluesky_core.fitting.Fit"><code class="xref py py-class docutils literal notranslate"><span class="pre">Fit</span></code></a></p>
+<p>Top Hat Fitting.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="../callbacks/fitting/standard_fits.html#fit-tophat"><span class="std std-ref">Top Hat (TopHat)</span></a> model and parameter descriptions</p>
+</div>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="ibex_bluesky_core.fitting.Trapezoid">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ibex_bluesky_core.fitting.</span></span><span class="sig-name descname"><span class="pre">Trapezoid</span></span><a class="reference internal" href="../_modules/ibex_bluesky_core/fitting.html#Trapezoid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibex_bluesky_core.fitting.Trapezoid" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ibex_bluesky_core.fitting.Fit" title="ibex_bluesky_core.fitting.Fit"><code class="xref py py-class docutils literal notranslate"><span class="pre">Fit</span></code></a></p>
+<p>Trapezoid Fitting.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="../callbacks/fitting/standard_fits.html#fit-trapezoid"><span class="std std-ref">Trapezoid</span></a> model and parameter descriptions</p>
+</div>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="ibex_bluesky_core.devices.simpledae.html" class="btn btn-neutral float-left" title="ibex_bluesky_core.devices.simpledae" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="ibex_bluesky_core.log.html" class="btn btn-neutral float-right" title="ibex_bluesky_core.log" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,402 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Detector-mapping alignment &mdash; ibex_bluesky_core 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=dc476284" />
+
+  
+    <link rel="shortcut icon" href="../../_static/favicon.svg"/>
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Psi scanning" href="psi_scan_linear_detector.html" />
+    <link rel="prev" title="Auto-alignment" href="autoalign.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #343131" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            ibex_bluesky_core
+              <img src="../../_static/logo.svg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial/overview.html">Getting started</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Devices</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../devices/blocks.html">Blocks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devices/dae.html">DAE (Data Acquisition Electronics)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Callbacks</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../callbacks/isiscallbacks.html">ISIS Standard Callbacks (<code class="xref py py-obj docutils literal notranslate"><span class="pre">ISISCallbacks</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../callbacks/fitting.html">Fits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../callbacks/centre_of_mass.html">Centre of Mass</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../callbacks/plotting.html">Plotting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../callbacks/file_writing.html">File writing callbacks</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Plans</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../plans.html">General Plans</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../reflectometry.html">Reflectometry-specific Plans</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="autoalign.html">Auto-alignment</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Detector-mapping alignment</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#angle-scan">Angle scan</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#height-angle-scan">Height &amp; angle scan</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#implementation">Implementation</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#periodspecintegralsreducer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PeriodSpecIntegralsReducer</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#detmapheightscanlivedispatcher"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DetMapHeightScanLiveDispatcher</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#detmapanglescanlivedispatcher"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DetMapAngleScanLiveDispatcher</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="psi_scan_linear_detector.html">Psi scanning</a></li>
+<li class="toctree-l2"><a class="reference internal" href="refl_param_scan.html">Reflectometry parameter scans</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Plan stubs</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../plan_stubs/external_code.html">Calling external code (<code class="xref py py-obj docutils literal notranslate"><span class="pre">call_sync</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../plan_stubs/matplotlib_helpers.html">Matplotlib helpers (<code class="xref py py-obj docutils literal notranslate"><span class="pre">call_qt_aware</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../plan_stubs/plan_wrappers.html">Plan wrappers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../plan_stubs/polling.html">Continuous polling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../plan_stubs/redefining.html">Redefinition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../plan_stubs/user_input.html">User input helpers</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../_api.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../replotting_scans.html">Replaying documents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../architectural_decisions.html">Architectural Decisions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer_information.html">Developer Information</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #343131" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">ibex_bluesky_core</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../reflectometry.html">Reflectometry-specific Plans</a></li>
+      <li class="breadcrumb-item active">Detector-mapping alignment</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/ISISComputingGroup/ibex_bluesky_core/blob/main/doc/plans/reflectometry/detector_mapping_alignment.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="detector-mapping-alignment">
+<h1>Detector-mapping alignment<a class="headerlink" href="#detector-mapping-alignment" title="Link to this heading"></a></h1>
+<p>Plans described in this section provide support for detector-mapping alignment on reflectometers.</p>
+<p>The plans in this module expect:</p>
+<ul class="simple">
+<li><p>A DAE collecting in period-per-point mode. A suitable controller is
+<a class="reference internal" href="../../generated/ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.PeriodPerPointController" title="ibex_bluesky_core.devices.simpledae.PeriodPerPointController"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PeriodPerPointController</span></code></a>.</p></li>
+<li><p>A DAE configured to reduce data by exposing all spectrum integrals. A suitable reducer is
+<a class="reference internal" href="../../generated/ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.PeriodSpecIntegralsReducer" title="ibex_bluesky_core.devices.simpledae.PeriodSpecIntegralsReducer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PeriodSpecIntegralsReducer</span></code></a>.</p></li>
+<li><p>An angle map, as a <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a> array with dtype <code class="docutils literal notranslate"><span class="pre">float64</span></code>, which has the same dimensionality as the set of selected detectors. This
+maps each configured detector pixel to its angular position.</p></li>
+<li><p>An optional flood map, as a <a class="reference external" href="https://scipp.github.io/generated/classes/scipp.Variable.html#scipp.Variable" title="(in Scipp v26.2.0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">scipp.Variable</span></code></a>. This should have a dimension label of “spectrum”
+and have the same dimensionality as the set of selected detectors. This array may have variances. This is used to
+normalise pixel efficiencies: raw counts are divided by the flood to get scaled counts. If no flood map is provided, no
+normalisation will be performed.</p></li>
+</ul>
+<section id="angle-scan">
+<h2>Angle scan<a class="headerlink" href="#angle-scan" title="Link to this heading"></a></h2>
+<p>API reference: <a class="reference internal" href="../../generated/ibex_bluesky_core.plans.reflectometry.html#ibex_bluesky_core.plans.reflectometry.angle_scan_plan" title="ibex_bluesky_core.plans.reflectometry.angle_scan_plan"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ibex_bluesky_core.plans.reflectometry.angle_scan_plan</span></code></a></p>
+<p>This plan takes a single DAE measurement, without moving anything.</p>
+<p>The resulting plots and data files describe the relationship between angular position of each detector pixel,
+and the counts observed on that detector pixel - with the aim of finding the angle at which peak intensity
+occurs.</p>
+<p>This plan returns the result of the angle fit, or <code class="docutils literal notranslate"><span class="pre">None</span></code> if the fit failed. The model used is a
+<a class="reference internal" href="../../generated/ibex_bluesky_core.fitting.html#ibex_bluesky_core.fitting.Gaussian" title="ibex_bluesky_core.fitting.Gaussian"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Gaussian</span></code></a>.</p>
+<p>The following is a full example of how <a class="reference internal" href="../../generated/ibex_bluesky_core.plans.reflectometry.html#ibex_bluesky_core.plans.reflectometry.angle_scan_plan" title="ibex_bluesky_core.plans.reflectometry.angle_scan_plan"><code class="xref py py-obj docutils literal notranslate"><span class="pre">angle_scan_plan</span></code></a>
+may be called, configuring an appropriate <a class="reference internal" href="../../generated/ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.SimpleDae" title="ibex_bluesky_core.devices.simpledae.SimpleDae"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SimpleDae</span></code></a>.</p>
+<details>
+<summary>Click to show example code</summary>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Generator</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">bluesky.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">Msg</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">lmfit.model</span><span class="w"> </span><span class="kn">import</span> <span class="n">ModelResult</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibex_bluesky_core.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_pv_prefix</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibex_bluesky_core.devices.simpledae</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">PeriodGoodFramesWaiter</span><span class="p">,</span>
+    <span class="n">PeriodPerPointController</span><span class="p">,</span>
+    <span class="n">PeriodSpecIntegralsReducer</span><span class="p">,</span>
+    <span class="n">SimpleDae</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibex_bluesky_core.plans.reflectometry</span><span class="w"> </span><span class="kn">import</span> <span class="n">angle_scan_plan</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">map_align_plan</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="n">Msg</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">ModelResult</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]:</span>
+    <span class="n">controller</span> <span class="o">=</span> <span class="n">PeriodPerPointController</span><span class="p">(</span><span class="n">save_run</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">waiter</span> <span class="o">=</span> <span class="n">PeriodGoodFramesWaiter</span><span class="p">(</span><span class="mi">50</span><span class="p">)</span>
+    <span class="n">reducer</span> <span class="o">=</span> <span class="n">PeriodSpecIntegralsReducer</span><span class="p">(</span>
+        <span class="c1"># Select spectrum 1 as the monitor</span>
+        <span class="n">monitors</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">),</span>
+        <span class="c1"># and 2-128 inclusive as the detectors</span>
+        <span class="n">detectors</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">129</span><span class="p">),</span>
+    <span class="p">)</span>
+
+    <span class="n">prefix</span> <span class="o">=</span> <span class="n">get_pv_prefix</span><span class="p">()</span>
+    <span class="n">dae</span> <span class="o">=</span> <span class="n">SimpleDae</span><span class="p">(</span>
+        <span class="n">prefix</span><span class="o">=</span><span class="n">prefix</span><span class="p">,</span>
+        <span class="n">controller</span><span class="o">=</span><span class="n">controller</span><span class="p">,</span>
+        <span class="n">waiter</span><span class="o">=</span><span class="n">waiter</span><span class="p">,</span>
+        <span class="n">reducer</span><span class="o">=</span><span class="n">reducer</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">angle_scan_result</span> <span class="o">=</span> <span class="k">yield from</span> <span class="n">angle_scan_plan</span><span class="p">(</span>
+        <span class="n">dae</span><span class="p">,</span>
+        <span class="n">angle_map</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="n">num</span><span class="o">=</span><span class="mi">127</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">),</span>
+    <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">angle_fit</span> <span class="o">:=</span> <span class="n">angle_scan_result</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">angle_fit</span><span class="o">.</span><span class="n">fit_report</span><span class="p">(</span><span class="n">show_correl</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">angle_scan_result</span>
+</pre></div>
+</div>
+</details>
+</section>
+<hr class="docutils" />
+<section id="height-angle-scan">
+<h2>Height &amp; angle scan<a class="headerlink" href="#height-angle-scan" title="Link to this heading"></a></h2>
+<p>API reference: <a class="reference internal" href="../../generated/ibex_bluesky_core.plans.reflectometry.html#ibex_bluesky_core.plans.reflectometry.height_and_angle_scan_plan" title="ibex_bluesky_core.plans.reflectometry.height_and_angle_scan_plan"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ibex_bluesky_core.plans.reflectometry.height_and_angle_scan_plan</span></code></a></p>
+<p>This plan scans over a provided height axis, taking a DAE measurement at each point. It then
+does simultaneous height and angle fits, using a single set of measurements - avoiding the need
+to scan height and angle separately.</p>
+<p><img alt="Detector-mapping alignment example plots" src="../../_images/det_map_align_example.png" /></p>
+<p>It is assumed that the optimum angle (integrated over all height points) and the optimum height (integrated over all selected pixels) is the best location for both height and angle. If this assumption is untrue, then the result of this plan is meaningless.</p>
+<p>This plan produces multiple plots &amp; data files from a single scan:</p>
+<ul class="simple">
+<li><p>A heatmap visualising the 2-dimensional relationship between angle (x axis), height (y axis), and measured
+intensity (heatmap colour).</p></li>
+<li><p>A set of plots &amp; data files describing the relationship between integrated intensity (across
+every configured detector pixel, normalized by monitor), versus height.</p></li>
+<li><p>A set of plots &amp; data files describing the relationship of accumulated counts on each detector pixel,
+across all height points, versus angular pixel position. The only difference between this and the <code class="docutils literal notranslate"><span class="pre">angle_scan</span></code>
+plan above is that this accumulates data across multiple height points, and therefore benefits from the
+counting statistics of all measured height points.</p></li>
+</ul>
+<p>This plan returns a typed dictionary, <a class="reference internal" href="../../generated/ibex_bluesky_core.plans.reflectometry.html#ibex_bluesky_core.plans.reflectometry.DetMapAlignResult" title="ibex_bluesky_core.plans.reflectometry.DetMapAlignResult"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DetMapAlignResult</span></code></a>, with the following keys:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;angle_fit&quot;</span></code>: the result of the angle fit, or <code class="docutils literal notranslate"><span class="pre">None</span></code> if the fit failed.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;height_fit&quot;</span></code>: the result of the height fit, or <code class="docutils literal notranslate"><span class="pre">None</span></code> if the fit failed.</p></li>
+</ul>
+<p>Both the height &amp; angle data are fitted using two independent
+<a class="reference internal" href="../../generated/ibex_bluesky_core.fitting.html#ibex_bluesky_core.fitting.Gaussian" title="ibex_bluesky_core.fitting.Gaussian"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Gaussian</span></code></a> models.</p>
+<p>The following is a full example of how <a class="reference internal" href="../../generated/ibex_bluesky_core.plans.reflectometry.html#ibex_bluesky_core.plans.reflectometry.height_and_angle_scan_plan" title="ibex_bluesky_core.plans.reflectometry.height_and_angle_scan_plan"><code class="xref py py-obj docutils literal notranslate"><span class="pre">height_and_angle_scan_plan</span></code></a>
+may be called, configuring an appropriate <a class="reference internal" href="../../generated/ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.SimpleDae" title="ibex_bluesky_core.devices.simpledae.SimpleDae"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SimpleDae</span></code></a> and a
+<a class="reference internal" href="../../generated/ibex_bluesky_core.devices.block.html#ibex_bluesky_core.devices.block.BlockRw" title="ibex_bluesky_core.devices.block.BlockRw"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BlockRw</span></code></a>.</p>
+<details>
+<summary>Click to show example code</summary>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Generator</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">bluesky.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">Msg</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibex_bluesky_core.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_pv_prefix</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibex_bluesky_core.devices.block</span><span class="w"> </span><span class="kn">import</span> <span class="n">block_rw</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibex_bluesky_core.devices.simpledae</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">PeriodGoodFramesWaiter</span><span class="p">,</span>
+    <span class="n">PeriodPerPointController</span><span class="p">,</span>
+    <span class="n">PeriodSpecIntegralsReducer</span><span class="p">,</span>
+    <span class="n">SimpleDae</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibex_bluesky_core.plans.reflectometry</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">DetMapAlignResult</span><span class="p">,</span>
+    <span class="n">height_and_angle_scan_plan</span>
+<span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">map_align</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="n">Msg</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">DetMapAlignResult</span><span class="p">]:</span>
+    <span class="c1"># Could also be a reflectometry parameter, or any other movable</span>
+    <span class="n">block</span> <span class="o">=</span> <span class="n">block_rw</span><span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="s2">&quot;some_block&quot;</span><span class="p">)</span>
+
+    <span class="n">controller</span> <span class="o">=</span> <span class="n">PeriodPerPointController</span><span class="p">(</span><span class="n">save_run</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">waiter</span> <span class="o">=</span> <span class="n">PeriodGoodFramesWaiter</span><span class="p">(</span><span class="mi">50</span><span class="p">)</span>
+    <span class="n">reducer</span> <span class="o">=</span> <span class="n">PeriodSpecIntegralsReducer</span><span class="p">(</span>
+        <span class="c1"># Select spectrum 1 as the monitor</span>
+        <span class="n">monitors</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">),</span>
+        <span class="c1"># and 2-128 inclusive as the detectors</span>
+        <span class="n">detectors</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">129</span><span class="p">),</span>
+    <span class="p">)</span>
+
+    <span class="n">prefix</span> <span class="o">=</span> <span class="n">get_pv_prefix</span><span class="p">()</span>
+    <span class="n">dae</span> <span class="o">=</span> <span class="n">SimpleDae</span><span class="p">(</span>
+        <span class="n">prefix</span><span class="o">=</span><span class="n">prefix</span><span class="p">,</span>
+        <span class="n">controller</span><span class="o">=</span><span class="n">controller</span><span class="p">,</span>
+        <span class="n">waiter</span><span class="o">=</span><span class="n">waiter</span><span class="p">,</span>
+        <span class="n">reducer</span><span class="o">=</span><span class="n">reducer</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">result</span> <span class="o">=</span> <span class="k">yield from</span> <span class="n">height_and_angle_scan_plan</span><span class="p">(</span>
+        <span class="n">dae</span><span class="p">,</span>
+        <span class="n">block</span><span class="p">,</span>
+        <span class="mi">5</span><span class="p">,</span>
+        <span class="mi">15</span><span class="p">,</span>
+        <span class="n">num</span><span class="o">=</span><span class="mi">21</span><span class="p">,</span>
+        <span class="n">angle_map</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="n">num</span><span class="o">=</span><span class="mi">127</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">),</span>
+    <span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Height fit:&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">height_fit</span> <span class="o">:=</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;height_fit&quot;</span><span class="p">]:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">height_fit</span><span class="o">.</span><span class="n">fit_report</span><span class="p">(</span><span class="n">show_correl</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Angle fit:&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">angle_fit</span> <span class="o">:=</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;angle_fit&quot;</span><span class="p">]:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">angle_fit</span><span class="o">.</span><span class="n">fit_report</span><span class="p">(</span><span class="n">show_correl</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">result</span>
+</pre></div>
+</div>
+</details>
+</section>
+<hr class="docutils" />
+<section id="implementation">
+<h2>Implementation<a class="headerlink" href="#implementation" title="Link to this heading"></a></h2>
+<p>The following specialised components are used to implement the detector-mapping alignment workflow:</p>
+<section id="periodspecintegralsreducer">
+<h3><a class="reference internal" href="../../generated/ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.PeriodSpecIntegralsReducer" title="ibex_bluesky_core.devices.simpledae.PeriodSpecIntegralsReducer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PeriodSpecIntegralsReducer</span></code></a><a class="headerlink" href="#periodspecintegralsreducer" title="Link to this heading"></a></h3>
+<p><a class="reference internal" href="../../generated/ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.PeriodSpecIntegralsReducer" title="ibex_bluesky_core.devices.simpledae.PeriodSpecIntegralsReducer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PeriodSpecIntegralsReducer</span></code></a>
+is responsible for exposing arrays of DAE detector data.</p>
+<p>It exposes numpy arrays of integer counts data from the current period, integrated over the entire time-of-flight
+dimension. This reducer is implemented by pulling the entire spectrum-data map from the DAE at once, so is efficient
+even for relatively large numbers of detectors.</p>
+<p>This reducer cannot be used by itself in a scan, as it does not produce scalar data. It is only intended for use with
+downstream processors, such as
+<a class="reference internal" href="../../generated/ibex_bluesky_core.callbacks.reflectometry.html#ibex_bluesky_core.callbacks.reflectometry.DetMapHeightScanLiveDispatcher" title="ibex_bluesky_core.callbacks.reflectometry.DetMapHeightScanLiveDispatcher"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DetMapHeightScanLiveDispatcher</span></code></a>
+or
+<a class="reference internal" href="../../generated/ibex_bluesky_core.callbacks.reflectometry.html#ibex_bluesky_core.callbacks.reflectometry.DetMapAngleScanLiveDispatcher" title="ibex_bluesky_core.callbacks.reflectometry.DetMapAngleScanLiveDispatcher"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DetMapAngleScanLiveDispatcher</span></code></a>
+described below.</p>
+<p>This reducer always accumulates data across the entire configured time-of-flight range - this is because it uses the
+spectrum-data map rather than reading individual spectra, and the spectrum-data map does not have access to time
+channel boundary information. For efficiency, if slicing data in time-of-flight or wavelength is desired, this should
+be done by changing DAE time-channel settings.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p><code class="docutils literal notranslate"><span class="pre">num_periods</span> <span class="pre">*</span> <span class="pre">(num_spectra</span> <span class="pre">+</span> <span class="pre">1)</span> <span class="pre">*</span> <span class="pre">(num_time_channels</span> <span class="pre">+</span> <span class="pre">1)</span></code> may not exceed <span class="math notranslate nohighlight">\(5000000\)</span>.</p>
+<p>This is a limitation of the underlying EPICS spectrum-data map used to implement this reducer.</p>
+</div>
+</section>
+<section id="detmapheightscanlivedispatcher">
+<h3><a class="reference internal" href="../../generated/ibex_bluesky_core.callbacks.reflectometry.html#ibex_bluesky_core.callbacks.reflectometry.DetMapHeightScanLiveDispatcher" title="ibex_bluesky_core.callbacks.reflectometry.DetMapHeightScanLiveDispatcher"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DetMapHeightScanLiveDispatcher</span></code></a><a class="headerlink" href="#detmapheightscanlivedispatcher" title="Link to this heading"></a></h3>
+<p><a class="reference internal" href="../../generated/ibex_bluesky_core.callbacks.reflectometry.html#ibex_bluesky_core.callbacks.reflectometry.DetMapHeightScanLiveDispatcher" title="ibex_bluesky_core.callbacks.reflectometry.DetMapHeightScanLiveDispatcher"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DetMapHeightScanLiveDispatcher</span></code></a>
+is a bluesky <a class="reference external" href="https://blueskyproject.io/bluesky/main/callbacks.html#bluesky.callbacks.stream.LiveDispatcher" title="(in bluesky v1.14.7.dev29+gfb2c32466)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LiveDispatcher</span></code></a> which processes arrays generated by
+<a class="reference internal" href="../../generated/ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.PeriodSpecIntegralsReducer" title="ibex_bluesky_core.devices.simpledae.PeriodSpecIntegralsReducer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PeriodSpecIntegralsReducer</span></code></a> by integrating
+counts across all detector spectra, and normalizing by integrated counts across all monitor spectra. This dispatcher
+therefore produces the same number of output events as input events (which is the same as the number of scan points).</p>
+<p>For example, for the following input arrays:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">event</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+<span class="n">event</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>The outputs would be:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">event</span><span class="p">:</span> <span class="mi">40</span>
+<span class="n">event</span><span class="p">:</span> <span class="mi">10</span>
+</pre></div>
+</div>
+</section>
+<section id="detmapanglescanlivedispatcher">
+<h3><a class="reference internal" href="../../generated/ibex_bluesky_core.callbacks.reflectometry.html#ibex_bluesky_core.callbacks.reflectometry.DetMapAngleScanLiveDispatcher" title="ibex_bluesky_core.callbacks.reflectometry.DetMapAngleScanLiveDispatcher"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DetMapAngleScanLiveDispatcher</span></code></a><a class="headerlink" href="#detmapanglescanlivedispatcher" title="Link to this heading"></a></h3>
+<p><a class="reference internal" href="../../generated/ibex_bluesky_core.callbacks.reflectometry.html#ibex_bluesky_core.callbacks.reflectometry.DetMapAngleScanLiveDispatcher" title="ibex_bluesky_core.callbacks.reflectometry.DetMapAngleScanLiveDispatcher"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DetMapAngleScanLiveDispatcher</span></code></a>
+is a bluesky <a class="reference external" href="https://blueskyproject.io/bluesky/main/callbacks.html#bluesky.callbacks.stream.LiveDispatcher" title="(in bluesky v1.14.7.dev29+gfb2c32466)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LiveDispatcher</span></code></a> which processes arrays generated by
+<a class="reference internal" href="../../generated/ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.PeriodSpecIntegralsReducer" title="ibex_bluesky_core.devices.simpledae.PeriodSpecIntegralsReducer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PeriodSpecIntegralsReducer</span></code></a> by accumulating
+counts from each scan point into an internal array. At the end of the scan, events are then emitted <em>across</em> this accumulated array.</p>
+<p>This means that this dispatcher will always produce a number of events equal to the number of detectors (which is also
+equal to the length of the angle map), regardless of the number of scan points which were performed.</p>
+<p>For example, for the following input arrays:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">event</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+<span class="n">event</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>The outputs would be:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">event</span><span class="p">:</span> <span class="mi">0</span>
+<span class="n">event</span><span class="p">:</span> <span class="mi">11</span>
+<span class="n">event</span><span class="p">:</span> <span class="mi">22</span>
+<span class="n">event</span><span class="p">:</span> <span class="mi">13</span>
+<span class="n">event</span><span class="p">:</span> <span class="mi">4</span>
+</pre></div>
+</div>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="autoalign.html" class="btn btn-neutral float-left" title="Auto-alignment" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="psi_scan_linear_detector.html" class="btn btn-neutral float-right" title="Psi scanning" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

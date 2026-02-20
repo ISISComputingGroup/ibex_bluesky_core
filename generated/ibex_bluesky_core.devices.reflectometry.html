@@ -1,0 +1,382 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ibex_bluesky_core.devices.reflectometry &mdash; ibex_bluesky_core 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=dc476284" />
+
+  
+    <link rel="shortcut icon" href="../_static/favicon.svg"/>
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="ibex_bluesky_core.devices.simpledae" href="ibex_bluesky_core.devices.simpledae.html" />
+    <link rel="prev" title="ibex_bluesky_core.devices.polarisingdae" href="ibex_bluesky_core.devices.polarisingdae.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #343131" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            ibex_bluesky_core
+              <img src="../_static/logo.svg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/overview.html">Getting started</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Devices</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../devices/blocks.html">Blocks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devices/dae.html">DAE (Data Acquisition Electronics)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Callbacks</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../callbacks/isiscallbacks.html">ISIS Standard Callbacks (<code class="xref py py-obj docutils literal notranslate"><span class="pre">ISISCallbacks</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../callbacks/fitting.html">Fits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../callbacks/centre_of_mass.html">Centre of Mass</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../callbacks/plotting.html">Plotting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../callbacks/file_writing.html">File writing callbacks</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Plans</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../plans/plans.html">General Plans</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plans/reflectometry.html">Reflectometry-specific Plans</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Plan stubs</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/external_code.html">Calling external code (<code class="xref py py-obj docutils literal notranslate"><span class="pre">call_sync</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/matplotlib_helpers.html">Matplotlib helpers (<code class="xref py py-obj docutils literal notranslate"><span class="pre">call_qt_aware</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/plan_wrappers.html">Plan wrappers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/polling.html">Continuous polling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/redefining.html">Redefinition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/user_input.html">User input helpers</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../_api.html">API</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="ibex_bluesky_core.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core</span></code></a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="ibex_bluesky_core.callbacks.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.callbacks</span></code></a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="ibex_bluesky_core.devices.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.devices</span></code></a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="ibex_bluesky_core.devices.block.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.devices.block</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ibex_bluesky_core.devices.dae.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.devices.dae</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ibex_bluesky_core.devices.muon.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.devices.muon</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ibex_bluesky_core.devices.polarisingdae.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.devices.polarisingdae</span></code></a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.devices.reflectometry</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ibex_bluesky_core.devices.simpledae.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.devices.simpledae</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="ibex_bluesky_core.fitting.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.fitting</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ibex_bluesky_core.log.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.log</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ibex_bluesky_core.plan_stubs.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.plan_stubs</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ibex_bluesky_core.plans.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.plans</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ibex_bluesky_core.preprocessors.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.preprocessors</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ibex_bluesky_core.run_engine.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.run_engine</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ibex_bluesky_core.utils.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.utils</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ibex_bluesky_core.version.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.version</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../replotting_scans.html">Replaying documents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../architectural_decisions.html">Architectural Decisions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer_information.html">Developer Information</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #343131" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">ibex_bluesky_core</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../_api.html">API</a></li>
+          <li class="breadcrumb-item"><a href="ibex_bluesky_core.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core</span></code></a></li>
+          <li class="breadcrumb-item"><a href="ibex_bluesky_core.devices.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.devices</span></code></a></li>
+      <li class="breadcrumb-item active"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.devices.reflectometry</span></code></li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/ISISComputingGroup/ibex_bluesky_core/blob/main/doc/generated/ibex_bluesky_core.devices.reflectometry.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-ibex_bluesky_core.devices.reflectometry">
+<span id="ibex-bluesky-core-devices-reflectometry"></span><h1><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.devices.reflectometry</span></code><a class="headerlink" href="#module-ibex_bluesky_core.devices.reflectometry" title="Link to this heading"></a></h1>
+<p>Reflectometry-specific bluesky devices and utilities.</p>
+<p class="rubric">Members</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ibex_bluesky_core.devices.reflectometry.AngleMappingReducer" title="ibex_bluesky_core.devices.reflectometry.AngleMappingReducer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AngleMappingReducer</span></code></a></p></td>
+<td><p>Angle-mapping reducer describing parameters of beam on a 1-D angular detector.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#ibex_bluesky_core.devices.reflectometry.ReflParameter" title="ibex_bluesky_core.devices.reflectometry.ReflParameter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ReflParameter</span></code></a></p></td>
+<td><p>Reflectometry server parameter.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ibex_bluesky_core.devices.reflectometry.ReflParameterRedefine" title="ibex_bluesky_core.devices.reflectometry.ReflParameterRedefine"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ReflParameterRedefine</span></code></a></p></td>
+<td><p>Reflectometry server parameter redefinition.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#ibex_bluesky_core.devices.reflectometry.refl_parameter" title="ibex_bluesky_core.devices.reflectometry.refl_parameter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">refl_parameter</span></code></a></p></td>
+<td><p>Small wrapper around a reflectometry parameter device.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py class">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.reflectometry.AngleMappingReducer">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ibex_bluesky_core.devices.reflectometry.</span></span><span class="sig-name descname"><span class="pre">AngleMappingReducer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">detectors</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><span class="pre">ndarray</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.dtype.html#numpy.dtype" title="(in NumPy v2.4)"><span class="pre">dtype</span></a><span class="p"><span class="pre">[</span></span><span class="pre">int32</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">angle_map</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><span class="pre">ndarray</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.dtype.html#numpy.dtype" title="(in NumPy v2.4)"><span class="pre">dtype</span></a><span class="p"><span class="pre">[</span></span><span class="pre">float64</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">flood</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://scipp.github.io/generated/classes/scipp.Variable.html#scipp.Variable" title="(in Scipp v26.2.0)"><span class="pre">Variable</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ibex_bluesky_core/devices/reflectometry.html#AngleMappingReducer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibex_bluesky_core.devices.reflectometry.AngleMappingReducer" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.Reducer" title="ibex_bluesky_core.devices.simpledae._strategies.Reducer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Reducer</span></code></a>, <a class="reference external" href="https://blueskyproject.io/ophyd-async/v0.16/_api/ophyd_async/ophyd_async.core.html#ophyd_async.core.StandardReadable" title="(in ophyd-async v0.16)"><code class="xref py py-class docutils literal notranslate"><span class="pre">StandardReadable</span></code></a></p>
+<p>Angle-mapping reducer describing parameters of beam on a 1-D angular detector.</p>
+<p>This <a class="reference internal" href="ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.Reducer" title="ibex_bluesky_core.devices.simpledae.Reducer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Reducer</span></code></a> fits the
+counts on each pixel of a detector, against the relative angular positions
+of those pixels. It then exposes fitted quantities, and their standard deviations,
+as signals from this reducer.</p>
+<p>The fitting model used is a <a class="reference internal" href="ibex_bluesky_core.fitting.html#ibex_bluesky_core.fitting.Gaussian" title="ibex_bluesky_core.fitting.Gaussian"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Gaussian</span></code></a>.
+Uncertainties from the counts data are taken into account on these fits -
+the variances are set to <cite>counts + 0.5</cite>
+(see <a class="reference internal" href="../architectural_decisions/005-variance-addition.html"><span class="doc">ADR5</span></a>
+for justification).</p>
+<p>Optionally, a flood map can be provided to normalise for pixel efficiencies
+before fitting. This flood map is provided as a <a class="reference external" href="https://scipp.github.io/generated/classes/scipp.Variable.html#scipp.Variable" title="(in Scipp v26.2.0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">scipp.Variable</span></code></a>,
+which means that it may contain variances.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>The uncertainties (signals ending in <code class="docutils literal notranslate"><span class="pre">_err</span></code>) from this reducer are
+obtained from <code class="docutils literal notranslate"><span class="pre">lmfit</span></code>. The exact method is described in
+lmfit’s <a class="reference external" href="https://lmfit.github.io/lmfit-py/fitting.html#lmfit.minimizer.MinimizerResult" title="(in lmfit v1.3.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MinimizerResult</span></code></a> documentation.
+For a perfect fit, which might result from fitting a limited number
+of points or flat data, uncertainties may be zero.</p>
+<p>Because the uncertainties may be zero, using them in an ‘outer’ fit is
+discouraged; an uncertainty of zero implies infinite weighting,
+which will likely cause the outer fit to fail to converge.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>detectors</strong> – numpy array of detector spectra to include.</p></li>
+<li><p><strong>angle_map</strong> – numpy array of relative pixel angles for each
+selected detector</p></li>
+<li><p><strong>flood</strong> – Optional <a class="reference external" href="https://scipp.github.io/generated/classes/scipp.Variable.html#scipp.Variable" title="(in Scipp v26.2.0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">scipp.Variable</span></code></a> describing a flood-correction.
+This array should be aligned along a “spectrum” dimension; counts are
+divided by this array before being used in fits. This is used to
+normalise the intensities detected by each detector pixel.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.reflectometry.AngleMappingReducer.amp">
+<span class="sig-name descname"><span class="pre">amp</span></span><a class="headerlink" href="#ibex_bluesky_core.devices.reflectometry.AngleMappingReducer.amp" title="Link to this definition"></a></dt>
+<dd><p>Amplitude of fitted Gaussian</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.reflectometry.AngleMappingReducer.amp_err">
+<span class="sig-name descname"><span class="pre">amp_err</span></span><a class="headerlink" href="#ibex_bluesky_core.devices.reflectometry.AngleMappingReducer.amp_err" title="Link to this definition"></a></dt>
+<dd><p>Amplitude standard deviation of fitted Gaussian.</p>
+<p>This is the standard error reported by <a class="reference external" href="https://lmfit.github.io/lmfit-py/model.html#lmfit.model.Model.fit" title="(in lmfit v1.3.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">lmfit.model.Model.fit</span></code></a>.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.reflectometry.AngleMappingReducer.background">
+<span class="sig-name descname"><span class="pre">background</span></span><a class="headerlink" href="#ibex_bluesky_core.devices.reflectometry.AngleMappingReducer.background" title="Link to this definition"></a></dt>
+<dd><p>Background of fitted Gaussian</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.reflectometry.AngleMappingReducer.background_err">
+<span class="sig-name descname"><span class="pre">background_err</span></span><a class="headerlink" href="#ibex_bluesky_core.devices.reflectometry.AngleMappingReducer.background_err" title="Link to this definition"></a></dt>
+<dd><p>Background standard deviation of fitted Gaussian.</p>
+<p>This is the standard error reported by <a class="reference external" href="https://lmfit.github.io/lmfit-py/model.html#lmfit.model.Model.fit" title="(in lmfit v1.3.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">lmfit.model.Model.fit</span></code></a>.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.reflectometry.AngleMappingReducer.r_squared">
+<span class="sig-name descname"><span class="pre">r_squared</span></span><a class="headerlink" href="#ibex_bluesky_core.devices.reflectometry.AngleMappingReducer.r_squared" title="Link to this definition"></a></dt>
+<dd><p>R-squared (goodness of fit) parameter reported by <a class="reference external" href="https://lmfit.github.io/lmfit-py/model.html#lmfit.model.Model.fit" title="(in lmfit v1.3.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">lmfit.model.Model.fit</span></code></a>.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.reflectometry.AngleMappingReducer.sigma">
+<span class="sig-name descname"><span class="pre">sigma</span></span><a class="headerlink" href="#ibex_bluesky_core.devices.reflectometry.AngleMappingReducer.sigma" title="Link to this definition"></a></dt>
+<dd><p>Width (sigma) of fitted Gaussian</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.reflectometry.AngleMappingReducer.sigma_err">
+<span class="sig-name descname"><span class="pre">sigma_err</span></span><a class="headerlink" href="#ibex_bluesky_core.devices.reflectometry.AngleMappingReducer.sigma_err" title="Link to this definition"></a></dt>
+<dd><p>Width (sigma) standard deviation of fitted Gaussian.</p>
+<p>This is the standard error reported by <a class="reference external" href="https://lmfit.github.io/lmfit-py/model.html#lmfit.model.Model.fit" title="(in lmfit v1.3.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">lmfit.model.Model.fit</span></code></a>.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.reflectometry.AngleMappingReducer.x0">
+<span class="sig-name descname"><span class="pre">x0</span></span><a class="headerlink" href="#ibex_bluesky_core.devices.reflectometry.AngleMappingReducer.x0" title="Link to this definition"></a></dt>
+<dd><p>Centre (x0) of fitted Gaussian</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.reflectometry.AngleMappingReducer.x0_err">
+<span class="sig-name descname"><span class="pre">x0_err</span></span><a class="headerlink" href="#ibex_bluesky_core.devices.reflectometry.AngleMappingReducer.x0_err" title="Link to this definition"></a></dt>
+<dd><p>Centre (x0) standard deviation of fitted Gaussian.</p>
+<p>This is the standard error reported by <a class="reference external" href="https://lmfit.github.io/lmfit-py/model.html#lmfit.model.Model.fit" title="(in lmfit v1.3.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">lmfit.model.Model.fit</span></code></a>.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.reflectometry.ReflParameter">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ibex_bluesky_core.devices.reflectometry.</span></span><span class="sig-name descname"><span class="pre">ReflParameter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prefix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">changing_timeout_s</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">has_redefine</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ibex_bluesky_core/devices/reflectometry.html#ReflParameter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibex_bluesky_core.devices.reflectometry.ReflParameter" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://blueskyproject.io/ophyd-async/v0.16/_api/ophyd_async/ophyd_async.core.html#ophyd_async.core.StandardReadable" title="(in ophyd-async v0.16)"><code class="xref py py-class docutils literal notranslate"><span class="pre">StandardReadable</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">NamedMovable</span></code>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>]</p>
+<p>Reflectometry server parameter.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>prefix</strong> – the PV prefix.</p></li>
+<li><p><strong>name</strong> – the name of the parameter.</p></li>
+<li><p><strong>changing_timeout_s</strong> – seconds to wait for the CHANGING signal to go to False after a set.</p></li>
+<li><p><strong>has_redefine</strong> – whether this parameter can be redefined.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.reflectometry.ReflParameter.changing">
+<span class="sig-name descname"><span class="pre">changing</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">SignalR</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#ibex_bluesky_core.devices.reflectometry.ReflParameter.changing" title="Link to this definition"></a></dt>
+<dd><p>Whether this parameter is currently changing.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.reflectometry.ReflParameter.readback">
+<span class="sig-name descname"><span class="pre">readback</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">SignalR</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#ibex_bluesky_core.devices.reflectometry.ReflParameter.readback" title="Link to this definition"></a></dt>
+<dd><p>Readback value. This is the hinted parameter for this class.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.reflectometry.ReflParameter.redefine">
+<span class="sig-name descname"><span class="pre">redefine</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#ibex_bluesky_core.devices.reflectometry.ReflParameterRedefine" title="ibex_bluesky_core.devices.reflectometry.ReflParameterRedefine"><span class="pre">ReflParameterRedefine</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></em><a class="headerlink" href="#ibex_bluesky_core.devices.reflectometry.ReflParameter.redefine" title="Link to this definition"></a></dt>
+<dd><p>Signal for redefining this parameter.</p>
+<p>Will be <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a> if this parameter was constructed with <code class="docutils literal notranslate"><span class="pre">has_redefine=False</span></code>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.reflectometry.ReflParameter.set">
+<span class="sig-name descname"><span class="pre">set</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/ibex_bluesky_core/devices/reflectometry.html#ReflParameter.set"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibex_bluesky_core.devices.reflectometry.ReflParameter.set" title="Link to this definition"></a></dt>
+<dd><p>Set the setpoint.</p>
+<p>This waits for the <a class="reference internal" href="#ibex_bluesky_core.devices.reflectometry.ReflParameter.changing" title="ibex_bluesky_core.devices.reflectometry.ReflParameter.changing"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ReflParameter.changing</span></code></a> signal to go <a class="reference external" href="https://docs.python.org/3/library/constants.html#False" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">False</span></code></a> to
+indicate it has finished.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.reflectometry.ReflParameter.setpoint">
+<span class="sig-name descname"><span class="pre">setpoint</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">SignalW</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#ibex_bluesky_core.devices.reflectometry.ReflParameter.setpoint" title="Link to this definition"></a></dt>
+<dd><p>Reflectometry parameter setpoint signal.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.reflectometry.ReflParameterRedefine">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ibex_bluesky_core.devices.reflectometry.</span></span><span class="sig-name descname"><span class="pre">ReflParameterRedefine</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prefix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ibex_bluesky_core/devices/reflectometry.html#ReflParameterRedefine"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibex_bluesky_core.devices.reflectometry.ReflParameterRedefine" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://blueskyproject.io/ophyd-async/v0.16/_api/ophyd_async/ophyd_async.core.html#ophyd_async.core.StandardReadable" title="(in ophyd-async v0.16)"><code class="xref py py-class docutils literal notranslate"><span class="pre">StandardReadable</span></code></a></p>
+<p>Reflectometry server parameter redefinition.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>prefix</strong> – the reflectometry parameter full address.</p></li>
+<li><p><strong>name</strong> – the name of the parameter redefinition.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.reflectometry.ReflParameterRedefine.set">
+<span class="sig-name descname"><span class="pre">set</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/ibex_bluesky_core/devices/reflectometry.html#ReflParameterRedefine.set"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibex_bluesky_core.devices.reflectometry.ReflParameterRedefine.set" title="Link to this definition"></a></dt>
+<dd><p>Set the setpoint.</p>
+<p>This redefines the position of a reflectometry parameter as the given value, and
+waits for the reflectometry parameter redefinition’s ‘CHANGED’ PV
+to go True to indicate it has finished redefining the position.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.reflectometry.refl_parameter">
+<span class="sig-prename descclassname"><span class="pre">ibex_bluesky_core.devices.reflectometry.</span></span><span class="sig-name descname"><span class="pre">refl_parameter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">changing_timeout_s</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">60.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">has_redefine</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#ibex_bluesky_core.devices.reflectometry.ReflParameter" title="ibex_bluesky_core.devices.reflectometry.ReflParameter"><span class="pre">ReflParameter</span></a></span></span><a class="reference internal" href="../_modules/ibex_bluesky_core/devices/reflectometry.html#refl_parameter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibex_bluesky_core.devices.reflectometry.refl_parameter" title="Link to this definition"></a></dt>
+<dd><p>Small wrapper around a reflectometry parameter device.</p>
+<p>This automatically applies the current instrument’s PV prefix.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> – the reflectometry parameter name.</p></li>
+<li><p><strong>changing_timeout_s</strong> – time to wait (seconds) for the CHANGING signal to go False after a set.</p></li>
+<li><p><strong>has_redefine</strong> – whether this parameter can be redefined.</p></li>
+</ul>
+</dd>
+</dl>
+<p>Returns a device pointing to a reflectometry parameter.</p>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="ibex_bluesky_core.devices.polarisingdae.html" class="btn btn-neutral float-left" title="ibex_bluesky_core.devices.polarisingdae" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="ibex_bluesky_core.devices.simpledae.html" class="btn btn-neutral float-right" title="ibex_bluesky_core.devices.simpledae" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,573 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ibex_bluesky_core.devices.block &mdash; ibex_bluesky_core 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=dc476284" />
+
+  
+    <link rel="shortcut icon" href="../_static/favicon.svg"/>
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="ibex_bluesky_core.devices.dae" href="ibex_bluesky_core.devices.dae.html" />
+    <link rel="prev" title="ibex_bluesky_core.devices" href="ibex_bluesky_core.devices.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #343131" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            ibex_bluesky_core
+              <img src="../_static/logo.svg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/overview.html">Getting started</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Devices</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../devices/blocks.html">Blocks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devices/dae.html">DAE (Data Acquisition Electronics)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Callbacks</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../callbacks/isiscallbacks.html">ISIS Standard Callbacks (<code class="xref py py-obj docutils literal notranslate"><span class="pre">ISISCallbacks</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../callbacks/fitting.html">Fits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../callbacks/centre_of_mass.html">Centre of Mass</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../callbacks/plotting.html">Plotting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../callbacks/file_writing.html">File writing callbacks</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Plans</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../plans/plans.html">General Plans</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plans/reflectometry.html">Reflectometry-specific Plans</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Plan stubs</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/external_code.html">Calling external code (<code class="xref py py-obj docutils literal notranslate"><span class="pre">call_sync</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/matplotlib_helpers.html">Matplotlib helpers (<code class="xref py py-obj docutils literal notranslate"><span class="pre">call_qt_aware</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/plan_wrappers.html">Plan wrappers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/polling.html">Continuous polling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/redefining.html">Redefinition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/user_input.html">User input helpers</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../_api.html">API</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="ibex_bluesky_core.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core</span></code></a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="ibex_bluesky_core.callbacks.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.callbacks</span></code></a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="ibex_bluesky_core.devices.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.devices</span></code></a><ul class="current">
+<li class="toctree-l4 current"><a class="current reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.devices.block</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ibex_bluesky_core.devices.dae.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.devices.dae</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ibex_bluesky_core.devices.muon.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.devices.muon</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ibex_bluesky_core.devices.polarisingdae.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.devices.polarisingdae</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ibex_bluesky_core.devices.reflectometry.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.devices.reflectometry</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ibex_bluesky_core.devices.simpledae.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.devices.simpledae</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="ibex_bluesky_core.fitting.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.fitting</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ibex_bluesky_core.log.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.log</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ibex_bluesky_core.plan_stubs.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.plan_stubs</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ibex_bluesky_core.plans.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.plans</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ibex_bluesky_core.preprocessors.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.preprocessors</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ibex_bluesky_core.run_engine.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.run_engine</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ibex_bluesky_core.utils.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.utils</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ibex_bluesky_core.version.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.version</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../replotting_scans.html">Replaying documents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../architectural_decisions.html">Architectural Decisions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer_information.html">Developer Information</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #343131" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">ibex_bluesky_core</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../_api.html">API</a></li>
+          <li class="breadcrumb-item"><a href="ibex_bluesky_core.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core</span></code></a></li>
+          <li class="breadcrumb-item"><a href="ibex_bluesky_core.devices.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.devices</span></code></a></li>
+      <li class="breadcrumb-item active"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.devices.block</span></code></li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/ISISComputingGroup/ibex_bluesky_core/blob/main/doc/generated/ibex_bluesky_core.devices.block.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-ibex_bluesky_core.devices.block">
+<span id="ibex-bluesky-core-devices-block"></span><h1><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.devices.block</span></code><a class="headerlink" href="#module-ibex_bluesky_core.devices.block" title="Link to this heading"></a></h1>
+<p>bluesky devices and utilities for communicating with IBEX blocks.</p>
+<p class="rubric">Members</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ibex_bluesky_core.devices.block.BlockMot" title="ibex_bluesky_core.devices.block.BlockMot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BlockMot</span></code></a></p></td>
+<td><p>Create a new motor-record block.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#ibex_bluesky_core.devices.block.BlockR" title="ibex_bluesky_core.devices.block.BlockR"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BlockR</span></code></a></p></td>
+<td><p>Device representing an IBEX readable block of arbitrary data type.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ibex_bluesky_core.devices.block.BlockRw" title="ibex_bluesky_core.devices.block.BlockRw"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BlockRw</span></code></a></p></td>
+<td><p>Device representing an IBEX read/write block of arbitrary data type.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#ibex_bluesky_core.devices.block.BlockRwRbv" title="ibex_bluesky_core.devices.block.BlockRwRbv"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BlockRwRbv</span></code></a></p></td>
+<td><p>Device representing an IBEX read/write/setpoint readback block of arbitrary data type.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ibex_bluesky_core.devices.block.BlockWriteConfig" title="ibex_bluesky_core.devices.block.BlockWriteConfig"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BlockWriteConfig</span></code></a></p></td>
+<td><p>Configuration settings for writing to blocks.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#ibex_bluesky_core.devices.block.RunControl" title="ibex_bluesky_core.devices.block.RunControl"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RunControl</span></code></a></p></td>
+<td><p>Subdevice for common run-control signals.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ibex_bluesky_core.devices.block.block_mot" title="ibex_bluesky_core.devices.block.block_mot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">block_mot</span></code></a></p></td>
+<td><p>Get a local block pointing at a motor record for the local instrument.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#ibex_bluesky_core.devices.block.block_r" title="ibex_bluesky_core.devices.block.block_r"><code class="xref py py-obj docutils literal notranslate"><span class="pre">block_r</span></code></a></p></td>
+<td><p>Get a local read-only block for the current instrument.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ibex_bluesky_core.devices.block.block_rw" title="ibex_bluesky_core.devices.block.block_rw"><code class="xref py py-obj docutils literal notranslate"><span class="pre">block_rw</span></code></a></p></td>
+<td><p>Get a local read-write block for the current instrument.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#ibex_bluesky_core.devices.block.block_rw_rbv" title="ibex_bluesky_core.devices.block.block_rw_rbv"><code class="xref py py-obj docutils literal notranslate"><span class="pre">block_rw_rbv</span></code></a></p></td>
+<td><p>Get a local read/write/setpoint readback block for the current instrument.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ibex_bluesky_core.devices.block.block_w" title="ibex_bluesky_core.devices.block.block_w"><code class="xref py py-obj docutils literal notranslate"><span class="pre">block_w</span></code></a></p></td>
+<td><p>Get a write-only block for the current instrument.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py class">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.block.BlockMot">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ibex_bluesky_core.devices.block.</span></span><span class="sig-name descname"><span class="pre">BlockMot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prefix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">block_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ibex_bluesky_core/devices/block.html#BlockMot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibex_bluesky_core.devices.block.BlockMot" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://blueskyproject.io/ophyd-async/v0.16/_api/ophyd_async/ophyd_async.epics.motor.html#ophyd_async.epics.motor.Motor" title="(in ophyd-async v0.16)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Motor</span></code></a>, <a class="reference external" href="https://blueskyproject.io/bluesky/main/hardware.html#bluesky.protocols.Movable" title="(in bluesky v1.14.7.dev29+gfb2c32466)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Movable</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>], <a class="reference external" href="https://blueskyproject.io/bluesky/main/hardware.html#bluesky.protocols.HasName" title="(in bluesky v1.14.7.dev29+gfb2c32466)"><code class="xref py py-class docutils literal notranslate"><span class="pre">HasName</span></code></a></p>
+<p>Create a new motor-record block.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">BlockMot</span></code> object supports motion-specific functionality such as:</p>
+<ul class="simple">
+<li><p>Stopping if a scan is aborted (supports the bluesky
+<a class="reference external" href="https://blueskyproject.io/bluesky/main/hardware.html#bluesky.protocols.Stoppable" title="(in bluesky v1.14.7.dev29+gfb2c32466)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Stoppable</span></code></a> protocol)</p></li>
+<li><p>Limit checking (before a move starts - supports the bluesky
+<a class="reference external" href="https://blueskyproject.io/bluesky/main/hardware.html#bluesky.protocols.Checkable" title="(in bluesky v1.14.7.dev29+gfb2c32466)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Checkable</span></code></a> protocol)</p></li>
+<li><p>Automatic calculation of move timeouts based on motor velocity</p></li>
+<li><p>Fly scanning</p></li>
+</ul>
+<p>However, it generally relies on the underlying motor being “well-behaved”. For example, a
+motor which does many retries may exceed the simple default timeout based on velocity (it
+is possible to explicitly specify a timeout on set() to override this).</p>
+<p>Blocks pointing at motors do not take a
+<a class="reference internal" href="#ibex_bluesky_core.devices.block.BlockWriteConfig" title="ibex_bluesky_core.devices.block.BlockWriteConfig"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BlockWriteConfig</span></code></a> parameter, as these
+parameters duplicate functionality which already exists in the motor record. The mapping is:</p>
+<dl class="simple">
+<dt><code class="docutils literal notranslate"><span class="pre">use_completion_callback</span></code>:</dt><dd><p>Motors always use completion callbacks to check whether motion has completed. Whether to
+wait on that completion callback can be configured by the ‘wait’ keyword argument on
+set().</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">set_success_func</span></code>:</dt><dd><p>Use <code class="docutils literal notranslate"><span class="pre">.RDBD</span></code> and <code class="docutils literal notranslate"><span class="pre">.RTRY</span></code> to control motor retries if the position has not been
+reached to within a specified tolerance. Note that motors which retry a lot may
+exceed the default motion timeout which is calculated based on velocity,
+distance and acceleration.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">set_timeout_s</span></code>:</dt><dd><p>A suitable timeout is calculated automatically based on velocity, distance and
+acceleration as defined on the motor record.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">settle_time_s</span></code>:</dt><dd><p>Use <code class="docutils literal notranslate"><span class="pre">.DLY</span></code> on the motor record to configure this.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">use_global_moving_flag</span></code>:</dt><dd><p>This is unnecessary for a single motor block, as a completion callback will always be
+used instead to detect when a single move has finished.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.block.BlockMot.set">
+<span class="sig-name descname"><span class="pre">set</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.14)"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'CALCULATE_TIMEOUT'</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">CALCULATE_TIMEOUT</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://blueskyproject.io/ophyd-async/v0.16/_api/ophyd_async/ophyd_async.core.html#ophyd_async.core.WatchableAsyncStatus" title="(in ophyd-async v0.16)"><span class="pre">WatchableAsyncStatus</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/ibex_bluesky_core/devices/block.html#BlockMot.set"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibex_bluesky_core.devices.block.BlockMot.set" title="Link to this definition"></a></dt>
+<dd><p>Pass through <code class="docutils literal notranslate"><span class="pre">set</span></code> to <a class="reference external" href="https://blueskyproject.io/ophyd-async/v0.16/_api/ophyd_async/ophyd_async.epics.motor.html#ophyd_async.epics.motor.Motor.set" title="(in ophyd-async v0.16)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ophyd_async.epics.motor.Motor.set</span></code></a>.</p>
+<p>This is needed so that type-checker correctly understands the type of set.</p>
+<p>This method will raise
+<a class="reference external" href="https://blueskyproject.io/ophyd-async/v0.16/_api/ophyd_async/ophyd_async.epics.motor.html#ophyd_async.epics.motor.MotorLimitsError" title="(in ophyd-async v0.16)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ophyd_async.epics.motor.MotorLimitsError</span></code></a>
+if the requested position was outside the motor’s limits.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.block.BlockR">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ibex_bluesky_core.devices.block.</span></span><span class="sig-name descname"><span class="pre">BlockR</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">datatype</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.14)"><span class="pre">type</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">block_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ibex_bluesky_core/devices/block.html#BlockR"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibex_bluesky_core.devices.block.BlockR" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://blueskyproject.io/ophyd-async/v0.16/_api/ophyd_async/ophyd_async.core.html#ophyd_async.core.StandardReadable" title="(in ophyd-async v0.16)"><code class="xref py py-class docutils literal notranslate"><span class="pre">StandardReadable</span></code></a>, <a class="reference external" href="https://blueskyproject.io/bluesky/main/hardware.html#bluesky.protocols.Triggerable" title="(in bluesky v1.14.7.dev29+gfb2c32466)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Triggerable</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Generic" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Generic</span></code></a>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code>]</p>
+<p>Device representing an IBEX readable block of arbitrary data type.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>datatype</strong> – the type of data in this block
+(e.g. <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a>)</p></li>
+<li><p><strong>prefix</strong> – the current instrument’s PV prefix</p></li>
+<li><p><strong>block_name</strong> – the name of the block</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.block.BlockR.readback">
+<span class="sig-name descname"><span class="pre">readback</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">SignalR</span><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#ibex_bluesky_core.devices.block.BlockR.readback" title="Link to this definition"></a></dt>
+<dd><p>Readback value. This is the hinted signal for a block.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.block.BlockR.run_control">
+<span class="sig-name descname"><span class="pre">run_control</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#ibex_bluesky_core.devices.block.RunControl" title="ibex_bluesky_core.devices.block.RunControl"><span class="pre">RunControl</span></a></em><a class="headerlink" href="#ibex_bluesky_core.devices.block.BlockR.run_control" title="Link to this definition"></a></dt>
+<dd><p>Run-control settings for this block.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.block.BlockR.trigger">
+<span class="sig-name descname"><span class="pre">trigger</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/ibex_bluesky_core/devices/block.html#BlockR.trigger"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibex_bluesky_core.devices.block.BlockR.trigger" title="Link to this definition"></a></dt>
+<dd><p>Blocks do not do anything when triggered.</p>
+<p>This method implements <a class="reference external" href="https://blueskyproject.io/bluesky/main/hardware.html#bluesky.protocols.Triggerable" title="(in bluesky v1.14.7.dev29+gfb2c32466)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bluesky.protocols.Triggerable</span></code></a>,
+and should not be called directly.</p>
+<p>This empty implementation is provided to allow using blocks in
+adaptive scans.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.block.BlockRw">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ibex_bluesky_core.devices.block.</span></span><span class="sig-name descname"><span class="pre">BlockRw</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">datatype</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.14)"><span class="pre">type</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">block_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">write_config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#ibex_bluesky_core.devices.block.BlockWriteConfig" title="ibex_bluesky_core.devices.block.BlockWriteConfig"><span class="pre">BlockWriteConfig</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sp_suffix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">':SP'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ibex_bluesky_core/devices/block.html#BlockRw"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibex_bluesky_core.devices.block.BlockRw" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ibex_bluesky_core.devices.block.BlockR" title="ibex_bluesky_core.devices.block.BlockR"><code class="xref py py-class docutils literal notranslate"><span class="pre">BlockR</span></code></a>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code>], <code class="xref py py-class docutils literal notranslate"><span class="pre">NamedMovable</span></code>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code>]</p>
+<p>Device representing an IBEX read/write block of arbitrary data type.</p>
+<p>The setpoint is not added to <code class="docutils literal notranslate"><span class="pre">read()</span></code> by default. For most cases where setpoint readback
+functionality is desired, <a class="reference internal" href="#ibex_bluesky_core.devices.block.BlockRwRbv" title="ibex_bluesky_core.devices.block.BlockRwRbv"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BlockRwRbv</span></code></a> is a more
+suitable type.</p>
+<p>If you <em>explicitly</em> need to read the setpoint from a
+<a class="reference internal" href="#ibex_bluesky_core.devices.block.BlockRw" title="ibex_bluesky_core.devices.block.BlockRw"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BlockRw</span></code></a>, you can do so in a plan with:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">bluesky.plan_stubs</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">bps</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">plan</span><span class="p">():</span>
+    <span class="n">block</span><span class="p">:</span> <span class="n">BlockRw</span> <span class="o">=</span> <span class="o">...</span>
+    <span class="k">yield from</span> <span class="n">bps</span><span class="o">.</span><span class="n">rd</span><span class="p">(</span><span class="n">block</span><span class="o">.</span><span class="n">setpoint</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>But note that this does not read back the setpoint from hardware, but rather the setpoint
+which was last sent by EPICS.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>datatype</strong> – the type of data in this block (e.g. str, int, float)</p></li>
+<li><p><strong>prefix</strong> – the current instrument’s PV prefix</p></li>
+<li><p><strong>block_name</strong> – the name of the block</p></li>
+<li><p><strong>write_config</strong> – Settings which control how this device will set the underlying PVs</p></li>
+<li><p><strong>sp_suffix</strong> – Suffix to append to PV for the setpoint. Defaults to “:SP” but can
+be set to empty string to read and write to exactly the same PV.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.block.BlockRw.set">
+<span class="sig-name descname"><span class="pre">set</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">T</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/ibex_bluesky_core/devices/block.html#BlockRw.set"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibex_bluesky_core.devices.block.BlockRw.set" title="Link to this definition"></a></dt>
+<dd><p>Set the setpoint of this block.</p>
+<p>This method implements <a class="reference external" href="https://blueskyproject.io/bluesky/main/hardware.html#bluesky.protocols.Movable" title="(in bluesky v1.14.7.dev29+gfb2c32466)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bluesky.protocols.Movable</span></code></a>, and should not be
+called directly.</p>
+<p>From a plan, set a block using:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">bluesky.plan_stubs</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">bps</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">my_plan</span><span class="p">():</span>
+    <span class="n">block</span> <span class="o">=</span> <span class="n">BlockRw</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+    <span class="k">yield from</span> <span class="n">bps</span><span class="o">.</span><span class="n">mv</span><span class="p">(</span><span class="n">block</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.block.BlockRw.setpoint">
+<span class="sig-name descname"><span class="pre">setpoint</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">SignalRW</span><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#ibex_bluesky_core.devices.block.BlockRw.setpoint" title="Link to this definition"></a></dt>
+<dd><p>The setpoint for this block.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.block.BlockRwRbv">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ibex_bluesky_core.devices.block.</span></span><span class="sig-name descname"><span class="pre">BlockRwRbv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">datatype</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.14)"><span class="pre">type</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">block_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">write_config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#ibex_bluesky_core.devices.block.BlockWriteConfig" title="ibex_bluesky_core.devices.block.BlockWriteConfig"><span class="pre">BlockWriteConfig</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ibex_bluesky_core/devices/block.html#BlockRwRbv"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibex_bluesky_core.devices.block.BlockRwRbv" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ibex_bluesky_core.devices.block.BlockRw" title="ibex_bluesky_core.devices.block.BlockRw"><code class="xref py py-class docutils literal notranslate"><span class="pre">BlockRw</span></code></a>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code>], <a class="reference external" href="https://blueskyproject.io/bluesky/main/hardware.html#bluesky.protocols.Locatable" title="(in bluesky v1.14.7.dev29+gfb2c32466)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Locatable</span></code></a>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code>]</p>
+<p>Device representing an IBEX read/write/setpoint readback block of arbitrary data type.</p>
+<p>The setpoint readback is added to read(), but not hints(), by default. If you do not have
+a setpoint readback, use <a class="reference internal" href="#ibex_bluesky_core.devices.block.BlockRw" title="ibex_bluesky_core.devices.block.BlockRw"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BlockRw</span></code></a> instead.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>datatype</strong> – the type of data in this block (e.g. str, int, float)</p></li>
+<li><p><strong>prefix</strong> – the current instrument’s PV prefix</p></li>
+<li><p><strong>block_name</strong> – the name of the block</p></li>
+<li><p><strong>write_config</strong> – Settings which control how this device will set the underlying PVs</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.block.BlockRwRbv.locate">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">locate</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://blueskyproject.io/bluesky/main/hardware.html#bluesky.protocols.Location" title="(in bluesky v1.14.7.dev29+gfb2c32466)"><span class="pre">Location</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/ibex_bluesky_core/devices/block.html#BlockRwRbv.locate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibex_bluesky_core.devices.block.BlockRwRbv.locate" title="Link to this definition"></a></dt>
+<dd><p>Get the current <a class="reference external" href="https://blueskyproject.io/bluesky/main/hardware.html#bluesky.protocols.Location" title="(in bluesky v1.14.7.dev29+gfb2c32466)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Location</span></code></a> of this block.</p>
+<p>This method implements <a class="reference external" href="https://blueskyproject.io/bluesky/main/hardware.html#bluesky.protocols.Locatable" title="(in bluesky v1.14.7.dev29+gfb2c32466)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bluesky.protocols.Locatable</span></code></a>, and should not be
+called directly.</p>
+<p>From a plan, locate a block using:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">bluesky.plan_stubs</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">bps</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">my_plan</span><span class="p">():</span>
+    <span class="n">block</span><span class="p">:</span> <span class="n">BlockRwRbv</span> <span class="o">=</span> <span class="o">...</span>
+    <span class="n">location</span> <span class="o">=</span> <span class="k">yield from</span> <span class="n">bps</span><span class="o">.</span><span class="n">locate</span><span class="p">(</span><span class="n">block</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>If you only need the current value, rather than the value and the setpoint-readback, use:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">bluesky.plan_stubs</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">bps</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">my_plan</span><span class="p">():</span>
+    <span class="n">block</span><span class="p">:</span> <span class="n">BlockRwRbv</span> <span class="o">=</span> <span class="o">...</span>
+    <span class="n">value</span> <span class="o">=</span> <span class="k">yield from</span> <span class="n">bps</span><span class="o">.</span><span class="n">rd</span><span class="p">(</span><span class="n">block</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.block.BlockRwRbv.setpoint_readback">
+<span class="sig-name descname"><span class="pre">setpoint_readback</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">SignalR</span><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#ibex_bluesky_core.devices.block.BlockRwRbv.setpoint_readback" title="Link to this definition"></a></dt>
+<dd><p>The setpoint-readback for this block.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.block.BlockWriteConfig">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ibex_bluesky_core.devices.block.</span></span><span class="sig-name descname"><span class="pre">BlockWriteConfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_completion_callback</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">set_success_func</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable" title="(in Python v3.14)"><span class="pre">Callable</span></a><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">T</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">set_timeout_s</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">settle_time_s</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_global_moving_flag</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout_is_error</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ibex_bluesky_core/devices/block.html#BlockWriteConfig"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibex_bluesky_core.devices.block.BlockWriteConfig" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Generic" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Generic</span></code></a>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code>]</p>
+<p>Configuration settings for writing to blocks.</p>
+<p>These settings control how a block write is determined to be ‘complete’. A block
+write should only be marked as complete when the equipment has physically reached
+the correct state, not just when the equipment has been told to move to the correct
+state.</p>
+<p>For example, during a scan of a block against a detector, the detector will be read
+as soon as the block declares the write as ‘complete’.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.block.BlockWriteConfig.set_success_func">
+<span class="sig-name descname"><span class="pre">set_success_func</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable" title="(in Python v3.14)"><span class="pre">Callable</span></a><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">T</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#ibex_bluesky_core.devices.block.BlockWriteConfig.set_success_func" title="Link to this definition"></a></dt>
+<dd><p>An arbitrary function which is called to decide whether the block has
+set successfully yet or not. The function takes <code class="docutils literal notranslate"><span class="pre">(setpoint,</span> <span class="pre">actual)</span></code> as arguments and
+should return <a class="reference external" href="https://docs.python.org/3/library/constants.html#True" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">True</span></code></a> if the value has successfully set and is “ready”, or
+<a class="reference external" href="https://docs.python.org/3/library/constants.html#False" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">False</span></code></a> otherwise.</p>
+<p>This can be used to implement arbitrary tolerance behaviour. For example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">check</span><span class="p">(</span><span class="n">setpoint</span><span class="p">:</span> <span class="n">T</span><span class="p">,</span> <span class="n">actual</span><span class="p">:</span> <span class="n">T</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">setpoint</span> <span class="o">-</span> <span class="mf">0.1</span> <span class="o">&lt;=</span> <span class="n">actual</span> <span class="o">&lt;=</span> <span class="n">setpoint</span> <span class="o">+</span> <span class="mf">0.1</span>
+</pre></div>
+</div>
+<p>If use_completion_callback is True, the completion callback must complete before
+<code class="docutils literal notranslate"><span class="pre">set_success_func</span></code> is ever called.</p>
+<p>Executing this function should be “fast” (i.e. the function should not sleep), and it should
+not do any external I/O.</p>
+<p>Defaults to <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a>, which means no check is applied.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.block.BlockWriteConfig.set_timeout_s">
+<span class="sig-name descname"><span class="pre">set_timeout_s</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#ibex_bluesky_core.devices.block.BlockWriteConfig.set_timeout_s" title="Link to this definition"></a></dt>
+<dd><p>A timeout, in seconds, on the value being set successfully. The timeout
+applies to the EPICS completion callback (if enabled) and the set success function
+(if provided), and excludes any configured settle time.</p>
+<p>Defaults to <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a>, which means no timeout.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.block.BlockWriteConfig.settle_time_s">
+<span class="sig-name descname"><span class="pre">settle_time_s</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.0</span></em><a class="headerlink" href="#ibex_bluesky_core.devices.block.BlockWriteConfig.settle_time_s" title="Link to this definition"></a></dt>
+<dd><p>A wait time, in seconds, which is unconditionally applied just before the set
+status is marked as complete. Defaults to zero.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.block.BlockWriteConfig.timeout_is_error">
+<span class="sig-name descname"><span class="pre">timeout_is_error</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#ibex_bluesky_core.devices.block.BlockWriteConfig.timeout_is_error" title="Link to this definition"></a></dt>
+<dd><p>Whether a write timeout is considered an error. Defaults to True. If False, a set will be
+marked as complete without error even if the block has not given a completion callback or
+satisfied <code class="docutils literal notranslate"><span class="pre">set_success_func</span></code> within <code class="docutils literal notranslate"><span class="pre">settle_time_s</span></code>.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.block.BlockWriteConfig.use_completion_callback">
+<span class="sig-name descname"><span class="pre">use_completion_callback</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#ibex_bluesky_core.devices.block.BlockWriteConfig.use_completion_callback" title="Link to this definition"></a></dt>
+<dd><p>Whether to wait for an EPICS completion callback while setting
+this block. Defaults to <a class="reference external" href="https://docs.python.org/3/library/constants.html#True" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">True</span></code></a>, which is appropriate for most blocks.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.block.BlockWriteConfig.use_global_moving_flag">
+<span class="sig-name descname"><span class="pre">use_global_moving_flag</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#ibex_bluesky_core.devices.block.BlockWriteConfig.use_global_moving_flag" title="Link to this definition"></a></dt>
+<dd><p>Whether to wait for the IBEX global moving indicator to return “stationary”. This is useful
+for compound moves, where changing a single block may cause multiple underlying axes to
+move, and all movement needs to be complete before the set is considered complete.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.block.RunControl">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ibex_bluesky_core.devices.block.</span></span><span class="sig-name descname"><span class="pre">RunControl</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prefix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ibex_bluesky_core/devices/block.html#RunControl"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibex_bluesky_core.devices.block.RunControl" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://blueskyproject.io/ophyd-async/v0.16/_api/ophyd_async/ophyd_async.core.html#ophyd_async.core.StandardReadable" title="(in ophyd-async v0.16)"><code class="xref py py-class docutils literal notranslate"><span class="pre">StandardReadable</span></code></a></p>
+<p>Subdevice for common run-control signals.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Run control should be accessed via the <code class="docutils literal notranslate"><span class="pre">run_control</span></code> property on a block,
+rather than by constructing an instance of this class directly.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>prefix</strong> – the run-control prefix, e.g. <code class="docutils literal notranslate"><span class="pre">IN:INSTRUMENT:CS:SB:blockname:RC:</span></code></p></li>
+<li><p><strong>name</strong> – ophyd device name</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.block.RunControl.enabled">
+<span class="sig-name descname"><span class="pre">enabled</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">SignalRW</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#ibex_bluesky_core.devices.block.RunControl.enabled" title="Link to this definition"></a></dt>
+<dd><p>Run-control enabled.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.block.RunControl.high_limit">
+<span class="sig-name descname"><span class="pre">high_limit</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">SignalRW</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#ibex_bluesky_core.devices.block.RunControl.high_limit" title="Link to this definition"></a></dt>
+<dd><p>Run-control high limit.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.block.RunControl.in_range">
+<span class="sig-name descname"><span class="pre">in_range</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">SignalR</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#ibex_bluesky_core.devices.block.RunControl.in_range" title="Link to this definition"></a></dt>
+<dd><p>Whether run-control is currently in-range.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.block.RunControl.in_time">
+<span class="sig-name descname"><span class="pre">in_time</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">SignalR</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#ibex_bluesky_core.devices.block.RunControl.in_time" title="Link to this definition"></a></dt>
+<dd><p>Run-control time inside limits.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.block.RunControl.low_limit">
+<span class="sig-name descname"><span class="pre">low_limit</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">SignalRW</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#ibex_bluesky_core.devices.block.RunControl.low_limit" title="Link to this definition"></a></dt>
+<dd><p>Run-control low limit.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.block.RunControl.out_time">
+<span class="sig-name descname"><span class="pre">out_time</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">SignalR</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#ibex_bluesky_core.devices.block.RunControl.out_time" title="Link to this definition"></a></dt>
+<dd><p>Run-control time outside limits.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.block.RunControl.suspend_if_invalid">
+<span class="sig-name descname"><span class="pre">suspend_if_invalid</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">SignalRW</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#ibex_bluesky_core.devices.block.RunControl.suspend_if_invalid" title="Link to this definition"></a></dt>
+<dd><p>Whether run-control should suspend data collection on invalid values.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.block.block_mot">
+<span class="sig-prename descclassname"><span class="pre">ibex_bluesky_core.devices.block.</span></span><span class="sig-name descname"><span class="pre">block_mot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">block_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#ibex_bluesky_core.devices.block.BlockMot" title="ibex_bluesky_core.devices.block.BlockMot"><span class="pre">BlockMot</span></a></span></span><a class="reference internal" href="../_modules/ibex_bluesky_core/devices/block.html#block_mot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibex_bluesky_core.devices.block.block_mot" title="Link to this definition"></a></dt>
+<dd><p>Get a local block pointing at a motor record for the local instrument.</p>
+<p>See documentation of <a class="reference internal" href="#ibex_bluesky_core.devices.block.BlockMot" title="ibex_bluesky_core.devices.block.BlockMot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BlockMot</span></code></a> for more information.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.block.block_r">
+<span class="sig-prename descclassname"><span class="pre">ibex_bluesky_core.devices.block.</span></span><span class="sig-name descname"><span class="pre">block_r</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">datatype</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.14)"><span class="pre">type</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">block_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#ibex_bluesky_core.devices.block.BlockR" title="ibex_bluesky_core.devices.block.BlockR"><span class="pre">BlockR</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/ibex_bluesky_core/devices/block.html#block_r"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibex_bluesky_core.devices.block.block_r" title="Link to this definition"></a></dt>
+<dd><p>Get a local read-only block for the current instrument.</p>
+<p>See documentation of <a class="reference internal" href="#ibex_bluesky_core.devices.block.BlockR" title="ibex_bluesky_core.devices.block.BlockR"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BlockR</span></code></a> for more information.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.block.block_rw">
+<span class="sig-prename descclassname"><span class="pre">ibex_bluesky_core.devices.block.</span></span><span class="sig-name descname"><span class="pre">block_rw</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">datatype</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.14)"><span class="pre">type</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">block_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">write_config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#ibex_bluesky_core.devices.block.BlockWriteConfig" title="ibex_bluesky_core.devices.block.BlockWriteConfig"><span class="pre">BlockWriteConfig</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sp_suffix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">':SP'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#ibex_bluesky_core.devices.block.BlockRw" title="ibex_bluesky_core.devices.block.BlockRw"><span class="pre">BlockRw</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/ibex_bluesky_core/devices/block.html#block_rw"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibex_bluesky_core.devices.block.block_rw" title="Link to this definition"></a></dt>
+<dd><p>Get a local read-write block for the current instrument.</p>
+<p>See documentation of <a class="reference internal" href="#ibex_bluesky_core.devices.block.BlockRw" title="ibex_bluesky_core.devices.block.BlockRw"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BlockRw</span></code></a> for more information.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.block.block_rw_rbv">
+<span class="sig-prename descclassname"><span class="pre">ibex_bluesky_core.devices.block.</span></span><span class="sig-name descname"><span class="pre">block_rw_rbv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">datatype</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.14)"><span class="pre">type</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">block_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">write_config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#ibex_bluesky_core.devices.block.BlockWriteConfig" title="ibex_bluesky_core.devices.block.BlockWriteConfig"><span class="pre">BlockWriteConfig</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#ibex_bluesky_core.devices.block.BlockRwRbv" title="ibex_bluesky_core.devices.block.BlockRwRbv"><span class="pre">BlockRwRbv</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/ibex_bluesky_core/devices/block.html#block_rw_rbv"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibex_bluesky_core.devices.block.block_rw_rbv" title="Link to this definition"></a></dt>
+<dd><p>Get a local read/write/setpoint readback block for the current instrument.</p>
+<p>See documentation of <a class="reference internal" href="#ibex_bluesky_core.devices.block.BlockRwRbv" title="ibex_bluesky_core.devices.block.BlockRwRbv"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BlockRwRbv</span></code></a> for more information.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.block.block_w">
+<span class="sig-prename descclassname"><span class="pre">ibex_bluesky_core.devices.block.</span></span><span class="sig-name descname"><span class="pre">block_w</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">datatype</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.14)"><span class="pre">type</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">block_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">write_config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#ibex_bluesky_core.devices.block.BlockWriteConfig" title="ibex_bluesky_core.devices.block.BlockWriteConfig"><span class="pre">BlockWriteConfig</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#ibex_bluesky_core.devices.block.BlockRw" title="ibex_bluesky_core.devices.block.BlockRw"><span class="pre">BlockRw</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/ibex_bluesky_core/devices/block.html#block_w"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibex_bluesky_core.devices.block.block_w" title="Link to this definition"></a></dt>
+<dd><p>Get a write-only block for the current instrument.</p>
+<p>This is a <a class="reference internal" href="#ibex_bluesky_core.devices.block.BlockRw" title="ibex_bluesky_core.devices.block.BlockRw"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BlockRw</span></code></a> instance with no SP suffix.</p>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="ibex_bluesky_core.devices.html" class="btn btn-neutral float-left" title="ibex_bluesky_core.devices" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="ibex_bluesky_core.devices.dae.html" class="btn btn-neutral float-right" title="ibex_bluesky_core.devices.dae" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

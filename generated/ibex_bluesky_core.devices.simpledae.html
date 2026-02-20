@@ -1,0 +1,860 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ibex_bluesky_core.devices.simpledae &mdash; ibex_bluesky_core 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=dc476284" />
+
+  
+    <link rel="shortcut icon" href="../_static/favicon.svg"/>
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="ibex_bluesky_core.fitting" href="ibex_bluesky_core.fitting.html" />
+    <link rel="prev" title="ibex_bluesky_core.devices.reflectometry" href="ibex_bluesky_core.devices.reflectometry.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #343131" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            ibex_bluesky_core
+              <img src="../_static/logo.svg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/overview.html">Getting started</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Devices</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../devices/blocks.html">Blocks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devices/dae.html">DAE (Data Acquisition Electronics)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Callbacks</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../callbacks/isiscallbacks.html">ISIS Standard Callbacks (<code class="xref py py-obj docutils literal notranslate"><span class="pre">ISISCallbacks</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../callbacks/fitting.html">Fits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../callbacks/centre_of_mass.html">Centre of Mass</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../callbacks/plotting.html">Plotting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../callbacks/file_writing.html">File writing callbacks</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Plans</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../plans/plans.html">General Plans</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plans/reflectometry.html">Reflectometry-specific Plans</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Plan stubs</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/external_code.html">Calling external code (<code class="xref py py-obj docutils literal notranslate"><span class="pre">call_sync</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/matplotlib_helpers.html">Matplotlib helpers (<code class="xref py py-obj docutils literal notranslate"><span class="pre">call_qt_aware</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/plan_wrappers.html">Plan wrappers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/polling.html">Continuous polling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/redefining.html">Redefinition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/user_input.html">User input helpers</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../_api.html">API</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="ibex_bluesky_core.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core</span></code></a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="ibex_bluesky_core.callbacks.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.callbacks</span></code></a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="ibex_bluesky_core.devices.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.devices</span></code></a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="ibex_bluesky_core.devices.block.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.devices.block</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ibex_bluesky_core.devices.dae.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.devices.dae</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ibex_bluesky_core.devices.muon.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.devices.muon</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ibex_bluesky_core.devices.polarisingdae.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.devices.polarisingdae</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ibex_bluesky_core.devices.reflectometry.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.devices.reflectometry</span></code></a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.devices.simpledae</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="ibex_bluesky_core.fitting.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.fitting</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ibex_bluesky_core.log.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.log</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ibex_bluesky_core.plan_stubs.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.plan_stubs</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ibex_bluesky_core.plans.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.plans</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ibex_bluesky_core.preprocessors.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.preprocessors</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ibex_bluesky_core.run_engine.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.run_engine</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ibex_bluesky_core.utils.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.utils</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ibex_bluesky_core.version.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.version</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../replotting_scans.html">Replaying documents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../architectural_decisions.html">Architectural Decisions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer_information.html">Developer Information</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #343131" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">ibex_bluesky_core</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../_api.html">API</a></li>
+          <li class="breadcrumb-item"><a href="ibex_bluesky_core.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core</span></code></a></li>
+          <li class="breadcrumb-item"><a href="ibex_bluesky_core.devices.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.devices</span></code></a></li>
+      <li class="breadcrumb-item active"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.devices.simpledae</span></code></li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/ISISComputingGroup/ibex_bluesky_core/blob/main/doc/generated/ibex_bluesky_core.devices.simpledae.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-ibex_bluesky_core.devices.simpledae">
+<span id="ibex-bluesky-core-devices-simpledae"></span><h1><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.devices.simpledae</span></code><a class="headerlink" href="#module-ibex_bluesky_core.devices.simpledae" title="Link to this heading"></a></h1>
+<p>High-level bluesky device interface to the DAE for ‘typical’ measurements.</p>
+<p class="rubric">Members</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ibex_bluesky_core.devices.simpledae.SimpleDae" title="ibex_bluesky_core.devices.simpledae.SimpleDae"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SimpleDae</span></code></a></p></td>
+<td><p>DAE with used-defined strategies for data collection, waiting, and reduction.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#ibex_bluesky_core.devices.simpledae.check_dae_strategies" title="ibex_bluesky_core.devices.simpledae.check_dae_strategies"><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_dae_strategies</span></code></a></p></td>
+<td><p>Check that the provided dae instance has appropriate controller/reducer/waiter configured.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ibex_bluesky_core.devices.simpledae.monitor_normalising_dae" title="ibex_bluesky_core.devices.simpledae.monitor_normalising_dae"><code class="xref py py-obj docutils literal notranslate"><span class="pre">monitor_normalising_dae</span></code></a></p></td>
+<td><p>Create a <a class="reference internal" href="#ibex_bluesky_core.devices.simpledae.SimpleDae" title="ibex_bluesky_core.devices.simpledae.SimpleDae"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SimpleDae</span></code></a> which normalises using a monitor and waits for frames.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py class">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.simpledae.Controller">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ibex_bluesky_core.devices.simpledae.</span></span><span class="sig-name descname"><span class="pre">Controller</span></span><a class="reference internal" href="../_modules/ibex_bluesky_core/devices/simpledae/_strategies.html#Controller"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibex_bluesky_core.devices.simpledae.Controller" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ibex_bluesky_core.devices.simpledae.ProvidesExtraReadables" title="ibex_bluesky_core.devices.simpledae._strategies.ProvidesExtraReadables"><code class="xref py py-class docutils literal notranslate"><span class="pre">ProvidesExtraReadables</span></code></a></p>
+<p>Specifies how DAE runs should be started &amp; stopped.</p>
+<p>This default implementation does nothing; concrete implementations
+such as <a class="reference internal" href="#ibex_bluesky_core.devices.simpledae.PeriodPerPointController" title="ibex_bluesky_core.devices.simpledae.PeriodPerPointController"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PeriodPerPointController</span></code></a>
+or <a class="reference internal" href="#ibex_bluesky_core.devices.simpledae.RunPerPointController" title="ibex_bluesky_core.devices.simpledae.RunPerPointController"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RunPerPointController</span></code></a>
+implement commonly-used behaviours.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.simpledae.Controller.setup">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">setup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dae</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.Dae" title="ibex_bluesky_core.devices.dae.Dae"><span class="pre">Dae</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/ibex_bluesky_core/devices/simpledae/_strategies.html#Controller.setup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibex_bluesky_core.devices.simpledae.Controller.setup" title="Link to this definition"></a></dt>
+<dd><p>Pre-scan setup.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.simpledae.Controller.start_counting">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">start_counting</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dae</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.Dae" title="ibex_bluesky_core.devices.dae.Dae"><span class="pre">Dae</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/ibex_bluesky_core/devices/simpledae/_strategies.html#Controller.start_counting"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibex_bluesky_core.devices.simpledae.Controller.start_counting" title="Link to this definition"></a></dt>
+<dd><p>Start counting for a single scan point.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.simpledae.Controller.stop_counting">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">stop_counting</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dae</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.Dae" title="ibex_bluesky_core.devices.dae.Dae"><span class="pre">Dae</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/ibex_bluesky_core/devices/simpledae/_strategies.html#Controller.stop_counting"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibex_bluesky_core.devices.simpledae.Controller.stop_counting" title="Link to this definition"></a></dt>
+<dd><p>Stop counting for a single scan point.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.simpledae.Controller.teardown">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">teardown</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dae</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.Dae" title="ibex_bluesky_core.devices.dae.Dae"><span class="pre">Dae</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/ibex_bluesky_core/devices/simpledae/_strategies.html#Controller.teardown"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibex_bluesky_core.devices.simpledae.Controller.teardown" title="Link to this definition"></a></dt>
+<dd><p>Post-scan teardown.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.simpledae.DSpacingMappingReducer">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ibex_bluesky_core.devices.simpledae.</span></span><span class="sig-name descname"><span class="pre">DSpacingMappingReducer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">detectors</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><span class="pre">ndarray</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.dtype.html#numpy.dtype" title="(in NumPy v2.4)"><span class="pre">dtype</span></a><span class="p"><span class="pre">[</span></span><span class="pre">int64</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">l_total</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://scipp.github.io/generated/classes/scipp.Variable.html#scipp.Variable" title="(in Scipp v26.2.0)"><span class="pre">Variable</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">two_theta</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://scipp.github.io/generated/classes/scipp.Variable.html#scipp.Variable" title="(in Scipp v26.2.0)"><span class="pre">Variable</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">dspacing_bin_edges</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://scipp.github.io/generated/classes/scipp.Variable.html#scipp.Variable" title="(in Scipp v26.2.0)"><span class="pre">Variable</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ibex_bluesky_core/devices/simpledae/_reducers.html#DSpacingMappingReducer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibex_bluesky_core.devices.simpledae.DSpacingMappingReducer" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ibex_bluesky_core.devices.simpledae.Reducer" title="ibex_bluesky_core.devices.simpledae._strategies.Reducer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Reducer</span></code></a>, <a class="reference external" href="https://blueskyproject.io/ophyd-async/v0.16/_api/ophyd_async/ophyd_async.core.html#ophyd_async.core.StandardReadable" title="(in ophyd-async v0.16)"><code class="xref py py-class docutils literal notranslate"><span class="pre">StandardReadable</span></code></a></p>
+<p>DAE Reducer which exposes an array of d-spacings at each scan point.</p>
+<p>This reducer produces one dimensional arrays of d-spacing, generated by
+converting the time-of-flight coordinates of each configured spectrum to
+d-spacing, rebinning all spectra to a common set of d-spacing bins, and
+then summing all spectra together. The conversion method used is
+<a class="reference external" href="https://scipp.github.io/scippneutron/generated/modules/scippneutron.conversion.tof.dspacing_from_tof.html#scippneutron.conversion.tof.dspacing_from_tof" title="(in ScippNeutron v0.0.0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">scippneutron.conversion.tof.dspacing_from_tof</span></code></a>.</p>
+<p>For a description of the basic theory behind conversions between
+time-of-flight and d-spacing, see the
+<a class="reference external" href="https://www.oxfordneutronschool.org/2024/Lectures/Boothroyd-Introductory%20Theory.pdf">introductory slides</a>
+from the Oxford Neutron School, or the
+<a class="reference external" href="https://www.isis.stfc.ac.uk/Pages/TOF-neutron-diffraction.aspx">ISIS introduction to ToF neutron diffraction</a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>prefix</strong> – PV prefix for the <a class="reference internal" href="#ibex_bluesky_core.devices.simpledae.SimpleDae" title="ibex_bluesky_core.devices.simpledae.SimpleDae"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SimpleDae</span></code></a>.</p></li>
+<li><p><strong>detectors</strong> – numpy <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.array.html#numpy.array" title="(in NumPy v2.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code></a> of detector
+spectra to select.
+For example, <code class="docutils literal notranslate"><span class="pre">np.array([1,</span> <span class="pre">2,</span> <span class="pre">3])</span></code> selects spectra 1-3 inclusive.
+All detectors in this list are assumed to have the same time
+channel boundaries.</p></li>
+<li><p><strong>l_total</strong> – scipp <a class="reference external" href="https://scipp.github.io/generated/classes/scipp.Variable.html#scipp.Variable" title="(in Scipp v26.2.0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Variable</span></code></a>
+describing the total flight path length of each
+selected detector. Must have the same length as detectors, have units
+of length, and have a scipp dimension label of “spec”</p></li>
+<li><p><strong>two_theta</strong> – scipp <a class="reference external" href="https://scipp.github.io/generated/classes/scipp.Variable.html#scipp.Variable" title="(in Scipp v26.2.0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Variable</span></code></a>
+describing the two theta scattering angle of
+each selected detector. Must have the same length as detectors, have
+units of angle, and have a scipp dimension label of “spec”</p></li>
+<li><p><strong>dspacing_bin_edges</strong> – scipp <a class="reference external" href="https://scipp.github.io/generated/classes/scipp.Variable.html#scipp.Variable" title="(in Scipp v26.2.0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Variable</span></code></a>
+describing the required d-spacing bin-edges.
+This must be bin edge coordinates, aligned along a scipp dimension label of
+“tof”, have a unit of length, for example Angstroms
+(<a class="reference external" href="https://scipp.github.io/generated/modules/scipp.units.html#module-scipp.units" title="(in Scipp v26.2.0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">scipp.units.angstrom</span></code></a>),
+and must be strictly ascending.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.simpledae.DSpacingMappingReducer.dspacing">
+<span class="sig-name descname"><span class="pre">dspacing</span></span><a class="headerlink" href="#ibex_bluesky_core.devices.simpledae.DSpacingMappingReducer.dspacing" title="Link to this definition"></a></dt>
+<dd><p>d-spacing <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a>, binned by <code class="docutils literal notranslate"><span class="pre">dspacing_bin_edges</span></code>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.simpledae.DSpacingMappingReducer.reduce_data">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">reduce_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dae</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.Dae" title="ibex_bluesky_core.devices.dae.Dae"><span class="pre">Dae</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/ibex_bluesky_core/devices/simpledae/_reducers.html#DSpacingMappingReducer.reduce_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibex_bluesky_core.devices.simpledae.DSpacingMappingReducer.reduce_data" title="Link to this definition"></a></dt>
+<dd><p>Expose calculated d-spacing.</p>
+<p>This will be in units of counts, which may be fractional due to rebinning.</p>
+<p>The binning of the data, and hence the length of the d-spacing
+array, has bin edges specified by <code class="docutils literal notranslate"><span class="pre">dspacing_bin_edges</span></code>.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.simpledae.GoodFramesNormalizer">
+<span class="sig-prename descclassname"><span class="pre">ibex_bluesky_core.devices.simpledae.</span></span><span class="sig-name descname"><span class="pre">GoodFramesNormalizer</span></span><a class="headerlink" href="#ibex_bluesky_core.devices.simpledae.GoodFramesNormalizer" title="Link to this definition"></a></dt>
+<dd><p>alias of <a class="reference internal" href="#ibex_bluesky_core.devices.simpledae.PeriodGoodFramesNormalizer" title="ibex_bluesky_core.devices.simpledae._reducers.PeriodGoodFramesNormalizer"><code class="xref py py-class docutils literal notranslate"><span class="pre">PeriodGoodFramesNormalizer</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.simpledae.GoodFramesWaiter">
+<span class="sig-prename descclassname"><span class="pre">ibex_bluesky_core.devices.simpledae.</span></span><span class="sig-name descname"><span class="pre">GoodFramesWaiter</span></span><a class="headerlink" href="#ibex_bluesky_core.devices.simpledae.GoodFramesWaiter" title="Link to this definition"></a></dt>
+<dd><p>alias of <a class="reference internal" href="#ibex_bluesky_core.devices.simpledae.PeriodGoodFramesWaiter" title="ibex_bluesky_core.devices.simpledae._waiters.PeriodGoodFramesWaiter"><code class="xref py py-class docutils literal notranslate"><span class="pre">PeriodGoodFramesWaiter</span></code></a></p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.simpledae.GoodUahWaiter">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ibex_bluesky_core.devices.simpledae.</span></span><span class="sig-name descname"><span class="pre">GoodUahWaiter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ibex_bluesky_core/devices/simpledae/_waiters.html#GoodUahWaiter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibex_bluesky_core.devices.simpledae.GoodUahWaiter" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ibex_bluesky_core.devices.simpledae.SimpleWaiter" title="ibex_bluesky_core.devices.simpledae._waiters.SimpleWaiter"><code class="xref py py-class docutils literal notranslate"><span class="pre">SimpleWaiter</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>]</p>
+<p>Wait for a specified number of good uAh in the current period.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>value</strong> – the number of good uAh to wait for</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.simpledae.MEventsWaiter">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ibex_bluesky_core.devices.simpledae.</span></span><span class="sig-name descname"><span class="pre">MEventsWaiter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ibex_bluesky_core/devices/simpledae/_waiters.html#MEventsWaiter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibex_bluesky_core.devices.simpledae.MEventsWaiter" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ibex_bluesky_core.devices.simpledae.SimpleWaiter" title="ibex_bluesky_core.devices.simpledae._waiters.SimpleWaiter"><code class="xref py py-class docutils literal notranslate"><span class="pre">SimpleWaiter</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>]</p>
+<p>Wait for a specified number of events (in millions) in the current period.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>value</strong> – the number of events (in millions) to wait for</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.simpledae.MonitorNormalizer">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ibex_bluesky_core.devices.simpledae.</span></span><span class="sig-name descname"><span class="pre">MonitorNormalizer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prefix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">detector_spectra</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Sequence" title="(in Python v3.14)"><span class="pre">Sequence</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">monitor_spectra</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Sequence" title="(in Python v3.14)"><span class="pre">Sequence</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sum_detector</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable" title="(in Python v3.14)"><span class="pre">Callable</span></a><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Collection" title="(in Python v3.14)"><span class="pre">Collection</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.DaeSpectra" title="ibex_bluesky_core.devices.dae._spectra.DaeSpectra"><span class="pre">DaeSpectra</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Awaitable" title="(in Python v3.14)"><span class="pre">Awaitable</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://scipp.github.io/generated/classes/scipp.Variable.html#scipp.Variable" title="(in Scipp v26.2.0)"><span class="pre">Variable</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://scipp.github.io/generated/classes/scipp.DataArray.html#scipp.DataArray" title="(in Scipp v26.2.0)"><span class="pre">DataArray</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">sum_spectra</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sum_monitor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable" title="(in Python v3.14)"><span class="pre">Callable</span></a><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Collection" title="(in Python v3.14)"><span class="pre">Collection</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.DaeSpectra" title="ibex_bluesky_core.devices.dae._spectra.DaeSpectra"><span class="pre">DaeSpectra</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Awaitable" title="(in Python v3.14)"><span class="pre">Awaitable</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://scipp.github.io/generated/classes/scipp.Variable.html#scipp.Variable" title="(in Scipp v26.2.0)"><span class="pre">Variable</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://scipp.github.io/generated/classes/scipp.DataArray.html#scipp.DataArray" title="(in Scipp v26.2.0)"><span class="pre">DataArray</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">sum_spectra</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ibex_bluesky_core/devices/simpledae/_reducers.html#MonitorNormalizer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibex_bluesky_core.devices.simpledae.MonitorNormalizer" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ibex_bluesky_core.devices.simpledae.Reducer" title="ibex_bluesky_core.devices.simpledae._strategies.Reducer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Reducer</span></code></a>, <a class="reference external" href="https://blueskyproject.io/ophyd-async/v0.16/_api/ophyd_async/ophyd_async.core.html#ophyd_async.core.StandardReadable" title="(in ophyd-async v0.16)"><code class="xref py py-class docutils literal notranslate"><span class="pre">StandardReadable</span></code></a></p>
+<p>Normalize a set of user-specified detector spectra by user-specified monitor spectra.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>prefix</strong> – the PV prefix of the instrument to get spectra from (e.g. <code class="docutils literal notranslate"><span class="pre">IN:DEMO:</span></code>)</p></li>
+<li><p><strong>detector_spectra</strong> – a sequence of spectra numbers (detectors) to sum.</p></li>
+<li><p><strong>monitor_spectra</strong> – a sequence of spectra number (monitors) to sum and normalize by.</p></li>
+<li><p><strong>sum_detector</strong> – takes spectra objects, reads from them, and returns a
+<a class="reference external" href="https://scipp.github.io/generated/functions/scipp.scalar.html#scipp.scalar" title="(in Scipp v26.2.0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">scipp.scalar</span></code></a>
+describing the detector intensity. Defaults to summing over the entire spectrum.</p></li>
+<li><p><strong>sum_monitor</strong> – takes spectra objects, reads from them, and returns a
+<a class="reference external" href="https://scipp.github.io/generated/functions/scipp.scalar.html#scipp.scalar" title="(in Scipp v26.2.0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">scipp.scalar</span></code></a>
+describing the monitor intensity. Defaults to summing over the entire spectrum.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.simpledae.MonitorNormalizer.det_counts">
+<span class="sig-name descname"><span class="pre">det_counts</span></span><a class="headerlink" href="#ibex_bluesky_core.devices.simpledae.MonitorNormalizer.det_counts" title="Link to this definition"></a></dt>
+<dd><p>Total detector counts.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.simpledae.MonitorNormalizer.det_counts_stddev">
+<span class="sig-name descname"><span class="pre">det_counts_stddev</span></span><a class="headerlink" href="#ibex_bluesky_core.devices.simpledae.MonitorNormalizer.det_counts_stddev" title="Link to this definition"></a></dt>
+<dd><p>Standard deviation of the detector counts.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.simpledae.MonitorNormalizer.intensity">
+<span class="sig-name descname"><span class="pre">intensity</span></span><a class="headerlink" href="#ibex_bluesky_core.devices.simpledae.MonitorNormalizer.intensity" title="Link to this definition"></a></dt>
+<dd><p>Normalised intensity.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.simpledae.MonitorNormalizer.intensity_stddev">
+<span class="sig-name descname"><span class="pre">intensity_stddev</span></span><a class="headerlink" href="#ibex_bluesky_core.devices.simpledae.MonitorNormalizer.intensity_stddev" title="Link to this definition"></a></dt>
+<dd><p>Standard deviation of the normalised intensity.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.simpledae.MonitorNormalizer.mon_counts">
+<span class="sig-name descname"><span class="pre">mon_counts</span></span><a class="headerlink" href="#ibex_bluesky_core.devices.simpledae.MonitorNormalizer.mon_counts" title="Link to this definition"></a></dt>
+<dd><p>Total monitor counts.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.simpledae.MonitorNormalizer.mon_counts_stddev">
+<span class="sig-name descname"><span class="pre">mon_counts_stddev</span></span><a class="headerlink" href="#ibex_bluesky_core.devices.simpledae.MonitorNormalizer.mon_counts_stddev" title="Link to this definition"></a></dt>
+<dd><p>Standard deviation of the monitor counts.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.simpledae.PeriodGoodFramesNormalizer">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ibex_bluesky_core.devices.simpledae.</span></span><span class="sig-name descname"><span class="pre">PeriodGoodFramesNormalizer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prefix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">detector_spectra</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Sequence" title="(in Python v3.14)"><span class="pre">Sequence</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sum_detector</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable" title="(in Python v3.14)"><span class="pre">Callable</span></a><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Collection" title="(in Python v3.14)"><span class="pre">Collection</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.DaeSpectra" title="ibex_bluesky_core.devices.dae._spectra.DaeSpectra"><span class="pre">DaeSpectra</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Awaitable" title="(in Python v3.14)"><span class="pre">Awaitable</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://scipp.github.io/generated/classes/scipp.Variable.html#scipp.Variable" title="(in Scipp v26.2.0)"><span class="pre">Variable</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://scipp.github.io/generated/classes/scipp.DataArray.html#scipp.DataArray" title="(in Scipp v26.2.0)"><span class="pre">DataArray</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">sum_spectra</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ibex_bluesky_core/devices/simpledae/_reducers.html#PeriodGoodFramesNormalizer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibex_bluesky_core.devices.simpledae.PeriodGoodFramesNormalizer" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ibex_bluesky_core.devices.simpledae.ScalarNormalizer" title="ibex_bluesky_core.devices.simpledae._reducers.ScalarNormalizer"><code class="xref py py-class docutils literal notranslate"><span class="pre">ScalarNormalizer</span></code></a></p>
+<p>Sum a set of user-specified spectra, then normalize by period good frames.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>prefix</strong> – The PV prefix of the instrument to get spectra from (e.g. <code class="docutils literal notranslate"><span class="pre">IN:DEMO:</span></code>)</p></li>
+<li><p><strong>detector_spectra</strong> – A sequence of spectra numbers (detectors) to sum.</p></li>
+<li><p><strong>sum_detector</strong> – Takes spectra objects, reads from them, and returns a
+<a class="reference external" href="https://scipp.github.io/generated/functions/scipp.scalar.html#scipp.scalar" title="(in Scipp v26.2.0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">scipp.scalar</span></code></a>
+describing the detector intensity. Defaults to summing over the entire spectrum.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.simpledae.PeriodGoodFramesWaiter">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ibex_bluesky_core.devices.simpledae.</span></span><span class="sig-name descname"><span class="pre">PeriodGoodFramesWaiter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ibex_bluesky_core/devices/simpledae/_waiters.html#PeriodGoodFramesWaiter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibex_bluesky_core.devices.simpledae.PeriodGoodFramesWaiter" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ibex_bluesky_core.devices.simpledae.SimpleWaiter" title="ibex_bluesky_core.devices.simpledae._waiters.SimpleWaiter"><code class="xref py py-class docutils literal notranslate"><span class="pre">SimpleWaiter</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>]</p>
+<p>Wait for a specified number of good frames in the current period.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>value</strong> – the number of good frames to wait for</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.simpledae.PeriodPerPointController">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ibex_bluesky_core.devices.simpledae.</span></span><span class="sig-name descname"><span class="pre">PeriodPerPointController</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">save_run</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ibex_bluesky_core/devices/simpledae/_controllers.html#PeriodPerPointController"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibex_bluesky_core.devices.simpledae.PeriodPerPointController" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ibex_bluesky_core.devices.simpledae.Controller" title="ibex_bluesky_core.devices.simpledae._strategies.Controller"><code class="xref py py-class docutils literal notranslate"><span class="pre">Controller</span></code></a></p>
+<p>Period-per-point DAE controller.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>save_run</strong> – <a class="reference external" href="https://docs.python.org/3/library/constants.html#True" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">True</span></code></a> to terminate runs using
+<a class="reference internal" href="ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.DaeControls.end_run" title="ibex_bluesky_core.devices.dae.DaeControls.end_run"><code class="xref py py-obj docutils literal notranslate"><span class="pre">end_run</span></code></a>,
+saving the data. <a class="reference external" href="https://docs.python.org/3/library/constants.html#False" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">False</span></code></a> to terminate runs using
+<a class="reference internal" href="ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.DaeControls.abort_run" title="ibex_bluesky_core.devices.dae.DaeControls.abort_run"><code class="xref py py-obj docutils literal notranslate"><span class="pre">abort_run</span></code></a>,
+discarding the data.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.simpledae.PeriodPerPointController.setup">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">setup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dae</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.Dae" title="ibex_bluesky_core.devices.dae.Dae"><span class="pre">Dae</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/ibex_bluesky_core/devices/simpledae/_controllers.html#PeriodPerPointController.setup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibex_bluesky_core.devices.simpledae.PeriodPerPointController.setup" title="Link to this definition"></a></dt>
+<dd><p>Pre-scan setup (begin a new run in paused mode).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.simpledae.PeriodPerPointController.start_counting">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">start_counting</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dae</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.Dae" title="ibex_bluesky_core.devices.dae.Dae"><span class="pre">Dae</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/ibex_bluesky_core/devices/simpledae/_controllers.html#PeriodPerPointController.start_counting"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibex_bluesky_core.devices.simpledae.PeriodPerPointController.start_counting" title="Link to this definition"></a></dt>
+<dd><p>Start counting a single point.</p>
+<p>Increments the period by 1, then unpauses the run.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.simpledae.PeriodPerPointController.stop_counting">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">stop_counting</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dae</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.Dae" title="ibex_bluesky_core.devices.dae.Dae"><span class="pre">Dae</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/ibex_bluesky_core/devices/simpledae/_controllers.html#PeriodPerPointController.stop_counting"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibex_bluesky_core.devices.simpledae.PeriodPerPointController.stop_counting" title="Link to this definition"></a></dt>
+<dd><p>Stop counting a scan point, by pausing the run.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.simpledae.PeriodPerPointController.teardown">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">teardown</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dae</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.Dae" title="ibex_bluesky_core.devices.dae.Dae"><span class="pre">Dae</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/ibex_bluesky_core/devices/simpledae/_controllers.html#PeriodPerPointController.teardown"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibex_bluesky_core.devices.simpledae.PeriodPerPointController.teardown" title="Link to this definition"></a></dt>
+<dd><p>Finish taking data, ending or aborting the run.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.simpledae.PeriodSpecIntegralsReducer">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ibex_bluesky_core.devices.simpledae.</span></span><span class="sig-name descname"><span class="pre">PeriodSpecIntegralsReducer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">monitors</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><span class="pre">ndarray</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.dtype.html#numpy.dtype" title="(in NumPy v2.4)"><span class="pre">dtype</span></a><span class="p"><span class="pre">[</span></span><span class="pre">int64</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">detectors</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><span class="pre">ndarray</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.dtype.html#numpy.dtype" title="(in NumPy v2.4)"><span class="pre">dtype</span></a><span class="p"><span class="pre">[</span></span><span class="pre">int64</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ibex_bluesky_core/devices/simpledae/_reducers.html#PeriodSpecIntegralsReducer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibex_bluesky_core.devices.simpledae.PeriodSpecIntegralsReducer" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ibex_bluesky_core.devices.simpledae.Reducer" title="ibex_bluesky_core.devices.simpledae._strategies.Reducer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Reducer</span></code></a>, <a class="reference external" href="https://blueskyproject.io/ophyd-async/v0.16/_api/ophyd_async/ophyd_async.core.html#ophyd_async.core.StandardReadable" title="(in ophyd-async v0.16)"><code class="xref py py-class docutils literal notranslate"><span class="pre">StandardReadable</span></code></a></p>
+<p>DAE Reducer which exposes integrals of many spectra in the current period.</p>
+<p>Two types of integrals are available: detectors and monitors. Other than defaults, their
+behaviour is identical.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>monitors</strong> – an array representing the mapping of monitors to acquire integrals from.
+For example, passing <code class="docutils literal notranslate"><span class="pre">np.array([1])</span></code> selects spectrum 1.</p></li>
+<li><p><strong>detectors</strong> – an array representing the mapping of detectors to acquire integrals from.
+For example, passing <code class="docutils literal notranslate"><span class="pre">np.array([5,</span> <span class="pre">6,</span> <span class="pre">7,</span> <span class="pre">8])</span></code> would select detector spectra 5-8
+inclusive, and so the output of this reducer would be an array of dimension 4.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.simpledae.PeriodSpecIntegralsReducer.det_integrals">
+<span class="sig-name descname"><span class="pre">det_integrals</span></span><a class="headerlink" href="#ibex_bluesky_core.devices.simpledae.PeriodSpecIntegralsReducer.det_integrals" title="Link to this definition"></a></dt>
+<dd><p>Detector integrals, as a <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a>.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.simpledae.PeriodSpecIntegralsReducer.det_sum">
+<span class="sig-name descname"><span class="pre">det_sum</span></span><a class="headerlink" href="#ibex_bluesky_core.devices.simpledae.PeriodSpecIntegralsReducer.det_sum" title="Link to this definition"></a></dt>
+<dd><p>Sum of detector integrals, as a <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code></a></p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.simpledae.PeriodSpecIntegralsReducer.detectors">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">detectors</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><span class="pre">ndarray</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.dtype.html#numpy.dtype" title="(in NumPy v2.4)"><span class="pre">dtype</span></a><span class="p"><span class="pre">[</span></span><span class="pre">int64</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#ibex_bluesky_core.devices.simpledae.PeriodSpecIntegralsReducer.detectors" title="Link to this definition"></a></dt>
+<dd><p>Get the detectors used by this reducer.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.simpledae.PeriodSpecIntegralsReducer.intensity">
+<span class="sig-name descname"><span class="pre">intensity</span></span><a class="headerlink" href="#ibex_bluesky_core.devices.simpledae.PeriodSpecIntegralsReducer.intensity" title="Link to this definition"></a></dt>
+<dd><p>Normalised intensity (detectors/monitors), as a <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.simpledae.PeriodSpecIntegralsReducer.intensity_stddev">
+<span class="sig-name descname"><span class="pre">intensity_stddev</span></span><a class="headerlink" href="#ibex_bluesky_core.devices.simpledae.PeriodSpecIntegralsReducer.intensity_stddev" title="Link to this definition"></a></dt>
+<dd><p>Standard deviation of normalised intensity (detectors/monitors), as a <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.simpledae.PeriodSpecIntegralsReducer.mon_integrals">
+<span class="sig-name descname"><span class="pre">mon_integrals</span></span><a class="headerlink" href="#ibex_bluesky_core.devices.simpledae.PeriodSpecIntegralsReducer.mon_integrals" title="Link to this definition"></a></dt>
+<dd><p>Monitor integrals, as a <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a>.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.simpledae.PeriodSpecIntegralsReducer.mon_sum">
+<span class="sig-name descname"><span class="pre">mon_sum</span></span><a class="headerlink" href="#ibex_bluesky_core.devices.simpledae.PeriodSpecIntegralsReducer.mon_sum" title="Link to this definition"></a></dt>
+<dd><p>Sum of monitor integrals, as a <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code></a></p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.simpledae.PeriodSpecIntegralsReducer.monitors">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">monitors</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.4)"><span class="pre">ndarray</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.dtype.html#numpy.dtype" title="(in NumPy v2.4)"><span class="pre">dtype</span></a><span class="p"><span class="pre">[</span></span><span class="pre">int64</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#ibex_bluesky_core.devices.simpledae.PeriodSpecIntegralsReducer.monitors" title="Link to this definition"></a></dt>
+<dd><p>Get the monitors used by this reducer.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.simpledae.PeriodSpecIntegralsReducer.reduce_data">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">reduce_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dae</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.Dae" title="ibex_bluesky_core.devices.dae.Dae"><span class="pre">Dae</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/ibex_bluesky_core/devices/simpledae/_reducers.html#PeriodSpecIntegralsReducer.reduce_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibex_bluesky_core.devices.simpledae.PeriodSpecIntegralsReducer.reduce_data" title="Link to this definition"></a></dt>
+<dd><p>Expose detector &amp; monitor integrals.</p>
+<p>After this method returns, it is valid to read from <a class="reference internal" href="#ibex_bluesky_core.devices.simpledae.PeriodSpecIntegralsReducer.det_integrals" title="ibex_bluesky_core.devices.simpledae.PeriodSpecIntegralsReducer.det_integrals"><code class="xref py py-obj docutils literal notranslate"><span class="pre">det_integrals</span></code></a>
+and <a class="reference internal" href="#ibex_bluesky_core.devices.simpledae.PeriodSpecIntegralsReducer.mon_integrals" title="ibex_bluesky_core.devices.simpledae.PeriodSpecIntegralsReducer.mon_integrals"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mon_integrals</span></code></a>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Could use <code class="docutils literal notranslate"><span class="pre">SPECINTEGRALS</span></code> PV here, which seems more efficient initially,
+but it gets bounded by some areadetector settings under-the-hood which
+may be a bit surprising on some instruments.</p>
+<p>We can’t just change these settings in this reducer, as they only apply
+to new events that come in.</p>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.simpledae.ProvidesExtraReadables">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ibex_bluesky_core.devices.simpledae.</span></span><span class="sig-name descname"><span class="pre">ProvidesExtraReadables</span></span><a class="reference internal" href="../_modules/ibex_bluesky_core/devices/simpledae/_strategies.html#ProvidesExtraReadables"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibex_bluesky_core.devices.simpledae.ProvidesExtraReadables" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Protocol for specifying extra ‘interesting’ signals for <a class="reference internal" href="#ibex_bluesky_core.devices.simpledae.SimpleDae" title="ibex_bluesky_core.devices.simpledae.SimpleDae"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SimpleDae</span></code></a>.</p>
+<p>Strategies may specify interesting DAE signals using the
+<a class="reference internal" href="#ibex_bluesky_core.devices.simpledae.ProvidesExtraReadables.additional_readable_signals" title="ibex_bluesky_core.devices.simpledae.ProvidesExtraReadables.additional_readable_signals"><code class="xref py py-obj docutils literal notranslate"><span class="pre">additional_readable_signals</span></code></a> method. Those signals will then be added
+to <a class="reference external" href="https://blueskyproject.io/bluesky/main/hardware.html#bluesky.protocols.Readable.read" title="(in bluesky v1.14.7.dev29+gfb2c32466)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read</span></code></a> and
+<a class="reference external" href="https://blueskyproject.io/bluesky/main/hardware.html#bluesky.protocols.Readable.describe" title="(in bluesky v1.14.7.dev29+gfb2c32466)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">describe</span></code></a> on the top-level
+<a class="reference internal" href="#ibex_bluesky_core.devices.simpledae.SimpleDae" title="ibex_bluesky_core.devices.simpledae.SimpleDae"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SimpleDae</span></code></a> instance.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.simpledae.ProvidesExtraReadables.additional_readable_signals">
+<span class="sig-name descname"><span class="pre">additional_readable_signals</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dae</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.Dae" title="ibex_bluesky_core.devices.dae.Dae"><span class="pre">Dae</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://blueskyproject.io/ophyd-async/v0.16/_api/ophyd_async/ophyd_async.core.html#ophyd_async.core.Device" title="(in ophyd-async v0.16)"><span class="pre">Device</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/ibex_bluesky_core/devices/simpledae/_strategies.html#ProvidesExtraReadables.additional_readable_signals"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibex_bluesky_core.devices.simpledae.ProvidesExtraReadables.additional_readable_signals" title="Link to this definition"></a></dt>
+<dd><p>Define signals that this strategy considers important.</p>
+<p>These will be added to the dae’s default-read signals and made available by
+<code class="docutils literal notranslate"><span class="pre">SimpleDae.read</span></code>.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.simpledae.Reducer">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ibex_bluesky_core.devices.simpledae.</span></span><span class="sig-name descname"><span class="pre">Reducer</span></span><a class="reference internal" href="../_modules/ibex_bluesky_core/devices/simpledae/_strategies.html#Reducer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibex_bluesky_core.devices.simpledae.Reducer" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ibex_bluesky_core.devices.simpledae.ProvidesExtraReadables" title="ibex_bluesky_core.devices.simpledae._strategies.ProvidesExtraReadables"><code class="xref py py-class docutils literal notranslate"><span class="pre">ProvidesExtraReadables</span></code></a></p>
+<p>Reducer specifies any post-processing which needs to be done after a scan point completes.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.simpledae.Reducer.reduce_data">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">reduce_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dae</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.Dae" title="ibex_bluesky_core.devices.dae.Dae"><span class="pre">Dae</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/ibex_bluesky_core/devices/simpledae/_strategies.html#Reducer.reduce_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibex_bluesky_core.devices.simpledae.Reducer.reduce_data" title="Link to this definition"></a></dt>
+<dd><p>Triggers a reduction of DAE data after a scan point has been measured.</p>
+<p>Data that should be published by this reducer should be added as soft signals, in
+a class which both implements this protocol and derives from StandardReadable.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.simpledae.RunPerPointController">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ibex_bluesky_core.devices.simpledae.</span></span><span class="sig-name descname"><span class="pre">RunPerPointController</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">save_run</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ibex_bluesky_core/devices/simpledae/_controllers.html#RunPerPointController"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibex_bluesky_core.devices.simpledae.RunPerPointController" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ibex_bluesky_core.devices.simpledae.Controller" title="ibex_bluesky_core.devices.simpledae._strategies.Controller"><code class="xref py py-class docutils literal notranslate"><span class="pre">Controller</span></code></a>, <a class="reference external" href="https://blueskyproject.io/ophyd-async/v0.16/_api/ophyd_async/ophyd_async.core.html#ophyd_async.core.StandardReadable" title="(in ophyd-async v0.16)"><code class="xref py py-class docutils literal notranslate"><span class="pre">StandardReadable</span></code></a></p>
+<p><a class="reference internal" href="#ibex_bluesky_core.devices.simpledae.SimpleDae" title="ibex_bluesky_core.devices.simpledae.SimpleDae"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SimpleDae</span></code></a> controller which counts using a run per point.</p>
+<p>The runs can be either ended or aborted once counting is finished.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>save_run</strong> – whether to end the run (True) or abort the run (False) on completion.</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.simpledae.RunPerPointController.run_number">
+<span class="sig-name descname"><span class="pre">run_number</span></span><a class="headerlink" href="#ibex_bluesky_core.devices.simpledae.RunPerPointController.run_number" title="Link to this definition"></a></dt>
+<dd><p>The run number which this run counted into.</p>
+<p>This property is added to the interesting signals only if save_run is <a class="reference external" href="https://docs.python.org/3/library/constants.html#True" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">True</span></code></a>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.simpledae.RunPerPointController.start_counting">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">start_counting</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dae</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.Dae" title="ibex_bluesky_core.devices.dae.Dae"><span class="pre">Dae</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/ibex_bluesky_core/devices/simpledae/_controllers.html#RunPerPointController.start_counting"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibex_bluesky_core.devices.simpledae.RunPerPointController.start_counting" title="Link to this definition"></a></dt>
+<dd><p>Start counting a scan point, by starting a DAE run.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.simpledae.RunPerPointController.stop_counting">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">stop_counting</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dae</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.Dae" title="ibex_bluesky_core.devices.dae.Dae"><span class="pre">Dae</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/ibex_bluesky_core/devices/simpledae/_controllers.html#RunPerPointController.stop_counting"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibex_bluesky_core.devices.simpledae.RunPerPointController.stop_counting" title="Link to this definition"></a></dt>
+<dd><p>Stop counting a scan point, by ending or aborting the run.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.simpledae.ScalarNormalizer">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ibex_bluesky_core.devices.simpledae.</span></span><span class="sig-name descname"><span class="pre">ScalarNormalizer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prefix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">detector_spectra</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Sequence" title="(in Python v3.14)"><span class="pre">Sequence</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sum_detector</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable" title="(in Python v3.14)"><span class="pre">Callable</span></a><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Collection" title="(in Python v3.14)"><span class="pre">Collection</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.DaeSpectra" title="ibex_bluesky_core.devices.dae._spectra.DaeSpectra"><span class="pre">DaeSpectra</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Awaitable" title="(in Python v3.14)"><span class="pre">Awaitable</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://scipp.github.io/generated/classes/scipp.Variable.html#scipp.Variable" title="(in Scipp v26.2.0)"><span class="pre">Variable</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://scipp.github.io/generated/classes/scipp.DataArray.html#scipp.DataArray" title="(in Scipp v26.2.0)"><span class="pre">DataArray</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">sum_spectra</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ibex_bluesky_core/devices/simpledae/_reducers.html#ScalarNormalizer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibex_bluesky_core.devices.simpledae.ScalarNormalizer" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ibex_bluesky_core.devices.simpledae.Reducer" title="ibex_bluesky_core.devices.simpledae._strategies.Reducer"><code class="xref py py-class docutils literal notranslate"><span class="pre">Reducer</span></code></a>, <a class="reference external" href="https://blueskyproject.io/ophyd-async/v0.16/_api/ophyd_async/ophyd_async.core.html#ophyd_async.core.StandardReadable" title="(in ophyd-async v0.16)"><code class="xref py py-class docutils literal notranslate"><span class="pre">StandardReadable</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/abc.html#abc.ABC" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></a></p>
+<p>Sum a set of user-specified spectra, then normalize by a scalar signal.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>prefix</strong> – the PV prefix of the instrument to get spectra from (e.g. <code class="docutils literal notranslate"><span class="pre">IN:DEMO:</span></code>)</p></li>
+<li><p><strong>detector_spectra</strong> – a sequence of spectra numbers (detectors) to sum.</p></li>
+<li><p><strong>sum_detector</strong> – takes spectra objects, reads from them, and returns a
+<a class="reference external" href="https://scipp.github.io/generated/functions/scipp.scalar.html#scipp.scalar" title="(in Scipp v26.2.0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">scipp.scalar</span></code></a>
+describing the detector intensity. Defaults to summing over the entire spectrum.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.simpledae.ScalarNormalizer.denominator">
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">denominator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dae</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.Dae" title="ibex_bluesky_core.devices.dae.Dae"><span class="pre">Dae</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://blueskyproject.io/ophyd-async/v0.16/_api/ophyd_async/ophyd_async.core.html#ophyd_async.core.SignalR" title="(in ophyd-async v0.16)"><span class="pre">SignalR</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://blueskyproject.io/ophyd-async/v0.16/_api/ophyd_async/ophyd_async.core.html#ophyd_async.core.SignalR" title="(in ophyd-async v0.16)"><span class="pre">SignalR</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/ibex_bluesky_core/devices/simpledae/_reducers.html#ScalarNormalizer.denominator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibex_bluesky_core.devices.simpledae.ScalarNormalizer.denominator" title="Link to this definition"></a></dt>
+<dd><p>Get the normalization denominator, which is assumed to be a scalar signal.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.simpledae.ScalarNormalizer.det_counts">
+<span class="sig-name descname"><span class="pre">det_counts</span></span><a class="headerlink" href="#ibex_bluesky_core.devices.simpledae.ScalarNormalizer.det_counts" title="Link to this definition"></a></dt>
+<dd><p>Total detector counts.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.simpledae.ScalarNormalizer.det_counts_stddev">
+<span class="sig-name descname"><span class="pre">det_counts_stddev</span></span><a class="headerlink" href="#ibex_bluesky_core.devices.simpledae.ScalarNormalizer.det_counts_stddev" title="Link to this definition"></a></dt>
+<dd><p>Standard deviation of detector counts.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.simpledae.ScalarNormalizer.intensity">
+<span class="sig-name descname"><span class="pre">intensity</span></span><a class="headerlink" href="#ibex_bluesky_core.devices.simpledae.ScalarNormalizer.intensity" title="Link to this definition"></a></dt>
+<dd><p>Normalised intensity.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.simpledae.ScalarNormalizer.intensity_stddev">
+<span class="sig-name descname"><span class="pre">intensity_stddev</span></span><a class="headerlink" href="#ibex_bluesky_core.devices.simpledae.ScalarNormalizer.intensity_stddev" title="Link to this definition"></a></dt>
+<dd><p>Standard deviation of intensity.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.simpledae.SimpleDae">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ibex_bluesky_core.devices.simpledae.</span></span><span class="sig-name descname"><span class="pre">SimpleDae</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'DAE'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">controller</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">TController_co</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">waiter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">TWaiter_co</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reducer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">TReducer_co</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ibex_bluesky_core/devices/simpledae.html#SimpleDae"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibex_bluesky_core.devices.simpledae.SimpleDae" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.Dae" title="ibex_bluesky_core.devices.dae.Dae"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dae</span></code></a>, <a class="reference external" href="https://blueskyproject.io/bluesky/main/hardware.html#bluesky.protocols.Triggerable" title="(in bluesky v1.14.7.dev29+gfb2c32466)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Triggerable</span></code></a>, <a class="reference external" href="https://blueskyproject.io/ophyd-async/v0.16/_api/ophyd_async/ophyd_async.core.html#ophyd_async.core.AsyncStageable" title="(in ophyd-async v0.16)"><code class="xref py py-class docutils literal notranslate"><span class="pre">AsyncStageable</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Generic" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Generic</span></code></a>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">TController_co</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">TWaiter_co</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">TReducer_co</span></code>]</p>
+<p>DAE with used-defined strategies for data collection, waiting, and reduction.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="../devices/dae.html"><span class="doc">DAE (Data Acquisition Electronics)</span></a> user documentation.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>prefix</strong> – the PV prefix of the instrument being controlled.</p></li>
+<li><p><strong>name</strong> – A friendly name for this DAE object. Defaults to “DAE”.</p></li>
+<li><p><strong>controller</strong> – A DAE control strategy, defines how the DAE begins and ends data acquisition
+Should implement the <a class="reference internal" href="#ibex_bluesky_core.devices.simpledae.Controller" title="ibex_bluesky_core.devices.simpledae.Controller"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Controller</span></code></a> protocol.</p></li>
+<li><p><strong>waiter</strong> – A waiting strategy, defines how the DAE waits for an acquisition to be complete
+Should implement the <a class="reference internal" href="#ibex_bluesky_core.devices.simpledae.Waiter" title="ibex_bluesky_core.devices.simpledae.Waiter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Waiter</span></code></a> protocol.</p></li>
+<li><p><strong>reducer</strong> – A data reduction strategy, defines the post-processing on raw DAE data, for
+example normalization or unit conversion.
+Should implement the <a class="reference internal" href="#ibex_bluesky_core.devices.simpledae.Reducer" title="ibex_bluesky_core.devices.simpledae.Reducer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Reducer</span></code></a> protocol.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.simpledae.SimpleDae.stage">
+<span class="sig-name descname"><span class="pre">stage</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/ibex_bluesky_core/devices/simpledae.html#SimpleDae.stage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibex_bluesky_core.devices.simpledae.SimpleDae.stage" title="Link to this definition"></a></dt>
+<dd><p>Pre-scan setup.</p>
+<p>The behaviour of this method is defined by <a class="reference internal" href="#ibex_bluesky_core.devices.simpledae.Controller.setup" title="ibex_bluesky_core.devices.simpledae.Controller.setup"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Controller.setup</span></code></a>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.simpledae.SimpleDae.trigger">
+<span class="sig-name descname"><span class="pre">trigger</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/ibex_bluesky_core/devices/simpledae.html#SimpleDae.trigger"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibex_bluesky_core.devices.simpledae.SimpleDae.trigger" title="Link to this definition"></a></dt>
+<dd><p>Take a single measurement, and prepare it for subsequent reading.</p>
+<p>This waits for the acquisition and any defined reduction to be complete, such that
+after this coroutine completes, all relevant data is available via
+<a class="reference external" href="https://blueskyproject.io/bluesky/main/hardware.html#bluesky.protocols.Readable.read" title="(in bluesky v1.14.7.dev29+gfb2c32466)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bluesky.protocols.Readable.read</span></code></a>.</p>
+<p>The behaviour of this method is defined by the following method calls (in order):</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#ibex_bluesky_core.devices.simpledae.Controller.start_counting" title="ibex_bluesky_core.devices.simpledae.Controller.start_counting"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Controller.start_counting</span></code></a></p></li>
+<li><p><a class="reference internal" href="#ibex_bluesky_core.devices.simpledae.Waiter.wait" title="ibex_bluesky_core.devices.simpledae.Waiter.wait"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Waiter.wait</span></code></a></p></li>
+<li><p><a class="reference internal" href="#ibex_bluesky_core.devices.simpledae.Controller.stop_counting" title="ibex_bluesky_core.devices.simpledae.Controller.stop_counting"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Controller.stop_counting</span></code></a></p></li>
+<li><p><a class="reference internal" href="#ibex_bluesky_core.devices.simpledae.Reducer.reduce_data" title="ibex_bluesky_core.devices.simpledae.Reducer.reduce_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Reducer.reduce_data</span></code></a></p></li>
+</ul>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.simpledae.SimpleDae.unstage">
+<span class="sig-name descname"><span class="pre">unstage</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/ibex_bluesky_core/devices/simpledae.html#SimpleDae.unstage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibex_bluesky_core.devices.simpledae.SimpleDae.unstage" title="Link to this definition"></a></dt>
+<dd><p>Post-scan teardown.</p>
+<p>The behaviour of this method is defined by <a class="reference internal" href="#ibex_bluesky_core.devices.simpledae.Controller.teardown" title="ibex_bluesky_core.devices.simpledae.Controller.teardown"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Controller.teardown</span></code></a>.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.simpledae.SimpleWaiter">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ibex_bluesky_core.devices.simpledae.</span></span><span class="sig-name descname"><span class="pre">SimpleWaiter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">T</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ibex_bluesky_core/devices/simpledae/_waiters.html#SimpleWaiter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibex_bluesky_core.devices.simpledae.SimpleWaiter" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ibex_bluesky_core.devices.simpledae.Waiter" title="ibex_bluesky_core.devices.simpledae._strategies.Waiter"><code class="xref py py-class docutils literal notranslate"><span class="pre">Waiter</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Generic" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Generic</span></code></a>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code>], <a class="reference external" href="https://docs.python.org/3/library/abc.html#abc.ABC" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></a></p>
+<p>Wait for a single DAE variable to be greater or equal to the specified value.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This is a generic base class. Implementations such as <a class="reference internal" href="#ibex_bluesky_core.devices.simpledae.PeriodGoodFramesWaiter" title="ibex_bluesky_core.devices.simpledae.PeriodGoodFramesWaiter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PeriodGoodFramesWaiter</span></code></a>
+should generally be used rather than this class directly.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>value</strong> – the value to wait for</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.simpledae.SimpleWaiter.finish_wait_at">
+<span class="sig-name descname"><span class="pre">finish_wait_at</span></span><a class="headerlink" href="#ibex_bluesky_core.devices.simpledae.SimpleWaiter.finish_wait_at" title="Link to this definition"></a></dt>
+<dd><p>Value at which to finish waiting.</p>
+<p>It is possible to change this signal dynamically at runtime, using:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">yield from</span> <span class="n">bps</span><span class="o">.</span><span class="n">mv</span><span class="p">(</span><span class="n">waiter</span><span class="o">.</span><span class="n">finish_wait_at</span><span class="p">,</span> <span class="n">new_finish_value</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.simpledae.SimpleWaiter.get_signal">
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_signal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dae</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.Dae" title="ibex_bluesky_core.devices.dae.Dae"><span class="pre">Dae</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://blueskyproject.io/ophyd-async/v0.16/_api/ophyd_async/ophyd_async.core.html#ophyd_async.core.SignalR" title="(in ophyd-async v0.16)"><span class="pre">SignalR</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/ibex_bluesky_core/devices/simpledae/_waiters.html#SimpleWaiter.get_signal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibex_bluesky_core.devices.simpledae.SimpleWaiter.get_signal" title="Link to this definition"></a></dt>
+<dd><p>Get the numeric signal to wait for.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.simpledae.SimpleWaiter.wait">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">wait</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dae</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.Dae" title="ibex_bluesky_core.devices.dae.Dae"><span class="pre">Dae</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/ibex_bluesky_core/devices/simpledae/_waiters.html#SimpleWaiter.wait"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibex_bluesky_core.devices.simpledae.SimpleWaiter.wait" title="Link to this definition"></a></dt>
+<dd><p>Wait for signal to reach the user-specified value.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.simpledae.TimeWaiter">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ibex_bluesky_core.devices.simpledae.</span></span><span class="sig-name descname"><span class="pre">TimeWaiter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">seconds</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ibex_bluesky_core/devices/simpledae/_waiters.html#TimeWaiter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibex_bluesky_core.devices.simpledae.TimeWaiter" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ibex_bluesky_core.devices.simpledae.Waiter" title="ibex_bluesky_core.devices.simpledae._strategies.Waiter"><code class="xref py py-class docutils literal notranslate"><span class="pre">Waiter</span></code></a></p>
+<p>Wait for a user-specified time duration.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>seconds</strong> – number of seconds to wait for.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.simpledae.Waiter">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ibex_bluesky_core.devices.simpledae.</span></span><span class="sig-name descname"><span class="pre">Waiter</span></span><a class="reference internal" href="../_modules/ibex_bluesky_core/devices/simpledae/_strategies.html#Waiter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibex_bluesky_core.devices.simpledae.Waiter" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ibex_bluesky_core.devices.simpledae.ProvidesExtraReadables" title="ibex_bluesky_core.devices.simpledae._strategies.ProvidesExtraReadables"><code class="xref py py-class docutils literal notranslate"><span class="pre">ProvidesExtraReadables</span></code></a></p>
+<p>Waiter specifies how the dae will wait for a scan point to complete counting.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.simpledae.Waiter.wait">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">wait</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dae</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.Dae" title="ibex_bluesky_core.devices.dae.Dae"><span class="pre">Dae</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/ibex_bluesky_core/devices/simpledae/_strategies.html#Waiter.wait"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibex_bluesky_core.devices.simpledae.Waiter.wait" title="Link to this definition"></a></dt>
+<dd><p>Wait for the acquisition to complete.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.simpledae.check_dae_strategies">
+<span class="sig-prename descclassname"><span class="pre">ibex_bluesky_core.devices.simpledae.</span></span><span class="sig-name descname"><span class="pre">check_dae_strategies</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dae</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#ibex_bluesky_core.devices.simpledae.SimpleDae" title="ibex_bluesky_core.devices.simpledae.SimpleDae"><span class="pre">SimpleDae</span></a></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">expected_controller</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.14)"><span class="pre">type</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#ibex_bluesky_core.devices.simpledae.Controller" title="ibex_bluesky_core.devices.simpledae._strategies.Controller"><span class="pre">Controller</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">expected_waiter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.14)"><span class="pre">type</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#ibex_bluesky_core.devices.simpledae.Waiter" title="ibex_bluesky_core.devices.simpledae._strategies.Waiter"><span class="pre">Waiter</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">expected_reducer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.14)"><span class="pre">type</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#ibex_bluesky_core.devices.simpledae.Reducer" title="ibex_bluesky_core.devices.simpledae._strategies.Reducer"><span class="pre">Reducer</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/ibex_bluesky_core/devices/simpledae.html#check_dae_strategies"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibex_bluesky_core.devices.simpledae.check_dae_strategies" title="Link to this definition"></a></dt>
+<dd><p>Check that the provided dae instance has appropriate controller/reducer/waiter configured.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dae</strong> – The <a class="reference internal" href="#ibex_bluesky_core.devices.simpledae.SimpleDae" title="ibex_bluesky_core.devices.simpledae.SimpleDae"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SimpleDae</span></code></a> instance to check.</p></li>
+<li><p><strong>expected_controller</strong> – The expected controller type, or <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a> to not check.</p></li>
+<li><p><strong>expected_waiter</strong> – The expected controller type, or <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a> to not check.</p></li>
+<li><p><strong>expected_reducer</strong> – The expected controller type, or <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a> to not check.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.simpledae.monitor_normalising_dae">
+<span class="sig-prename descclassname"><span class="pre">ibex_bluesky_core.devices.simpledae.</span></span><span class="sig-name descname"><span class="pre">monitor_normalising_dae</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">det_pixels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frames</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">periods</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">monitor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_run</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#ibex_bluesky_core.devices.simpledae.SimpleDae" title="ibex_bluesky_core.devices.simpledae.SimpleDae"><span class="pre">SimpleDae</span></a></span></span><a class="reference internal" href="../_modules/ibex_bluesky_core/devices/simpledae.html#monitor_normalising_dae"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibex_bluesky_core.devices.simpledae.monitor_normalising_dae" title="Link to this definition"></a></dt>
+<dd><p>Create a <a class="reference internal" href="#ibex_bluesky_core.devices.simpledae.SimpleDae" title="ibex_bluesky_core.devices.simpledae.SimpleDae"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SimpleDae</span></code></a> which normalises using a monitor and waits for frames.</p>
+<p>This is a shortcut to reduce code in plans used on the majority of instruments that
+normalise using a monitor, wait for a number of frames and optionally use software periods.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>det_pixels</strong> – list of detector pixel to use for scanning.</p></li>
+<li><p><strong>frames</strong> – number of frames to wait for.</p></li>
+<li><p><strong>periods</strong> – whether or not to use software periods.</p></li>
+<li><p><strong>monitor</strong> – the monitor spectra number.</p></li>
+<li><p><strong>save_run</strong> – whether or not to save the run of the DAE.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.simpledae.sum_spectra">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ibex_bluesky_core.devices.simpledae.</span></span><span class="sig-name descname"><span class="pre">sum_spectra</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">spectra</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Collection" title="(in Python v3.14)"><span class="pre">Collection</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.DaeSpectra" title="ibex_bluesky_core.devices.dae._spectra.DaeSpectra"><span class="pre">DaeSpectra</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://scipp.github.io/generated/classes/scipp.Variable.html#scipp.Variable" title="(in Scipp v26.2.0)"><span class="pre">Variable</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://scipp.github.io/generated/classes/scipp.DataArray.html#scipp.DataArray" title="(in Scipp v26.2.0)"><span class="pre">DataArray</span></a></span></span><a class="reference internal" href="../_modules/ibex_bluesky_core/devices/simpledae/_reducers.html#sum_spectra"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibex_bluesky_core.devices.simpledae.sum_spectra" title="Link to this definition"></a></dt>
+<dd><p>Read and sum a number of spectra from the DAE.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>spectra</strong> – a <a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Collection" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Collection</span></code></a> type object of DAE spectra</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>scipp <a class="reference external" href="https://scipp.github.io/generated/classes/scipp.Variable.html#scipp.Variable" title="(in Scipp v26.2.0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Variable</span></code></a>
+or <a class="reference external" href="https://scipp.github.io/generated/classes/scipp.DataArray.html#scipp.DataArray" title="(in Scipp v26.2.0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DataArray</span></code></a> describing
+the sum of the provided spectra.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.simpledae.tof_bounded_spectra">
+<span class="sig-prename descclassname"><span class="pre">ibex_bluesky_core.devices.simpledae.</span></span><span class="sig-name descname"><span class="pre">tof_bounded_spectra</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bounds</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://scipp.github.io/generated/classes/scipp.Variable.html#scipp.Variable" title="(in Scipp v26.2.0)"><span class="pre">Variable</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable" title="(in Python v3.14)"><span class="pre">Callable</span></a><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Collection" title="(in Python v3.14)"><span class="pre">Collection</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.DaeSpectra" title="ibex_bluesky_core.devices.dae._spectra.DaeSpectra"><span class="pre">DaeSpectra</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Awaitable" title="(in Python v3.14)"><span class="pre">Awaitable</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://scipp.github.io/generated/classes/scipp.Variable.html#scipp.Variable" title="(in Scipp v26.2.0)"><span class="pre">Variable</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://scipp.github.io/generated/classes/scipp.DataArray.html#scipp.DataArray" title="(in Scipp v26.2.0)"><span class="pre">DataArray</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/ibex_bluesky_core/devices/simpledae/_reducers.html#tof_bounded_spectra"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibex_bluesky_core.devices.simpledae.tof_bounded_spectra" title="Link to this definition"></a></dt>
+<dd><p>Sum a set of neutron spectra between the specified time of flight bounds.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>bounds</strong> – A scipp <a class="reference external" href="https://scipp.github.io/generated/functions/scipp.array.html#scipp.array" title="(in Scipp v26.2.0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code></a> of size 2, no variances, unit
+of us, where the second element must be larger than the first.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>scipp <a class="reference external" href="https://scipp.github.io/generated/functions/scipp.scalar.html#scipp.scalar" title="(in Scipp v26.2.0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">scalar</span></code></a> describing summed intensity, which has
+<a class="reference external" href="https://scipp.github.io/generated/classes/scipp.Variable.html#scipp.Variable.value" title="(in Scipp v26.2.0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">value</span></code></a> and <a class="reference external" href="https://scipp.github.io/generated/classes/scipp.Variable.html#scipp.Variable.variance" title="(in Scipp v26.2.0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">variance</span></code></a>
+properties for accessing the sum and variance respectively of the summed counts.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ibex_bluesky_core.devices.simpledae.wavelength_bounded_spectra">
+<span class="sig-prename descclassname"><span class="pre">ibex_bluesky_core.devices.simpledae.</span></span><span class="sig-name descname"><span class="pre">wavelength_bounded_spectra</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bounds</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://scipp.github.io/generated/classes/scipp.Variable.html#scipp.Variable" title="(in Scipp v26.2.0)"><span class="pre">Variable</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">total_flight_path_length</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://scipp.github.io/generated/classes/scipp.Variable.html#scipp.Variable" title="(in Scipp v26.2.0)"><span class="pre">Variable</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable" title="(in Python v3.14)"><span class="pre">Callable</span></a><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Collection" title="(in Python v3.14)"><span class="pre">Collection</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="ibex_bluesky_core.devices.dae.html#ibex_bluesky_core.devices.dae.DaeSpectra" title="ibex_bluesky_core.devices.dae._spectra.DaeSpectra"><span class="pre">DaeSpectra</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Awaitable" title="(in Python v3.14)"><span class="pre">Awaitable</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://scipp.github.io/generated/classes/scipp.Variable.html#scipp.Variable" title="(in Scipp v26.2.0)"><span class="pre">Variable</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://scipp.github.io/generated/classes/scipp.DataArray.html#scipp.DataArray" title="(in Scipp v26.2.0)"><span class="pre">DataArray</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/ibex_bluesky_core/devices/simpledae/_reducers.html#wavelength_bounded_spectra"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibex_bluesky_core.devices.simpledae.wavelength_bounded_spectra" title="Link to this definition"></a></dt>
+<dd><p>Sum a set of neutron spectra between the specified wavelength bounds.</p>
+<blockquote>
+<div><p>Time of flight is converted to wavelength using scipp neutron’s library function
+<a class="reference external" href="https://scipp.github.io/scippneutron/generated/modules/scippneutron.conversion.tof.wavelength_from_tof.html#scippneutron.conversion.tof.wavelength_from_tof" title="(in ScippNeutron v0.0.0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">wavelength_from_tof</span></code></a>.</p>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>bounds</strong> – A scipp <a class="reference external" href="https://scipp.github.io/generated/functions/scipp.array.html#scipp.array" title="(in Scipp v26.2.0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">array</span></code></a> of size 2 of wavelength bounds,
+in units of angstrom, where the second element must be larger than the first.</p></li>
+<li><p><strong>total_flight_path_length</strong> – A scipp <a class="reference external" href="https://scipp.github.io/generated/functions/scipp.scalar.html#scipp.scalar" title="(in Scipp v26.2.0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">scalar</span></code></a> of <span class="math notranslate nohighlight">\(L_{total}\)</span>
+(total flight path length), the path length from neutron source to detector or monitor,
+in units of meters.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>scipp <a class="reference external" href="https://scipp.github.io/generated/functions/scipp.scalar.html#scipp.scalar" title="(in Scipp v26.2.0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">scalar</span></code></a>, which has
+<a class="reference external" href="https://scipp.github.io/generated/classes/scipp.Variable.html#scipp.Variable.value" title="(in Scipp v26.2.0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">value</span></code></a> and <a class="reference external" href="https://scipp.github.io/generated/classes/scipp.Variable.html#scipp.Variable.variance" title="(in Scipp v26.2.0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">variance</span></code></a>
+properties for accessing the sum and variance respectively of the summed counts.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="ibex_bluesky_core.devices.reflectometry.html" class="btn btn-neutral float-left" title="ibex_bluesky_core.devices.reflectometry" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="ibex_bluesky_core.fitting.html" class="btn btn-neutral float-right" title="ibex_bluesky_core.fitting" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
