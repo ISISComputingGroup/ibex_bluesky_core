@@ -243,23 +243,20 @@ def check_dae_strategies(
         expected_reducer: The expected controller type, or :py:obj:`None` to not check.
 
     """
-    if expected_controller is not None:
-        if not isinstance(dae.controller, expected_controller):
-            raise TypeError(
-                f"DAE controller must be of type {expected_controller.__name__}, "
-                f"got {dae.controller.__class__.__name__}"
-            )
+    if expected_controller is not None and not isinstance(dae.controller, expected_controller):
+        raise TypeError(
+            f"DAE controller must be of type {expected_controller.__name__}, "
+            f"got {dae.controller.__class__.__name__}"
+        )
 
-    if expected_waiter is not None:
-        if not isinstance(dae.waiter, expected_waiter):
-            raise TypeError(
-                f"DAE waiter must be of type {expected_waiter.__name__}, "
-                f"got {dae.waiter.__class__.__name__}"
-            )
+    if expected_waiter is not None and not isinstance(dae.waiter, expected_waiter):
+        raise TypeError(
+            f"DAE waiter must be of type {expected_waiter.__name__}, "
+            f"got {dae.waiter.__class__.__name__}"
+        )
 
-    if expected_reducer is not None:
-        if not isinstance(dae.reducer, expected_reducer):
-            raise TypeError(
-                f"DAE reducer must be of type {expected_reducer.__name__}, "
-                f"got {dae.reducer.__class__.__name__}"
-            )
+    if expected_reducer is not None and not isinstance(dae.reducer, expected_reducer):
+        raise TypeError(
+            f"DAE reducer must be of type {expected_reducer.__name__}, "
+            f"got {dae.reducer.__class__.__name__}"
+        )

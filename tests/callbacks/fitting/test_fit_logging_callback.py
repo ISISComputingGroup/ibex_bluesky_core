@@ -30,13 +30,13 @@ def test_after_fitting_callback_writes_to_file_successfully_no_y_uncertainty(
     with (
         patch("ibex_bluesky_core.callbacks._fitting.open", m),
         patch("ibex_bluesky_core.callbacks._fitting.os.makedirs"),
+        patch("time.time", MagicMock(return_value=time)),
     ):
-        with patch("time.time", MagicMock(return_value=time)):
-            RE(
-                scan([invariant], mot, -1, 1, 3),
-                [lf, lfl],  # pyright: ignore until https://github.com/bluesky/bluesky/issues/1938
-                rb_number="0",
-            )
+        RE(
+            scan([invariant], mot, -1, 1, 3),
+            [lf, lfl],  # pyright: ignore until https://github.com/bluesky/bluesky/issues/1938
+            rb_number="0",
+        )
 
     assert m.call_args_list[0].args == (
         filepath / "0" / f"{node()}_motor_invariant_2024-10-04_13-43-43Z{postfix}.txt",
@@ -68,12 +68,12 @@ def test_fitting_callback_handles_no_rb_number_save(
     with (
         patch("ibex_bluesky_core.callbacks._fitting.open", m),
         patch("ibex_bluesky_core.callbacks._fitting.os.makedirs"),
+        patch("time.time", MagicMock(return_value=time)),
     ):
-        with patch("time.time", MagicMock(return_value=time)):
-            RE(
-                scan([invariant], mot, -1, 1, 3),
-                [lf, lfl],  # pyright: ignore until https://github.com/bluesky/bluesky/issues/1938
-            )
+        RE(
+            scan([invariant], mot, -1, 1, 3),
+            [lf, lfl],  # pyright: ignore until https://github.com/bluesky/bluesky/issues/1938
+        )
 
     assert m.call_args_list[0].args == (
         filepath / "Unknown RB" / f"{node()}_motor_invariant_2024-10-04_13-43-43Z{postfix}.txt",
@@ -100,13 +100,13 @@ def test_after_fitting_callback_writes_to_file_successfully_with_y_uncertainty(
     with (
         patch("ibex_bluesky_core.callbacks._fitting.open", m),
         patch("ibex_bluesky_core.callbacks._fitting.os.makedirs"),
+        patch("time.time", MagicMock(return_value=time)),
     ):
-        with patch("time.time", MagicMock(return_value=time)):
-            RE(
-                scan([invariant, uncertainty], mot, -1, 1, 3),
-                [lf, lfl],  # pyright: ignore until https://github.com/bluesky/bluesky/issues/1938
-                rb_number="0",
-            )
+        RE(
+            scan([invariant, uncertainty], mot, -1, 1, 3),
+            [lf, lfl],  # pyright: ignore until https://github.com/bluesky/bluesky/issues/1938
+            rb_number="0",
+        )
 
     assert m.call_args_list[0].args == (
         filepath / "0" / f"{node()}_motor_invariant_2024-10-04_13-43-43Z{postfix}.txt",

@@ -107,7 +107,7 @@ def _set_up_fields_and_icc(
         fields.append(dae.period_num.name)  # type: ignore
     elif save_run:
         fields.append(dae.controller.run_number.name)  # type: ignore
-    icc = ISISCallbacks(
+    return ISISCallbacks(
         y=dae.reducer.intensity.name,  # type: ignore
         yerr=dae.reducer.intensity_stddev.name,  # type: ignore
         x=block.name,
@@ -115,7 +115,6 @@ def _set_up_fields_and_icc(
         fit=model,
         ax=ax,
     )
-    return icc
 
 
 def adaptive_scan(  # noqa: PLR0913, PLR0917
