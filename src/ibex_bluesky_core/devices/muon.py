@@ -247,15 +247,13 @@ class MuonAsymmetryReducer(Reducer, StandardReadable):
         bin_edges = asymmetry.coords["tof"].to(unit=sc.units.ns, dtype="float64").values
         bin_centers = (bin_edges[:-1] + bin_edges[1:]) / 2
 
-        result = self._model.fit(
+        return self._model.fit(
             asymmetry.values,
             t=bin_centers,
             weights=1.0 / (asymmetry.variances**0.5),
             params=self._fit_parameters,
             nan_policy="omit",
         )
-
-        return result
 
     def _calculate_asymmetry(
         self, current_period_data: NDArray[np.int32], first_spec_dataarray: sc.DataArray

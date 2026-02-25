@@ -241,7 +241,7 @@ def polarising_dae(  # noqa: PLR0913
         intervals=intervals, reducer_up=reducer_up, reducer_down=reducer_down
     )
 
-    dae = DualRunDae(
+    return DualRunDae(
         prefix=prefix,
         controller=controller,
         waiter=waiter,
@@ -251,5 +251,3 @@ def polarising_dae(  # noqa: PLR0913
         movable=movable,
         movable_states=movable_states,
     )
-
-    return dae

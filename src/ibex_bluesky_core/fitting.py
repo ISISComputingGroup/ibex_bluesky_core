@@ -169,14 +169,12 @@ class Gaussian(Fit):
             else:
                 amp = np.min(y) + background
 
-            init_guess = {
+            return {
                 "amp": lmfit.Parameter("amp", amp),
                 "sigma": lmfit.Parameter("sigma", sigma, min=0),
                 "x0": lmfit.Parameter("x0", cen),
                 "background": lmfit.Parameter("background", background),
             }
-
-            return init_guess
 
         return guess
 
@@ -252,14 +250,12 @@ class Lorentzian(Fit):
 
             sigma = (x[x2_index] - x[x1_index]) / 2
 
-            init_guess = {
+            return {
                 "amp": lmfit.Parameter("amp", amp),
                 "sigma": lmfit.Parameter("sigma", sigma, min=0),
                 "center": lmfit.Parameter("center", center),
                 "background": lmfit.Parameter("background", background),
             }
-
-            return init_guess
 
         return guess
 
@@ -389,14 +385,12 @@ class DampedOsc(Fit):
             peak = x[np.argmax(y)]
             valley = x[np.argmin(y)]
 
-            init_guess = {
+            return {
                 "center": lmfit.Parameter("center", peak),
                 "amp": lmfit.Parameter("amp", np.max(y)),
                 "freq": lmfit.Parameter("freq", np.pi / np.abs(peak - valley)),
                 "width": lmfit.Parameter("width", np.max(x) - np.min(x)),
             }
-
-            return init_guess
 
         return guess
 
@@ -447,9 +441,7 @@ class SlitScan(Fit):
             linear_seg = np.maximum(linear_seg, background)
             exp_seg = np.maximum(exp_seg, background)
 
-            y = np.minimum(linear_seg, exp_seg)
-
-            return y
+            return np.minimum(linear_seg, exp_seg)
 
         return lmfit.Model(model, name=f"{cls.__name__}  [{cls.equation}]")
 
@@ -471,7 +463,7 @@ class SlitScan(Fit):
             gradient = 2 * (np.max(y) - np.min(y)) / (np.max(x) - np.min(x))
             height_above_inflection1 = (np.max(y) - np.min(y)) / 5.0
 
-            init_guess = {
+            return {
                 "background": lmfit.Parameter("background", background),
                 "inflection0": lmfit.Parameter("inflection0", inflection0),
                 "gradient": lmfit.Parameter("gradient", gradient, min=0),
@@ -482,8 +474,6 @@ class SlitScan(Fit):
                     "height_above_inflection1", height_above_inflection1, min=0
                 ),
             }
-
-            return init_guess
 
         return guess
 
@@ -589,14 +579,12 @@ class ERF(Fit):
             background = np.min(y) + (np.max(y) - np.min(y)) / 2
             stretch = _calculate_erf_stretch(x, y)
 
-            init_guess = {
+            return {
                 "cen": lmfit.Parameter("cen", center),
                 "stretch": lmfit.Parameter("stretch", stretch),
                 "scale": lmfit.Parameter("scale", scale),
                 "background": lmfit.Parameter("background", background),
             }
-
-            return init_guess
 
         return guess
 
@@ -642,14 +630,12 @@ class ERFC(Fit):
             background = np.min(y)
             stretch = _calculate_erf_stretch(x, y, True)
 
-            init_guess = {
+            return {
                 "cen": lmfit.Parameter("cen", center),
                 "stretch": lmfit.Parameter("stretch", stretch),
                 "scale": lmfit.Parameter("scale", scale),
                 "background": lmfit.Parameter("background", background),
             }
-
-            return init_guess
 
         return guess
 
@@ -694,7 +680,7 @@ class TopHat(Fit):
         ) -> dict[str, lmfit.Parameter]:
             cen, width = _guess_cen_and_width(x, y)
 
-            init_guess = {
+            return {
                 "cen": lmfit.Parameter("cen", cen),
                 "width": lmfit.Parameter("width", width, min=0),
                 "height": lmfit.Parameter(
@@ -703,8 +689,6 @@ class TopHat(Fit):
                 ),
                 "background": lmfit.Parameter("background", np.min(y)),
             }
-
-            return init_guess
 
         return guess
 
@@ -746,8 +730,7 @@ class Trapezoid(Fit):
         ) -> npt.NDArray[np.float64]:
             y = y_offset + height + background - gradient * np.abs(x - cen)
             y = np.maximum(y, background)
-            y = np.minimum(y, background + height)
-            return y
+            return np.minimum(y, background + height)
 
         return lmfit.Model(model, name=f"{cls.__name__}  [{cls.equation}]")
 
@@ -770,15 +753,13 @@ class Trapezoid(Fit):
             background = np.min(y)
             y_offset = gradient_guess * width / 2.0
 
-            init_guess = {
+            return {
                 "cen": lmfit.Parameter("cen", cen, min=np.min(x), max=np.max(x)),
                 "gradient": lmfit.Parameter("gradient", gradient_guess, min=0),
                 "height": lmfit.Parameter("height", height, min=0),
                 "background": lmfit.Parameter("background", background),
                 "y_offset": lmfit.Parameter("y_offset", y_offset),
             }
-
-            return init_guess
 
         return guess
 
@@ -812,8 +793,7 @@ class NegativeTrapezoid(Fit):
         ) -> npt.NDArray[np.float64]:
             y = y_offset - height + background + gradient * np.abs(x - cen)
             y = np.maximum(y, background - height)
-            y = np.minimum(y, background)
-            return y
+            return np.minimum(y, background)
 
         return lmfit.Model(model, name=f"{cls.__name__}  [{cls.equation}]")
 
@@ -836,15 +816,13 @@ class NegativeTrapezoid(Fit):
             background = np.max(y)
             y_offset = -gradient_guess * width / 2.0
 
-            init_guess = {
+            return {
                 "cen": lmfit.Parameter("cen", cen, min=np.min(x), max=np.max(x)),
                 "gradient": lmfit.Parameter("gradient", gradient_guess, min=0),
                 "height": lmfit.Parameter("height", height, min=0),
                 "background": lmfit.Parameter("background", background),
                 "y_offset": lmfit.Parameter("y_offset", y_offset),
             }
-
-            return init_guess
 
         return guess
 
@@ -908,13 +886,12 @@ class MuonMomentum(Fit):
             p = 1  # Expected value, not likely to change
             w = 1 / _calculate_erf_stretch(x, y, erfc=True, pre_sorted=True)
 
-            init_guess = {
+            return {
                 "b": lmfit.Parameter("b", b),
                 "r": lmfit.Parameter("r", r, min=0),
                 "x0": lmfit.Parameter("x0", x0, min=0),
                 "p": lmfit.Parameter("p", p, min=0),
                 "w": lmfit.Parameter("w", w, min=0),
             }
-            return init_guess
 
         return guess

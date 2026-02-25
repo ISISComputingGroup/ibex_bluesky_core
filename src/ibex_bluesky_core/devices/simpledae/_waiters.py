@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 T = TypeVar("T", int, float)
 
 
-class SimpleWaiter(Waiter, Generic[T], ABC):
+class SimpleWaiter(Waiter, ABC, Generic[T]):
     """Wait for a single DAE variable to be greater or equal to a specified numeric value."""
 
     def __init__(self, value: T) -> None:
