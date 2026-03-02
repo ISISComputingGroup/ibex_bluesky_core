@@ -28,7 +28,8 @@ from ibex_bluesky_core.fitting import Gaussian, Linear
 logger = logging.getLogger(__name__)
 
 __all__ = ["LivePColorMesh", "LivePlot", "PlotPNGSaver", "show_plot"]
-
+_selected_params = ["cen", "center", "x0", "inflections_diff", "centre"]
+_precision = 3
 
 def show_plot() -> None:
     """Call :code:`plt.show()`.
@@ -133,16 +134,21 @@ class LiveFitPlot(_DefaultLiveFitPlot):
 
     def stop(self, doc: RunStop) -> None:
         """Process a stop document (delegate to superclass, then show the plot)."""
-        precision = 10
-
         super().stop(doc)
 
-        if self.set_title:
-            equation_values = [(key, value) for key, value in self.livefit.result.values.items() if key in self.livefit.model.param_names]
-            model_title = self.livefit.model.name
-            title_formatted = f"{model_title}:\n {', '.join(f'{k}: {v:.{precision}f}' for k, v in equation_values)}"
-            self.ax.set_title(title_formatted, wrap=True)
+        param_name = self.livefit.model.param_names
+        result_values = self.livefit.result.values
+        model_title = self.livefit.model.name
 
+        contains = [x for x in _selected_params if x in param_name]
+
+        if contains:
+            equation_values = [(key, value) for key, value in result_values.items() if key in contains]
+        else:
+            equation_values = [(key, value) for key, value in result_values.items() if key in param_name]
+
+        title_formatted = f"{model_title}:\n {', '.join(f'{k}: {v:.{_precision}g}' for k, v in equation_values)}"
+        self.ax.set_title(title_formatted, wrap=True)
 
 class LivePColorMesh(QtAwareCallback):
     """Live :py:obj:`PColorMesh<matplotlib.pyplot.pcolormesh>`-based heatmap."""

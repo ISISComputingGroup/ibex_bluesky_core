@@ -165,6 +165,10 @@ class Gaussian(Fit):
 
         return guess
 
+    @classmethod
+    def param_names(cls) -> list[str]:
+        values_to_display = ["amp", "sigma", "x0", "background"]
+        return values_to_display
 
 class Lorentzian(Fit):
     """Lorentzian Fitting."""
@@ -237,6 +241,10 @@ class Lorentzian(Fit):
 
         return guess
 
+    @classmethod
+    def param_names(cls) -> list[str]:
+        values_to_display = ["amp", "sigma", "center", "background"]
+        return values_to_display
 
 class Linear(Fit):
     """Linear Fitting."""
@@ -301,6 +309,10 @@ class Polynomial(Fit):
 
         return guess
 
+    @classmethod
+    def param_names(cls) -> list[str]:
+        values_to_display = [] #unsure what values should be displayed, c(i)
+        return values_to_display
 
 class DampedOsc(Fit):
     """Damped Oscillator Fitting."""
@@ -341,6 +353,10 @@ class DampedOsc(Fit):
 
         return guess
 
+    @classmethod
+    def param_names(cls) -> list[str]:
+        values_to_display = ["center", "amp", "freq", "width"]
+        return values_to_display
 
 class SlitScan(Fit):
     """Slit Scan Fitting."""
@@ -417,6 +433,10 @@ class SlitScan(Fit):
 
         return guess
 
+    @classmethod
+    def param_names(cls) -> list[str]:
+        values_to_display = ["background", "inflection0", "gradient", "inflections_diff", "height_above_inflection1"]
+        return values_to_display
 
 def _calculate_erf_stretch(
     x: npt.NDArray[np.float64],
@@ -519,6 +539,10 @@ class ERF(Fit):
 
         return guess
 
+    @classmethod
+    def param_names(cls) -> list[str]:
+        values_to_display = ["cen", "stretch", "scale", "background"]
+        return values_to_display
 
 class ERFC(Fit):
     """Complementary Error Function Fitting."""
@@ -561,6 +585,10 @@ class ERFC(Fit):
 
         return guess
 
+    @classmethod
+    def param_names(cls) -> list[str]:
+        values_to_display = ["cen", "stretch", "scale", "background"]
+        return values_to_display
 
 class TopHat(Fit):
     """Top Hat Fitting."""
@@ -605,6 +633,10 @@ class TopHat(Fit):
 
         return guess
 
+    @classmethod
+    def param_names(cls) -> list[str]:
+        values_to_display = ["cen", "width", "height", "background"]
+        return values_to_display
 
 def _guess_trapezoid_gradient(x: npt.NDArray[np.float64], y: npt.NDArray[np.float64]) -> float:
     gradients = np.zeros_like(x[1:], dtype=np.float64)
@@ -668,6 +700,10 @@ class Trapezoid(Fit):
 
         return guess
 
+    @classmethod
+    def param_names(cls) -> list[str]:
+        values_to_display = ["cen", "gradient", "height", "background", "y_offset"]
+        return values_to_display
 
 class NegativeTrapezoid(Fit):
     """Negative Trapezoid Fitting."""
@@ -723,6 +759,10 @@ class NegativeTrapezoid(Fit):
 
         return guess
 
+    @classmethod
+    def param_names(cls) -> list[str]:
+        values_to_display = ["cen", "gradient", "height", "background", "y_offset"]
+        return values_to_display
 
 class MuonMomentum(Fit):
     """Muon momentum fitting."""
@@ -782,3 +822,8 @@ class MuonMomentum(Fit):
             return init_guess
 
         return guess
+
+    @classmethod
+    def param_names(cls) -> list[str]:
+        values_to_display = ["b", "r", "x0", "p", "w"]
+        return values_to_display
