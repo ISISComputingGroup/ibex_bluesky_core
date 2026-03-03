@@ -80,11 +80,11 @@ def call_qt_aware(
         *args: Arbitrary arguments, passed through to matplotlib.pyplot.subplots
         **kwargs: Arbitrary keyword arguments, passed through to matplotlib.pyplot.subplots
 
-    Raises:
-        ValueError: if the passed function is not a matplotlib function.
-
     Returns:
         The return value of the wrapped function
+
+    Raises:
+        ValueError: if the passed function is not a matplotlib function.
 
     """
     # Limit potential for misuse - constrain to just running matplotlib functions.
