@@ -138,7 +138,7 @@ class LiveFitPlot(_DefaultLiveFitPlot):
 
         param_name = self.livefit.model.param_names
         result_values = self.livefit.result.values
-        model_title = self.livefit.model.name
+        model_title = self.livefit.model.name.split("  [")[0] + ")"
 
         contains = [x for x in _selected_params if x in param_name]
 
@@ -147,7 +147,7 @@ class LiveFitPlot(_DefaultLiveFitPlot):
         else:
             equation_values = [(key, value) for key, value in result_values.items() if key in param_name]
 
-        title_formatted = f"{model_title}:\n {', '.join(f'{k}: {v:.{_precision}g}' for k, v in equation_values)}"
+        title_formatted = f"{model_title}:\n{', '.join(f'{k}: {v:.{_precision}g}' for k, v in equation_values)}"
         self.ax.set_title(title_formatted, wrap=True)
 
 class LivePColorMesh(QtAwareCallback):
