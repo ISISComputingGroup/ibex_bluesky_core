@@ -1,0 +1,197 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Replaying documents &mdash; ibex_bluesky_core 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="_static/css/custom.css?v=dc476284" />
+
+  
+    <link rel="shortcut icon" href="_static/favicon.svg"/>
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=2709fde1"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Architectural Decisions" href="architectural_decisions.html" />
+    <link rel="prev" title="ibex_bluesky_core.version" href="generated/ibex_bluesky_core.version.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #343131" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            ibex_bluesky_core
+              <img src="_static/logo.svg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="tutorial/overview.html">Getting started</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Devices</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="devices/blocks.html">Blocks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devices/dae.html">DAE (Data Acquisition Electronics)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Callbacks</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="callbacks/isiscallbacks.html">ISIS Standard Callbacks (<code class="xref py py-obj docutils literal notranslate"><span class="pre">ISISCallbacks</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="callbacks/fitting.html">Fits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="callbacks/centre_of_mass.html">Centre of Mass</a></li>
+<li class="toctree-l1"><a class="reference internal" href="callbacks/plotting.html">Plotting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="callbacks/file_writing.html">File writing callbacks</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Plans</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="plans/plans.html">General Plans</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plans/reflectometry.html">Reflectometry-specific Plans</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Plan stubs</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="plan_stubs/external_code.html">Calling external code (<code class="xref py py-obj docutils literal notranslate"><span class="pre">call_sync</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plan_stubs/matplotlib_helpers.html">Matplotlib helpers (<code class="xref py py-obj docutils literal notranslate"><span class="pre">call_qt_aware</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plan_stubs/plan_wrappers.html">Plan wrappers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plan_stubs/polling.html">Continuous polling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plan_stubs/redefining.html">Redefinition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plan_stubs/user_input.html">User input helpers</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="_api.html">API</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Replaying documents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="architectural_decisions.html">Architectural Decisions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="developer_information.html">Developer Information</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #343131" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">ibex_bluesky_core</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Replaying documents</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/ISISComputingGroup/ibex_bluesky_core/blob/main/doc/replotting_scans.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="replaying-documents">
+<h1>Replaying documents<a class="headerlink" href="#replaying-documents" title="Link to this heading"></a></h1>
+<p>All <a class="reference external" href="https://blueskyproject.io/bluesky/main/callbacks.html" title="(in bluesky v1.14.7.dev29+gfb2c32466)"><span class="xref std std-doc">callbacks</span></a> in bluesky operate on a data structure called a <a class="reference external" href="https://blueskyproject.io/bluesky/main/documents.html" title="(in bluesky v1.14.7.dev29+gfb2c32466)"><span class="xref std std-doc">document</span></a>. These documents represent the metadata and data emitted by a bluesky scan.</p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>The schema of these documents is defined formally by the bluesky <a class="reference external" href="https://blueskyproject.io/event-model/main/explanations/data-model.html" title="(in event-model vmain)"><span class="xref std std-doc">event model</span></a>. However, the implementation details of these documents are not important for simply replaying them.</p>
+<p>If instead you wish to write a tool to consume bluesky documents <em>without</em> using the callbacks provided in this library or in bluesky, please <a class="reference external" href="https://isiscomputinggroup.github.io/ibex_user_manual/FAQ.html#report-a-problem" title="(in IBEX User Manual)"><span class="xref std std-ref">get in touch with experiment controls</span></a> for advice.</p>
+</div>
+<p>All bluesky <a class="reference external" href="https://blueskyproject.io/bluesky/main/callbacks.html" title="(in bluesky v1.14.7.dev29+gfb2c32466)"><span class="xref std std-doc">callbacks</span></a> consume <a class="reference external" href="https://blueskyproject.io/bluesky/main/documents.html" title="(in bluesky v1.14.7.dev29+gfb2c32466)"><span class="xref std std-doc">documents</span></a> as their source of data or metadata. This means that historic documents can be replayed into one or more callbacks. This facilitates:</p>
+<ul class="simple">
+<li><p>Replaying documents into plotting callbacks to ‘replot’ a scan</p></li>
+<li><p>Replaying documents into (potentially different) fitting callbacks, to experiment with different fitting routines</p></li>
+<li><p>Developing entirely new callbacks using data from historic scans</p></li>
+</ul>
+<section id="document-storage-and-replay-from-file">
+<h2>Document storage and replay from file<a class="headerlink" href="#document-storage-and-replay-from-file" title="Link to this heading"></a></h2>
+<p>The IBEX <a class="reference internal" href="generated/ibex_bluesky_core.run_engine.html#ibex_bluesky_core.run_engine.get_run_engine" title="ibex_bluesky_core.run_engine.get_run_engine"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RunEngine</span></code></a> instance is configured to automatically save the raw documents from any scan - these are saved into</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">c</span><span class="p">:</span>\<span class="n">Instrument</span>\<span class="n">var</span>\<span class="n">logs</span>\<span class="n">bluesky</span>\<span class="n">raw_documents</span>
+</pre></div>
+</div>
+<p>They are subsequently moved to a backups area after 10 days; if you need access to old scans, please contact experiment controls for the exact path you will need.</p>
+<p>These files are organised as line-delimited JSON dictionaries. The filename is the unique identifier of the scan.</p>
+<p>Documents can be loaded from their save files and replayed into arbitrary callbacks - which can be a completely different set of callbacks than were used during the scan. The following example shows replay into a <a class="reference internal" href="generated/ibex_bluesky_core.callbacks.html#ibex_bluesky_core.callbacks.LivePlot" title="ibex_bluesky_core.callbacks.LivePlot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LivePlot</span></code></a> callback to regenerate a matplotlib plot, as well as re-running a Gaussian fit using the <a class="reference internal" href="generated/ibex_bluesky_core.callbacks.html#ibex_bluesky_core.callbacks.LiveFit" title="ibex_bluesky_core.callbacks.LiveFit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LiveFit</span></code></a> callback and displaying that on the plot using <a class="reference external" href="https://blueskyproject.io/bluesky/main/callbacks.html#bluesky.callbacks.mpl_plotting.LiveFitPlot" title="(in bluesky v1.14.7.dev29+gfb2c32466)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LiveFitPlot</span></code></a>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibex_bluesky_core.callbacks</span><span class="w"> </span><span class="kn">import</span> <span class="n">LivePlot</span><span class="p">,</span> <span class="n">LiveFit</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibex_bluesky_core.fitting</span><span class="w"> </span><span class="kn">import</span> <span class="n">Gaussian</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">bluesky.callbacks</span><span class="w"> </span><span class="kn">import</span> <span class="n">LiveFitPlot</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">replot_scan</span><span class="p">(</span><span class="n">path_to_save_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">y_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">x_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="c1"># Prepare a set of matplotlib axes to plot onto</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="s2">&quot;all&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+    <span class="n">_</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+
+    <span class="c1"># Example callbacks for plotting and fitting - the exact callbacks</span>
+    <span class="c1"># to use when replotting a scan can be chosen freely.</span>
+    <span class="n">live_plot</span> <span class="o">=</span> <span class="n">LivePlot</span><span class="p">(</span><span class="n">y_name</span><span class="p">,</span> <span class="n">x_name</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s2">&quot;none&quot;</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">)</span>
+    <span class="n">live_fit</span> <span class="o">=</span> <span class="n">LiveFit</span><span class="p">(</span><span class="n">Gaussian</span><span class="o">.</span><span class="n">fit</span><span class="p">(),</span> <span class="n">y</span><span class="o">=</span><span class="n">y_name</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="n">x_name</span><span class="p">)</span>
+    <span class="n">live_fit_plot</span> <span class="o">=</span> <span class="n">LiveFitPlot</span><span class="p">(</span><span class="n">livefit</span><span class="o">=</span><span class="n">live_fit</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="n">num_points</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span>
+
+    <span class="c1"># Open the relevant save-file</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path_to_save_file</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">f</span><span class="p">:</span>
+            <span class="c1"># Load the JSON representation of this document.</span>
+            <span class="n">document</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+            <span class="c1"># Pass the document to arbitrary callbacks.</span>
+            <span class="n">live_plot</span><span class="p">(</span><span class="n">document</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">],</span> <span class="n">document</span><span class="p">[</span><span class="s2">&quot;document&quot;</span><span class="p">])</span>
+            <span class="n">live_fit_plot</span><span class="p">(</span><span class="n">document</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">],</span> <span class="n">document</span><span class="p">[</span><span class="s2">&quot;document&quot;</span><span class="p">])</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="generated/ibex_bluesky_core.version.html" class="btn btn-neutral float-left" title="ibex_bluesky_core.version" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="architectural_decisions.html" class="btn btn-neutral float-right" title="Architectural Decisions" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,50 @@
+
+
+``ibex_bluesky_core.fitting``
+=============================
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+
+.. automodule:: ibex_bluesky_core.fitting
+    :members:
+    :show-inheritance:
+
+    
+    
+    
+
+    
+    
+    .. rubric:: Members
+
+    .. autosummary::
+        :nosignatures:
+    
+        DampedOsc
+        ERF
+        ERFC
+        Fit
+        FitMethod
+        Gaussian
+        Linear
+        Lorentzian
+        MuonMomentum
+        NegativeTrapezoid
+        Polynomial
+        SlitScan
+        TopHat
+        Trapezoid
+    
+    

@@ -1,0 +1,305 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Blocks &mdash; ibex_bluesky_core 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=dc476284" />
+
+  
+    <link rel="shortcut icon" href="../_static/favicon.svg"/>
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="DAE (Data Acquisition Electronics)" href="dae.html" />
+    <link rel="prev" title="Getting started" href="../tutorial/overview.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #343131" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            ibex_bluesky_core
+              <img src="../_static/logo.svg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/overview.html">Getting started</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Devices</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Blocks</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#block-types">Block types</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#read-only-blockr">Read-only (<code class="xref py py-obj docutils literal notranslate"><span class="pre">BlockR</span></code>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#read-write-blockrw">Read-write (<code class="xref py py-obj docutils literal notranslate"><span class="pre">BlockRw</span></code>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#read-write-setpoint-readback-blockrwrbv">Read/write/setpoint-readback (<code class="xref py py-obj docutils literal notranslate"><span class="pre">BlockRwRbv</span></code>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#motors-blockmot">Motors (<code class="xref py py-obj docutils literal notranslate"><span class="pre">BlockMot</span></code>)</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#configuring-block-write-behaviour">Configuring block write behaviour</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#run-control">Run Control</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="dae.html">DAE (Data Acquisition Electronics)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Callbacks</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../callbacks/isiscallbacks.html">ISIS Standard Callbacks (<code class="xref py py-obj docutils literal notranslate"><span class="pre">ISISCallbacks</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../callbacks/fitting.html">Fits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../callbacks/centre_of_mass.html">Centre of Mass</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../callbacks/plotting.html">Plotting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../callbacks/file_writing.html">File writing callbacks</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Plans</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../plans/plans.html">General Plans</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plans/reflectometry.html">Reflectometry-specific Plans</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Plan stubs</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/external_code.html">Calling external code (<code class="xref py py-obj docutils literal notranslate"><span class="pre">call_sync</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/matplotlib_helpers.html">Matplotlib helpers (<code class="xref py py-obj docutils literal notranslate"><span class="pre">call_qt_aware</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/plan_wrappers.html">Plan wrappers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/polling.html">Continuous polling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/redefining.html">Redefinition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/user_input.html">User input helpers</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../_api.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../replotting_scans.html">Replaying documents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../architectural_decisions.html">Architectural Decisions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer_information.html">Developer Information</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #343131" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">ibex_bluesky_core</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Blocks</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/ISISComputingGroup/ibex_bluesky_core/blob/main/doc/devices/blocks.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="blocks">
+<h1>Blocks<a class="headerlink" href="#blocks" title="Link to this heading"></a></h1>
+<p>Blocks are one of IBEX’s central abstractions, which present a uniform interface to any
+scientifically interesting PV.</p>
+<p>The <a class="reference internal" href="../generated/ibex_bluesky_core.devices.block.html#module-ibex_bluesky_core.devices.block" title="ibex_bluesky_core.devices.block"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ibex_bluesky_core.devices.block</span></code></a> module provides support for four types of blocks:</p>
+<ul class="simple">
+<li><p>Read-only (<a class="reference internal" href="../generated/ibex_bluesky_core.devices.block.html#ibex_bluesky_core.devices.block.BlockR" title="ibex_bluesky_core.devices.block.BlockR"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BlockR</span></code></a>)</p></li>
+<li><p>Read/write (<a class="reference internal" href="../generated/ibex_bluesky_core.devices.block.html#ibex_bluesky_core.devices.block.BlockRw" title="ibex_bluesky_core.devices.block.BlockRw"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BlockRw</span></code></a>)</p></li>
+<li><p>Read/write with setpoint readback (<a class="reference internal" href="../generated/ibex_bluesky_core.devices.block.html#ibex_bluesky_core.devices.block.BlockRwRbv" title="ibex_bluesky_core.devices.block.BlockRwRbv"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BlockRwRbv</span></code></a>)</p></li>
+<li><p>Motors (<a class="reference internal" href="../generated/ibex_bluesky_core.devices.block.html#ibex_bluesky_core.devices.block.BlockMot" title="ibex_bluesky_core.devices.block.BlockMot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BlockMot</span></code></a>)</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>All signals in bluesky have a strong type. This must match
+the underlying EPICS type of the PV, which helps to catch problems up-front rather than
+the middle of a plan.</p>
+<p>The following is an example error that will occur at the start of a plan, if trying to connect a <code class="docutils literal notranslate"><span class="pre">str</span></code> block to a <code class="docutils literal notranslate"><span class="pre">float</span></code> PV:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ophyd_async</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">_utils</span><span class="o">.</span><span class="n">NotConnected</span><span class="p">:</span>
+<span class="n">mot</span><span class="p">:</span> <span class="n">NotConnected</span><span class="p">:</span>
+    <span class="n">setpoint_readback</span><span class="p">:</span> <span class="ne">TypeError</span><span class="p">:</span> <span class="n">TE</span><span class="p">:</span><span class="n">NDW2922</span><span class="p">:</span><span class="n">CS</span><span class="p">:</span><span class="n">SB</span><span class="p">:</span><span class="n">mot</span><span class="p">:</span><span class="n">SP</span><span class="p">:</span><span class="n">RBV</span> <span class="n">has</span> <span class="nb">type</span> <span class="nb">float</span> <span class="ow">not</span> <span class="nb">str</span>
+    <span class="n">setpoint</span><span class="p">:</span> <span class="ne">TypeError</span><span class="p">:</span> <span class="n">TE</span><span class="p">:</span><span class="n">NDW2922</span><span class="p">:</span><span class="n">CS</span><span class="p">:</span><span class="n">SB</span><span class="p">:</span><span class="n">mot</span><span class="p">:</span><span class="n">SP</span> <span class="n">has</span> <span class="nb">type</span> <span class="nb">float</span> <span class="ow">not</span> <span class="nb">str</span>
+    <span class="n">readback</span><span class="p">:</span> <span class="ne">TypeError</span><span class="p">:</span> <span class="n">TE</span><span class="p">:</span><span class="n">NDW2922</span><span class="p">:</span><span class="n">CS</span><span class="p">:</span><span class="n">SB</span><span class="p">:</span><span class="n">mot</span> <span class="n">has</span> <span class="nb">type</span> <span class="nb">float</span> <span class="ow">not</span> <span class="nb">str</span>
+</pre></div>
+</div>
+</div>
+<section id="block-types">
+<h2>Block types<a class="headerlink" href="#block-types" title="Link to this heading"></a></h2>
+<section id="read-only-blockr">
+<h3>Read-only (<a class="reference internal" href="../generated/ibex_bluesky_core.devices.block.html#ibex_bluesky_core.devices.block.BlockR" title="ibex_bluesky_core.devices.block.BlockR"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BlockR</span></code></a>)<a class="headerlink" href="#read-only-blockr" title="Link to this heading"></a></h3>
+<p>This is a read-only block. It supports bluesky’s <a class="reference external" href="https://blueskyproject.io/bluesky/main/hardware.html#bluesky.protocols.Readable" title="(in bluesky v1.14.7.dev29+gfb2c32466)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Readable</span></code></a> protocol, as well as
+basic metadata protocols such as <a class="reference external" href="https://blueskyproject.io/bluesky/main/hardware.html#bluesky.protocols.HasName" title="(in bluesky v1.14.7.dev29+gfb2c32466)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HasName</span></code></a>.</p>
+<p>This type of block is usable by:</p>
+<ul class="simple">
+<li><p>Plans like <a class="reference external" href="https://blueskyproject.io/bluesky/main/generated/bluesky.plans.count.html#bluesky.plans.count" title="(in bluesky v1.14.7.dev29+gfb2c32466)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bluesky.plans.count</span></code></a> or <a class="reference external" href="https://blueskyproject.io/bluesky/main/generated/bluesky.plans.scan.html#bluesky.plans.scan" title="(in bluesky v1.14.7.dev29+gfb2c32466)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bluesky.plans.scan</span></code></a> as a detector object.</p></li>
+<li><p>Plan stubs like <a class="reference external" href="https://blueskyproject.io/bluesky/main/generated/bluesky.plan_stubs.rd.html#bluesky.plan_stubs.rd" title="(in bluesky v1.14.7.dev29+gfb2c32466)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bluesky.plan_stubs.rd</span></code></a>, which plans may use to get the current value
+of a block for use within a plan.</p></li>
+</ul>
+<p>A <a class="reference internal" href="../generated/ibex_bluesky_core.devices.block.html#ibex_bluesky_core.devices.block.BlockR" title="ibex_bluesky_core.devices.block.BlockR"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BlockR</span></code></a> object does not implement any logic on read - it simply returns the most recent
+value of the block.</p>
+<p>A simple constructor, <a class="reference internal" href="../generated/ibex_bluesky_core.devices.block.html#ibex_bluesky_core.devices.block.block_r" title="ibex_bluesky_core.devices.block.block_r"><code class="xref py py-obj docutils literal notranslate"><span class="pre">block_r</span></code></a>, is available, which assumes the current instrument’s PV
+prefix:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">ibex_bluesky_core.devices.block</span><span class="w"> </span><span class="kn">import</span> <span class="n">block_r</span>
+<span class="n">readable_block</span> <span class="o">=</span> <span class="n">block_r</span><span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="s2">&quot;my_block_name&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="read-write-blockrw">
+<h3>Read-write (<a class="reference internal" href="../generated/ibex_bluesky_core.devices.block.html#ibex_bluesky_core.devices.block.BlockRw" title="ibex_bluesky_core.devices.block.BlockRw"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BlockRw</span></code></a>)<a class="headerlink" href="#read-write-blockrw" title="Link to this heading"></a></h3>
+<p>This is a read-write block. It supports the same protocols as a <a class="reference internal" href="../generated/ibex_bluesky_core.devices.block.html#ibex_bluesky_core.devices.block.BlockR" title="ibex_bluesky_core.devices.block.BlockR"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BlockR</span></code></a>, plus the <a class="reference external" href="https://blueskyproject.io/bluesky/main/hardware.html#bluesky.protocols.Movable" title="(in bluesky v1.14.7.dev29+gfb2c32466)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Movable</span></code></a> protocol.</p>
+<p>The addition of the <a class="reference external" href="https://blueskyproject.io/bluesky/main/hardware.html#bluesky.protocols.Movable" title="(in bluesky v1.14.7.dev29+gfb2c32466)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Movable</span></code></a> protocol means that this type of block can be moved by plan
+stubs such as <a class="reference external" href="https://blueskyproject.io/bluesky/main/generated/bluesky.plan_stubs.mv.html#bluesky.plan_stubs.mv" title="(in bluesky v1.14.7.dev29+gfb2c32466)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bluesky.plan_stubs.mv</span></code></a> or <a class="reference external" href="https://blueskyproject.io/bluesky/main/generated/bluesky.plan_stubs.abs_set.html#bluesky.plan_stubs.abs_set" title="(in bluesky v1.14.7.dev29+gfb2c32466)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bluesky.plan_stubs.abs_set</span></code></a>.</p>
+<p>It can also be used as the movable in full plans like <a class="reference external" href="https://blueskyproject.io/bluesky/main/generated/bluesky.plans.scan.html#bluesky.plans.scan" title="(in bluesky v1.14.7.dev29+gfb2c32466)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bluesky.plans.scan</span></code></a>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>In bluesky terminology, any object with a <code class="docutils literal notranslate"><span class="pre">set()</span></code> method is ‘Movable’. Therefore, a
+temperature controller is “moved” from one temperature to another, and a run title
+is also “moved” from one title to another.</p>
+<p>This is simply a matter of terminology - bluesky fully supports moving things which
+are not motors, even if the documentation tends to use motors as the examples.</p>
+</div>
+<p>A simple constructor, <a class="reference internal" href="../generated/ibex_bluesky_core.devices.block.html#ibex_bluesky_core.devices.block.block_rw" title="ibex_bluesky_core.devices.block.block_rw"><code class="xref py py-obj docutils literal notranslate"><span class="pre">block_rw</span></code></a>, is available, which assumes the current instrument’s PV
+prefix:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">ibex_bluesky_core.devices.block</span><span class="w"> </span><span class="kn">import</span> <span class="n">block_rw</span><span class="p">,</span> <span class="n">BlockWriteConfig</span>
+<span class="n">writable_block</span> <span class="o">=</span> <span class="n">block_rw</span><span class="p">(</span>
+    <span class="nb">float</span><span class="p">,</span> 
+    <span class="s2">&quot;my_block_name&quot;</span><span class="p">,</span>
+    <span class="c1"># Example: configure to always wait 5 seconds after being set.</span>
+    <span class="c1"># For further options, see docstring of BlockWriteConfig.</span>
+    <span class="n">write_config</span><span class="o">=</span><span class="n">BlockWriteConfig</span><span class="p">(</span><span class="n">settle_time_s</span><span class="o">=</span><span class="mf">5.0</span><span class="p">)</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="read-write-setpoint-readback-blockrwrbv">
+<h3>Read/write/setpoint-readback (<a class="reference internal" href="../generated/ibex_bluesky_core.devices.block.html#ibex_bluesky_core.devices.block.BlockRwRbv" title="ibex_bluesky_core.devices.block.BlockRwRbv"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BlockRwRbv</span></code></a>)<a class="headerlink" href="#read-write-setpoint-readback-blockrwrbv" title="Link to this heading"></a></h3>
+<p>This is a block with full support for reading and writing as per <a class="reference internal" href="../generated/ibex_bluesky_core.devices.block.html#ibex_bluesky_core.devices.block.BlockRw" title="ibex_bluesky_core.devices.block.BlockRw"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BlockRw</span></code></a>, but with
+the addition of bluesky’s <a class="reference external" href="https://blueskyproject.io/bluesky/main/hardware.html#bluesky.protocols.Locatable" title="(in bluesky v1.14.7.dev29+gfb2c32466)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Locatable</span></code></a> protocol, which allows you to read back the
+current setpoint. Where possible, the setpoint will be read back from hardware.</p>
+<p>This object is suitable for use in plan stubs such as <code class="docutils literal notranslate"><span class="pre">bluesky.plan_stubs.locate</span></code>.</p>
+<p>This object is also more suitable for use in plans which use relative moves - the
+relative move will be calculated with respect to the setpoint readback from hardware
+(if available).</p>
+<p>A simple constructor (<a class="reference internal" href="../generated/ibex_bluesky_core.devices.block.html#ibex_bluesky_core.devices.block.block_rw_rbv" title="ibex_bluesky_core.devices.block.block_rw_rbv"><code class="xref py py-obj docutils literal notranslate"><span class="pre">block_rw_rbv</span></code></a>) is available:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">ibex_bluesky_core.devices.block</span><span class="w"> </span><span class="kn">import</span> <span class="n">block_rw_rbv</span><span class="p">,</span> <span class="n">BlockWriteConfig</span>
+<span class="n">rw_rbv_block</span> <span class="o">=</span> <span class="n">block_rw_rbv</span><span class="p">(</span>
+    <span class="nb">float</span><span class="p">,</span> 
+    <span class="s2">&quot;my_block_name&quot;</span><span class="p">,</span>
+    <span class="c1"># Example: configure to always wait 5 seconds after being set.</span>
+    <span class="c1"># For further options, see docstring of BlockWriteConfig.</span>
+    <span class="n">write_config</span><span class="o">=</span><span class="n">BlockWriteConfig</span><span class="p">(</span><span class="n">settle_time_s</span><span class="o">=</span><span class="mf">5.0</span><span class="p">)</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="motors-blockmot">
+<h3>Motors (<a class="reference internal" href="../generated/ibex_bluesky_core.devices.block.html#ibex_bluesky_core.devices.block.BlockMot" title="ibex_bluesky_core.devices.block.BlockMot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BlockMot</span></code></a>)<a class="headerlink" href="#motors-blockmot" title="Link to this heading"></a></h3>
+<p>This represents a block pointing at a motor record. This has support for:</p>
+<ul class="simple">
+<li><p>Reading (<a class="reference external" href="https://blueskyproject.io/bluesky/main/hardware.html#bluesky.protocols.Readable" title="(in bluesky v1.14.7.dev29+gfb2c32466)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Readable</span></code></a>)</p></li>
+<li><p>Writing (<a class="reference external" href="https://blueskyproject.io/bluesky/main/hardware.html#bluesky.protocols.Movable" title="(in bluesky v1.14.7.dev29+gfb2c32466)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Movable</span></code></a>)</p></li>
+<li><p>Limit-checking (<a class="reference external" href="https://blueskyproject.io/bluesky/main/hardware.html#bluesky.protocols.Checkable" title="(in bluesky v1.14.7.dev29+gfb2c32466)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Checkable</span></code></a>)</p></li>
+<li><p>Stopping (e.g. on scan abort) (<a class="reference external" href="https://blueskyproject.io/bluesky/main/hardware.html#bluesky.protocols.Stoppable" title="(in bluesky v1.14.7.dev29+gfb2c32466)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Stoppable</span></code></a>)</p></li>
+<li><p>And advanced use-cases like fly-scanning</p></li>
+</ul>
+<p>This type is recommended to be used if the underlying block is a motor record. It always has
+type <code class="docutils literal notranslate"><span class="pre">float</span></code>, and as such does not take a type argument (unlike the other block types).</p>
+<p><a class="reference external" href="https://blueskyproject.io/bluesky/main/hardware.html#bluesky.protocols.Checkable" title="(in bluesky v1.14.7.dev29+gfb2c32466)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Checkable</span></code></a> means that moves which would eventually violate limits can be detected by
+bluesky simulators, before the plan ever runs. This can help to catch errors before
+the plan is executed against hardware. There is also limit-checking at runtime;
+a <a class="reference external" href="https://blueskyproject.io/ophyd-async/v0.16/_api/ophyd_async/ophyd_async.epics.motor.html#ophyd_async.epics.motor.MotorLimitsError" title="(in ophyd-async v0.16)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MotorLimitsError</span></code></a> will be raised
+at runtime if a requested position is outside the motor’s limits.</p>
+<p><a class="reference external" href="https://blueskyproject.io/bluesky/main/hardware.html#bluesky.protocols.Stoppable" title="(in bluesky v1.14.7.dev29+gfb2c32466)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Stoppable</span></code></a> means that the motor can be asked to stop by bluesky. Plans may choose to execute
+a <code class="docutils literal notranslate"><span class="pre">stop()</span></code> on failure, or explicitly during a plan.</p>
+<p>Similar to other block types, a utility constructor (<a class="reference internal" href="../generated/ibex_bluesky_core.devices.block.html#ibex_bluesky_core.devices.block.block_mot" title="ibex_bluesky_core.devices.block.block_mot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">block_mot</span></code></a>) is available; however, it does not
+require an explicit type as motors are always of <code class="docutils literal notranslate"><span class="pre">float</span></code> data type:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">ibex_bluesky_core.devices.block</span><span class="w"> </span><span class="kn">import</span> <span class="n">block_mot</span>
+<span class="n">mot_block</span> <span class="o">=</span> <span class="n">block_mot</span><span class="p">(</span><span class="s2">&quot;motor_block&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>A motor block does not need an explicit write config: it always waits for the requested motion
+to complete. See <a class="reference internal" href="../generated/ibex_bluesky_core.devices.block.html#ibex_bluesky_core.devices.block.BlockMot" title="ibex_bluesky_core.devices.block.BlockMot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BlockMot</span></code></a> for a detailed mapping of
+the usual write-configuration options and how these are instead achieved by a motor block.</p>
+</section>
+</section>
+<section id="configuring-block-write-behaviour">
+<h2>Configuring block write behaviour<a class="headerlink" href="#configuring-block-write-behaviour" title="Link to this heading"></a></h2>
+<p><a class="reference internal" href="../generated/ibex_bluesky_core.devices.block.html#ibex_bluesky_core.devices.block.BlockRw" title="ibex_bluesky_core.devices.block.BlockRw"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BlockRw</span></code></a> and <a class="reference internal" href="../generated/ibex_bluesky_core.devices.block.html#ibex_bluesky_core.devices.block.BlockRwRbv" title="ibex_bluesky_core.devices.block.BlockRwRbv"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BlockRwRbv</span></code></a> both take a <code class="docutils literal notranslate"><span class="pre">write_config</span></code> argument, which can be used to configure
+the behaviour on writing to a block, for example tolerances and settle times.</p>
+<p>See <a class="reference internal" href="../generated/ibex_bluesky_core.devices.block.html#ibex_bluesky_core.devices.block.BlockWriteConfig" title="ibex_bluesky_core.devices.block.BlockWriteConfig"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BlockWriteConfig</span></code></a> for a detailed
+description of the available options.</p>
+</section>
+<section id="run-control">
+<h2>Run Control<a class="headerlink" href="#run-control" title="Link to this heading"></a></h2>
+<p>Run-control information is available via the <a class="reference internal" href="../generated/ibex_bluesky_core.devices.block.html#ibex_bluesky_core.devices.block.RunControl" title="ibex_bluesky_core.devices.block.RunControl"><code class="xref py py-obj docutils literal notranslate"><span class="pre">block.run_control</span></code></a> sub-device.
+Both configuring and reading the current status of run control are permitted.</p>
+<p>The signals available on the run-control subdevice are:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">block.run_control.in_range</span></code>: Whether run-control is currently in-range (bool, read-only)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">block.run_control.low_limit</span></code>: Low run-control limit (float, read-write)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">block.run_control.high_limit</span></code>: High run-control limit (float, read-write)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">block.run_control.suspend_if_invalid</span></code>: Whether to suspend data collection on invalid data (bool, read-write)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">block.run_control.enabled</span></code>: Whether run-control is enabled (bool, read-write)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">block.run_control.out_time</span></code>: Time, in seconds, for which run-control has been out-of-range (float, read-only)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">block.run_control.in_time</span></code>: Time, in seconds, for which run-control has been in-range (float, read-only)</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Run control limits are always <code class="docutils literal notranslate"><span class="pre">float</span></code>, regardless of the datatype of the block.</p>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../tutorial/overview.html" class="btn btn-neutral float-left" title="Getting started" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="dae.html" class="btn btn-neutral float-right" title="DAE (Data Acquisition Electronics)" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

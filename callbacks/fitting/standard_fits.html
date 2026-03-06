@@ -1,0 +1,329 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Standard Fitting Models &mdash; ibex_bluesky_core 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=dc476284" />
+
+  
+    <link rel="shortcut icon" href="../../_static/favicon.svg"/>
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Centre of Mass" href="../centre_of_mass.html" />
+    <link rel="prev" title="Saving fit results to file (LiveFitLogger)" href="livefit_logger.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #343131" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            ibex_bluesky_core
+              <img src="../../_static/logo.svg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial/overview.html">Getting started</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Devices</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../devices/blocks.html">Blocks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devices/dae.html">DAE (Data Acquisition Electronics)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Callbacks</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../isiscallbacks.html">ISIS Standard Callbacks (<code class="xref py py-obj docutils literal notranslate"><span class="pre">ISISCallbacks</span></code>)</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../fitting.html">Fits</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="chained_fitting.html">Chained Fitting (<code class="xref py py-obj docutils literal notranslate"><span class="pre">ChainedLiveFit</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="fitting.html">Fitting (<code class="xref py py-obj docutils literal notranslate"><span class="pre">LiveFit</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="livefit_logger.html">Saving fit results to file (<code class="xref py py-obj docutils literal notranslate"><span class="pre">LiveFitLogger</span></code>)</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Standard Fitting Models</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#fit-linear"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Linear</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#fit-polynomial"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Polynomial</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#fit-gaussian"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Gaussian</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#fit-lorentzian"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Lorentzian</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#fit-damped-osc">Damped Oscillator (<code class="xref py py-obj docutils literal notranslate"><span class="pre">DampedOsc</span></code>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#fit-slitscan">Slit Scan (<code class="xref py py-obj docutils literal notranslate"><span class="pre">SlitScan</span></code>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#fit-erf">Error Function (<code class="xref py py-obj docutils literal notranslate"><span class="pre">ERF</span></code>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#fit-erfc">Complementary Error Function (<code class="xref py py-obj docutils literal notranslate"><span class="pre">ERFC</span></code>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#fit-tophat">Top Hat (<code class="xref py py-obj docutils literal notranslate"><span class="pre">TopHat</span></code>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#fit-trapezoid"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Trapezoid</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#fit-neg-trapezoid"><code class="xref py py-obj docutils literal notranslate"><span class="pre">NegativeTrapezoid</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#fit-muon-momentum">Muon Momentum (<code class="xref py py-obj docutils literal notranslate"><span class="pre">MuonMomentum</span></code>)</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../centre_of_mass.html">Centre of Mass</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plotting.html">Plotting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../file_writing.html">File writing callbacks</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Plans</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../plans/plans.html">General Plans</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../plans/reflectometry.html">Reflectometry-specific Plans</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Plan stubs</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../plan_stubs/external_code.html">Calling external code (<code class="xref py py-obj docutils literal notranslate"><span class="pre">call_sync</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../plan_stubs/matplotlib_helpers.html">Matplotlib helpers (<code class="xref py py-obj docutils literal notranslate"><span class="pre">call_qt_aware</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../plan_stubs/plan_wrappers.html">Plan wrappers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../plan_stubs/polling.html">Continuous polling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../plan_stubs/redefining.html">Redefinition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../plan_stubs/user_input.html">User input helpers</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../_api.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../replotting_scans.html">Replaying documents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../architectural_decisions.html">Architectural Decisions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer_information.html">Developer Information</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #343131" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">ibex_bluesky_core</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../fitting.html">Fits</a></li>
+      <li class="breadcrumb-item active">Standard Fitting Models</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/ISISComputingGroup/ibex_bluesky_core/blob/main/doc/callbacks/fitting/standard_fits.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="standard-fitting-models">
+<h1>Standard Fitting Models<a class="headerlink" href="#standard-fitting-models" title="Link to this heading"></a></h1>
+<p>The following fitting models are all available under the <a class="reference internal" href="../../generated/ibex_bluesky_core.fitting.html#module-ibex_bluesky_core.fitting" title="ibex_bluesky_core.fitting"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ibex_bluesky_core.fitting</span></code></a> module.</p>
+<section id="fit-linear">
+<h2><a class="reference internal" href="../../generated/ibex_bluesky_core.fitting.html#ibex_bluesky_core.fitting.Linear" title="ibex_bluesky_core.fitting.Linear"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Linear</span></code></a><a class="headerlink" href="#fit-linear" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">c1</span></code> - Gradient</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">c0</span></code> - (y) Intercept</p></li>
+</ul>
+<div class="math notranslate nohighlight">
+\[y = c_1x + c_0\]</div>
+</section>
+<section id="fit-polynomial">
+<h2><a class="reference internal" href="../../generated/ibex_bluesky_core.fitting.html#ibex_bluesky_core.fitting.Polynomial" title="ibex_bluesky_core.fitting.Polynomial"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Polynomial</span></code></a><a class="headerlink" href="#fit-polynomial" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">cn</span></code> … <code class="docutils literal notranslate"><span class="pre">c0</span></code> - Polynomial coefficients</p></li>
+</ul>
+<p>For a polynomial degree <code class="docutils literal notranslate"><span class="pre">n</span></code>:</p>
+<div class="math notranslate nohighlight">
+\[y = c_{n}x^n + c_{n-1}x^{n-1} + ... + c_1 * x^1 + c_0 \]</div>
+</section>
+<section id="fit-gaussian">
+<h2><a class="reference internal" href="../../generated/ibex_bluesky_core.fitting.html#ibex_bluesky_core.fitting.Gaussian" title="ibex_bluesky_core.fitting.Gaussian"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Gaussian</span></code></a><a class="headerlink" href="#fit-gaussian" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">amp</span></code> - The maximum height of the Gaussian above <code class="docutils literal notranslate"><span class="pre">background</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">sigma</span></code> - A scalar for Gaussian width</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">x0</span></code> - The centre (x) of the Gaussian</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">background</span></code> - The minimum value (y) of the Gaussian</p></li>
+</ul>
+<div class="math notranslate nohighlight">
+\[y = \text{amp} * e^{-\frac{(x - x0) ^ 2}{2 * \text{sigma}^2}} + \text{background}\]</div>
+<p><img alt="GaussianModel" src="../../_images/gaussian.png" /></p>
+</section>
+<section id="fit-lorentzian">
+<h2><a class="reference internal" href="../../generated/ibex_bluesky_core.fitting.html#ibex_bluesky_core.fitting.Lorentzian" title="ibex_bluesky_core.fitting.Lorentzian"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Lorentzian</span></code></a><a class="headerlink" href="#fit-lorentzian" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">amp</span></code> - The maximum height of the Lorentzian above <code class="docutils literal notranslate"><span class="pre">background</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">sigma</span></code> - A scalar for Lorentzian width</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">center</span></code> - The centre (x) of the Lorentzian</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">background</span></code> - The minimum value (y) of the Lorentzian</p></li>
+</ul>
+<div class="math notranslate nohighlight">
+\[y = \frac{\text{amp}}{1 + \frac{x - \text{center}}{\text{sigma}}^2} + \text{background}\]</div>
+<p><img alt="LorentzianModel" src="../../_images/lorentzian.png" /></p>
+</section>
+<section id="fit-damped-osc">
+<h2>Damped Oscillator (<a class="reference internal" href="../../generated/ibex_bluesky_core.fitting.html#ibex_bluesky_core.fitting.DampedOsc" title="ibex_bluesky_core.fitting.DampedOsc"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DampedOsc</span></code></a>)<a class="headerlink" href="#fit-damped-osc" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">center</span></code> - The centre (x) of the oscillation</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">amp</span></code> - The maximum height of the curve above 0</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">freq</span></code> - The frequency of the oscillation</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">width</span></code> - How far away from the centre will oscillations last for</p></li>
+</ul>
+<div class="math notranslate nohighlight">
+\[y = \text{amp} * \cos((x - \text{center}) * \text{freq}) * e^{-\frac{x - \text{center}}{\text{width}^ 2}}\]</div>
+<p><img alt="DampedOscModel" src="../../_images/damped_osc.png" /></p>
+</section>
+<section id="fit-slitscan">
+<h2>Slit Scan (<a class="reference internal" href="../../generated/ibex_bluesky_core.fitting.html#ibex_bluesky_core.fitting.SlitScan" title="ibex_bluesky_core.fitting.SlitScan"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SlitScan</span></code></a>)<a class="headerlink" href="#fit-slitscan" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">background</span></code> <span class="math notranslate nohighlight">\(b\)</span> - The minimum value (y) of the model</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">inflection0</span></code> <span class="math notranslate nohighlight">\(i_0\)</span> - The x coord of the first inflection point</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">gradient</span></code> <span class="math notranslate nohighlight">\(g\)</span> - The gradient of the sloped-linear section of the model</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">inflections_diff</span></code> <span class="math notranslate nohighlight">\(i_{\Delta}\)</span> - The x displacement between the two inflection points</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">height_above_inflection1</span></code> <span class="math notranslate nohighlight">\(h_1\)</span> - The y displacement between inflection 1 and the model’s asymptote</p></li>
+</ul>
+<div class="math notranslate nohighlight">
+\[\text{exp_seg} = h_1 \cdot \text{erf} \left( g \cdot \frac{\sqrt{\pi}}{2h_1} \cdot (x - i_0 - \Delta i) \right) + g \cdot \Delta i + b\]</div>
+<div class="math notranslate nohighlight">
+\[\text{lin_seg} = \max(b + g * (x - i_0), b)\]</div>
+<div class="math notranslate nohighlight">
+\[y = \min(\text{lin_seg}, \text{exp_seg})\]</div>
+<p><img alt="SlitScanModel" src="../../_images/slit_scan.png" /></p>
+</section>
+<section id="fit-erf">
+<h2>Error Function (<a class="reference internal" href="../../generated/ibex_bluesky_core.fitting.html#ibex_bluesky_core.fitting.ERF" title="ibex_bluesky_core.fitting.ERF"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ERF</span></code></a>)<a class="headerlink" href="#fit-erf" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">cen</span></code> - The centre (x) of the model</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">stretch</span></code> - A horizontal stretch factor for the model</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">scale</span></code> - A vertical stretch factor for the model</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">background</span></code> - The minimum value (y) of the model</p></li>
+</ul>
+<div class="math notranslate nohighlight">
+\[y = background + scale * erf(stretch * (x - cen))\]</div>
+<p><img alt="ERFModel" src="../../_images/erf.png" /></p>
+</section>
+<section id="fit-erfc">
+<h2>Complementary Error Function (<a class="reference internal" href="../../generated/ibex_bluesky_core.fitting.html#ibex_bluesky_core.fitting.ERFC" title="ibex_bluesky_core.fitting.ERFC"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ERFC</span></code></a>)<a class="headerlink" href="#fit-erfc" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">cen</span></code> - The centre (x) of the model</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">stretch</span></code> - A horizontal stretch factor for the model</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">scale</span></code> - A vertical stretch factor for the model</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">background</span></code> - The minimum value (y) of the model</p></li>
+</ul>
+<div class="math notranslate nohighlight">
+\[y = background + scale * erfc(stretch * (x - cen))\]</div>
+<p><img alt="ERFCModel" src="../../_images/erfc.png" /></p>
+</section>
+<section id="fit-tophat">
+<h2>Top Hat (<a class="reference internal" href="../../generated/ibex_bluesky_core.fitting.html#ibex_bluesky_core.fitting.TopHat" title="ibex_bluesky_core.fitting.TopHat"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TopHat</span></code></a>)<a class="headerlink" href="#fit-tophat" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">cen</span></code> - The centre (x) of the model</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">width</span></code> - How wide the ‘hat’ is</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">height</span></code> - The maximum height of the model above <code class="docutils literal notranslate"><span class="pre">background</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">background</span></code> - The minimum value (y) of the model</p></li>
+</ul>
+<div class="math notranslate nohighlight">
+\[\begin{split}y = 
+\begin{cases} 
+\text{background} + \text{height}, &amp; \text{if } |x - \text{cen}| &lt; \frac{\text{width}}{2} \\
+\text{background}, &amp; \text{otherwise}
+\end{cases}\end{split}\]</div>
+<p><img alt="TopHatModel" src="../../_images/tophat.png" /></p>
+</section>
+<section id="fit-trapezoid">
+<h2><a class="reference internal" href="../../generated/ibex_bluesky_core.fitting.html#ibex_bluesky_core.fitting.Trapezoid" title="ibex_bluesky_core.fitting.Trapezoid"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Trapezoid</span></code></a><a class="headerlink" href="#fit-trapezoid" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">cen</span></code> - The centre (x) of the model</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">gradient</span></code> - How steep the edges of the trapezoid are</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">height</span></code> - The maximum height of the model above <code class="docutils literal notranslate"><span class="pre">background</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">background</span></code> - The minimum value (y) of the model</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">y_offset</span></code> - Acts as a width factor for the trapezoid. If you extrapolate the sides of the trapezoid until they meet above the top, this value represents the y coord of this point minus height and background.</p></li>
+</ul>
+<div class="math notranslate nohighlight">
+\[f(x) = \text{y_offset} + \text{height} + \text{background} - \text{gradient} * |x - \text{cen}|\]</div>
+<div class="math notranslate nohighlight">
+\[g(x) = \max(f(x), \text{background})\]</div>
+<div class="math notranslate nohighlight">
+\[y = \min(g(x), \text{background} + \text{height})\]</div>
+<p><img alt="TrapezoidModel" src="../../_images/trapezoid.png" /></p>
+</section>
+<section id="fit-neg-trapezoid">
+<h2><a class="reference internal" href="../../generated/ibex_bluesky_core.fitting.html#ibex_bluesky_core.fitting.NegativeTrapezoid" title="ibex_bluesky_core.fitting.NegativeTrapezoid"><code class="xref py py-obj docutils literal notranslate"><span class="pre">NegativeTrapezoid</span></code></a><a class="headerlink" href="#fit-neg-trapezoid" title="Link to this heading"></a></h2>
+<p>This model is the same shape as the trapezoid described above, but with a negative height.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">cen</span></code> - The centre (x) of the model</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">gradient</span></code> - How steep the edges of the trapezoid are</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">height</span></code> - The maximum height of the model below <code class="docutils literal notranslate"><span class="pre">background</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">background</span></code> - The maximum value (y) of the model</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">y_offset</span></code> - Acts as a width factor for the trapezoid. If you extrapolate the sides of the trapezoid until they meet, this value represents the y coord of this point minus height and background.</p></li>
+</ul>
+<div class="math notranslate nohighlight">
+\[f(x) = \text{y_offset} - \text{height} + \text{background} + \text{gradient} * |x - \text{cen}|\]</div>
+<div class="math notranslate nohighlight">
+\[g(x) = \max(f(x), \text{background} - \text{height})\]</div>
+<div class="math notranslate nohighlight">
+\[y = \min(g(x), \text{background})\]</div>
+</section>
+<section id="fit-muon-momentum">
+<h2>Muon Momentum (<a class="reference internal" href="../../generated/ibex_bluesky_core.fitting.html#ibex_bluesky_core.fitting.MuonMomentum" title="ibex_bluesky_core.fitting.MuonMomentum"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MuonMomentum</span></code></a>)<a class="headerlink" href="#fit-muon-momentum" title="Link to this heading"></a></h2>
+<p>Fits data from a momentum scan, it is designed for the specific use case of scanning over magnet current on muon instruments.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">x0</span></code> - The center (x) of the model</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">w</span></code> - The horizontal stretch factor of the model</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">R</span></code> - The amplitude of the model</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">b</span></code> - The minimum value (y) of the model</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">p</span></code> - Changes the gradient of the tail ends of the model</p></li>
+</ul>
+<div class="math notranslate nohighlight">
+\[y = \left (\text{erfc} \mathopen{} \left(\frac{x-x_0}{w} \right) \mathclose{} \cdot \frac{R}{2} + b \right) \cdot \left (\frac{x}{x_0} \right)^p\]</div>
+<p><img alt="MuonMomentumModel" src="../../_images/muons_momentum.png" /></p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="livefit_logger.html" class="btn btn-neutral float-left" title="Saving fit results to file (LiveFitLogger)" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../centre_of_mass.html" class="btn btn-neutral float-right" title="Centre of Mass" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

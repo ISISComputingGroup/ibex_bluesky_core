@@ -1,0 +1,269 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ibex_bluesky_core.run_engine &mdash; ibex_bluesky_core 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=dc476284" />
+
+  
+    <link rel="shortcut icon" href="../_static/favicon.svg"/>
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="ibex_bluesky_core.utils" href="ibex_bluesky_core.utils.html" />
+    <link rel="prev" title="ibex_bluesky_core.preprocessors" href="ibex_bluesky_core.preprocessors.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #343131" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            ibex_bluesky_core
+              <img src="../_static/logo.svg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/overview.html">Getting started</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Devices</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../devices/blocks.html">Blocks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devices/dae.html">DAE (Data Acquisition Electronics)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Callbacks</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../callbacks/isiscallbacks.html">ISIS Standard Callbacks (<code class="xref py py-obj docutils literal notranslate"><span class="pre">ISISCallbacks</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../callbacks/fitting.html">Fits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../callbacks/centre_of_mass.html">Centre of Mass</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../callbacks/plotting.html">Plotting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../callbacks/file_writing.html">File writing callbacks</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Plans</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../plans/plans.html">General Plans</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plans/reflectometry.html">Reflectometry-specific Plans</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Plan stubs</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/external_code.html">Calling external code (<code class="xref py py-obj docutils literal notranslate"><span class="pre">call_sync</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/matplotlib_helpers.html">Matplotlib helpers (<code class="xref py py-obj docutils literal notranslate"><span class="pre">call_qt_aware</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/plan_wrappers.html">Plan wrappers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/polling.html">Continuous polling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/redefining.html">Redefinition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/user_input.html">User input helpers</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../_api.html">API</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="ibex_bluesky_core.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core</span></code></a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="ibex_bluesky_core.callbacks.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.callbacks</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ibex_bluesky_core.devices.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.devices</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ibex_bluesky_core.fitting.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.fitting</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ibex_bluesky_core.log.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.log</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ibex_bluesky_core.plan_stubs.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.plan_stubs</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ibex_bluesky_core.plans.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.plans</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ibex_bluesky_core.preprocessors.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.preprocessors</span></code></a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.run_engine</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ibex_bluesky_core.utils.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.utils</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ibex_bluesky_core.version.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.version</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../replotting_scans.html">Replaying documents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../architectural_decisions.html">Architectural Decisions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer_information.html">Developer Information</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #343131" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">ibex_bluesky_core</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../_api.html">API</a></li>
+          <li class="breadcrumb-item"><a href="ibex_bluesky_core.html"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core</span></code></a></li>
+      <li class="breadcrumb-item active"><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.run_engine</span></code></li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/ISISComputingGroup/ibex_bluesky_core/blob/main/doc/generated/ibex_bluesky_core.run_engine.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-ibex_bluesky_core.run_engine">
+<span id="ibex-bluesky-core-run-engine"></span><h1><code class="docutils literal notranslate"><span class="pre">ibex_bluesky_core.run_engine</span></code><a class="headerlink" href="#module-ibex_bluesky_core.run_engine" title="Link to this heading"></a></h1>
+<p>Utilities for the bluesky run engine, configured for IBEX.</p>
+<p class="rubric">Members</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#ibex_bluesky_core.run_engine.get_run_engine" title="ibex_bluesky_core.run_engine.get_run_engine"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_run_engine</span></code></a></p></td>
+<td><p>Acquire a <a class="reference external" href="https://blueskyproject.io/bluesky/main/generated/bluesky.run_engine.RunEngine.html#bluesky.run_engine.RunEngine" title="(in bluesky v1.14.7.dev29+gfb2c32466)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RunEngine</span></code></a> with ISIS configuration.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#ibex_bluesky_core.run_engine.run_plan" title="ibex_bluesky_core.run_engine.run_plan"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run_plan</span></code></a></p></td>
+<td><p>Run a plan non-interactively.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py function">
+<dt class="sig sig-object py" id="ibex_bluesky_core.run_engine.get_run_engine">
+<span class="sig-prename descclassname"><span class="pre">ibex_bluesky_core.run_engine.</span></span><span class="sig-name descname"><span class="pre">get_run_engine</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://blueskyproject.io/bluesky/main/generated/bluesky.run_engine.RunEngine.html#bluesky.run_engine.RunEngine" title="(in bluesky v1.14.7.dev29+gfb2c32466)"><span class="pre">RunEngine</span></a></span></span><a class="reference internal" href="../_modules/ibex_bluesky_core/run_engine.html#get_run_engine"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibex_bluesky_core.run_engine.get_run_engine" title="Link to this definition"></a></dt>
+<dd><p>Acquire a <a class="reference external" href="https://blueskyproject.io/bluesky/main/generated/bluesky.run_engine.RunEngine.html#bluesky.run_engine.RunEngine" title="(in bluesky v1.14.7.dev29+gfb2c32466)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RunEngine</span></code></a> with ISIS configuration.</p>
+<p>This function should always be used in preference to creating a bluesky run engine manually.</p>
+<p>This function is cached, meaning that the <em>same</em> run engine (using the same underlying event
+loop) will be used if this function is called multiple times. Creating multiple run engine
+instances is unlikely to be desired behaviour, though we cannot prevent users from creating a
+<a class="reference external" href="https://blueskyproject.io/bluesky/main/generated/bluesky.run_engine.RunEngine.html#bluesky.run_engine.RunEngine" title="(in bluesky v1.14.7.dev29+gfb2c32466)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RunEngine</span></code></a> from bluesky directly.</p>
+<p>Basic usage:</p>
+<ul>
+<li><p>Get the IBEX run engine:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">RE</span> <span class="o">=</span> <span class="n">get_run_engine</span><span class="p">()</span>
+</pre></div>
+</div>
+</li>
+<li><p>Run a plan:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">bluesky.plans</span><span class="w"> </span><span class="kn">import</span> <span class="n">count</span>  <span class="c1"># Or any other plan</span>
+
+<span class="n">det</span> <span class="o">=</span> <span class="o">...</span>  <span class="c1"># A &quot;detector&quot; object, for example a Block or Dae device.</span>
+<span class="n">RE</span><span class="p">(</span><span class="n">count</span><span class="p">([</span><span class="n">det</span><span class="p">]))</span>
+</pre></div>
+</div>
+</li>
+<li><p>Control the state of the run engine:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">RE</span><span class="o">.</span><span class="n">abort</span><span class="p">(</span><span class="n">reason</span><span class="o">=</span><span class="s2">&quot;...&quot;</span><span class="p">)</span>  <span class="c1"># Stop a plan, do cleanup, and mark as failed (e.g. bad data).</span>
+<span class="n">RE</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>  <span class="c1"># Stop a plan, do cleanup, mark as success&quot;(e.g. scan has moved past peak).</span>
+<span class="n">RE</span><span class="o">.</span><span class="n">halt</span><span class="p">()</span>  <span class="c1"># Stop a plan, don&#39;t do any cleanup, just abort with no further action.</span>
+<span class="n">RE</span><span class="o">.</span><span class="n">resume</span><span class="p">()</span>  <span class="c1"># Resume running a previously-paused plan.</span>
+</pre></div>
+</div>
+</li>
+<li><p>Subscribe to data emitted by this run engine:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">RE</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="k">lambda</span> <span class="n">name</span><span class="p">,</span> <span class="n">document</span><span class="p">:</span> <span class="o">...</span><span class="p">)</span>
+</pre></div>
+</div>
+</li>
+</ul>
+<p>For full documentation about the run engine, see:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://blueskyproject.io/bluesky/main/tutorial.html#tutorial-run-engine-setup" title="(in bluesky v1.14.7.dev29+gfb2c32466)"><span>The RunEngine</span></a></p></li>
+<li><p><a class="reference external" href="https://blueskyproject.io/bluesky/main/run_engine_api.html" title="(in bluesky v1.14.7.dev29+gfb2c32466)"><span>RunEngine API Documentation</span></a></p></li>
+</ul>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ibex_bluesky_core.run_engine.run_plan">
+<span class="sig-prename descclassname"><span class="pre">ibex_bluesky_core.run_engine.</span></span><span class="sig-name descname"><span class="pre">run_plan</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plan</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Generator" title="(in Python v3.14)"><span class="pre">Generator</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://blueskyproject.io/bluesky/main/generated/bluesky.utils.Msg.html#bluesky.utils.Msg" title="(in bluesky v1.14.7.dev29+gfb2c32466)"><span class="pre">Msg</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">metadata_kw</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://blueskyproject.io/bluesky/main/generated/bluesky.run_engine.RunEngineResult.html#bluesky.run_engine.RunEngineResult" title="(in bluesky v1.14.7.dev29+gfb2c32466)"><span class="pre">RunEngineResult</span></a></span></span><a class="reference internal" href="../_modules/ibex_bluesky_core/run_engine.html#run_plan"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ibex_bluesky_core.run_engine.run_plan" title="Link to this definition"></a></dt>
+<dd><p>Run a plan non-interactively.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>The usual way to run a plan in bluesky is by calling <code class="docutils literal notranslate"><span class="pre">RE(plan(...))</span></code> interactively.
+An <code class="docutils literal notranslate"><span class="pre">RE</span></code> object is already available in recent versions of the IBEX user interface,
+or can be acquired by calling <code class="docutils literal notranslate"><span class="pre">get_run_engine()</span></code>.</p>
+<p>Use of this function is <strong>not recommended</strong>, but it is nevertheless provided as an escape
+hatch for workflows which would otherwise be difficult to express or where parts of scanning
+scripts have not, or cannot, be migrated to bluesky.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>plan</strong> (<em>positional-only</em>) – The plan to run. This is typically a generator instance.</p></li>
+<li><p><strong>metadata_kw</strong> (<em>optional</em><em>, </em><em>keyword-only</em>) – Keyword arguments (metadata) to pass to the bluesky
+run engine.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A <a class="reference external" href="https://blueskyproject.io/bluesky/main/generated/bluesky.run_engine.RunEngineResult.html#bluesky.run_engine.RunEngineResult" title="(in bluesky v1.14.7.dev29+gfb2c32466)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RunEngineResult</span></code></a> instance.
+The return value of the plan can then be accessed using
+the <code class="docutils literal notranslate"><span class="pre">plan_result</span></code> attribute.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#RuntimeError" title="(in Python v3.14)"><strong>RuntimeError</strong></a> – if the run engine was not idle at the start of this call.</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#RuntimeError" title="(in Python v3.14)"><strong>RuntimeError</strong></a> – if a reentrant call to the run engine is detected.</p></li>
+<li><p><a class="reference external" href="https://blueskyproject.io/bluesky/main/generated/bluesky.utils.RunEngineInterrupted.html#bluesky.utils.RunEngineInterrupted" title="(in bluesky v1.14.7.dev29+gfb2c32466)"><strong>bluesky.utils.RunEngineInterrupted</strong></a> – if the user, or the plan itself, explicitly
+    requests an interruption.</p></li>
+</ul>
+</dd>
+</dl>
+<p>Calling a plan using this function means that keyboard-interrupt handling will be
+degraded: all keyboard interrupts will now force an immediate abort of the plan, using
+<a class="reference external" href="https://blueskyproject.io/bluesky/main/generated/bluesky.run_engine.RunEngine.abort.html#bluesky.run_engine.RunEngine.abort" title="(in bluesky v1.14.7.dev29+gfb2c32466)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RE.abort()</span></code></a>, rather than giving the
+possibility of gracefully resuming. Cleanup handlers will execute during the
+<a class="reference external" href="https://blueskyproject.io/bluesky/main/generated/bluesky.run_engine.RunEngine.abort.html#bluesky.run_engine.RunEngine.abort" title="(in bluesky v1.14.7.dev29+gfb2c32466)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RE.abort()</span></code></a> call.</p>
+<p>The bluesky run engine is not reentrant. It is a programming error to attempt to run a plan
+using this function, from within a plan. To call a sub plan from within an outer plan, use:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">outer_plan</span><span class="p">():</span>
+    <span class="o">...</span>
+    <span class="k">yield from</span> <span class="n">subplan</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="ibex_bluesky_core.preprocessors.html" class="btn btn-neutral float-left" title="ibex_bluesky_core.preprocessors" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="ibex_bluesky_core.utils.html" class="btn btn-neutral float-right" title="ibex_bluesky_core.utils" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

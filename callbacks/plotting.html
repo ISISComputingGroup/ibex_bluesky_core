@@ -1,0 +1,251 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Plotting &mdash; ibex_bluesky_core 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=dc476284" />
+
+  
+    <link rel="shortcut icon" href="../_static/favicon.svg"/>
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="File writing callbacks" href="file_writing.html" />
+    <link rel="prev" title="Centre of Mass" href="centre_of_mass.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #343131" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            ibex_bluesky_core
+              <img src="../_static/logo.svg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/overview.html">Getting started</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Devices</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../devices/blocks.html">Blocks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devices/dae.html">DAE (Data Acquisition Electronics)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Callbacks</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="isiscallbacks.html">ISIS Standard Callbacks (<code class="xref py py-obj docutils literal notranslate"><span class="pre">ISISCallbacks</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="fitting.html">Fits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="centre_of_mass.html">Centre of Mass</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Plotting</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#liveplot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LivePlot</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#livepcolormesh"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LivePColorMesh</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#plot-png-saver">Saving plots to PNG files (<code class="xref py py-obj docutils literal notranslate"><span class="pre">PlotPNGSaver</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#replotting-a-previous-scan">Replotting a previous scan</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="file_writing.html">File writing callbacks</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Plans</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../plans/plans.html">General Plans</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plans/reflectometry.html">Reflectometry-specific Plans</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Plan stubs</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/external_code.html">Calling external code (<code class="xref py py-obj docutils literal notranslate"><span class="pre">call_sync</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/matplotlib_helpers.html">Matplotlib helpers (<code class="xref py py-obj docutils literal notranslate"><span class="pre">call_qt_aware</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/plan_wrappers.html">Plan wrappers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/polling.html">Continuous polling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/redefining.html">Redefinition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/user_input.html">User input helpers</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../_api.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../replotting_scans.html">Replaying documents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../architectural_decisions.html">Architectural Decisions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer_information.html">Developer Information</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #343131" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">ibex_bluesky_core</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Plotting</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/ISISComputingGroup/ibex_bluesky_core/blob/main/doc/callbacks/plotting.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="plotting">
+<h1>Plotting<a class="headerlink" href="#plotting" title="Link to this heading"></a></h1>
+<section id="liveplot">
+<h2><a class="reference internal" href="../generated/ibex_bluesky_core.callbacks.html#ibex_bluesky_core.callbacks.LivePlot" title="ibex_bluesky_core.callbacks.LivePlot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LivePlot</span></code></a><a class="headerlink" href="#liveplot" title="Link to this heading"></a></h2>
+<p>Bluesky has good integration with <a class="reference external" href="https://matplotlib.org/stable/index.html#module-matplotlib" title="(in Matplotlib v3.10.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">matplotlib</span></code></a> for data visualization, and data from scans
+may be easily plotted using the <a class="reference internal" href="../generated/ibex_bluesky_core.callbacks.html#ibex_bluesky_core.callbacks.LivePlot" title="ibex_bluesky_core.callbacks.LivePlot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LivePlot</span></code></a>  callback.</p>
+<p><a class="reference internal" href="../generated/ibex_bluesky_core.callbacks.html#ibex_bluesky_core.callbacks.LivePlot" title="ibex_bluesky_core.callbacks.LivePlot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ibex_bluesky_core.callbacks.LivePlot</span></code></a> provides a thin wrapper over bluesky’s default
+<a class="reference external" href="https://blueskyproject.io/bluesky/main/callbacks.html#bluesky.callbacks.mpl_plotting.LivePlot" title="(in bluesky v1.14.7.dev29+gfb2c32466)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bluesky.callbacks.mpl_plotting.LivePlot</span></code></a> callback,
+which ensures that plots are promptly displayed in IBEX.</p>
+<p>In order to use the wrapper, import <a class="reference internal" href="../generated/ibex_bluesky_core.callbacks.html#ibex_bluesky_core.callbacks.LivePlot" title="ibex_bluesky_core.callbacks.LivePlot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LivePlot</span></code></a>
+from <a class="reference internal" href="../generated/ibex_bluesky_core.callbacks.html#module-ibex_bluesky_core.callbacks" title="ibex_bluesky_core.callbacks"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ibex_bluesky_core.callbacks</span></code></a> rather than importing
+<a class="reference external" href="https://blueskyproject.io/bluesky/main/callbacks.html#bluesky.callbacks.mpl_plotting.LivePlot" title="(in bluesky v1.14.7.dev29+gfb2c32466)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bluesky.callbacks.mpl_plotting.LivePlot</span></code></a> directly:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">ibex_bluesky_core.callbacks</span><span class="w"> </span><span class="kn">import</span> <span class="n">LivePlot</span>
+</pre></div>
+</div>
+<p>A range of configuration options for <a class="reference internal" href="../generated/ibex_bluesky_core.callbacks.html#ibex_bluesky_core.callbacks.LivePlot" title="ibex_bluesky_core.callbacks.LivePlot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LivePlot</span></code></a> are available - see bluesky’s <a class="reference external" href="https://blueskyproject.io/bluesky/main/callbacks.html#bluesky.callbacks.mpl_plotting.LivePlot" title="(in bluesky v1.14.7.dev29+gfb2c32466)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bluesky.callbacks.mpl_plotting.LivePlot</span></code></a> documentation for more details about available options.</p>
+<p>The <a class="reference internal" href="../generated/ibex_bluesky_core.callbacks.html#ibex_bluesky_core.callbacks.LivePlot" title="ibex_bluesky_core.callbacks.LivePlot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LivePlot</span></code></a> object allows an arbitrary set of matplotlib <a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes" title="(in Matplotlib v3.10.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Axes</span></code></a> to be passed in, onto
+which it will plot. This can be used to configure properties which are not directly exposed
+on the <a class="reference internal" href="../generated/ibex_bluesky_core.callbacks.html#ibex_bluesky_core.callbacks.LivePlot" title="ibex_bluesky_core.callbacks.LivePlot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LivePlot</span></code></a> object, for example log-scaled axes.</p>
+<p>See the <a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes" title="(in Matplotlib v3.10.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">matplotlib.axes.Axes</span></code></a> documentation for a full range of options on how to configure an <a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes" title="(in Matplotlib v3.10.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Axes</span></code></a> object.</p>
+<p>Below is a full example showing how to use standard <a class="reference external" href="https://matplotlib.org/stable/index.html#module-matplotlib" title="(in Matplotlib v3.10.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">matplotlib</span></code></a> &amp; <a class="reference external" href="https://blueskyproject.io/bluesky/main/_api/bluesky.html#module-bluesky" title="(in bluesky v1.14.7.dev29+gfb2c32466)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bluesky</span></code></a> functionality
+to plot a scan with a logarithmically scaled y-axis:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibex_bluesky_core.callbacks</span><span class="w"> </span><span class="kn">import</span> <span class="n">LivePlot</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibex_bluesky_core.plan_stubs</span><span class="w"> </span><span class="kn">import</span> <span class="n">call_qt_aware</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">plan</span><span class="p">():</span>
+    <span class="c1"># Create a new figure to plot onto.</span>
+    <span class="k">yield from</span> <span class="n">call_qt_aware</span><span class="p">(</span><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">)</span>
+    <span class="c1"># Make a new set of axes on that figure</span>
+    <span class="n">ax</span> <span class="o">=</span> <span class="k">yield from</span> <span class="n">call_qt_aware</span><span class="p">(</span><span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">)</span>
+    <span class="c1"># Set the y-scale to logarithmic</span>
+    <span class="k">yield from</span> <span class="n">call_qt_aware</span><span class="p">(</span><span class="n">ax</span><span class="o">.</span><span class="n">set_yscale</span><span class="p">,</span> <span class="s2">&quot;log&quot;</span><span class="p">)</span>
+    <span class="c1"># Use the above axes in a LivePlot callback</span>
+    <span class="n">plot_callback</span> <span class="o">=</span> <span class="n">LivePlot</span><span class="p">(</span><span class="n">y</span><span class="o">=</span><span class="s2">&quot;y_variable&quot;</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s2">&quot;x_variable&quot;</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="n">yerr</span><span class="o">=</span><span class="s2">&quot;yerr_variable&quot;</span><span class="p">)</span>
+    <span class="c1"># yerr is the uncertanties of each y value, producing error bars</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>See <a class="reference internal" href="../plan_stubs/matplotlib_helpers.html"><span class="std std-doc">docs for <code class="docutils literal notranslate"><span class="pre">call_qt_aware</span></code></span></a> for a description of why we need to use
+<code class="docutils literal notranslate"><span class="pre">yield</span> <span class="pre">from</span> <span class="pre">call_qt_aware</span></code> rather than calling <code class="docutils literal notranslate"><span class="pre">matplotlib</span></code> functions directly.</p>
+</div>
+<p>By providing a signal name to the <code class="docutils literal notranslate"><span class="pre">yerr</span></code> argument you can pass uncertainties to <a class="reference internal" href="../generated/ibex_bluesky_core.callbacks.html#ibex_bluesky_core.callbacks.LivePlot" title="ibex_bluesky_core.callbacks.LivePlot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LivePlot</span></code></a>, by not providing anything for this argument means that no error bars will be drawn. Error bars are drawn after each point collected, displaying their standard deviation - uncertainty data is collected from Bluesky event documents and error bars are updated after every new point added.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">plot_callback</span></code> object can then be subscribed to the run engine, using either:</p>
+<ul class="simple">
+<li><p>An explicit callback when calling the run engine: <code class="docutils literal notranslate"><span class="pre">RE(some_plan(),</span> <span class="pre">plot_callback)</span></code></p></li>
+<li><p>Be subscribed in a plan using <a class="reference external" href="https://blueskyproject.io/bluesky/main/generated/bluesky.preprocessors.subs_decorator.html#bluesky.preprocessors.subs_decorator" title="(in bluesky v1.14.7.dev29+gfb2c32466)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">subs_decorator</span></code></a> from bluesky <strong>(recommended)</strong></p></li>
+<li><p>Globally attached to the run engine using <a class="reference external" href="https://blueskyproject.io/bluesky/main/generated/bluesky.run_engine.RunEngine.subscribe.html#bluesky.run_engine.RunEngine.subscribe" title="(in bluesky v1.14.7.dev29+gfb2c32466)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RE.subscribe</span></code></a></p>
+<ul>
+<li><p>Not recommended, not all scans will use the same variables and a plot setup that works
+for one scan is unlikely to be optimal for a different type of scan.</p></li>
+</ul>
+</li>
+</ul>
+<p>By subsequently re-using the same <code class="docutils literal notranslate"><span class="pre">ax</span></code> object in later scans, rather than creating a new
+<code class="docutils literal notranslate"><span class="pre">ax</span></code> object for each scan, two scans can be “overplotted” with each other for comparison.</p>
+</section>
+<section id="livepcolormesh">
+<h2><a class="reference internal" href="../generated/ibex_bluesky_core.callbacks.html#ibex_bluesky_core.callbacks.LivePColorMesh" title="ibex_bluesky_core.callbacks.LivePColorMesh"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LivePColorMesh</span></code></a><a class="headerlink" href="#livepcolormesh" title="Link to this heading"></a></h2>
+<p><a class="reference internal" href="../generated/ibex_bluesky_core.callbacks.html#ibex_bluesky_core.callbacks.LivePColorMesh" title="ibex_bluesky_core.callbacks.LivePColorMesh"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LivePColorMesh</span></code></a> is a specialized heatmap
+plotting callback which reacts to <em>rows</em> of data at a time. This is suitable for use by DAE reducers
+which emit rows of data at a time, such as
+<a class="reference internal" href="../generated/ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.PeriodSpecIntegralsReducer" title="ibex_bluesky_core.devices.simpledae.PeriodSpecIntegralsReducer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PeriodSpecIntegralsReducer</span></code></a> or
+<a class="reference internal" href="../generated/ibex_bluesky_core.devices.simpledae.html#ibex_bluesky_core.devices.simpledae.DSpacingMappingReducer" title="ibex_bluesky_core.devices.simpledae.DSpacingMappingReducer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DSpacingMappingReducer</span></code></a>.</p>
+<p>This callback updates live as the scan progresses. It is otherwise very similar to the
+existing bluesky plotting callbacks.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Due to an implementation detail of <a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.pcolormesh.html#matplotlib.pyplot.pcolormesh" title="(in Matplotlib v3.10.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">matplotlib.pyplot.pcolormesh</span></code></a>,
+the plot will only appear once at least <em>two</em> rows of data have been collected.</p>
+</div>
+</section>
+<section id="plot-png-saver">
+<h2>Saving plots to PNG files (<a class="reference internal" href="../generated/ibex_bluesky_core.callbacks.html#ibex_bluesky_core.callbacks.PlotPNGSaver" title="ibex_bluesky_core.callbacks.PlotPNGSaver"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PlotPNGSaver</span></code></a>)<a class="headerlink" href="#plot-png-saver" title="Link to this heading"></a></h2>
+<p><a class="reference internal" href="../generated/ibex_bluesky_core.callbacks.html#ibex_bluesky_core.callbacks.PlotPNGSaver" title="ibex_bluesky_core.callbacks.PlotPNGSaver"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PlotPNGSaver</span></code></a> is used to save plots to PNG files at the end of a scan.</p>
+<p>This is enabled by default in the <a class="reference internal" href="../generated/ibex_bluesky_core.callbacks.html#ibex_bluesky_core.callbacks.ISISCallbacks" title="ibex_bluesky_core.callbacks.ISISCallbacks"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ISISCallbacks</span></code></a> callbacks collection.</p>
+<p>Using the above example (i.e. without the <a class="reference internal" href="../generated/ibex_bluesky_core.callbacks.html#ibex_bluesky_core.callbacks.ISISCallbacks" title="ibex_bluesky_core.callbacks.ISISCallbacks"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ISISCallbacks</span></code></a> helper) it can be used like so:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibex_bluesky_core.callbacks</span><span class="w"> </span><span class="kn">import</span> <span class="n">LivePlot</span><span class="p">,</span> <span class="n">PlotPNGSaver</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ibex_bluesky_core.plan_stubs</span><span class="w"> </span><span class="kn">import</span> <span class="n">call_qt_aware</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">plan</span><span class="p">():</span>
+    <span class="c1"># Create a new figure to plot onto.</span>
+    <span class="k">yield from</span> <span class="n">call_qt_aware</span><span class="p">(</span><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">)</span>
+    <span class="c1"># Make a new set of axes on that figure</span>
+    <span class="n">ax</span> <span class="o">=</span> <span class="k">yield from</span> <span class="n">call_qt_aware</span><span class="p">(</span><span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">)</span>
+    <span class="c1"># Set the y-scale to logarithmic</span>
+    <span class="k">yield from</span> <span class="n">call_qt_aware</span><span class="p">(</span><span class="n">ax</span><span class="o">.</span><span class="n">set_yscale</span><span class="p">,</span> <span class="s2">&quot;log&quot;</span><span class="p">)</span>
+    <span class="c1"># Use the above axes in a LivePlot callback</span>
+    <span class="n">plot_callback</span> <span class="o">=</span> <span class="n">LivePlot</span><span class="p">(</span><span class="n">y</span><span class="o">=</span><span class="s2">&quot;y_variable&quot;</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s2">&quot;x_variable&quot;</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="n">yerr</span><span class="o">=</span><span class="s2">&quot;yerr_variable&quot;</span><span class="p">)</span>
+    <span class="c1"># Add a PNG saving callback</span>
+    <span class="n">png_callback</span> <span class="o">=</span> <span class="n">PlotPNGSaver</span><span class="p">(</span><span class="n">y</span><span class="o">=</span><span class="s2">&quot;y_variable&quot;</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s2">&quot;x_variable&quot;</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;C://&quot;</span><span class="p">,</span> <span class="s2">&quot;Some&quot;</span><span class="p">,</span> <span class="s2">&quot;Custom&quot;</span><span class="p">,</span> <span class="s2">&quot;Directory&quot;</span><span class="p">),</span> <span class="n">postfix</span><span class="o">=</span><span class="s2">&quot;test123&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="replotting-a-previous-scan">
+<h2>Replotting a previous scan<a class="headerlink" href="#replotting-a-previous-scan" title="Link to this heading"></a></h2>
+<p>See <a class="reference internal" href="../replotting_scans.html"><span class="doc">Replaying documents</span></a> for information about how to replay bluesky documents into an arbitrary set of callbacks, which can be used to replot a previous scan.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="centre_of_mass.html" class="btn btn-neutral float-left" title="Centre of Mass" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="file_writing.html" class="btn btn-neutral float-right" title="File writing callbacks" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

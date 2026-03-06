@@ -1,0 +1,215 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ISIS Standard Callbacks (ISISCallbacks) &mdash; ibex_bluesky_core 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=dc476284" />
+
+  
+    <link rel="shortcut icon" href="../_static/favicon.svg"/>
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Fits" href="fitting.html" />
+    <link rel="prev" title="DAE (Data Acquisition Electronics)" href="../devices/dae.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #343131" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            ibex_bluesky_core
+              <img src="../_static/logo.svg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/overview.html">Getting started</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Devices</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../devices/blocks.html">Blocks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devices/dae.html">DAE (Data Acquisition Electronics)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Callbacks</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">ISIS Standard Callbacks (<code class="xref py py-obj docutils literal notranslate"><span class="pre">ISISCallbacks</span></code>)</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#live-table">Live table</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#plotting">Plotting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#fitting">Fitting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#centre-of-mass-and-peak-stats">Centre of mass and Peak Stats</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#file-output">File output</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#fit-output">Fit output</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#hr-files-icc">Human readable files</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#plot-pngs">Plot PNGs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#raw-bluesky-events">Raw Bluesky Events</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#accessing-callbacks-directly">Accessing callbacks directly</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="fitting.html">Fits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="centre_of_mass.html">Centre of Mass</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plotting.html">Plotting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="file_writing.html">File writing callbacks</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Plans</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../plans/plans.html">General Plans</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plans/reflectometry.html">Reflectometry-specific Plans</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Plan stubs</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/external_code.html">Calling external code (<code class="xref py py-obj docutils literal notranslate"><span class="pre">call_sync</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/matplotlib_helpers.html">Matplotlib helpers (<code class="xref py py-obj docutils literal notranslate"><span class="pre">call_qt_aware</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/plan_wrappers.html">Plan wrappers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/polling.html">Continuous polling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/redefining.html">Redefinition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/user_input.html">User input helpers</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../_api.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../replotting_scans.html">Replaying documents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../architectural_decisions.html">Architectural Decisions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer_information.html">Developer Information</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #343131" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">ibex_bluesky_core</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">ISIS Standard Callbacks (<code class="xref py py-obj docutils literal notranslate"><span class="pre">ISISCallbacks</span></code>)</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/ISISComputingGroup/ibex_bluesky_core/blob/main/doc/callbacks/isiscallbacks.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="icc">
+<h1>ISIS Standard Callbacks (<a class="reference internal" href="../generated/ibex_bluesky_core.callbacks.html#ibex_bluesky_core.callbacks.ISISCallbacks" title="ibex_bluesky_core.callbacks.ISISCallbacks"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ISISCallbacks</span></code></a>)<a class="headerlink" href="#icc" title="Link to this heading"></a></h1>
+<p><a class="reference internal" href="../generated/ibex_bluesky_core.callbacks.html#ibex_bluesky_core.callbacks.ISISCallbacks" title="ibex_bluesky_core.callbacks.ISISCallbacks"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ISISCallbacks</span></code></a> is a helper to add common callbacks to 1-dimensional scans with a single dependent variable (with an optional uncertainty) and a single independent variable.  This should avoid some repetition as you don’t need to pass <code class="docutils literal notranslate"><span class="pre">x</span></code> and <code class="docutils literal notranslate"><span class="pre">y</span></code> to each callback.</p>
+<p>It is composed of the following callbacks:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../generated/ibex_bluesky_core.callbacks.html#ibex_bluesky_core.callbacks.LiveFit" title="ibex_bluesky_core.callbacks.LiveFit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ibex_bluesky_core.callbacks.LiveFit</span></code></a></p></li>
+<li><p><a class="reference internal" href="../generated/ibex_bluesky_core.callbacks.html#ibex_bluesky_core.callbacks.LivePlot" title="ibex_bluesky_core.callbacks.LivePlot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ibex_bluesky_core.callbacks.LivePlot</span></code></a></p></li>
+<li><p><a class="reference external" href="https://blueskyproject.io/bluesky/main/callbacks.html#bluesky.callbacks.LiveTable" title="(in bluesky v1.14.7.dev29+gfb2c32466)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bluesky.callbacks.LiveTable</span></code></a></p></li>
+<li><p><a class="reference external" href="https://blueskyproject.io/bluesky/main/callbacks.html#bluesky.callbacks.fitting.PeakStats" title="(in bluesky v1.14.7.dev29+gfb2c32466)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bluesky.callbacks.fitting.PeakStats</span></code></a></p></li>
+<li><p><a class="reference external" href="https://blueskyproject.io/bluesky/main/callbacks.html#bluesky.callbacks.mpl_plotting.LiveFitPlot" title="(in bluesky v1.14.7.dev29+gfb2c32466)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bluesky.callbacks.mpl_plotting.LiveFitPlot</span></code></a></p></li>
+<li><p><a class="reference internal" href="../generated/ibex_bluesky_core.callbacks.html#ibex_bluesky_core.callbacks.CentreOfMass" title="ibex_bluesky_core.callbacks.CentreOfMass"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ibex_bluesky_core.callbacks.CentreOfMass</span></code></a></p></li>
+<li><p><a class="reference internal" href="../generated/ibex_bluesky_core.callbacks.html#ibex_bluesky_core.callbacks.PlotPNGSaver" title="ibex_bluesky_core.callbacks.PlotPNGSaver"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ibex_bluesky_core.callbacks.PlotPNGSaver</span></code></a></p></li>
+<li><p><a class="reference internal" href="../generated/ibex_bluesky_core.callbacks.html#ibex_bluesky_core.callbacks.LiveFitLogger" title="ibex_bluesky_core.callbacks.LiveFitLogger"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ibex_bluesky_core.callbacks.LiveFitLogger</span></code></a></p></li>
+<li><p><a class="reference internal" href="../generated/ibex_bluesky_core.callbacks.html#ibex_bluesky_core.callbacks.HumanReadableFileCallback" title="ibex_bluesky_core.callbacks.HumanReadableFileCallback"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ibex_bluesky_core.callbacks.HumanReadableFileCallback</span></code></a></p></li>
+</ul>
+<section id="live-table">
+<h2>Live table<a class="headerlink" href="#live-table" title="Link to this heading"></a></h2>
+<p>A <a class="reference external" href="https://blueskyproject.io/bluesky/main/callbacks.html#bluesky.callbacks.LiveTable" title="(in bluesky v1.14.7.dev29+gfb2c32466)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LiveTable</span></code></a> is enabled by default. This will show the values of X and Y according to their <code class="docutils literal notranslate"><span class="pre">seq_num</span></code> or event order.</p>
+<p>You can pass optional fields to be displayed in the LiveTable with the <code class="docutils literal notranslate"><span class="pre">fields_for_live_table</span></code> argument or the <code class="docutils literal notranslate"><span class="pre">measured_fields</span></code> argument if you want the fields to be put in the human-readable file (see <a class="reference internal" href="#hr-files-icc"><span class="std std-ref">below.</span></a>)</p>
+</section>
+<section id="plotting">
+<h2>Plotting<a class="headerlink" href="#plotting" title="Link to this heading"></a></h2>
+<p>Plotting is enabled by default and running a plan with <a class="reference internal" href="../generated/ibex_bluesky_core.callbacks.html#ibex_bluesky_core.callbacks.ISISCallbacks" title="ibex_bluesky_core.callbacks.ISISCallbacks"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ISISCallbacks</span></code></a> will close any current active plots.</p>
+</section>
+<section id="fitting">
+<h2>Fitting<a class="headerlink" href="#fitting" title="Link to this heading"></a></h2>
+<p>If a <a class="reference internal" href="fitting/standard_fits.html#standard-fitting-models"><span class="std std-ref">fitting method</span></a> is given via the <code class="docutils literal notranslate"><span class="pre">fit</span></code> argument (this is optional), fitting will be enabled. By default, this fit will be shown on a plot.</p>
+<p>After a scan has run you can get the fitting results by using the <a class="reference internal" href="../generated/ibex_bluesky_core.callbacks.html#ibex_bluesky_core.callbacks.ISISCallbacks.live_fit" title="ibex_bluesky_core.callbacks.ISISCallbacks.live_fit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">live_fit</span></code></a> property.</p>
+</section>
+<section id="centre-of-mass-and-peak-stats">
+<h2>Centre of mass and Peak Stats<a class="headerlink" href="#centre-of-mass-and-peak-stats" title="Link to this heading"></a></h2>
+<p>These are both enabled by default. To access <a class="reference internal" href="../generated/ibex_bluesky_core.callbacks.html#ibex_bluesky_core.callbacks.CentreOfMass" title="ibex_bluesky_core.callbacks.CentreOfMass"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CentreOfMass</span></code></a> information after a plan, use the <a class="reference internal" href="../generated/ibex_bluesky_core.callbacks.html#ibex_bluesky_core.callbacks.ISISCallbacks.com" title="ibex_bluesky_core.callbacks.ISISCallbacks.com"><code class="xref py py-obj docutils literal notranslate"><span class="pre">com</span></code></a> property.</p>
+<p>To access <a class="reference external" href="https://blueskyproject.io/bluesky/main/callbacks.html#bluesky.callbacks.fitting.PeakStats" title="(in bluesky v1.14.7.dev29+gfb2c32466)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PeakStats</span></code></a> after a plan, use the <a class="reference internal" href="../generated/ibex_bluesky_core.callbacks.html#ibex_bluesky_core.callbacks.ISISCallbacks.peak_stats" title="ibex_bluesky_core.callbacks.ISISCallbacks.peak_stats"><code class="xref py py-obj docutils literal notranslate"><span class="pre">peak_stats</span></code></a> property.</p>
+</section>
+<section id="file-output">
+<h2>File output<a class="headerlink" href="#file-output" title="Link to this heading"></a></h2>
+<section id="fit-output">
+<h3>Fit output<a class="headerlink" href="#fit-output" title="Link to this heading"></a></h3>
+<p>These are enabled by default when a fit method is given. See <a class="reference internal" href="fitting/livefit_logger.html#livefit-logger"><span class="std std-ref">Saving fit results to file (LiveFitLogger)</span></a> for more information.</p>
+</section>
+<section id="hr-files-icc">
+<h3>Human readable files<a class="headerlink" href="#hr-files-icc" title="Link to this heading"></a></h3>
+<p>These are enabled by default and are appended to throughout a bluesky run. See <a class="reference internal" href="file_writing.html#hr-file-cb"><span class="std std-ref">Human readable files</span></a> for more information.</p>
+</section>
+<section id="plot-pngs">
+<h3>Plot PNGs<a class="headerlink" href="#plot-pngs" title="Link to this heading"></a></h3>
+<p>These are enabled by default. They are saved on the end of a bluesky run. See <a class="reference internal" href="plotting.html#plot-png-saver"><span class="std std-ref">Saving plots to PNG files (PlotPNGSaver)</span></a> for more information.</p>
+</section>
+<section id="raw-bluesky-events">
+<h3>Raw Bluesky Events<a class="headerlink" href="#raw-bluesky-events" title="Link to this heading"></a></h3>
+<p>These are enabled, but not by <a class="reference internal" href="../generated/ibex_bluesky_core.callbacks.html#ibex_bluesky_core.callbacks.ISISCallbacks" title="ibex_bluesky_core.callbacks.ISISCallbacks"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ISISCallbacks</span></code></a>. See <a class="reference internal" href="file_writing.html#event-doc-cb"><span class="std std-ref">Bluesky Event documents</span></a> for more information.</p>
+</section>
+</section>
+<section id="accessing-callbacks-directly">
+<h2>Accessing callbacks directly<a class="headerlink" href="#accessing-callbacks-directly" title="Link to this heading"></a></h2>
+<p>A list of callbacks used by the current instance can be obtained through the <a class="reference internal" href="../generated/ibex_bluesky_core.callbacks.html#ibex_bluesky_core.callbacks.ISISCallbacks.subs" title="ibex_bluesky_core.callbacks.ISISCallbacks.subs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">subs</span></code></a> property.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../devices/dae.html" class="btn btn-neutral float-left" title="DAE (Data Acquisition Electronics)" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="fitting.html" class="btn btn-neutral float-right" title="Fits" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

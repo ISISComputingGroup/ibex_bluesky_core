@@ -1,0 +1,221 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>9. Kafka streaming &mdash; ibex_bluesky_core 0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=dc476284" />
+
+  
+    <link rel="shortcut icon" href="../_static/favicon.svg"/>
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=2709fde1"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Developer Information" href="../developer_information.html" />
+    <link rel="prev" title="8. Using our own Centre of Mass Callback" href="008-centre-of-mass.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #343131" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            ibex_bluesky_core
+              <img src="../_static/logo.svg" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/overview.html">Getting started</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Devices</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../devices/blocks.html">Blocks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devices/dae.html">DAE (Data Acquisition Electronics)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Callbacks</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../callbacks/isiscallbacks.html">ISIS Standard Callbacks (<code class="xref py py-obj docutils literal notranslate"><span class="pre">ISISCallbacks</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../callbacks/fitting.html">Fits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../callbacks/centre_of_mass.html">Centre of Mass</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../callbacks/plotting.html">Plotting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../callbacks/file_writing.html">File writing callbacks</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Plans</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../plans/plans.html">General Plans</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plans/reflectometry.html">Reflectometry-specific Plans</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Plan stubs</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/external_code.html">Calling external code (<code class="xref py py-obj docutils literal notranslate"><span class="pre">call_sync</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/matplotlib_helpers.html">Matplotlib helpers (<code class="xref py py-obj docutils literal notranslate"><span class="pre">call_qt_aware</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/plan_wrappers.html">Plan wrappers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/polling.html">Continuous polling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/redefining.html">Redefinition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/user_input.html">User input helpers</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../_api.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../replotting_scans.html">Replaying documents</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../architectural_decisions.html">Architectural Decisions</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="001-repo-structure.html">1. Repository structure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="002-use-ophyd-async.html">2. Use <code class="docutils literal notranslate"><span class="pre">ophyd-async</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="003-run-in-process.html">3. Run in-process</a></li>
+<li class="toctree-l2"><a class="reference internal" href="004-use-scipp.html">4. Use <code class="docutils literal notranslate"><span class="pre">scipp</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="005-variance-addition.html">5. Variance addition to counts data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="006-where-to-put-code.html">6. Where to put code</a></li>
+<li class="toctree-l2"><a class="reference internal" href="007-output-file-archiving.html">7. Output file archiving</a></li>
+<li class="toctree-l2"><a class="reference internal" href="008-centre-of-mass.html">8. Using our own Centre of Mass Callback</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">9. Kafka streaming</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../developer_information.html">Developer Information</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #343131" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">ibex_bluesky_core</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../architectural_decisions.html">Architectural Decisions</a></li>
+      <li class="breadcrumb-item active">9. Kafka streaming</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/ISISComputingGroup/ibex_bluesky_core/blob/main/doc/architectural_decisions/009-kafka-streaming.md" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="kafka-streaming">
+<h1>9. Kafka streaming<a class="headerlink" href="#kafka-streaming" title="Link to this heading"></a></h1>
+<section id="status">
+<h2>Status<a class="headerlink" href="#status" title="Link to this heading"></a></h2>
+<p>Current</p>
+</section>
+<section id="context">
+<h2>Context<a class="headerlink" href="#context" title="Link to this heading"></a></h2>
+<p>Many facilities stream bluesky documents to an event-bus for consumption by out-of-process listeners.
+Event buses used for this purpose at other facilities include ZeroMQ, RabbitMQ, Kafka, Redis, NATS, and
+others.</p>
+<p>The capability this provides is that callbacks can be run in different processes or on other computers,
+without holding up or interfering with the local <code class="docutils literal notranslate"><span class="pre">RunEngine</span></code>. Other groups at ISIS have expressed some
+interest in being able to subscribe to bluesky documents.</p>
+</section>
+<section id="decision">
+<h2>Decision<a class="headerlink" href="#decision" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>We will stream our messages to Kafka, as opposed to some other message bus. This is because we already
+have Kafka infrastructure available for other purposes (e.g. event data &amp; sample-environment data).</p></li>
+<li><p>At the time of writing, we will not <strong>depend</strong> on Kafka for anything critical. This is because the
+central Kafka instance is not currently considered “reliable” in an experiment controls context. However,
+streaming the documents will allow testing to be done. Kafka will eventually be deployed in a “reliable”
+way accessible to each instrument.</p></li>
+<li><p>We will encode messages from bluesky using <code class="docutils literal notranslate"><span class="pre">msgpack</span></code> (with the <code class="docutils literal notranslate"><span class="pre">msgpack-numpy</span></code> extension), because:</p>
+<ul>
+<li><p>It is the default encoder used by the upstream <code class="docutils literal notranslate"><span class="pre">bluesky-kafka</span></code> integration (though we are not using
+that integration directly, as it has been soft-deprecated upstream)</p></li>
+<li><p>It is a schema-less encoder, meaning we do not have to write/maintain fixed schemas for all the
+documents allowed by <code class="docutils literal notranslate"><span class="pre">event-model</span></code></p></li>
+<li><p>It has reasonable performance in terms of encoding speed and message size</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">msgpack</span></code> is very widely supported in a range of programming languages</p></li>
+</ul>
+</li>
+<li><p>Kafka brokers will be configurable via an environment variable, <code class="docutils literal notranslate"><span class="pre">IBEX_BLUESKY_CORE_KAFKA_BROKER</span></code></p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Wherever Kafka is mentioned above, the actual implementation may be a Kafka-like (e.g. RedPanda).</p>
+</div>
+<section id="alternatives-considered">
+<h3>Alternatives considered<a class="headerlink" href="#alternatives-considered" title="Link to this heading"></a></h3>
+<p>Encoding bluesky documents into JSON and then wrapping them in the
+<a class="reference external" href="https://github.com/ess-dmsc/streaming-data-types/blob/58793c3dfa060f60b4a933bc085f831744e43f17/schemas/json_json.fbs"><code class="docutils literal notranslate"><span class="pre">json_json.fbs</span></code> flatbuffers schema</a>
+was considered.</p>
+<p>We chose <code class="docutils literal notranslate"><span class="pre">msgpack</span></code> instead of json strings + flatbuffers because:</p>
+<ul class="simple">
+<li><p>It is more standard in the bluesky community</p></li>
+<li><p>Bluesky events will be streamed to a dedicated topic, which is unlikely to be confused with data
+using any other schema.</p></li>
+</ul>
+<p>Performance/storage impacts are unlikely to be noticeable for bluesky documents, but nonetheless:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">msgpack</span></code>-encoded documents are 30-40% smaller than <code class="docutils literal notranslate"><span class="pre">json</span></code> + flatbuffers
+for a typical bluesky document</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">msgpack</span></code>-encoding messages is ~5x faster than <code class="docutils literal notranslate"><span class="pre">json</span></code> + flatbuffers encoding
+for a typical bluesky document.</p></li>
+</ul>
+</section>
+</section>
+<section id="justification-consequences">
+<h2>Justification &amp; Consequences<a class="headerlink" href="#justification-consequences" title="Link to this heading"></a></h2>
+<p>We will stream bluesky documents to Kafka, encoded using <code class="docutils literal notranslate"><span class="pre">msgpack-numpy</span></code>.</p>
+<p>At the time of writing this is purely to enable testing, and will not be used for “production” workflows.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="008-centre-of-mass.html" class="btn btn-neutral float-left" title="8. Using our own Centre of Mass Callback" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../developer_information.html" class="btn btn-neutral float-right" title="Developer Information" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright .</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
