@@ -90,7 +90,7 @@ class ISISCallbacks:
         plot_png_postfix: str = "",
         live_fit_update_every: int | None = 1,
         live_plot_update_on_every_event: bool = True,
-        set_title_to_fit_result: bool = True,
+        set_title_to_fit_result: bool = False,
     ) -> None:
         """A collection of ISIS standard callbacks for use within plans.
 

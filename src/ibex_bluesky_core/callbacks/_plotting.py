@@ -135,20 +135,20 @@ class LiveFitPlot(_DefaultLiveFitPlot):
     def stop(self, doc: RunStop) -> None:
         """Process a stop document (delegate to superclass, then show the plot)."""
         super().stop(doc)
+        if self.set_title:
+            param_name = self.livefit.model.param_names
+            result_values = self.livefit.result.values
+            model_title = self.livefit.model.name.split("  [")[0] + ")"
 
-        param_name = self.livefit.model.param_names
-        result_values = self.livefit.result.values
-        model_title = self.livefit.model.name.split("  [")[0] + ")"
+            contains = [x for x in _selected_params if x in param_name]
 
-        contains = [x for x in _selected_params if x in param_name]
+            if contains:
+                equation_values = [(key, value) for key, value in result_values.items() if key in contains]
+            else:
+                equation_values = [(key, value) for key, value in result_values.items() if key in param_name]
 
-        if contains:
-            equation_values = [(key, value) for key, value in result_values.items() if key in contains]
-        else:
-            equation_values = [(key, value) for key, value in result_values.items() if key in param_name]
-
-        title_formatted = f"{model_title}:\n{', '.join(f'{k}: {v:.{_precision}g}' for k, v in equation_values)}"
-        self.ax.set_title(title_formatted, wrap=True)
+            title_formatted = f"{model_title}:\n{', '.join(f'{k}: {v:.{_precision}g}' for k, v in equation_values)}"
+            self.ax.set_title(title_formatted, wrap=True)
 
 class LivePColorMesh(QtAwareCallback):
     """Live :py:obj:`PColorMesh<matplotlib.pyplot.pcolormesh>`-based heatmap."""
