@@ -157,6 +157,7 @@ class ISISCallbacks:
             plot_png_postfix: the postfix to add to PNG plot files.
             live_fit_update_every: How often, in points, to recompute the fit. If None, do not compute until the end.
             live_plot_update_on_every_event: whether to show the live plot on every event, or just at the end.
+            set_title_to_fit_result: whether to set the title of the fit plot to the fit result.
         """  # noqa
         fig = None
         self._subs = []
