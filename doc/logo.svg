@@ -2,20 +2,20 @@
 	<title>bluesky-logo-dark</title>
 	<defs>
 		<linearGradient id="g1" x2="1" gradientUnits="userSpaceOnUse" gradientTransform="matrix(0,-600.92,2483.566,0,812.206,600.414)">
-			<stop offset="0" stop-color="#ff4500"/>
-			<stop offset="1" stop-color="#ff8c00"/>
+			<stop offset="0" stop-color="#5db0d8"/>
+			<stop offset="1" stop-color="#477fb9"/>
 		</linearGradient>
 	</defs>
 	<defs>
 		<linearGradient id="g2" x2="1" gradientUnits="userSpaceOnUse" gradientTransform="matrix(0,-350.92,2483.566,0,812.206,600.414)">
-			<stop offset="0" stop-color="#5E2E07"/>
-			<stop offset="1" stop-color="#A9530D"/>
+			<stop offset="0" stop-color="#00385b"/>
+			<stop offset="1" stop-color="#0068a9"/>
 		</linearGradient>
 	</defs>
 	<defs>
-		<linearGradient id="g3" x2="1" gradientUnits="userSpaceOnUse" gradientTransform="matrix(0,-1000.92,2483.566,0,812.206,700.414)">
-			<stop offset="0" stop-color="#344322"/>
-			<stop offset="1" stop-color="#B6CD9C"/>
+		<linearGradient id="g3" x2="1" gradientUnits="userSpaceOnUse" gradientTransform="matrix(0,-300.92,2483.566,0,812.206,315.414)">
+			<stop offset="0" stop-color="#5db0d8"/>
+			<stop offset="1" stop-color="#477fb9"/>
 		</linearGradient>
 	</defs>
 	<style>

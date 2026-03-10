@@ -110,3 +110,7 @@ def plan():
     # Add a PNG saving callback
     png_callback = PlotPNGSaver(y="y_variable", x="x_variable", ax=ax, output_dir=Path("C://", "Some", "Custom", "Directory"), postfix="test123")
 ```
+
+## Replotting a previous scan
+
+See {doc}`/replotting_scans` for information about how to replay bluesky documents into an arbitrary set of callbacks, which can be used to replot a previous scan.
