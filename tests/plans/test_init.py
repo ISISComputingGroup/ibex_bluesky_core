@@ -6,9 +6,9 @@ from unittest.mock import patch
 import bluesky.utils
 import pytest
 from bluesky.preprocessors import run_decorator
+from ophyd_async.core import callback_on_mock_put, get_mock_put, set_mock_value
 from ophyd_async.plan_stubs import ensure_connected
 from ophyd_async.sim import SimMotor
-from ophyd_async.testing import callback_on_mock_put, get_mock_put, set_mock_value
 
 from ibex_bluesky_core.devices.block import BlockMot, BlockR, BlockRw
 from ibex_bluesky_core.devices.simpledae import (
@@ -145,10 +145,10 @@ def test_if_in_periods_mode_and_run_saved_then_scan_start_doc_contains_run_numbe
 
     with (
         patch("ibex_bluesky_core.plans.ensure_connected"),
-    ):
         # Scan fails because DAE isn't set up right... but it still emits a start doc so that's fine
-        with pytest.raises(bluesky.utils.FailedStatus):
-            RE(scan_func(dae, block, rel=False, periods=True, save_run=True), _cb)
+        pytest.raises(bluesky.utils.FailedStatus),
+    ):
+        RE(scan_func(dae, block, rel=False, periods=True, save_run=True), _cb)
 
     assert start_doc is not None
     assert start_doc.get("run_number") == "12345678"
@@ -191,7 +191,7 @@ def test_adaptive_scan_with_periods_sets_max_periods(RE, dae, block):
                 model=Gaussian().fit(),
             )
         )
-    get_mock_put(dae.number_of_periods.signal).assert_called_with(expected, wait=True)
+    get_mock_put(dae.number_of_periods.signal).assert_called_with(expected)
 
 
 def test_adaptive_scan_does_normal_scan_when_relative_false(RE, dae, block):
@@ -356,4 +356,4 @@ async def test_polling_plan_drops_readable_updates_if_no_new_motor_position(RE):
         {"event": lambda x, y: captured_events.append(y["data"])},
     )
 
-    assert all([readable == 10 for motor, readable in [x.values() for x in captured_events]])
+    assert all(readable == 10 for motor, readable in [x.values() for x in captured_events])

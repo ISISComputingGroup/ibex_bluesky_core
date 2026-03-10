@@ -51,8 +51,7 @@ class MockFit(Fit):
             x: npt.NDArray[np.float64], y: npt.NDArray[np.float64]
         ) -> dict[str, lmfit.Parameter]:
             cls.mock_guess()
-            init_guess = {"offset": lmfit.Parameter("offset", 1)}
-            return init_guess
+            return {"offset": lmfit.Parameter("offset", 1)}
 
         return guess
 

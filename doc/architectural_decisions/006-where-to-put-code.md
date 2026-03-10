@@ -34,7 +34,7 @@ Examples of devices and where we would put them under this model:
 Examples of plans and where we would put them under this model:
 ### `ibex_bluesky_core` plans
 - Scanning one block against DAE with a common set of callbacks
-- Optimizing an axis against a readback (e.g. consituent parts of reflectometry auto-align)
+- Optimizing an axis against a readback (e.g. constituent parts of reflectometry auto-align)
 - Very common plans
   - `scan_motor_against_dae`:
     * Always assumes a "motor" - i.e. sets up a block with `use_completion_callback=True` and `use_global_moving_flag=True`
@@ -49,7 +49,7 @@ Examples of plans and where we would put them under this model:
 - RIKEN auto-tuning - but like refl, might be able to use component plans that we keep in `ibex_bluesky_core`
 - "top-level" plans that end users will actually call (though they may delegate almost immediately to `ibex_bluesky_core` helpers)
 
-where `inst` plans/devices are kept in ie. `\instrument\settings\config\<>\configurations\python\inst\bluesky\{plans\devices}` respectively.
+where `inst` plans/devices are kept in ie. `\instrument\settings\config\<>\python\inst\bluesky\{plans\devices}` respectively.
 
 ## Consequences
 Negative: 

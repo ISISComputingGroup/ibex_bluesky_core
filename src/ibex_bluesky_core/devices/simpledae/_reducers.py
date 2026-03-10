@@ -34,7 +34,7 @@ async def sum_spectra(spectra: Collection[DaeSpectra]) -> sc.Variable | sc.DataA
     """Read and sum a number of spectra from the DAE.
 
     Args:
-        spectra: a Collection type object of DAE spectra
+        spectra: a :py:obj:`~collections.abc.Collection` type object of DAE spectra
 
     Returns:
         scipp :external+scipp:py:obj:`Variable <scipp.Variable>`
@@ -59,11 +59,10 @@ def tof_bounded_spectra(
         bounds: A scipp :external+scipp:py:obj:`array <scipp.array>` of size 2, no variances, unit
             of us, where the second element must be larger than the first.
 
-    :rtype:
-        scipp :external+scipp:py:obj:`scalar <scipp.scalar>`
-
-    Returns a scipp :external+scipp:py:obj:`scalar <scipp.scalar>`, which has .value and .variance
-    properties for accessing the sum and variance respectively of the summed counts.
+    Returns:
+        scipp :external+scipp:py:obj:`scalar <scipp.scalar>` describing summed intensity, which has
+        :py:obj:`~scipp.Variable.value` and :py:obj:`~scipp.Variable.variance`
+        properties for accessing the sum and variance respectively of the summed counts.
 
     """
     bounds_value = 2
@@ -88,23 +87,22 @@ def wavelength_bounded_spectra(
 ) -> Callable[[Collection[DaeSpectra]], Awaitable[sc.Variable | sc.DataArray]]:
     """Sum a set of neutron spectra between the specified wavelength bounds.
 
+     Time of flight is converted to wavelength using scipp neutron's library function
+     :py:obj:`~scippneutron.conversion.tof.wavelength_from_tof`.
+
     Args:
-        bounds: A scipp :external+scipp:py:obj:`array <scipp.array>` of size 2 of wavelength bounds,
-            in units of angstrom, where the second element must be larger than the first.
-        total_flight_path_length: A scipp :external+scipp:py:obj:`scalar <scipp.scalar>` of Ltotal
-            (total flight path length), the path length from neutron source to detector or monitor,
-            in units of meters.
+         bounds:
+             A scipp :external+scipp:py:obj:`array <scipp.array>` of size 2 of wavelength bounds,
+             in units of angstrom, where the second element must be larger than the first.
+         total_flight_path_length:
+             A scipp :external+scipp:py:obj:`scalar <scipp.scalar>` of :math:`L_{total}`
+             (total flight path length), the path length from neutron source to detector or monitor,
+             in units of meters.
 
-    :rtype:
-        scipp :external+scipp:py:obj:`scalar <scipp.scalar>`
-
-    Time of flight is converted to wavelength using scipp neutron's library function
-    `wavelength_from_tof`, more info on which can be found here:
-    :external+scippneutron:py:obj:`wavelength_from_tof
-    <scippneutron.conversion.tof.wavelength_from_tof>`
-
-    Returns a scipp :external+scipp:py:obj:`scalar <scipp.scalar>`, which has .value and .variance
-    properties for accessing the sum and variance respectively of the summed counts.
+    Returns:
+         scipp :external+scipp:py:obj:`scalar <scipp.scalar>`, which has
+         :py:obj:`~scipp.Variable.value` and :py:obj:`~scipp.Variable.variance`
+         properties for accessing the sum and variance respectively of the summed counts.
 
     """
     bounds_value = 2
@@ -142,12 +140,13 @@ class ScalarNormalizer(Reducer, StandardReadable, ABC):
             [Collection[DaeSpectra]], Awaitable[sc.Variable | sc.DataArray]
         ] = sum_spectra,
     ) -> None:
-        """Init.
+        """Sum a set of user-specified spectra, then normalize by a scalar signal.
 
         Args:
-            prefix: the PV prefix of the instrument to get spectra from (e.g. IN:DEMO:)
+            prefix: the PV prefix of the instrument to get spectra from (e.g. ``IN:DEMO:``)
             detector_spectra: a sequence of spectra numbers (detectors) to sum.
-            sum_detector: takes spectra objects, reads from them, and returns a scipp scalar
+            sum_detector: takes spectra objects, reads from them, and returns a
+                :py:obj:`scipp.scalar`
                 describing the detector intensity. Defaults to summing over the entire spectrum.
 
         """
@@ -159,16 +158,22 @@ class ScalarNormalizer(Reducer, StandardReadable, ABC):
         )
 
         self.det_counts, self._det_counts_setter = soft_signal_r_and_setter(float, 0.0)
+        """Total detector counts."""
         self.intensity, self._intensity_setter = soft_signal_r_and_setter(
             float, 0.0, precision=INTENSITY_PRECISION
         )
+        "Normalised intensity."
 
         self.det_counts_stddev, self._det_counts_stddev_setter = soft_signal_r_and_setter(
             float, 0.0
         )
+        """Standard deviation of detector counts."""
+
         self.intensity_stddev, self._intensity_stddev_setter = soft_signal_r_and_setter(
             float, 0.0, precision=INTENSITY_PRECISION
         )
+        """Standard deviation of intensity."""
+
         self.sum_detector = sum_detector
 
         super().__init__(name="")
@@ -178,7 +183,10 @@ class ScalarNormalizer(Reducer, StandardReadable, ABC):
         """Get the normalization denominator, which is assumed to be a scalar signal."""
 
     async def reduce_data(self, dae: Dae) -> None:
-        """Apply the normalization."""
+        """Apply the normalization.
+
+        :meta private:
+        """
         logger.info("starting reduction")
         summed_counts, denominator = await asyncio.gather(
             self.sum_detector(self.detectors.values()), self.denominator(dae).get_value()
@@ -202,7 +210,10 @@ class ScalarNormalizer(Reducer, StandardReadable, ABC):
         logger.info("reduction complete")
 
     def additional_readable_signals(self, dae: Dae) -> list[Device]:
-        """Publish interesting signals derived or used by this reducer."""
+        """Publish interesting signals derived or used by this reducer.
+
+        :meta private:
+        """
         return [
             self.det_counts,
             self.intensity,
@@ -215,8 +226,36 @@ class ScalarNormalizer(Reducer, StandardReadable, ABC):
 class PeriodGoodFramesNormalizer(ScalarNormalizer):
     """Sum a set of user-specified spectra, then normalize by period good frames."""
 
+    def __init__(
+        self,
+        prefix: str,
+        detector_spectra: Sequence[int],
+        sum_detector: Callable[
+            [Collection[DaeSpectra]], Awaitable[sc.Variable | sc.DataArray]
+        ] = sum_spectra,
+    ) -> None:
+        """Sum a set of user-specified spectra, then normalize by period good frames.
+
+        Args:
+            prefix:
+                The PV prefix of the instrument to get spectra from (e.g. ``IN:DEMO:``)
+            detector_spectra:
+                A sequence of spectra numbers (detectors) to sum.
+            sum_detector:
+                Takes spectra objects, reads from them, and returns a
+                :py:obj:`scipp.scalar`
+                describing the detector intensity. Defaults to summing over the entire spectrum.
+
+        """
+        super().__init__(
+            prefix=prefix, detector_spectra=detector_spectra, sum_detector=sum_detector
+        )
+
     def denominator(self, dae: Dae) -> SignalR[int]:
-        """Get normalization denominator (period good frames)."""
+        """Get normalization denominator (period good frames).
+
+        :meta private:
+        """
         return dae.period.good_frames
 
 
@@ -235,18 +274,18 @@ class MonitorNormalizer(Reducer, StandardReadable):
             [Collection[DaeSpectra]], Awaitable[sc.Variable | sc.DataArray]
         ] = sum_spectra,
     ) -> None:
-        """Init.
+        """Normalize a set of user-specified detector spectra by user-specified monitor spectra.
 
         Args:
-            prefix: the PV prefix of the instrument to get spectra from (e.g. IN:DEMO:)
+            prefix: the PV prefix of the instrument to get spectra from (e.g. ``IN:DEMO:``)
             detector_spectra: a sequence of spectra numbers (detectors) to sum.
             monitor_spectra: a sequence of spectra number (monitors) to sum and normalize by.
-            sum_detector: takes spectra objects, reads from them, and returns a scipp scalar
+            sum_detector: takes spectra objects, reads from them, and returns a
+                :py:obj:`scipp.scalar`
                 describing the detector intensity. Defaults to summing over the entire spectrum.
-            sum_monitor: takes spectra objects, reads from them, and returns a scipp scalar
+            sum_monitor: takes spectra objects, reads from them, and returns a
+                :py:obj:`scipp.scalar`
                 describing the monitor intensity. Defaults to summing over the entire spectrum.
-
-        Scipp scalars are described in further detail here: https://scipp.github.io/generated/functions/scipp.scalar.html
 
         """
         dae_prefix = prefix + "DAE:"
@@ -258,27 +297,36 @@ class MonitorNormalizer(Reducer, StandardReadable):
         )
 
         self.det_counts, self._det_counts_setter = soft_signal_r_and_setter(float, 0.0)
+        """Total detector counts."""
         self.mon_counts, self._mon_counts_setter = soft_signal_r_and_setter(float, 0.0)
+        """Total monitor counts."""
         self.intensity, self._intensity_setter = soft_signal_r_and_setter(
             float, 0.0, precision=INTENSITY_PRECISION
         )
+        """Normalised intensity."""
 
         self.det_counts_stddev, self._det_counts_stddev_setter = soft_signal_r_and_setter(
             float, 0.0
         )
+        """Standard deviation of the detector counts."""
         self.mon_counts_stddev, self._mon_counts_stddev_setter = soft_signal_r_and_setter(
             float, 0.0
         )
+        """Standard deviation of the monitor counts."""
         self.intensity_stddev, self._intensity_stddev_setter = soft_signal_r_and_setter(
             float, 0.0, precision=INTENSITY_PRECISION
         )
+        """Standard deviation of the normalised intensity."""
         self.sum_detector = sum_detector
         self.sum_monitor = sum_monitor
 
         super().__init__(name="")
 
     async def reduce_data(self, dae: Dae) -> None:
-        """Apply the normalization."""
+        """Apply the normalization.
+
+        :meta private:
+        """
         logger.info("starting reduction")
         detector_counts, monitor_counts = await asyncio.gather(
             self.sum_detector(self.detectors.values()),
@@ -307,7 +355,10 @@ class MonitorNormalizer(Reducer, StandardReadable):
         logger.info("reduction complete")
 
     def additional_readable_signals(self, dae: Dae) -> list[Device]:
-        """Publish interesting signals derived or used by this reducer."""
+        """Publish interesting signals derived or used by this reducer.
+
+        :meta private:
+        """
         return [
             self.det_counts,
             self.mon_counts,
@@ -319,15 +370,7 @@ class MonitorNormalizer(Reducer, StandardReadable):
 
 
 class PeriodSpecIntegralsReducer(Reducer, StandardReadable):
-    """A DAE Reducer which simultaneously exposes integrals of many spectra in the current period.
-
-    Two types of integrals are available: detectors and monitors. Other than defaults, their
-    behaviour is identical. No normalization is performed in this reducer - exactly how the
-    detector and monitor integrals are used is defined downstream.
-
-    By itself, the data from this reducer is not suitable for use in a scan - but it provides
-    raw data which may be useful for further processing as part of callbacks (e.g. LiveDispatchers).
-    """
+    """DAE Reducer which simultaneously exposes integrals of many spectra in the current period."""
 
     def __init__(
         self,
@@ -335,13 +378,16 @@ class PeriodSpecIntegralsReducer(Reducer, StandardReadable):
         monitors: npt.NDArray[np.int64],
         detectors: npt.NDArray[np.int64],
     ) -> None:
-        """Init.
+        """DAE Reducer which exposes integrals of many spectra in the current period.
+
+        Two types of integrals are available: detectors and monitors. Other than defaults, their
+        behaviour is identical.
 
         Args:
             monitors: an array representing the mapping of monitors to acquire integrals from.
-                For example, passing np.array([1]) selects spectrum 1.
+                For example, passing ``np.array([1])`` selects spectrum 1.
             detectors: an array representing the mapping of detectors to acquire integrals from.
-                For example, passing np.array([5, 6, 7, 8]) would select detector spectra 5-8
+                For example, passing ``np.array([5, 6, 7, 8])`` would select detector spectra 5-8
                 inclusive, and so the output of this reducer would be an array of dimension 4.
 
         """
@@ -351,9 +397,19 @@ class PeriodSpecIntegralsReducer(Reducer, StandardReadable):
         self.det_integrals, self._det_integrals_setter = soft_signal_r_and_setter(
             Array1D[np.int32], np.ndarray([], dtype=np.int32)
         )
+        """Detector integrals, as a :py:obj:`numpy.ndarray`."""
         self.mon_integrals, self._mon_integrals_setter = soft_signal_r_and_setter(
             Array1D[np.int32], np.ndarray([], dtype=np.int32)
         )
+        """Monitor integrals, as a :py:obj:`numpy.ndarray`."""
+        self.det_sum, self._det_sum_setter = soft_signal_r_and_setter(int, 0)
+        """Sum of detector integrals, as a :py:obj:`int`"""
+        self.mon_sum, self._mon_sum_setter = soft_signal_r_and_setter(int, 0)
+        """Sum of monitor integrals, as a :py:obj:`int`"""
+        self.intensity, self._intensity_setter = soft_signal_r_and_setter(float, 0.0)
+        """Normalised intensity (detectors/monitors), as a :py:obj:`float`"""
+        self.intensity_stddev, self._intensity_stddev_setter = soft_signal_r_and_setter(float, 0.0)
+        """Standard deviation of normalised intensity (detectors/monitors), as a :py:obj:`float`"""
 
         super().__init__(name="")
 
@@ -370,11 +426,11 @@ class PeriodSpecIntegralsReducer(Reducer, StandardReadable):
     async def reduce_data(self, dae: Dae) -> None:
         """Expose detector & monitor integrals.
 
-        After this method returns, it is valid to read from det_integrals and
-        mon_integrals.
+        After this method returns, it is valid to read from :py:obj:`det_integrals`
+        and :py:obj:`mon_integrals`.
 
         Note:
-            Could use SPECINTEGRALS PV here, which seems more efficient initially,
+            Could use ``SPECINTEGRALS`` PV here, which seems more efficient initially,
             but it gets bounded by some areadetector settings under-the-hood which
             may be a bit surprising on some instruments.
 
@@ -393,31 +449,36 @@ class PeriodSpecIntegralsReducer(Reducer, StandardReadable):
         self._det_integrals_setter(det_integrals)
         self._mon_integrals_setter(mon_integrals)
 
+        scalar_det_sum = det_integrals.sum()
+        scalar_mon_sum = mon_integrals.sum()
+        self._det_sum_setter(scalar_det_sum)
+        self._mon_sum_setter(scalar_mon_sum)
+
+        normalized = sc.scalar(
+            scalar_det_sum, variance=scalar_det_sum + VARIANCE_ADDITION, dtype="float64"
+        ) / sc.scalar(scalar_mon_sum, variance=scalar_mon_sum + VARIANCE_ADDITION, dtype="float64")
+        self._intensity_setter(normalized.value)
+        self._intensity_stddev_setter(math.sqrt(normalized.variance))
+
         logger.info("reduction complete")
 
     def additional_readable_signals(self, dae: Dae) -> list[Device]:
-        """Publish interesting signals derived or used by this reducer."""
+        """Publish interesting signals derived or used by this reducer.
+
+        :meta private:
+        """
         return [
             self.mon_integrals,
             self.det_integrals,
+            self.det_sum,
+            self.mon_sum,
+            self.intensity,
+            self.intensity_stddev,
         ]
 
 
 class DSpacingMappingReducer(Reducer, StandardReadable):
-    """A DAE Reducer which exposes an array of d-spacings at each scan point.
-
-    This reducer produces one dimensional arrays of d-spacing, generated by
-    converting the time-of-flight coordinates of each configured spectrum to
-    d-spacing, rebinning all spectra to a common set of d-spacing bins, and
-    then summing all spectra together. The conversion method used is
-    :external+scippneutron:py:obj:`scippneutron.conversion.tof.dspacing_from_tof`.
-
-    For a description of the basic theory behind conversions between
-    time-of-flight and d-spacing, see the
-    `introductory slides <https://www.oxfordneutronschool.org/2024/Lectures/Boothroyd-Introductory%20Theory.pdf>`_
-    from the Oxford Neutron School, or the
-    `ISIS introduction to ToF neutron diffraction <https://www.isis.stfc.ac.uk/Pages/TOF-neutron-diffraction.aspx>`_.
-    """
+    """A DAE Reducer which exposes an array of d-spacings at each scan point."""
 
     def __init__(
         self,
@@ -428,7 +489,19 @@ class DSpacingMappingReducer(Reducer, StandardReadable):
         two_theta: sc.Variable,
         dspacing_bin_edges: sc.Variable,
     ) -> None:
-        """Create a new DSpacingMappingReducer.
+        """DAE Reducer which exposes an array of d-spacings at each scan point.
+
+        This reducer produces one dimensional arrays of d-spacing, generated by
+        converting the time-of-flight coordinates of each configured spectrum to
+        d-spacing, rebinning all spectra to a common set of d-spacing bins, and
+        then summing all spectra together. The conversion method used is
+        :external+scippneutron:py:obj:`scippneutron.conversion.tof.dspacing_from_tof`.
+
+        For a description of the basic theory behind conversions between
+        time-of-flight and d-spacing, see the
+        `introductory slides <https://www.oxfordneutronschool.org/2024/Lectures/Boothroyd-Introductory%20Theory.pdf>`_
+        from the Oxford Neutron School, or the
+        `ISIS introduction to ToF neutron diffraction <https://www.isis.stfc.ac.uk/Pages/TOF-neutron-diffraction.aspx>`_.
 
         Args:
             prefix: PV prefix for the :py:obj:`SimpleDae`.
@@ -470,6 +543,7 @@ class DSpacingMappingReducer(Reducer, StandardReadable):
         self.dspacing, self._dspacing_setter = soft_signal_r_and_setter(
             Array1D[np.float64], np.array([], dtype=np.float64)
         )
+        """d-spacing :py:obj:`numpy.ndarray`, binned by ``dspacing_bin_edges``."""
 
         super().__init__(name="")
 
@@ -479,7 +553,7 @@ class DSpacingMappingReducer(Reducer, StandardReadable):
         This will be in units of counts, which may be fractional due to rebinning.
 
         The binning of the data, and hence the length of the d-spacing
-        array, has bin edges specified by self.dspacing_bins.
+        array, has bin edges specified by ``dspacing_bin_edges``.
         """
         logger.info("starting reduction reads")
         (
@@ -520,5 +594,8 @@ class DSpacingMappingReducer(Reducer, StandardReadable):
         logger.info("reduction complete")
 
     def additional_readable_signals(self, dae: Dae) -> list[Device]:
-        """Publish interesting signals derived or used by this reducer."""
+        """Publish interesting signals derived or used by this reducer.
+
+        :meta private:
+        """
         return [self.dspacing]

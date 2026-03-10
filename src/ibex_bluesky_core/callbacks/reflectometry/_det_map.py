@@ -49,7 +49,14 @@ class DetMapHeightScanLiveDispatcher(LiveDispatcher):
     def __init__(
         self, *, mon_name: str, det_name: str, out_name: str, flood: sc.Variable | None = None
     ) -> None:
-        """Init."""
+        """LiveDispatcher for reflectometry height scans.
+
+        This sums a 1-D array of detector integrals, and synchronously emits events,
+        normalizing by the sum of a 1-D array of monitor integrals.
+
+        In the typical case, the array of monitor integrals will be of size 1 (i.e. a single
+        monitor spectrum used for normalization).
+        """
         super().__init__()
         self._mon_name = mon_name
         self._det_name = det_name
@@ -57,7 +64,10 @@ class DetMapHeightScanLiveDispatcher(LiveDispatcher):
         self._flood = flood if flood is not None else sc.scalar(value=1, dtype="float64")
 
     def event(self, doc: Event, **kwargs: dict[str, Any]) -> Event:
-        """Process an event."""
+        """Process an event.
+
+        :meta private:
+        """
         logger.debug("DetMapHeightScanLiveDispatcher processing event uid %s", doc.get("uid"))
         det_data = doc["data"][self._det_name]
         mon_data = doc["data"][self._mon_name]
@@ -102,7 +112,11 @@ class DetMapAngleScanLiveDispatcher(LiveDispatcher):
         y_out_name: str,
         flood: sc.Variable | None = None,
     ) -> None:
-        """Init."""
+        """LiveDispatcher which accumulates an array of counts data, and emits data at the end.
+
+        For an array with dimension N, N events will be emitted at the end, corresponding
+        to all input arrays summed together.
+        """
         super().__init__()
         self.x_data = x_data
         self.x_name = x_name
@@ -121,12 +135,18 @@ class DetMapAngleScanLiveDispatcher(LiveDispatcher):
         self._flood = flood if flood is not None else sc.scalar(value=1, dtype="float64")
 
     def descriptor(self, doc: EventDescriptor) -> None:
-        """Process a descriptor."""
+        """Process a descriptor.
+
+        :meta private:
+        """
         self._descriptor_uid = doc["uid"]
         return super().descriptor(doc)
 
     def event(self, doc: Event, **kwargs: dict[str, Any]) -> Event:
-        """Process an event."""
+        """Process an event.
+
+        :meta private:
+        """
         logger.debug("DetMapAngleScanLiveDispatcher processing event uid %s", doc.get("uid"))
 
         data = doc["data"][self.y_in_name]
@@ -142,7 +162,10 @@ class DetMapAngleScanLiveDispatcher(LiveDispatcher):
         return doc
 
     def stop(self, doc: RunStop, _md: dict[str, Any] | None = None) -> None:
-        """Process a stop event."""
+        """Process a stop event.
+
+        :meta private:
+        """
         if self._descriptor_uid is None:
             # No data to emit... don't do anything.
             return super().stop(doc, _md)

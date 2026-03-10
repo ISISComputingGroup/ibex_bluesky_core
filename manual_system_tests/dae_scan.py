@@ -101,7 +101,7 @@ def dae_scan_plan() -> Generator[Msg, None, None]:
     yield from _inner()
 
 
-if __name__ == "__main__" and not os.environ.get("FROM_IBEX") == "True":
+if __name__ == "__main__" and os.environ.get("FROM_IBEX") != "True":
     matplotlib.use("qtagg")
     plt.ion()
     RE = get_run_engine()

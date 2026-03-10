@@ -1,4 +1,4 @@
-"""Generic plans."""
+"""Core plans."""
 
 from collections.abc import Generator
 from typing import TYPE_CHECKING, Any
@@ -107,7 +107,7 @@ def _set_up_fields_and_icc(
         fields.append(dae.period_num.name)  # type: ignore
     elif save_run:
         fields.append(dae.controller.run_number.name)  # type: ignore
-    icc = ISISCallbacks(
+    return ISISCallbacks(
         y=dae.reducer.intensity.name,  # type: ignore
         yerr=dae.reducer.intensity_stddev.name,  # type: ignore
         x=block.name,
@@ -115,7 +115,6 @@ def _set_up_fields_and_icc(
         fit=model,
         ax=ax,
     )
-    return icc
 
 
 def adaptive_scan(  # noqa: PLR0913, PLR0917
@@ -207,10 +206,11 @@ def motor_scan(  # noqa: PLR0913
     rel: bool = False,
     md: dict[Any, Any] | None = None,
 ) -> Generator[Msg, None, ISISCallbacks]:
-    """Wrap our scan() plan and create a block_rw and a DAE object.
+    """Wrap our ``scan()`` plan and create a ``block_rw`` and a DAE object.
 
-    This essentially uses the same mechanism as a waitfor_move by using the global "moving" flag
-    to determine if motors are still moving after starting a move.
+    This uses the same mechanism as a :py:obj:`genie.waitfor_move`,
+    by using the global "moving" flag to determine if motors are still moving
+    after starting a move.
     This is really just a wrapper around :func:`ibex_bluesky_core.plans.scan`
 
     Args:
@@ -276,9 +276,10 @@ def motor_adaptive_scan(  # noqa: PLR0913
     rel: bool = False,
     md: dict[Any, Any] | None = None,
 ) -> Generator[Msg, None, ISISCallbacks]:
-    """Wrap adaptive_scan() plan and create a block_rw and a DAE object.
+    """Wrap ``adaptive_scan()`` plan and create a ``block_rw`` and a DAE object.
 
-    This essentially uses the same mechanism as a waitfor_move by using the global "moving" flag
+    This essentially uses the same mechanism as a :py:obj:`genie.waitfor_move`,
+    by using the global "moving" flag
     to determine if motors are still moving after starting a move.
     This is really just a wrapper around :func:`ibex_bluesky_core.plans.adaptive_scan`
 

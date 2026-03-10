@@ -34,7 +34,7 @@ set IBEX_BLUESKY_CORE_OUTPUT=c:\instrument\var\bluesky\tmp
 ```
 - Checking the prerequisites:
 
-Ensure that any prerequisites are met before running the selected test. These can be located within the .py file.
+Ensure that any prerequisites are met before running the selected test. These can be located within the `.py` file.
 
 - Run the test using:
 ```

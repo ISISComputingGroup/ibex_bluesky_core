@@ -32,10 +32,9 @@ _selected_params = ["cen", "center", "x0", "inflections_diff", "centre"]
 _precision = 3
 
 def show_plot() -> None:
-    """Call :code:`plt.show()`.
+    """Call :py:obj:`matplotlib.pyplot.show` if IBEX matplotlib backend is in use.
 
-    Play nicely with the "normal" backends too
-    - only force show if we're actually using our custom backend.
+    If a different matplotlib backend is in use, do nothing.
     """
     if "genie_python" in matplotlib.get_backend():
         logger.debug("Explicitly show()ing plot for IBEX")
@@ -55,17 +54,24 @@ class LivePlot(_DefaultLivePlot):
         update_on_every_event: bool = True,
         **kwargs: Any,  # noqa: ANN401
     ) -> None:
-        """Initialise LivePlot.
+        """:py:obj:`bluesky.callbacks.mpl_plotting.LivePlot` with support for uncertainties.
+
+        This callback is an extension of :py:obj:`bluesky.callbacks.mpl_plotting.LivePlot`
+        with the following additional features:
+
+        - Support for rendering uncertainties as error-bars on the plot.
+        - Support for automatically calling :py:obj:`matplotlib.pyplot.show` when needed,
+          if using the IBEX matplotlib backend.
 
         Args:
-            y (str): The name of the dependant variable.
-            x (str or None, optional): The name of the independant variable.
-            yerr (str or None, optional): Name of uncertainties signal.
+            y (str): The name of the dependent variable.
+            x (str or None, optional): The name of the independent variable.
+            yerr (str or None, optional): Name of uncertainty signal.
                 Providing None means do not plot uncertainties.
-            *args: As per mpl_plotting.py
+            *args: As per :py:obj:`bluesky.callbacks.mpl_plotting.LivePlot`
             update_on_every_event (bool, optional): Whether to update plot every event,
                 or just at the end.
-            **kwargs: As per mpl_plotting.py
+            **kwargs: As per :py:obj:`bluesky.callbacks.mpl_plotting.LivePlot`
 
         """
         self.update_on_every_event = update_on_every_event
@@ -79,7 +85,10 @@ class LivePlot(_DefaultLivePlot):
         self._mpl_errorbar_container = None
 
     def event(self, doc: Event) -> None:
-        """Process an event document (delegate to superclass, then show the plot)."""
+        """Process an event document (delegate to superclass, then show the plot).
+
+        :meta private:
+        """
         new_yerr = None if self.yerr is None else doc["data"][self.yerr]
         self.update_yerr(new_yerr)
         super().event(doc)
@@ -87,7 +96,10 @@ class LivePlot(_DefaultLivePlot):
             show_plot()
 
     def update_plot(self, force: bool = False) -> None:
-        """Create error bars if needed, then update plot."""
+        """Create error bars if needed, then update plot.
+
+        :meta private:
+        """
         if self.update_on_every_event or force:
             if self.yerr is not None:
                 if self._mpl_errorbar_container is not None:
@@ -100,16 +112,25 @@ class LivePlot(_DefaultLivePlot):
             super().update_plot()
 
     def update_yerr(self, yerr: float | None) -> None:
-        """Update uncertainties data."""
+        """Update uncertainties data.
+
+        :meta private:
+        """
         self.yerr_data.append(yerr)
 
     def start(self, doc: RunStart) -> None:
-        """Process a start document (delegate to superclass, then show the plot)."""
+        """Process a start document (delegate to superclass, then show the plot).
+
+        :meta private:
+        """
         super().start(doc)
         show_plot()
 
     def stop(self, doc: RunStop) -> None:
-        """Process a stop document (delegate to superclass, then show the plot)."""
+        """Process a stop document (delegate to superclass, then show the plot).
+
+        :meta private:
+        """
         super().stop(doc)
         if not self.update_on_every_event:
             self.update_plot(force=True)
@@ -163,7 +184,11 @@ class LivePColorMesh(QtAwareCallback):
         x_name: str | None = None,
         **kwargs: Any,  # noqa: ANN401
     ) -> None:
-        """Create a new heatmap.
+        """Live :py:obj:`PColorMesh<matplotlib.pyplot.pcolormesh>`-based heatmap.
+
+        This callback displays one row of data in the heatmap per scan point. The ``x``
+        signal is therefore expected to contain array data, which should be of the same
+        length for every measurement.
 
         Args:
             y: the name of the signal appearing along the y-axis.
@@ -171,7 +196,7 @@ class LivePColorMesh(QtAwareCallback):
                 expected to be an array, representing rows of the heatmap.
             x_coord: coordinates along the x-axis. This is expected to have the same length
                 as each row of the heatmap.
-            ax: a set of matplotlib axes on which to plot.
+            ax: a set of :py:obj:`~matplotlib.axes.Axes` on which to plot.
             x_name: A display name for the x-axis. Defaults to the same as :code:`x`
                 if not provided.
             **kwargs: Arbitrary keyword arguments are passed through to
@@ -192,7 +217,10 @@ class LivePColorMesh(QtAwareCallback):
         self.kwargs = kwargs
 
     def start(self, doc: RunStart) -> RunStart | None:
-        """Start a new plot (clear any old data)."""
+        """Start a new plot (clear any old data).
+
+        :meta private:
+        """
         # The doc is not used; we just use the signal that a new run began.
         self._data = None
         self._y_coords = []
@@ -200,7 +228,10 @@ class LivePColorMesh(QtAwareCallback):
         return super().start(doc)
 
     def event(self, doc: Event) -> Event:
-        """Unpack data from the event and call :code:`self.update()`."""
+        """Unpack data from the event and call :code:`self.update()`.
+
+        :meta private:
+        """
         new_x = doc["data"][self._x]
         new_y = doc["data"][self._y]
 
@@ -215,7 +246,10 @@ class LivePColorMesh(QtAwareCallback):
         return super().event(doc)
 
     def update_plot(self) -> None:
-        """Redraw the heatmap."""
+        """Redraw the heatmap.
+
+        :meta private:
+        """
         assert self._data is not None
         assert self.ax is not None
 
@@ -245,7 +279,7 @@ class PlotPNGSaver(QtAwareCallback):
         postfix: str,
         output_dir: str | os.PathLike[str] | None = None,
     ) -> None:
-        """Initialise the PlotPNGSaver callback.
+        """Save plots to PNG files on a run end.
 
         Args:
             x: The name of the signal for x.
@@ -275,6 +309,8 @@ class PlotPNGSaver(QtAwareCallback):
 
         Args:
             doc: The stop document.
+
+        :meta private:
 
         """
         if self.filename is None:

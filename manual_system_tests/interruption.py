@@ -24,5 +24,5 @@ def interruption_manual_test_plan() -> Generator[Msg, None, None]:
     yield from bps.sleep(999999999)
 
 
-if __name__ == "__main__" and not os.environ.get("FROM_IBEX") == "True":
+if __name__ == "__main__" and os.environ.get("FROM_IBEX") != "True":
     print("This system test should only be run from an interactive session.")
