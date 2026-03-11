@@ -53,6 +53,7 @@ dependencies = [
   "scippneutron",  # neutron-specific utilities for scipp
   "typing-extensions",  # TypeVar with default-arg support
   "tzdata",  # Windows timezone support
+  "ibex-non-ca-helpers"  # ibex utilies ie. compress_and_hex
 ]
 
 [project.optional-dependencies]

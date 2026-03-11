@@ -1,25 +1,8 @@
 from unittest.mock import patch
 
 from ibex_bluesky_core.devices import (
-    compress_and_hex,
-    dehex_and_decompress,
     isis_epics_signal_rw,
 )
-
-
-def test_can_dehex_and_decompress():
-    expected = b"test123"
-    hexed_and_compressed = b"789c2b492d2e31343206000aca0257"
-    result = dehex_and_decompress(hexed_and_compressed)
-    assert result == expected
-
-
-def test_can_hex_and_compress():
-    to_compress_and_hex = "test123"
-    expected = b"789c2b492d2e31343206000aca0257"
-    result = compress_and_hex(to_compress_and_hex)
-    assert result == expected
-
 
 def test_isis_epics_rw_signal_appends_correct_sp_suffix():
     with patch("ibex_bluesky_core.devices.epics_signal_rw") as mock_epics_signal_rw:
