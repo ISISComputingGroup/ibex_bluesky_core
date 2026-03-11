@@ -9,9 +9,9 @@ import pytest
 import scipp as sc
 import scipp.testing
 from bluesky.run_engine import RunEngine
+from ibex_non_ca_helpers.compress_hex import compress_and_hex, dehex_and_decompress
 from ophyd_async.core import get_mock_put, set_mock_value
 
-from ibex_non_ca_helpers.compress_hex import compress_and_hex, dehex_and_decompress
 from ibex_bluesky_core.devices.dae import (
     BeginRunExBits,
     Dae,

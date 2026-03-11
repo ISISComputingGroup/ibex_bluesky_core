@@ -7,7 +7,9 @@ from enum import Enum
 from xml.etree.ElementTree import tostring
 
 from bluesky.protocols import Locatable, Location, Movable
+from ibex_non_ca_helpers.compress_hex import compress_and_hex, dehex_and_decompress
 from ophyd_async.core import AsyncStatus, SignalRW, StandardReadable
+
 from ibex_bluesky_core.devices import (
     isis_epics_signal_rw,
 )
@@ -16,7 +18,6 @@ from ibex_bluesky_core.devices.dae._helpers import (
     _get_all_elements_in_xml_with_child_called_name,
     _set_value_in_dae_xml,
 )
-from ibex_non_ca_helpers.compress_hex import compress_and_hex, dehex_and_decompress
 
 logger = logging.getLogger(__name__)
 

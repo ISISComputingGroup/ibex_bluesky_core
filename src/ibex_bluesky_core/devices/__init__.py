@@ -6,8 +6,6 @@ which in turn reads or writes to the underlying EPICS PVs to control equipment.
 
 from __future__ import annotations
 
-import binascii
-import zlib
 from typing import TypeVar
 
 from ophyd_async.core import SignalDatatype, SignalRW, StrictEnum

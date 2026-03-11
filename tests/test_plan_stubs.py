@@ -9,6 +9,7 @@ import pytest
 from bluesky import RunEngine
 from bluesky import plan_stubs as bps
 from bluesky.utils import Msg
+from ibex_non_ca_helpers.compress_hex import compress_and_hex, dehex_and_decompress
 from ophyd_async.core import get_mock_put, set_mock_value
 from ophyd_async.epics.motor import UseSetMode
 from ophyd_async.plan_stubs import ensure_connected
@@ -36,7 +37,6 @@ from ibex_bluesky_core.plan_stubs import (
     with_time_channels,
 )
 from ibex_bluesky_core.run_engine._msg_handlers import call_sync_handler
-from ibex_non_ca_helpers.compress_hex import compress_and_hex, dehex_and_decompress
 from tests.devices.dae_testing_data import dae_settings_template, tcb_settings_template
 
 
