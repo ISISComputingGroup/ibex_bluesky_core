@@ -535,9 +535,6 @@ def _calculate_erf_stretch(
         else np.abs(erfinv(1 - tails) - erfinv(tails))
     )
 
-    if deltax == 0:
-        return 1.0
-
     return np.abs(x_front - x_back) / deltax
 
 
