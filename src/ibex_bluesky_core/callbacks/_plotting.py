@@ -142,25 +142,27 @@ class LiveFitPlot(_DefaultLiveFitPlot):
     ax: Axes
 
     def __init__(  # noqa: PLR0913
-            self,
-             livefit: LiveFit,
-             *,
-             num_points: int = 100,
-             legend_keys: list[str] | None = None,
-             xlim: tuple[float, float] | None = None,
-             ylim: tuple[float, float] | None = None,
-             ax: Axes | None = None,
-             set_title: bool = False,
-             **kwargs: Any  # noqa: ANN401
-             ) -> None:
+        self,
+        livefit: LiveFit,
+        *,
+        num_points: int = 100,
+        legend_keys: list[str] | None = None,
+        xlim: tuple[float, float] | None = None,
+        ylim: tuple[float, float] | None = None,
+        ax: Axes | None = None,
+        set_title: bool = False,
+        **kwargs: Any,  # noqa: ANN401
+    ) -> None:
 
-        super().__init__(livefit,
-                         num_points=num_points,
-                         legend_keys=legend_keys,
-                         xlim=xlim,
-                         ylim=ylim,
-                         ax=ax,
-                         **kwargs)
+        super().__init__(
+            livefit,
+            num_points=num_points,
+            legend_keys=legend_keys,
+            xlim=xlim,
+            ylim=ylim,
+            ax=ax,
+            **kwargs,
+        )
         self.set_title = set_title
 
     def stop(self, doc: RunStop) -> None:
@@ -174,16 +176,15 @@ class LiveFitPlot(_DefaultLiveFitPlot):
             contains = [x for x in _selected_params if x in param_name]
 
             if contains:
-                equation_values = [(key, value)
-                                   for key, value in result_values.items()
-                                   if key in contains]
+                equation_values = [
+                    (key, value) for key, value in result_values.items() if key in contains
+                ]
             else:
-                equation_values = [(key, value)
-                                   for key, value in result_values.items()
-                                   if key in param_name]
+                equation_values = [
+                    (key, value) for key, value in result_values.items() if key in param_name
+                ]
 
-            title_formatted = ', '.join(
-                f'{k}: {v:.{_precision}g}' for k, v in equation_values)
+            title_formatted = ", ".join(f"{k}: {v:.{_precision}g}" for k, v in equation_values)
             completed_title = f"{model_title}:\n{title_formatted}"
             self.ax.set_title(completed_title, wrap=True)
 
