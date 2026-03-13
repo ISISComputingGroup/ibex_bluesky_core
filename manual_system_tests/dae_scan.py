@@ -18,11 +18,11 @@ from ibex_bluesky_core.devices.simpledae import (
     RunPerPointController,
     SimpleDae,
 )
-from ibex_bluesky_core.fitting import Linear
+from ibex_bluesky_core.fitting import Gaussian
 from ibex_bluesky_core.run_engine import get_run_engine
 from ibex_bluesky_core.utils import get_pv_prefix
 
-NUM_POINTS: int = 3
+NUM_POINTS: int = 10
 
 
 def dae_scan_plan() -> Generator[Msg, None, None]:
@@ -70,7 +70,8 @@ def dae_scan_plan() -> Generator[Msg, None, None]:
         x=block.name,
         y=reducer.intensity.name,
         yerr=reducer.intensity_stddev.name,
-        fit=Linear.fit(),
+        fit=Gaussian.fit(),
+        set_title_to_fit_result=True,
         measured_fields=[
             controller.run_number.name,
             reducer.det_counts.name,

@@ -10,12 +10,14 @@ import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 import numpy.typing as npt
+from bluesky.callbacks import LiveFitPlot as _DefaultLiveFitPlot
 from bluesky.callbacks import LivePlot as _DefaultLivePlot
 from bluesky.callbacks.core import get_obj_fields, make_class_safe
 from bluesky.callbacks.mpl_plotting import QtAwareCallback
 from event_model.documents import Event, RunStart, RunStop
 from matplotlib.axes import Axes
 
+from ibex_bluesky_core.callbacks._fitting import LiveFit
 from ibex_bluesky_core.callbacks._utils import (
     _get_rb_num,
     format_time,
@@ -26,6 +28,8 @@ from ibex_bluesky_core.callbacks._utils import (
 logger = logging.getLogger(__name__)
 
 __all__ = ["LivePColorMesh", "LivePlot", "PlotPNGSaver", "show_plot"]
+_selected_params = ["cen", "center", "x0", "inflections_diff", "centre"]
+_precision = 3
 
 
 def show_plot() -> None:
@@ -132,6 +136,57 @@ class LivePlot(_DefaultLivePlot):
         if not self.update_on_every_event:
             self.update_plot(force=True)
             show_plot()
+
+
+class LiveFitPlot(_DefaultLiveFitPlot):
+    ax: Axes
+
+    def __init__(  # noqa: PLR0913
+        self,
+        livefit: LiveFit,
+        *,
+        num_points: int = 100,
+        legend_keys: list[str] | None = None,
+        xlim: tuple[float, float] | None = None,
+        ylim: tuple[float, float] | None = None,
+        ax: Axes | None = None,
+        set_title: bool = False,
+        **kwargs: Any,  # noqa: ANN401
+    ) -> None:
+
+        super().__init__(
+            livefit,
+            num_points=num_points,
+            legend_keys=legend_keys,
+            xlim=xlim,
+            ylim=ylim,
+            ax=ax,
+            **kwargs,
+        )
+        self.set_title = set_title
+
+    def stop(self, doc: RunStop) -> None:
+        """Process a stop document (delegate to superclass, then show the plot)."""
+        super().stop(doc)
+        if self.set_title:
+            param_name = self.livefit.model.param_names
+            result_values = self.livefit.result.values
+            model_title = self.livefit.model.name.split("  [")[0] + ")"
+
+            contains = [x for x in _selected_params if x in param_name]
+
+            if contains:
+                equation_values = [
+                    (key, value) for key, value in result_values.items() if key in contains
+                ]
+            else:
+                equation_values = [
+                    (key, value) for key, value in result_values.items() if key in param_name
+                ]
+
+            title_formatted = ", ".join(f"{k}: {v:.{_precision}g}" for k, v in equation_values)
+            completed_title = f"{model_title}:\n{title_formatted}"
+            self.ax.set_title(completed_title, wrap=True)
 
 
 class LivePColorMesh(QtAwareCallback):
