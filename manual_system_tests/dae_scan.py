@@ -18,11 +18,11 @@ from ibex_bluesky_core.devices.simpledae import (
     RunPerPointController,
     SimpleDae,
 )
-from ibex_bluesky_core.fitting import Linear, Gaussian, Polynomial, SlitScan, TopHat, ERF
+from ibex_bluesky_core.fitting import Gaussian
 from ibex_bluesky_core.run_engine import get_run_engine
 from ibex_bluesky_core.utils import get_pv_prefix
 
-NUM_POINTS: int = 6
+NUM_POINTS: int = 10
 
 
 def dae_scan_plan() -> Generator[Msg, None, None]:

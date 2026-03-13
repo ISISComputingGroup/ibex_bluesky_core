@@ -34,7 +34,13 @@ from ibex_bluesky_core.callbacks._fitting import (
     LiveFitLogger,
 )
 from ibex_bluesky_core.callbacks._kafka import KafkaCallback
-from ibex_bluesky_core.callbacks._plotting import LiveFitPlot, LivePColorMesh, LivePlot, PlotPNGSaver, show_plot
+from ibex_bluesky_core.callbacks._plotting import (
+    LiveFitPlot,
+    LivePColorMesh,
+    LivePlot,
+    PlotPNGSaver,
+    show_plot,
+)
 from ibex_bluesky_core.callbacks._utils import get_default_output_path
 from ibex_bluesky_core.fitting import FitMethod
 from ibex_bluesky_core.utils import is_matplotlib_backend_qt
@@ -250,7 +256,10 @@ class ISISCallbacks:
                 # Sample 5000 points as this strikes a reasonable balance between displaying
                 # 'enough' points for almost any scan (even after zooming in on a peak), while
                 # not taking 'excessive' compute time to generate these samples.
-                self._subs.append(LiveFitPlot(livefit=self._live_fit, ax=ax, num_points=5000, set_title=set_title_to_fit_result))
+                self._subs.append(LiveFitPlot(livefit=self._live_fit,
+                                              ax=ax,
+                                              num_points=5000,
+                                              set_title=set_title_to_fit_result))
             else:
                 self._subs.append(self._live_fit)
 
