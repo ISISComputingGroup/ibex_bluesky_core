@@ -156,14 +156,7 @@ def test_livefitplot_stop_set_title():
         patch("bluesky.callbacks.LiveFitPlot.stop"),
         patch("ibex_bluesky_core.callbacks._plotting.plt.show"),
     ):
-        lfp.stop(
-            {
-                "time": 0,
-                "uid": "0",
-                "exit_status": "success",
-                "run_start": ""
-            }
-        )
+        lfp.stop({"time": 0, "uid": "0", "exit_status": "success", "run_start": ""})
 
     ax.set_title.assert_called_once()
     title_called = ax.set_title.call_args[0][0]
@@ -205,14 +198,7 @@ def test_livefitplot_stop_set_title_without_contains():
         patch("bluesky.callbacks.LiveFitPlot.stop"),
         patch("ibex_bluesky_core.callbacks._plotting.plt.show"),
     ):
-        lfp.stop(
-            {
-                "time": 0,
-                "uid": "0",
-                "exit_status": "success",
-                "run_start": ""
-            }
-        )
+        lfp.stop({"time": 0, "uid": "0", "exit_status": "success", "run_start": ""})
 
     ax.set_title.assert_called_once()
     title_called = ax.set_title.call_args[0][0]
