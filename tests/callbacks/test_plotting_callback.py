@@ -2,11 +2,10 @@ from typing import Any
 from unittest.mock import MagicMock, patch
 
 import pytest
-from matplotlib import pyplot as plt
 from matplotlib.axes import Axes
 from matplotlib.figure import Figure
 
-from ibex_bluesky_core.callbacks import LivePlot, PlotPNGSaver, show_plot, LiveFitPlot
+from ibex_bluesky_core.callbacks import LiveFitPlot, LivePlot, PlotPNGSaver, show_plot
 from ibex_bluesky_core.callbacks._fitting import LiveFit
 from ibex_bluesky_core.callbacks._utils import RB
 
@@ -137,6 +136,7 @@ def test_no_filename_raises():
     with pytest.raises(ValueError, match=r"No filename specified for plot PNG"):
         s.stop({"uid": "0", "exit_status": "success", "run_start": "", "time": 123456789})
 
+
 def test_livefitplot_stop_set_title():
     mock_livefit = MagicMock(spec=LiveFit)
     mock_livefit.y = "y"
@@ -175,7 +175,7 @@ def test_livefitplot_stop_no_set_title():
     mock_livefit = MagicMock(spec=LiveFit)
     mock_livefit.y = "y"
     mock_livefit.independent_vars = {"x": "x"}
-    
+
     ax = MagicMock(spec=Axes)
 
     lfp = LiveFitPlot(livefit=mock_livefit, ax=ax, set_title=False)
@@ -184,6 +184,7 @@ def test_livefitplot_stop_no_set_title():
         lfp.stop({"time": 0, "uid": "0", "exit_status": "success", "run_start": ""})
 
     ax.set_title.assert_not_called()
+
 
 def test_livefitplot_stop_set_title_without_contains():
     mock_livefit = MagicMock(spec=LiveFit)
