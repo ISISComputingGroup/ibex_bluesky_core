@@ -9,4 +9,5 @@ updates:
     schedule:
       interval: "daily"
     labels:
+      - "dependencies"
       - "bluesky-ignore-for-release"
