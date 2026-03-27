@@ -1,6 +1,7 @@
 """Fitting methods used by the LiveFit callback."""
 
 import math
+import warnings
 from abc import ABC, abstractmethod
 from collections.abc import Callable
 
@@ -336,7 +337,11 @@ class Polynomial(Fit):
             init_guess = {}
             degree = cls._check_degree(args)
 
-            coeffs = np.polynomial.polynomial.polyfit(x, y, degree)
+            # RankWarnings for fitting data are common with flat data, flat data is valid, so the
+            # warnings are being surpressed
+            with np.testing.clear_and_catch_warnings():
+                warnings.filterwarnings("ignore", category=np.exceptions.RankWarning)
+                coeffs = np.polynomial.polynomial.polyfit(x, y, degree)
 
             for i in range(degree + 1):
                 init_guess[f"c{i}"] = coeffs[i]
@@ -385,10 +390,14 @@ class DampedOsc(Fit):
             peak = x[np.argmax(y)]
             valley = x[np.argmin(y)]
 
+            frequency_guess = 1
+            if np.abs(peak - valley) > 0:
+                frequency_guess = np.pi / np.abs(peak - valley)
+
             return {
                 "center": lmfit.Parameter("center", peak),
                 "amp": lmfit.Parameter("amp", np.max(y)),
-                "freq": lmfit.Parameter("freq", np.pi / np.abs(peak - valley)),
+                "freq": lmfit.Parameter("freq", frequency_guess),
                 "width": lmfit.Parameter("width", np.max(x) - np.min(x)),
             }
 
@@ -459,8 +468,15 @@ class SlitScan(Fit):
         ) -> dict[str, lmfit.Parameter]:
             background = np.min(y)
             inflection0 = np.min(x) + (1 / 3) * (np.max(x) - np.min(x))
-            inflections_diff = (1 / 3) * (np.max(x) - np.min(x))
-            gradient = 2 * (np.max(y) - np.min(y)) / (np.max(x) - np.min(x))
+            if np.max(x) == np.min(x):
+                # Using 1 for flat lines
+                inflections_diff = (1 / 3) * 1.0
+                inflections_max = 1.0
+                gradient = 2 * (np.max(y) - np.min(y)) / 1.0
+            else:
+                inflections_diff = (1 / 3) * (np.max(x) - np.min(x))
+                gradient = 2 * (np.max(y) - np.min(y)) / (np.max(x) - np.min(x))
+                inflections_max = float(np.max(x) - np.min(x))
             height_above_inflection1 = (np.max(y) - np.min(y)) / 5.0
 
             return {
@@ -468,7 +484,7 @@ class SlitScan(Fit):
                 "inflection0": lmfit.Parameter("inflection0", inflection0),
                 "gradient": lmfit.Parameter("gradient", gradient, min=0),
                 "inflections_diff": lmfit.Parameter(
-                    "inflections_diff", inflections_diff, min=0, max=float(np.max(x) - np.min(x))
+                    "inflections_diff", inflections_diff, min=0, max=inflections_max
                 ),
                 "height_above_inflection1": lmfit.Parameter(
                     "height_above_inflection1", height_above_inflection1, min=0
@@ -753,8 +769,16 @@ class Trapezoid(Fit):
             background = np.min(y)
             y_offset = gradient_guess * width / 2.0
 
+            if np.min(x) == np.max(x):
+                # These are pure guesses
+                cen_min = 0.0
+                cen_max = 1.0
+            else:
+                cen_min = np.min(x)
+                cen_max = np.max(x)
+
             return {
-                "cen": lmfit.Parameter("cen", cen, min=np.min(x), max=np.max(x)),
+                "cen": lmfit.Parameter("cen", cen, min=cen_min, max=cen_max),
                 "gradient": lmfit.Parameter("gradient", gradient_guess, min=0),
                 "height": lmfit.Parameter("height", height, min=0),
                 "background": lmfit.Parameter("background", background),
@@ -816,8 +840,16 @@ class NegativeTrapezoid(Fit):
             background = np.max(y)
             y_offset = -gradient_guess * width / 2.0
 
+            if np.min(x) == np.max(x):
+                # These are pure guesses
+                cen_min = 0.0
+                cen_max = 1.0
+            else:
+                cen_min = np.min(x)
+                cen_max = np.max(x)
+
             return {
-                "cen": lmfit.Parameter("cen", cen, min=np.min(x), max=np.max(x)),
+                "cen": lmfit.Parameter("cen", cen, min=cen_min, max=cen_max),
                 "gradient": lmfit.Parameter("gradient", gradient_guess, min=0),
                 "height": lmfit.Parameter("height", height, min=0),
                 "background": lmfit.Parameter("background", background),
@@ -884,7 +916,11 @@ class MuonMomentum(Fit):
                 x0 = x[-1]  # Picked as it can't be 0
 
             p = 1  # Expected value, not likely to change
-            w = 1 / _calculate_erf_stretch(x, y, erfc=True, pre_sorted=True)
+            erf_stretch = _calculate_erf_stretch(x, y, erfc=True, pre_sorted=True)
+            if erf_stretch == 0.0:
+                w = 0.5  # Value smaller than one when the stretch would otherwise be 0 and fault
+            else:
+                w = 1 / erf_stretch
 
             return {
                 "b": lmfit.Parameter("b", b),
