@@ -3,8 +3,7 @@ from unittest.mock import MagicMock, patch
 
 import numpy as np
 import pytest
-from ophyd_async.core import soft_signal_rw
-from ophyd_async.testing import callback_on_mock_put, set_mock_value
+from ophyd_async.core import callback_on_mock_put, set_mock_value, soft_signal_rw
 
 from ibex_bluesky_core.devices.simpledae import (
     PeriodPerPointController,
@@ -16,6 +15,7 @@ from ibex_bluesky_core.plans.reflectometry import (
     angle_scan_plan,
     height_and_angle_scan_plan,
 )
+from ibex_bluesky_core.plans.reflectometry._det_map_align import _set_title_to_fit_result
 
 
 @pytest.fixture
@@ -110,15 +110,38 @@ def test_angle_align(RE, dae):
 
 
 def test_det_map_align_bad_angle_map_shape(RE, dae, height):
-    with patch("ibex_bluesky_core.plans.reflectometry._det_map_align.ensure_connected"):
-        with pytest.raises(ValueError, match=r".* must have same shape"):
-            RE(
-                height_and_angle_scan_plan(
-                    dae=dae,  # type: ignore
-                    height=height,  # type: ignore
-                    start=0,
-                    stop=10,
-                    num=6,
-                    angle_map=np.array([21, 22, 23, 24]),
-                )
+    with (
+        patch("ibex_bluesky_core.plans.reflectometry._det_map_align.ensure_connected"),
+        pytest.raises(ValueError, match=r".* must have same shape"),
+    ):
+        RE(
+            height_and_angle_scan_plan(
+                dae=dae,  # type: ignore
+                height=height,  # type: ignore
+                start=0,
+                stop=10,
+                num=6,
+                angle_map=np.array([21, 22, 23, 24]),
             )
+        )
+
+
+def test_set_title_to_fit_result_failed_fit():
+    ax = MagicMock()
+    live_fit = MagicMock()
+    live_fit.result = None
+
+    _set_title_to_fit_result(fit_callback=live_fit, ax=ax, name="stop", doc={})
+
+    ax.set_title.assert_called_once_with("Fit failed")
+
+
+def test_set_title_to_fit_result_good_fit():
+    ax = MagicMock()
+    live_fit = MagicMock()
+    live_fit.result.params["x0"].value = 1.23456789
+    live_fit.result.params["x0"].stderr = 9.87654321
+
+    _set_title_to_fit_result(fit_callback=live_fit, ax=ax, name="stop", doc={})
+
+    ax.set_title.assert_called_once_with("Best x0: 1.2346 +/- 9.8765")

@@ -1,8 +1,9 @@
 """Bluesky specific logging configuration.
 
-Note: logging.config.fileconfig sets the global, application-level, logging policies. We are a
-library so should not set application-level policies. Instead just quietly add handlers for our own
-logger and the bluesky logger.
+.. note::
+    :py:obj:`logging.config.fileConfig` sets the global, application-level, logging policies.
+    :py:obj:`ibex_bluesky_core` is a library, so does not set application-level policies.
+    Instead, handlers for our own logger and the bluesky loggers are added.
 """
 
 import logging
@@ -18,7 +19,7 @@ DEFAULT_LOG_FOLDER = os.path.join("C:\\", "instrument", "var", "logs", "bluesky"
 # Find the log directory, if already set in the environment, else use the default
 log_location = os.environ.get("IBEX_BLUESKY_CORE_LOGS", DEFAULT_LOG_FOLDER)
 
-INTERESTING_LOGGER_NAMES = ["ibex_bluesky_core", "bluesky", "ophyd_async"]
+INTERESTING_LOGGER_NAMES = ["ibex_bluesky_core", "bluesky", "ophyd_async", "bluesky_kafka"]
 
 
 @cache
@@ -40,7 +41,18 @@ def file_handler() -> TimedRotatingFileHandler:
 
 
 def setup_logging() -> None:
-    """Set up logging."""
+    r"""Set up logging with a default configuration.
+
+    The default configuration is to log to ::
+
+        c:\instrument\var\logs\bluesky
+
+    This location can be overridden using the ``IBEX_BLUESKY_CORE_LOGS`` environment variable.
+
+    Loggers listened-to by default include the loggers for this library, as well as
+    the loggers for :py:obj:`bluesky` and :py:obj:`ophyd_async`. The severities of those
+    loggers are set to ``INFO`` by default.
+    """
     # Create the log directory if it doesn't already exist
     try:
         os.makedirs(log_location, exist_ok=True)

@@ -9,7 +9,7 @@ import pytest
 import scipp as sc
 import scipp.testing
 from bluesky.run_engine import RunEngine
-from ophyd_async.testing import get_mock_put, set_mock_value
+from ophyd_async.core import get_mock_put, set_mock_value
 
 from ibex_bluesky_core.devices import compress_and_hex, dehex_and_decompress
 from ibex_bluesky_core.devices.dae import (
@@ -48,13 +48,6 @@ from tests.devices.dae_testing_data import (
     period_settings_template,
     tcb_settings_template,
 )
-
-
-@pytest.fixture
-async def dae() -> Dae:
-    dae = Dae("UNITTEST:MOCK:")
-    await dae.connect(mock=True)
-    return dae
 
 
 @pytest.fixture

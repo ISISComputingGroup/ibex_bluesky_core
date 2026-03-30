@@ -18,28 +18,33 @@ logger = logging.getLogger(__name__)
 async def _end_or_abort_run(dae: Dae, save: bool) -> None:
     if save:
         logger.info("ending run")
-        await dae.controls.end_run.trigger(wait=True, timeout=None)
+        await dae.controls.end_run.trigger(timeout=None)
         logger.info("run ended")
     else:
         logger.info("aborting run")
-        await dae.controls.abort_run.trigger(wait=True, timeout=None)
+        await dae.controls.abort_run.trigger(timeout=None)
         logger.info("run aborted")
 
 
 class PeriodPerPointController(Controller):
     """Controller for a SimpleDae which counts using a period per point.
 
-    A single run is opened during stage(), and then each new point will count into a new
-    DAE period (starting from 1). The run will be either ended or aborted in unstage, depending
-    on the value of the save_run parameter.
+    A single run is opened during
+    :py:obj:`~bluesky.protocols.Stageable.stage`, and then each new point will count into a new
+    DAE period (starting from 1). The run will be either ended or aborted in
+    :py:obj:`~bluesky.protocols.Stageable.unstage`, depending
+    on the value of the ``save_run`` parameter.
     """
 
     def __init__(self, save_run: bool) -> None:
         """Period-per-point DAE controller.
 
         Args:
-            save_run: True to terminate runs using end(), saving the data. False to terminate runs
-                using abort(), discarding the data.
+            save_run: :py:obj:`True` to terminate runs using
+                :py:obj:`~ibex_bluesky_core.devices.dae.DaeControls.end_run`,
+                saving the data. :py:obj:`False` to terminate runs using
+                :py:obj:`~ibex_bluesky_core.devices.dae.DaeControls.abort_run`,
+                discarding the data.
 
         """
         self._save_run = save_run
@@ -54,13 +59,13 @@ class PeriodPerPointController(Controller):
         logger.info("setup complete")
 
     async def start_counting(self, dae: Dae) -> None:
-        """Start counting a scan point.
+        """Start counting a single point.
 
         Increments the period by 1, then unpauses the run.
         """
         logger.info("start counting")
         self._current_period += 1
-        await dae.period_num.set(self._current_period, wait=True, timeout=None)
+        await dae.period_num.set(self._current_period, timeout=None)
 
         # Error if the period change didn't work (e.g. we have exceeded max periods)
         await wait_for_value(
@@ -75,7 +80,7 @@ class PeriodPerPointController(Controller):
         await wait_for_value(dae.period.raw_frames, 0, timeout=10)
 
         logger.info("resuming run")
-        await dae.controls.resume_run.trigger(wait=True, timeout=None)
+        await dae.controls.resume_run.trigger(timeout=None)
         await wait_for_value(
             dae.run_state,
             lambda v: v in {RunstateEnum.RUNNING, RunstateEnum.WAITING, RunstateEnum.VETOING},
@@ -85,7 +90,7 @@ class PeriodPerPointController(Controller):
     async def stop_counting(self, dae: Dae) -> None:
         """Stop counting a scan point, by pausing the run."""
         logger.info("stop counting")
-        await dae.controls.pause_run.trigger(wait=True, timeout=None)
+        await dae.controls.pause_run.trigger(timeout=None)
         await wait_for_value(dae.run_state, RunstateEnum.PAUSED, timeout=10)
 
     async def teardown(self, dae: Dae) -> None:
@@ -93,19 +98,20 @@ class PeriodPerPointController(Controller):
         await _end_or_abort_run(dae, self._save_run)
 
     def additional_readable_signals(self, dae: Dae) -> list[Device]:
-        """period_num is always an interesting signal if using this controller."""
+        """period_num is always an interesting signal if using this controller.
+
+        :meta private:
+        """
         return [dae.period_num]
 
 
 class RunPerPointController(Controller, StandardReadable):
-    """Controller for a SimpleDae which counts using a DAE run per point.
-
-    The runs can be either ended or aborted once counting is finished.
-
-    """
+    """Controller for a :py:obj:`SimpleDae` which counts using a run per point."""
 
     def __init__(self, save_run: bool) -> None:
-        """Init.
+        """:py:obj:`SimpleDae` controller which counts using a run per point.
+
+        The runs can be either ended or aborted once counting is finished.
 
         Args:
             save_run: whether to end the run (True) or abort the run (False) on completion.
@@ -117,12 +123,17 @@ class RunPerPointController(Controller, StandardReadable):
         # dae.run_number, which increments immediately after end and so reflects the next run
         # number.
         self.run_number, self._run_number_setter = soft_signal_r_and_setter(int, 0)
+        """
+        The run number which this run counted into.
+
+        This property is added to the interesting signals only if save_run is :py:obj:`True`.
+        """
         super().__init__()
 
     async def start_counting(self, dae: Dae) -> None:
         """Start counting a scan point, by starting a DAE run."""
         logger.info("start counting")
-        await dae.controls.begin_run.trigger(wait=True, timeout=None)
+        await dae.controls.begin_run.trigger(timeout=None)
         await wait_for_value(
             dae.run_state,
             lambda v: v in {RunstateEnum.RUNNING, RunstateEnum.WAITING, RunstateEnum.VETOING},
@@ -140,7 +151,10 @@ class RunPerPointController(Controller, StandardReadable):
         await _end_or_abort_run(dae, self._save_run)
 
     def additional_readable_signals(self, dae: Dae) -> list[Device]:
-        """Run number is an interesting signal only if saving runs."""
+        """Run number is an interesting signal only if saving runs.
+
+        :meta private:
+        """
         if self._save_run:
             return [self.run_number]
         else:

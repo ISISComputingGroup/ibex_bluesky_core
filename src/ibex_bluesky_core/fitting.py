@@ -1,5 +1,7 @@
 """Fitting methods used by the LiveFit callback."""
 
+import math
+import warnings
 from abc import ABC, abstractmethod
 from collections.abc import Callable
 
@@ -46,11 +48,13 @@ class FitMethod:
             [npt.NDArray[np.float64], npt.NDArray[np.float64]], dict[str, lmfit.Parameter]
         ],
     ) -> None:
-        """Assign model and guess functions.
+        """Tell :py:obj:`~ibex_bluesky_core.callbacks.LiveFit` how to fit to data points.
+
+        Contains a model function and a guess function.
 
         Args:
-            model (lmfit.Model | Callable): The model function to use.
-            guess (Callable): The guess function to use.
+            model: The model function to use.
+            guess: The guess function to use.
 
         """
         self.guess = guess
@@ -75,8 +79,9 @@ class Fit(ABC):
             *args (int): Any extra parameters required for fitting.
 
         Returns:
-            lmfit.Model: Model function
-            (x-values: NDArray, parameters: np.float64 -> y-values: NDArray)
+            :py:obj:`lmfit.model.Model`: Model function, which takes
+            x-values as a :py:obj:`numpy.ndarray`, parameters as :py:obj:`float`
+            or :py:obj:`numpy.float64`, and returns y-values as a :py:obj:`numpy.ndarray`.
 
         """
 
@@ -85,14 +90,15 @@ class Fit(ABC):
     def guess(
         cls, *args: int
     ) -> Callable[[npt.NDArray[np.float64], npt.NDArray[np.float64]], dict[str, lmfit.Parameter]]:
-        """Outline base Guessing. method.
+        """Outline base guessing method.
 
         Args:
             *args (int): Any extra parameters required for fitting.
 
         Returns:
-            Callable: Guess function
-            (x-values: NDArray, y-values: NDArray -> parameters: Dict[str, lmfit.Parameter])
+            typing.Callable: Guess function
+            (x-values: :py:obj:`numpy.ndarray`, y-values: :py:obj:`numpy.ndarray`
+            -> parameters: ``Dict[str, lmfit.Parameter]``)
 
         """
 
@@ -102,14 +108,35 @@ class Fit(ABC):
         return FitMethod(model=cls.model(*args), guess=cls.guess(*args))
 
 
+def _guess_cen_and_width(
+    x: npt.NDArray[np.float64], y: npt.NDArray[np.float64]
+) -> tuple[float, float]:
+    """Guess the center and width of a positive peak."""
+    com, total_area = center_of_mass_of_area_under_curve(x, y)
+    y_range = np.max(y) - np.min(y)
+    if y_range == 0.0:
+        width = (np.max(x) - np.min(x)) / 2
+    else:
+        width = total_area / y_range
+    return com, width
+
+
 class Gaussian(Fit):
-    """Gaussian Fitting."""
+    """Gaussian Fitting.
+
+    See Also:
+        :ref:`fit_gaussian` model and parameter descriptions
+
+    """
 
     equation = "amp * exp(-((x - x0) ** 2) / (2 * sigma**2)) + background"
 
     @classmethod
     def model(cls, *args: int) -> lmfit.Model:
-        """Gaussian Model."""
+        """Gaussian Model.
+
+        :meta private:
+        """
 
         def model(
             x: npt.NDArray[np.float64], amp: float, sigma: float, x0: float, background: float
@@ -125,13 +152,17 @@ class Gaussian(Fit):
     def guess(
         cls, *args: int
     ) -> Callable[[npt.NDArray[np.float64], npt.NDArray[np.float64]], dict[str, lmfit.Parameter]]:
-        """Gaussian Guessing."""
+        """Gaussian Guessing.
+
+        :meta private:
+        """
 
         def guess(
             x: npt.NDArray[np.float64], y: npt.NDArray[np.float64]
         ) -> dict[str, lmfit.Parameter]:
-            mean = np.sum(x * y) / np.sum(y)
-            sigma = np.sqrt(np.sum(y * (x - mean) ** 2) / np.sum(y))
+            cen, width = _guess_cen_and_width(x, y)
+            sigma = width / math.sqrt(2 * math.pi)  # From expected area under gaussian
+
             background = np.min(y)
 
             if np.max(y) > abs(np.min(y)):
@@ -139,26 +170,32 @@ class Gaussian(Fit):
             else:
                 amp = np.min(y) + background
 
-            init_guess = {
+            return {
                 "amp": lmfit.Parameter("amp", amp),
                 "sigma": lmfit.Parameter("sigma", sigma, min=0),
-                "x0": lmfit.Parameter("x0", mean),
+                "x0": lmfit.Parameter("x0", cen),
                 "background": lmfit.Parameter("background", background),
             }
-
-            return init_guess
 
         return guess
 
 
 class Lorentzian(Fit):
-    """Lorentzian Fitting."""
+    """Lorentzian Fitting.
+
+    See Also:
+        :ref:`fit_lorentzian` model and parameter descriptions
+
+    """
 
     equation = "amp / (1 + ((x - center) / sigma) ** 2) + background"
 
     @classmethod
     def model(cls, *args: int) -> lmfit.Model:
-        """Lorentzian Model."""
+        """Lorentzian Model.
+
+        :meta private:
+        """
 
         def model(
             x: npt.NDArray[np.float64], amp: float, sigma: float, center: float, background: float
@@ -174,7 +211,10 @@ class Lorentzian(Fit):
     def guess(
         cls, *args: int
     ) -> Callable[[npt.NDArray[np.float64], npt.NDArray[np.float64]], dict[str, lmfit.Parameter]]:
-        """Lorentzian Guessing."""
+        """Lorentzian Guessing.
+
+        :meta private:
+        """
 
         def guess(
             x: npt.NDArray[np.float64], y: npt.NDArray[np.float64]
@@ -211,26 +251,32 @@ class Lorentzian(Fit):
 
             sigma = (x[x2_index] - x[x1_index]) / 2
 
-            init_guess = {
+            return {
                 "amp": lmfit.Parameter("amp", amp),
                 "sigma": lmfit.Parameter("sigma", sigma, min=0),
                 "center": lmfit.Parameter("center", center),
                 "background": lmfit.Parameter("background", background),
             }
 
-            return init_guess
-
         return guess
 
 
 class Linear(Fit):
-    """Linear Fitting."""
+    """Linear Fitting.
+
+    See Also:
+        :ref:`fit_linear` model and parameter descriptions
+
+    """
 
     equation = "c1 * x + c0"
 
     @classmethod
     def model(cls, *args: int) -> lmfit.Model:
-        """Linear Model."""
+        """Linear Model.
+
+        :meta private:
+        """
 
         def model(x: npt.NDArray[np.float64], c1: float, c0: float) -> npt.NDArray[np.float64]:
             return c1 * x + c0
@@ -241,12 +287,20 @@ class Linear(Fit):
     def guess(
         cls, *args: int
     ) -> Callable[[npt.NDArray[np.float64], npt.NDArray[np.float64]], dict[str, lmfit.Parameter]]:
-        """Linear Guessing."""
+        """Linear Guessing.
+
+        :meta private:
+        """
         return Polynomial.guess(1)
 
 
 class Polynomial(Fit):
-    """Polynomial Fitting."""
+    """Polynomial Fitting.
+
+    See Also:
+        :ref:`fit_polynomial` model and parameter descriptions
+
+    """
 
     equation = "cn * x^n + ... + c1 * x^1 + c0"
 
@@ -261,7 +315,10 @@ class Polynomial(Fit):
 
     @classmethod
     def model(cls, *args: int) -> lmfit.Model:
-        """Polynomial Model."""
+        """Polynomial Model.
+
+        :meta private:
+        """
         degree = cls._check_degree(args)
         return PolynomialModel(degree=degree)
 
@@ -269,7 +326,10 @@ class Polynomial(Fit):
     def guess(
         cls, *args: int
     ) -> Callable[[npt.NDArray[np.float64], npt.NDArray[np.float64]], dict[str, lmfit.Parameter]]:
-        """Polynomial Guessing."""
+        """Polynomial Guessing.
+
+        :meta private:
+        """
 
         def guess(
             x: npt.NDArray[np.float64], y: npt.NDArray[np.float64]
@@ -277,7 +337,11 @@ class Polynomial(Fit):
             init_guess = {}
             degree = cls._check_degree(args)
 
-            coeffs = np.polynomial.polynomial.polyfit(x, y, degree)
+            # RankWarnings for fitting data are common with flat data, flat data is valid, so the
+            # warnings are being surpressed
+            with np.testing.clear_and_catch_warnings():
+                warnings.filterwarnings("ignore", category=np.exceptions.RankWarning)
+                coeffs = np.polynomial.polynomial.polyfit(x, y, degree)
 
             for i in range(degree + 1):
                 init_guess[f"c{i}"] = coeffs[i]
@@ -288,13 +352,21 @@ class Polynomial(Fit):
 
 
 class DampedOsc(Fit):
-    """Damped Oscillator Fitting."""
+    """Damped Oscillator Fitting.
+
+    See Also:
+        :ref:`fit_damped_osc` model and parameter descriptions
+
+    """
 
     equation = "amp * cos((x - center) * freq) * exp(-(((x - center) / width) ** 2))"
 
     @classmethod
     def model(cls, *args: int) -> lmfit.Model:
-        """Damped Oscillator Model."""
+        """Damped Oscillator Model.
+
+        :meta private:
+        """
 
         def model(
             x: npt.NDArray[np.float64], center: float, amp: float, freq: float, width: float
@@ -307,7 +379,10 @@ class DampedOsc(Fit):
     def guess(
         cls, *args: int
     ) -> Callable[[npt.NDArray[np.float64], npt.NDArray[np.float64]], dict[str, lmfit.Parameter]]:
-        """Damped Oscillator Guessing."""
+        """Damped Oscillator Guessing.
+
+        :meta private:
+        """
 
         def guess(
             x: npt.NDArray[np.float64], y: npt.NDArray[np.float64]
@@ -315,28 +390,38 @@ class DampedOsc(Fit):
             peak = x[np.argmax(y)]
             valley = x[np.argmin(y)]
 
-            init_guess = {
+            frequency_guess = 1
+            if np.abs(peak - valley) > 0:
+                frequency_guess = np.pi / np.abs(peak - valley)
+
+            return {
                 "center": lmfit.Parameter("center", peak),
                 "amp": lmfit.Parameter("amp", np.max(y)),
-                "freq": lmfit.Parameter("freq", np.pi / np.abs(peak - valley)),
+                "freq": lmfit.Parameter("freq", frequency_guess),
                 "width": lmfit.Parameter("width", np.max(x) - np.min(x)),
             }
-
-            return init_guess
 
         return guess
 
 
 class SlitScan(Fit):
-    """Slit Scan Fitting."""
+    """Slit Scan Fitting.
+
+    See Also:
+        :ref:`fit_slitscan` model and parameter descriptions
+
+    """
 
     equation = """See
-    https://isiscomputinggroup.github.io/ibex_bluesky_core/fitting/standard_fits.html#slit-scan-slitscan
+    https://isiscomputinggroup.github.io/ibex_bluesky_core/fitting/standard_fits.html#fit_slitscan
     for model function"""
 
     @classmethod
     def model(cls, *args: int) -> lmfit.Model:
-        """Slit Scan Model."""
+        """Slit Scan Model.
+
+        :meta private:
+        """
 
         def model(
             x: npt.NDArray[np.float64],
@@ -365,9 +450,7 @@ class SlitScan(Fit):
             linear_seg = np.maximum(linear_seg, background)
             exp_seg = np.maximum(exp_seg, background)
 
-            y = np.minimum(linear_seg, exp_seg)
-
-            return y
+            return np.minimum(linear_seg, exp_seg)
 
         return lmfit.Model(model, name=f"{cls.__name__}  [{cls.equation}]")
 
@@ -375,30 +458,38 @@ class SlitScan(Fit):
     def guess(
         cls, *args: int
     ) -> Callable[[npt.NDArray[np.float64], npt.NDArray[np.float64]], dict[str, lmfit.Parameter]]:
-        """Slit Scan Guessing."""
+        """Slit Scan Guessing.
+
+        :meta private:
+        """
 
         def guess(
             x: npt.NDArray[np.float64], y: npt.NDArray[np.float64]
         ) -> dict[str, lmfit.Parameter]:
             background = np.min(y)
             inflection0 = np.min(x) + (1 / 3) * (np.max(x) - np.min(x))
-            inflections_diff = (1 / 3) * (np.max(x) - np.min(x))
-            gradient = 2 * (np.max(y) - np.min(y)) / (np.max(x) - np.min(x))
+            if np.max(x) == np.min(x):
+                # Using 1 for flat lines
+                inflections_diff = (1 / 3) * 1.0
+                inflections_max = 1.0
+                gradient = 2 * (np.max(y) - np.min(y)) / 1.0
+            else:
+                inflections_diff = (1 / 3) * (np.max(x) - np.min(x))
+                gradient = 2 * (np.max(y) - np.min(y)) / (np.max(x) - np.min(x))
+                inflections_max = float(np.max(x) - np.min(x))
             height_above_inflection1 = (np.max(y) - np.min(y)) / 5.0
 
-            init_guess = {
+            return {
                 "background": lmfit.Parameter("background", background),
                 "inflection0": lmfit.Parameter("inflection0", inflection0),
                 "gradient": lmfit.Parameter("gradient", gradient, min=0),
                 "inflections_diff": lmfit.Parameter(
-                    "inflections_diff", inflections_diff, min=0, max=float(np.max(x) - np.min(x))
+                    "inflections_diff", inflections_diff, min=0, max=inflections_max
                 ),
                 "height_above_inflection1": lmfit.Parameter(
                     "height_above_inflection1", height_above_inflection1, min=0
                 ),
             }
-
-            return init_guess
 
         return guess
 
@@ -464,13 +555,21 @@ def _calculate_erf_stretch(
 
 
 class ERF(Fit):
-    """Error Function Fitting."""
+    """Error Function Fitting.
+
+    See Also:
+        :ref:`fit_erf` model and parameter descriptions
+
+    """
 
     equation = "background + scale * erf(stretch * (x - cen))"
 
     @classmethod
     def model(cls, *args: int) -> lmfit.Model:
-        """Error Function Model."""
+        """Error Function Model.
+
+        :meta private:
+        """
 
         def model(
             x: npt.NDArray[np.float64], cen: float, stretch: float, scale: float, background: float
@@ -483,7 +582,10 @@ class ERF(Fit):
     def guess(
         cls, *args: int
     ) -> Callable[[npt.NDArray[np.float64], npt.NDArray[np.float64]], dict[str, lmfit.Parameter]]:
-        """Error Function Guessing."""
+        """Error Function Guessing.
+
+        :meta private:
+        """
 
         def guess(
             x: npt.NDArray[np.float64], y: npt.NDArray[np.float64]
@@ -493,26 +595,32 @@ class ERF(Fit):
             background = np.min(y) + (np.max(y) - np.min(y)) / 2
             stretch = _calculate_erf_stretch(x, y)
 
-            init_guess = {
+            return {
                 "cen": lmfit.Parameter("cen", center),
                 "stretch": lmfit.Parameter("stretch", stretch),
                 "scale": lmfit.Parameter("scale", scale),
                 "background": lmfit.Parameter("background", background),
             }
 
-            return init_guess
-
         return guess
 
 
 class ERFC(Fit):
-    """Complementary Error Function Fitting."""
+    """Complementary Error Function Fitting.
+
+    See Also:
+        :ref:`fit_erfc` model and parameter descriptions
+
+    """
 
     equation = "background + scale * erfc(stretch * (x - cen))"
 
     @classmethod
     def model(cls, *args: int) -> lmfit.Model:
-        """Complementary Error Function Model."""
+        """Complementary Error Function Model.
+
+        :meta private:
+        """
 
         def model(
             x: npt.NDArray[np.float64], cen: float, stretch: float, scale: float, background: float
@@ -525,7 +633,10 @@ class ERFC(Fit):
     def guess(
         cls, *args: int
     ) -> Callable[[npt.NDArray[np.float64], npt.NDArray[np.float64]], dict[str, lmfit.Parameter]]:
-        """Complementary Error Function Guessing."""
+        """Complementary Error Function Guessing.
+
+        :meta private:
+        """
 
         def guess(
             x: npt.NDArray[np.float64], y: npt.NDArray[np.float64]
@@ -535,39 +646,32 @@ class ERFC(Fit):
             background = np.min(y)
             stretch = _calculate_erf_stretch(x, y, True)
 
-            init_guess = {
+            return {
                 "cen": lmfit.Parameter("cen", center),
                 "stretch": lmfit.Parameter("stretch", stretch),
                 "scale": lmfit.Parameter("scale", scale),
                 "background": lmfit.Parameter("background", background),
             }
 
-            return init_guess
-
         return guess
 
 
-def _guess_cen_and_width(
-    x: npt.NDArray[np.float64], y: npt.NDArray[np.float64]
-) -> tuple[float, float]:
-    """Guess the center and width of a positive peak."""
-    com, total_area = center_of_mass_of_area_under_curve(x, y)
-    y_range = np.max(y) - np.min(y)
-    if y_range == 0.0:
-        width = (np.max(x) - np.min(x)) / 2
-    else:
-        width = total_area / y_range
-    return com, width
-
-
 class TopHat(Fit):
-    """Top Hat Fitting."""
+    """Top Hat Fitting.
+
+    See Also:
+        :ref:`fit_tophat` model and parameter descriptions
+
+    """
 
     equation = "if (abs(x - cen) < width / 2) { background + height } else { background }"
 
     @classmethod
     def model(cls, *args: int) -> lmfit.Model:
-        """Top Hat Model."""
+        """Top Hat Model.
+
+        :meta private:
+        """
 
         def model(
             x: npt.NDArray[np.float64], cen: float, width: float, height: float, background: float
@@ -582,14 +686,17 @@ class TopHat(Fit):
     def guess(
         cls, *args: int
     ) -> Callable[[npt.NDArray[np.float64], npt.NDArray[np.float64]], dict[str, lmfit.Parameter]]:
-        """Top Hat Guessing."""
+        """Top Hat Guessing.
+
+        :meta private:
+        """
 
         def guess(
             x: npt.NDArray[np.float64], y: npt.NDArray[np.float64]
         ) -> dict[str, lmfit.Parameter]:
             cen, width = _guess_cen_and_width(x, y)
 
-            init_guess = {
+            return {
                 "cen": lmfit.Parameter("cen", cen),
                 "width": lmfit.Parameter("width", width, min=0),
                 "height": lmfit.Parameter(
@@ -598,8 +705,6 @@ class TopHat(Fit):
                 ),
                 "background": lmfit.Parameter("background", np.min(y)),
             }
-
-            return init_guess
 
         return guess
 
@@ -613,7 +718,12 @@ def _guess_trapezoid_gradient(x: npt.NDArray[np.float64], y: npt.NDArray[np.floa
 
 
 class Trapezoid(Fit):
-    """Trapezoid Fitting."""
+    """Trapezoid Fitting.
+
+    See Also:
+        :ref:`fit_trapezoid` model and parameter descriptions
+
+    """
 
     equation = """
     y = clip(y_offset + height + background - gradient * abs(x - cen),
@@ -621,7 +731,10 @@ class Trapezoid(Fit):
 
     @classmethod
     def model(cls, *args: int) -> lmfit.Model:
-        """Trapezoid Model."""
+        """Trapezoid Model.
+
+        :meta private:
+        """
 
         def model(
             x: npt.NDArray[np.float64],
@@ -633,8 +746,7 @@ class Trapezoid(Fit):
         ) -> npt.NDArray[np.float64]:
             y = y_offset + height + background - gradient * np.abs(x - cen)
             y = np.maximum(y, background)
-            y = np.minimum(y, background + height)
-            return y
+            return np.minimum(y, background + height)
 
         return lmfit.Model(model, name=f"{cls.__name__}  [{cls.equation}]")
 
@@ -642,7 +754,10 @@ class Trapezoid(Fit):
     def guess(
         cls, *args: int
     ) -> Callable[[npt.NDArray[np.float64], npt.NDArray[np.float64]], dict[str, lmfit.Parameter]]:
-        """Trapezoid Guessing."""
+        """Trapezoid Guessing.
+
+        :meta private:
+        """
 
         def guess(
             x: npt.NDArray[np.float64], y: npt.NDArray[np.float64]
@@ -654,21 +769,32 @@ class Trapezoid(Fit):
             background = np.min(y)
             y_offset = gradient_guess * width / 2.0
 
-            init_guess = {
-                "cen": lmfit.Parameter("cen", cen, min=np.min(x), max=np.max(x)),
+            if np.min(x) == np.max(x):
+                # These are pure guesses
+                cen_min = 0.0
+                cen_max = 1.0
+            else:
+                cen_min = np.min(x)
+                cen_max = np.max(x)
+
+            return {
+                "cen": lmfit.Parameter("cen", cen, min=cen_min, max=cen_max),
                 "gradient": lmfit.Parameter("gradient", gradient_guess, min=0),
                 "height": lmfit.Parameter("height", height, min=0),
                 "background": lmfit.Parameter("background", background),
                 "y_offset": lmfit.Parameter("y_offset", y_offset),
             }
 
-            return init_guess
-
         return guess
 
 
 class NegativeTrapezoid(Fit):
-    """Negative Trapezoid Fitting."""
+    """Negative Trapezoid Fitting.
+
+    See Also:
+        :ref:`fit_neg_trapezoid` model and parameter descriptions
+
+    """
 
     equation = """
     y = clip(y_offset - height + background + gradient * abs(x - cen),
@@ -676,7 +802,10 @@ class NegativeTrapezoid(Fit):
 
     @classmethod
     def model(cls, *args: int) -> lmfit.Model:
-        """Negative Trapezoid Model."""
+        """Negative Trapezoid Model.
+
+        :meta private:
+        """
 
         def model(
             x: npt.NDArray[np.float64],
@@ -688,8 +817,7 @@ class NegativeTrapezoid(Fit):
         ) -> npt.NDArray[np.float64]:
             y = y_offset - height + background + gradient * np.abs(x - cen)
             y = np.maximum(y, background - height)
-            y = np.minimum(y, background)
-            return y
+            return np.minimum(y, background)
 
         return lmfit.Model(model, name=f"{cls.__name__}  [{cls.equation}]")
 
@@ -697,7 +825,10 @@ class NegativeTrapezoid(Fit):
     def guess(
         cls, *args: int
     ) -> Callable[[npt.NDArray[np.float64], npt.NDArray[np.float64]], dict[str, lmfit.Parameter]]:
-        """Negative Trapezoid Guessing."""
+        """Negative Trapezoid Guessing.
+
+        :meta private:
+        """
 
         def guess(
             x: npt.NDArray[np.float64], y: npt.NDArray[np.float64]
@@ -709,28 +840,42 @@ class NegativeTrapezoid(Fit):
             background = np.max(y)
             y_offset = -gradient_guess * width / 2.0
 
-            init_guess = {
-                "cen": lmfit.Parameter("cen", cen, min=np.min(x), max=np.max(x)),
+            if np.min(x) == np.max(x):
+                # These are pure guesses
+                cen_min = 0.0
+                cen_max = 1.0
+            else:
+                cen_min = np.min(x)
+                cen_max = np.max(x)
+
+            return {
+                "cen": lmfit.Parameter("cen", cen, min=cen_min, max=cen_max),
                 "gradient": lmfit.Parameter("gradient", gradient_guess, min=0),
                 "height": lmfit.Parameter("height", height, min=0),
                 "background": lmfit.Parameter("background", background),
                 "y_offset": lmfit.Parameter("y_offset", y_offset),
             }
 
-            return init_guess
-
         return guess
 
 
 class MuonMomentum(Fit):
-    """Muon momentum fitting."""
+    """Muon momentum fitting.
+
+    See Also:
+        :ref:`fit_muon_momentum` model and parameter descriptions
+
+    """
 
     equation = """
         y=(erfc((x-x0/w))*(r/2)+b)*((x/x0)**p)"""
 
     @classmethod
     def model(cls, *args: int) -> lmfit.Model:
-        """Momentum scan model."""
+        """Momentum scan model.
+
+        :meta private:
+        """
 
         def model(
             x: npt.NDArray[np.float64], x0: float, r: float, w: float, p: float, b: float
@@ -743,7 +888,10 @@ class MuonMomentum(Fit):
     def guess(
         cls, *args: int
     ) -> Callable[[npt.NDArray[np.float64], npt.NDArray[np.float64]], dict[str, lmfit.Parameter]]:
-        """Momentum Scan Fit Guessing."""
+        """Momentum Scan Fit Guessing.
+
+        :meta private:
+        """
 
         def guess(
             x: npt.NDArray[np.float64], y: npt.NDArray[np.float64]
@@ -768,15 +916,18 @@ class MuonMomentum(Fit):
                 x0 = x[-1]  # Picked as it can't be 0
 
             p = 1  # Expected value, not likely to change
-            w = 1 / _calculate_erf_stretch(x, y, erfc=True, pre_sorted=True)
+            erf_stretch = _calculate_erf_stretch(x, y, erfc=True, pre_sorted=True)
+            if erf_stretch == 0.0:
+                w = 0.5  # Value smaller than one when the stretch would otherwise be 0 and fault
+            else:
+                w = 1 / erf_stretch
 
-            init_guess = {
+            return {
                 "b": lmfit.Parameter("b", b),
                 "r": lmfit.Parameter("r", r, min=0),
                 "x0": lmfit.Parameter("x0", x0, min=0),
                 "p": lmfit.Parameter("p", p, min=0),
                 "w": lmfit.Parameter("w", w, min=0),
             }
-            return init_guess
 
         return guess

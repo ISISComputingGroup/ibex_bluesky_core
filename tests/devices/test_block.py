@@ -1,14 +1,12 @@
 # pyright: reportMissingParameterType=false
-import asyncio
-import sys
 from contextlib import nullcontext
 from unittest.mock import ANY, MagicMock, call, patch
 
 import bluesky.plan_stubs as bps
 import bluesky.plans as bp
-import ophyd_async
 import pytest
-from ophyd_async.testing import get_mock_put, set_mock_value
+from ophyd_async.core import get_mock_put, set_mock_value
+from ophyd_async.epics.motor import MotorLimitsError
 
 from ibex_bluesky_core.devices.block import (
     GLOBAL_MOVING_FLAG_PRE_WAIT,
@@ -24,11 +22,6 @@ from ibex_bluesky_core.devices.block import (
     block_w,
 )
 from tests.conftest import MOCK_PREFIX
-
-if sys.version_info < (3, 11):
-    aio_timeout_error = asyncio.exceptions.TimeoutError
-else:
-    aio_timeout_error = TimeoutError
 
 
 async def _make_block(clazz):
@@ -163,13 +156,13 @@ async def test_read_and_describe_configuration(readable_block):
 async def test_block_set(writable_block):
     set_mock_value(writable_block.setpoint, 10)
     await writable_block.set(20)
-    get_mock_put(writable_block.setpoint).assert_called_once_with(20, wait=True)
+    get_mock_put(writable_block.setpoint).assert_called_once_with(20)
 
 
 async def test_block_set_without_epics_completion_callback():
     block = await _block_with_write_config(BlockWriteConfig(use_completion_callback=False))
     await block.set(20)
-    get_mock_put(block.setpoint).assert_called_once_with(20, wait=False)
+    get_mock_put(block.setpoint).assert_called_once_with(20)
 
 
 async def test_block_set_with_arbitrary_completion_function():
@@ -192,7 +185,7 @@ async def test_block_set_with_timeout():
 
     set_mock_value(block.readback, 10)
 
-    with pytest.raises(aio_timeout_error):
+    with pytest.raises(TimeoutError):
         await block.set(20)
 
     func.assert_called_once_with(20, 10)
@@ -234,7 +227,7 @@ async def test_block_set_waiting_for_global_moving_flag_timeout():
 
     set_mock_value(block.global_moving, True)
     with patch("ibex_bluesky_core.devices.block.asyncio.sleep") as mock_aio_sleep:
-        with pytest.raises(aio_timeout_error):
+        with pytest.raises(TimeoutError):
             await block.set(10)
         # Only check first call, as wait_for_value from ophyd_async gives us a few more...
         assert mock_aio_sleep.mock_calls[0] == call(GLOBAL_MOVING_FLAG_PRE_WAIT)
@@ -340,7 +333,7 @@ def test_plan_trigger_block(RE, readable_block):
 def test_plan_mv_block(RE, writable_block):
     set_mock_value(writable_block.setpoint, 123.0)
     RE(bps.mv(writable_block, 456.0))
-    get_mock_put(writable_block.setpoint).assert_called_once_with(456.0, wait=True)
+    get_mock_put(writable_block.setpoint).assert_called_once_with(456.0)
 
 
 def test_block_reprs():
@@ -356,22 +349,17 @@ async def test_block_mot_set_within_limits(mot_block):
     set_mock_value(mot_block.high_limit_travel, 1000)
     set_mock_value(mot_block.low_limit_travel, -1000)
     await mot_block.set(20)
-    get_mock_put(mot_block.user_setpoint).assert_called_once_with(20, wait=True)
+    get_mock_put(mot_block.user_setpoint).assert_called_once_with(20)
 
 
-@pytest.mark.skipif(
-    ophyd_async._version.version_tuple < (0, 13, 2),
-    reason="Exception only raised in ophyd_async >= 0.13.2",
-)
 async def test_block_mot_set_outside_limits(mot_block):
-    # Local import as API not available in older ophyd_async versions
-    from ophyd_async.epics.motor import MotorLimitsException  # noqa PLC0415
-
     set_mock_value(mot_block.user_setpoint, 10)
     set_mock_value(mot_block.velocity, 10)
+    set_mock_value(mot_block.dial_high_limit_travel, 15)
+    set_mock_value(mot_block.dial_low_limit_travel, 5)
     set_mock_value(mot_block.high_limit_travel, 15)
     set_mock_value(mot_block.low_limit_travel, 5)
-    with pytest.raises(MotorLimitsException):
+    with pytest.raises(MotorLimitsError):
         await mot_block.set(20)
 
 
@@ -379,13 +367,13 @@ async def test_block_mot_set_outside_limits(mot_block):
 async def test_block_failing_write(timeout_is_error):
     block = await _block_with_write_config(BlockWriteConfig(timeout_is_error=timeout_is_error))
 
-    get_mock_put(block.setpoint).side_effect = aio_timeout_error
+    get_mock_put(block.setpoint).side_effect = TimeoutError
 
-    with pytest.raises(aio_timeout_error) if timeout_is_error else nullcontext():
+    with pytest.raises(TimeoutError) if timeout_is_error else nullcontext():
         await block.set(1)
 
 
 async def test_block_failing_write_with_default_write_config(writable_block):
-    get_mock_put(writable_block.setpoint).side_effect = aio_timeout_error
-    with pytest.raises(aio_timeout_error):
+    get_mock_put(writable_block.setpoint).side_effect = TimeoutError
+    with pytest.raises(TimeoutError):
         await writable_block.set(1)
