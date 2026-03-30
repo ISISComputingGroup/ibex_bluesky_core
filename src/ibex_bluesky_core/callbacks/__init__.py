@@ -344,8 +344,9 @@ class CustomCallbackFunc(typing.Protocol[T_co]):
             x: npt.NDArray[np.float64],
             y: npt.NDArray[np.float64],
             y_err: npt.NDArray[np.float64] | None
-        ):
-            ...
+        ) -> float:
+            # Fiddle with the arrays in a user-specified way
+            return 42.0
 
     The function may return any type; the return value will be exposed by :py:obj:`~CustomCallback`.
 
