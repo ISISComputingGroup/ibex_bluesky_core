@@ -46,11 +46,21 @@ RE(some_plan())
 ```
 
 This will put the `block` and `dae.good_frames` data collected over the run into a `.txt` file, named after the `uid` 
-of the scan, in `\\isis\inst$\ndx<inst>\user\bluesky_scans\<rbnumber>`. 
+of the scan, in:
+```
+\\isis\inst$\NDX<instrument>\Instrument\data\cycle_<cycle>\autoreduced\bluesky_scans
+```
+
+:::{note}
+On versions of `ibex_bluesky_core` before 1.3.0, this location was:
+```
+`<isis share>\inst$\NDX<inst>\user\bluesky_scans\<current rb number>`
+```
+:::
 
 Optional parameters, not shown above, include:
 - `output_dir` parameter is optional; if not provided, the file will by default be placed in 
-`\\isis\inst$\ndx<inst>\user\bluesky_scans\<rbnumber>`. 
+`c:/data/rb_number`, and subsequently moved to the archive by the {doc}`archival process </dev/archiving>`. 
 - `postfix` an optional suffix to append to the end of the file name, to disambiguate scans. Default is no suffix.
 
 The data is prepended on the first event with the names and units of each logged field, and then subsequently the data 
