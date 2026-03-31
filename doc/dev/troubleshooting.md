@@ -47,8 +47,15 @@ showing how to do this.
 
 ### Scientist-facing data
 
-Scientist-facing output files are written to `<isis share>\inst$\NDX<inst>\user\bluesky_scans\<current rb number>` by 
+Scientist-facing output files are written to `\\isis\inst$\NDX<instrument>\Instrument\data\cycle_<cycle>\autoreduced\bluesky_scans` by 
 default.
+
+:::{note}
+On versions of `ibex_bluesky_core` before 1.3.0, this location was:
+```
+`<isis share>\inst$\NDX<inst>\user\bluesky_scans\<current rb number>`
+```
+:::
 
 Custom file-output paths can be specified by passing extra arguments to 
 {py:obj}`~ibex_bluesky_core.callbacks.HumanReadableFileCallback` 

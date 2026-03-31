@@ -4,6 +4,7 @@ import csv
 import logging
 import os
 from pathlib import Path
+from stat import S_IRGRP, S_IROTH, S_IRUSR
 
 from bluesky.callbacks import CallbackBase
 from event_model.documents.event import Event
@@ -69,6 +70,7 @@ class HumanReadableFileCallback(CallbackBase):
         self.current_start_document = doc[UID]
 
         rb_num = _get_rb_num(doc)
+        rb_num_str = rb_num if rb_num == "Unknown RB" else f"RB{rb_num}"
 
         # motors is a tuple, we need to convert to a list to join the two below
         motors = list(doc.get(MOTORS, []))
@@ -77,7 +79,8 @@ class HumanReadableFileCallback(CallbackBase):
 
         self.filename = (
             self.output_dir
-            / f"{rb_num}"
+            / rb_num_str
+            / "bluesky_scans"
             / f"{get_instrument()}{'_' + '_'.join(motors) if motors else ''}_"
             f"{formatted_time}Z{self.postfix}.txt"
         )
@@ -161,4 +164,6 @@ class HumanReadableFileCallback(CallbackBase):
         """
         logger.info("Stopping run, clearing descriptors, filename=%s", self.filename)
         self.descriptors.clear()
+        if self.filename is not None:
+            os.chmod(self.filename, S_IRUSR | S_IRGRP | S_IROTH)
         return super().stop(doc)

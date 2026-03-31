@@ -145,6 +145,8 @@ def test_if_in_periods_mode_and_run_saved_then_scan_start_doc_contains_run_numbe
 
     with (
         patch("ibex_bluesky_core.plans.ensure_connected"),
+        patch("ibex_bluesky_core.callbacks._file_logger.open"),
+        patch("ibex_bluesky_core.callbacks._file_logger.os.chmod"),
         # Scan fails because DAE isn't set up right... but it still emits a start doc so that's fine
         pytest.raises(bluesky.utils.FailedStatus),
     ):
