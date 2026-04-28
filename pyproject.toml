@@ -67,7 +67,7 @@ doc = [
 ]
 dev = [
   "ibex_bluesky_core[doc]",
-  "ruff==0.15.11",  # Update manually so we don't get new rules 'by accident'
+  "ruff==0.15.12",  # Update manually so we don't get new rules 'by accident'
   "pyright==1.1.409",  # Update manually
   "pytest",
   "pytest-asyncio",
