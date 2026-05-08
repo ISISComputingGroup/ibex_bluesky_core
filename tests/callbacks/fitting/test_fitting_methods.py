@@ -51,8 +51,7 @@ class MockFit(Fit):
             x: npt.NDArray[np.float64], y: npt.NDArray[np.float64]
         ) -> dict[str, lmfit.Parameter]:
             cls.mock_guess()
-            init_guess = {"offset": lmfit.Parameter("offset", 1)}
-            return init_guess
+            return {"offset": lmfit.Parameter("offset", 1)}
 
         return guess
 
@@ -133,10 +132,10 @@ class TestGaussian:
             assert outp["amp"] < 0
 
         def test_sigma(self):
-            x = np.array([-1.0, 0.0, 1.0], dtype=np.float64)
-            y = np.array([1.0, 2.0, 1.0], dtype=np.float64)
+            x = np.array([-2.0, -1.0, 0.0, 1.0, 2.0], dtype=np.float64)
+            y = np.array([0.0, 0.0, 2.0, 0.0, 0.0], dtype=np.float64)
             # y1 is "wider" so must have higher sigma
-            y1 = np.array([1.5, 1.75, 1.5], dtype=np.float64)
+            y1 = np.array([0.0, 2.0, 2.0, 2.0, 0.0], dtype=np.float64)
 
             outp = Gaussian.guess()(x, y)
             outp1 = Gaussian.guess()(x, y1)
@@ -968,3 +967,224 @@ class TestMuonMomentum:
             out = MuonMomentum.guess()(x, y)
 
             assert out["x0"] == x[-1]
+
+
+class TestFlatLines:
+    # This is an initial version to then add appropriate tests to each test above
+    class TestFlatLinesLinear:
+        @pytest.mark.filterwarnings(
+            "error"
+        )  # This allows the rank warning to be viewed as an error
+        def test_flat_lines_0_x_linear(self):
+            x = np.linspace(0, 0, 10, dtype=np.float64)
+            y = np.arange(-5.0, 5.0, 1.0, dtype=np.float64)
+
+            outp = Linear.guess()(x, y)
+            assert pytest.approx(outp["c1"]) == 0.0
+
+        @pytest.mark.filterwarnings(
+            "error"
+        )  # This allows the rank warning to be viewed as an error
+        def test_flat_lines_0_y_linear(self):
+            x = np.arange(-5.0, 5.0, 1.0, dtype=np.float64)
+            y = np.linspace(0, 0, 10, dtype=np.float64)
+
+            outp = Linear.guess()(x, y)
+            assert pytest.approx(outp["c1"]) == 0.0
+
+        @pytest.mark.filterwarnings(
+            "error"
+        )  # This allows the rank warning to be viewed as an error
+        def test_flat_lines_0_x_0_y_linear(self):
+            x = np.linspace(0, 0, 10, dtype=np.float64)
+            y = np.linspace(0, 0, 10, dtype=np.float64)
+
+            outp = Linear.guess()(x, y)
+            assert pytest.approx(outp["c1"]) == 0.0
+
+    class TestFlatLinesPolynomial:
+        @pytest.mark.filterwarnings(
+            "error"
+        )  # This allows the rank warning to be viewed as an error
+        def test_flat_lines_0_x_polynomial(self):
+            x = np.linspace(0, 0, 10, dtype=np.float64)
+            y = np.arange(-5.0, 5.0, 1.0, dtype=np.float64)
+
+            outp = Polynomial.guess()(x, y)
+            assert pytest.approx(outp["c1"]) == 0.0
+
+        @pytest.mark.filterwarnings(
+            "error"
+        )  # This allows the rank warning to be viewed as an error
+        def test_flat_lines_0_y_polynomial(self):
+            x = np.arange(-5.0, 5.0, 1.0, dtype=np.float64)
+            y = np.linspace(0, 0, 10, dtype=np.float64)
+
+            outp = Polynomial.guess()(x, y)
+            assert pytest.approx(outp["c1"]) == 0.0
+
+        @pytest.mark.filterwarnings(
+            "error"
+        )  # This allows the rank warning to be viewed as an error
+        def test_flat_lines_0_x_0_y_polynomial(self):
+            x = np.linspace(0, 0, 10, dtype=np.float64)
+            y = np.linspace(0, 0, 10, dtype=np.float64)
+
+            outp = Polynomial.guess()(x, y)
+            assert pytest.approx(outp["c1"]) == 0.0
+
+    class TestFlatLinesDampedOscillator:
+        @pytest.mark.filterwarnings(
+            "error"
+        )  # This allows the rank warning to be viewed as an error
+        def test_flat_lines_0_x_damped_oscillator(self):
+            x = np.linspace(0, 0, 10, dtype=np.float64)
+            y = np.arange(-5.0, 5.0, 1.0, dtype=np.float64)
+
+            outp = DampedOsc.guess()(x, y)
+            assert pytest.approx(outp["freq"].value) == 1
+
+        @pytest.mark.filterwarnings(
+            "error"
+        )  # This allows the rank warning to be viewed as an error
+        def test_flat_lines_0_y_damped_oscillator(self):
+            x = np.arange(-5.0, 5.0, 1.0, dtype=np.float64)
+            y = np.linspace(0, 0, 10, dtype=np.float64)
+
+            outp = DampedOsc.guess()(x, y)
+            assert pytest.approx(outp["freq"].value) == 1
+
+        @pytest.mark.filterwarnings(
+            "error"
+        )  # This allows the rank warning to be viewed as an error
+        def test_flat_lines_0_x_0_y_damped_oscillator(self):
+            x = np.linspace(0, 0, 10, dtype=np.float64)
+            y = np.linspace(0, 0, 10, dtype=np.float64)
+
+            outp = DampedOsc.guess()(x, y)
+            assert pytest.approx(outp["freq"].value) == 1
+
+    class TestFlatLinesSlitScan:
+        @pytest.mark.filterwarnings(
+            "error"
+        )  # This allows the rank warning to be viewed as an error
+        def test_flat_lines_0_x_slit_scan(self):
+            x = np.linspace(0, 0, 10, dtype=np.float64)
+            y = np.arange(-5.0, 5.0, 1.0, dtype=np.float64)
+
+            outp = SlitScan.guess()(x, y)
+            assert pytest.approx(outp["inflections_diff"].max) == 1.0
+
+        @pytest.mark.filterwarnings(
+            "error"
+        )  # This allows the rank warning to be viewed as an error
+        def test_flat_lines_0_y_slit_scan(self):
+            x = np.arange(-5.0, 5.0, 1.0, dtype=np.float64)
+            y = np.linspace(0, 0, 10, dtype=np.float64)
+
+            outp = SlitScan.guess()(x, y)
+            assert pytest.approx(outp["inflections_diff"].max) == 9.0
+
+        @pytest.mark.filterwarnings(
+            "error"
+        )  # This allows the rank warning to be viewed as an error
+        def test_flat_lines_0_x_0_y_slit_scan(self):
+            x = np.linspace(0, 0, 10, dtype=np.float64)
+            y = np.linspace(0, 0, 10, dtype=np.float64)
+
+            outp = SlitScan.guess()(x, y)
+            assert pytest.approx(outp["inflections_diff"].max) == 1.0
+
+    class TestFlatLinesTrapezoid:
+        @pytest.mark.filterwarnings(
+            "error"
+        )  # This allows the rank warning to be viewed as an error
+        def test_flat_lines_0_x_trapezoid(self):
+            x = np.linspace(0, 0, 10, dtype=np.float64)
+            y = np.arange(-5.0, 5.0, 1.0, dtype=np.float64)
+
+            outp = Trapezoid.guess()(x, y)
+            assert pytest.approx(outp["cen"].max) == 1.0
+
+        @pytest.mark.filterwarnings(
+            "error"
+        )  # This allows the rank warning to be viewed as an error
+        def test_flat_lines_0_y_trapezoid(self):
+            x = np.arange(-5.0, 5.0, 1.0, dtype=np.float64)
+            y = np.linspace(0, 0, 10, dtype=np.float64)
+
+            outp = Trapezoid.guess()(x, y)
+            assert pytest.approx(outp["cen"].max) == 4.0
+
+        @pytest.mark.filterwarnings(
+            "error"
+        )  # This allows the rank warning to be viewed as an error
+        def test_flat_lines_0_x_0_y_trapezoid(self):
+            x = np.linspace(0, 0, 10, dtype=np.float64)
+            y = np.linspace(0, 0, 10, dtype=np.float64)
+
+            outp = Trapezoid.guess()(x, y)
+            assert pytest.approx(outp["cen"].max) == 1.0
+
+    class TestFlatLinesNegativeTrapezoid:
+        @pytest.mark.filterwarnings(
+            "error"
+        )  # This allows the rank warning to be viewed as an error
+        def test_flat_lines_0_x_negative_trapezoid(self):
+            x = np.linspace(0, 0, 10, dtype=np.float64)
+            y = np.arange(-5.0, 5.0, 1.0, dtype=np.float64)
+
+            outp = NegativeTrapezoid.guess()(x, y)
+            assert pytest.approx(outp["cen"].max) == 1.0
+
+        @pytest.mark.filterwarnings(
+            "error"
+        )  # This allows the rank warning to be viewed as an error
+        def test_flat_lines_0_y_negative_trapezoid(self):
+            x = np.arange(-5.0, 5.0, 1.0, dtype=np.float64)
+            y = np.linspace(0, 0, 10, dtype=np.float64)
+
+            outp = NegativeTrapezoid.guess()(x, y)
+            assert pytest.approx(outp["cen"].max) == 4.0
+
+        @pytest.mark.filterwarnings(
+            "error"
+        )  # This allows the rank warning to be viewed as an error
+        def test_flat_lines_0_x_0_y_negative_trapezoid(self):
+            x = np.linspace(0, 0, 10, dtype=np.float64)
+            y = np.linspace(0, 0, 10, dtype=np.float64)
+
+            outp = NegativeTrapezoid.guess()(x, y)
+            assert pytest.approx(outp["cen"].max) == 1.0
+
+    class TestFlatLinesMuonMomentum:
+        @pytest.mark.filterwarnings(
+            "error"
+        )  # This allows the rank warning to be viewed as an error
+        def test_flat_lines_0_x_muon_momentum(self):
+            x = np.linspace(0, 0, 10, dtype=np.float64)
+            y = np.arange(-5.0, 5.0, 1.0, dtype=np.float64)
+
+            outp = MuonMomentum.guess()(x, y)
+            assert pytest.approx(outp["w"].value) == 0.5
+
+        @pytest.mark.filterwarnings(
+            "error"
+        )  # This allows the rank warning to be viewed as an error
+        def test_flat_lines_0_y_muon_momentum(self):
+            x = np.arange(-5.0, 5.0, 1.0, dtype=np.float64)
+            y = np.linspace(0, 0, 10, dtype=np.float64)
+
+            outp = MuonMomentum.guess()(x, y)
+            assert pytest.approx(outp["w"].value) == 0.5
+
+        @pytest.mark.filterwarnings(
+            "error"
+        )  # This allows the rank warning to be viewed as an error
+        def test_flat_lines_0_x_0_y_muon_momentum(self):
+            x = np.linspace(0, 0, 10, dtype=np.float64)
+            y = np.linspace(0, 0, 10, dtype=np.float64)
+
+            outp = MuonMomentum.guess()(x, y)
+            print(f"\n\n\n\\{outp}\n\n\n")
+            assert pytest.approx(outp["w"].value) == 0.5

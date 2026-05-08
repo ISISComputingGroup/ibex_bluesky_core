@@ -12,16 +12,14 @@ import bluesky.preprocessors as bpp
 from bluesky.run_engine import RunEngine, RunEngineResult
 from bluesky.utils import DuringTask, Msg, RunEngineControlException, RunEngineInterrupted
 
-from ibex_bluesky_core.callbacks import DocLoggingCallback
-from ibex_bluesky_core.preprocessors import add_rb_number_processor
-
-__all__ = ["get_run_engine", "run_plan"]
-
-
+from ibex_bluesky_core.callbacks import DocLoggingCallback, KafkaCallback
 from ibex_bluesky_core.plan_stubs import CALL_QT_AWARE_MSG_KEY, CALL_SYNC_MSG_KEY
+from ibex_bluesky_core.preprocessors import add_rb_number_processor
 from ibex_bluesky_core.run_engine._msg_handlers import call_qt_aware_handler, call_sync_handler
 from ibex_bluesky_core.utils import is_matplotlib_backend_qt
 from ibex_bluesky_core.version import version
+
+__all__ = ["get_run_engine", "run_plan"]
 
 logger = logging.getLogger(__name__)
 
@@ -42,14 +40,14 @@ class _DuringTask(DuringTask):
 
 @cache  # functools.cache ensures we only ever create a single instance of the RunEngine
 def get_run_engine() -> RunEngine:
-    """Acquire a RunEngine in a suitable configuration for ISIS experiments.
+    """Acquire a :py:obj:`~bluesky.run_engine.RunEngine` with ISIS configuration.
 
     This function should always be used in preference to creating a bluesky run engine manually.
 
     This function is cached, meaning that the *same* run engine (using the same underlying event
-    loop) will be used if this function is called multiple times. Creating multiple RunEngines is
-    unlikely to be desired behaviour, though we cannot prevent users from creating a RunEngine from
-    bluesky directly.
+    loop) will be used if this function is called multiple times. Creating multiple run engine
+    instances is unlikely to be desired behaviour, though we cannot prevent users from creating a
+    :py:obj:`~bluesky.run_engine.RunEngine` from bluesky directly.
 
     Basic usage:
 
@@ -77,8 +75,8 @@ def get_run_engine() -> RunEngine:
 
     For full documentation about the run engine, see:
 
-    - https://nsls-ii.github.io/bluesky/tutorial.html#the-runengine
-    - https://nsls-ii.github.io/bluesky/run_engine_api.html
+    - :external+bluesky:ref:`tutorial_run_engine_setup`
+    - :external+bluesky:doc:`run_engine_api`
     """
     logger.info("Creating new bluesky RunEngine")
     loop = asyncio.new_event_loop()
@@ -103,6 +101,16 @@ def get_run_engine() -> RunEngine:
     log_callback = DocLoggingCallback()
     RE.subscribe(log_callback)
 
+    kafka_callback = KafkaCallback(
+        key="doc",
+        kafka_config={
+            "enable.idempotence": True,
+            "log_level": 0,
+            "log.connection.close": False,
+        },
+    )
+    RE.subscribe(kafka_callback)
+
     RE.register_command(CALL_SYNC_MSG_KEY, call_sync_handler)
     RE.register_command(CALL_QT_AWARE_MSG_KEY, call_qt_aware_handler)
 
@@ -118,7 +126,7 @@ def run_plan(
     plan: Generator[Msg, Any, Any],
     **metadata_kw: Any,  # noqa ANN401 - this really does accept anything serializable
 ) -> RunEngineResult:
-    """Run a plan.
+    """Run a plan non-interactively.
 
     .. Warning::
 
@@ -136,7 +144,8 @@ def run_plan(
             run engine.
 
     Returns:
-        A ``RunEngineResult`` instance. The return value of the plan can then be accessed using
+        A :py:obj:`~bluesky.run_engine.RunEngineResult` instance.
+        The return value of the plan can then be accessed using
         the ``plan_result`` attribute.
 
     Raises:
@@ -147,8 +156,9 @@ def run_plan(
 
     Calling a plan using this function means that keyboard-interrupt handling will be
     degraded: all keyboard interrupts will now force an immediate abort of the plan, using
-    ``RE.abort()``, rather than giving the possibility of gracefully resuming. Cleanup handlers
-    will execute during the ``RE.abort()``.
+    :py:obj:`RE.abort() <bluesky.run_engine.RunEngine.abort>`, rather than giving the
+    possibility of gracefully resuming. Cleanup handlers will execute during the
+    :py:obj:`RE.abort() <bluesky.run_engine.RunEngine.abort>` call.
 
     The bluesky run engine is not reentrant. It is a programming error to attempt to run a plan
     using this function, from within a plan. To call a sub plan from within an outer plan, use::

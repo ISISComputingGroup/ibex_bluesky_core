@@ -37,7 +37,7 @@ async def call_sync_handler(msg: Msg) -> Any:  # noqa: ANN401
         except _ExternalFunctionInterrupted:
             # Suppress stack traces from our special interruption exception.
             logger.debug("Running '%s' was interrupted by user", func.__name__)
-        except BaseException as e:
+        except BaseException as e:  # noqa: BLE001
             logger.error("Running '%s' failed with %s: %s", func.__name__, e.__class__.__name__, e)
             exc = e
         finally:
@@ -125,7 +125,7 @@ async def call_qt_aware_handler(msg: Msg) -> Any:  # noqa: ANN401
 
                 plt.show()
                 logger.debug("Running '%s' (Qt) successful", func.__name__)
-            except BaseException as e:
+            except BaseException as e:  # noqa: BLE001
                 logger.error(
                     "Running '%s' failed with %s: %s", func.__name__, e.__class__.__name__, e
                 )

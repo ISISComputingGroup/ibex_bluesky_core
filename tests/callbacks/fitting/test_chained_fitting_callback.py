@@ -114,12 +114,14 @@ def test_first_livefit_uses_normal_guess_function(
     ax = request.getfixturevalue(axes) if isinstance(axes, str) else axes
     clf = ChainedLiveFit(method=method, y=Y_VARS, x=X_VAR, ax=ax)
 
-    with patch.object(clf._livefits[0].method, "guess") as mock_guess:
-        with patch.object(clf._livefits[0], "event") as mock_event:
-            clf.event(mock_doc)  # pyright: ignore
-            # Generic document type is not assignable
-            mock_event.assert_called_once()
-            assert mock_guess == clf._livefits[0].method.guess
+    with (
+        patch.object(clf._livefits[0].method, "guess") as mock_guess,
+        patch.object(clf._livefits[0], "event") as mock_event,
+    ):
+        clf.event(mock_doc)  # pyright: ignore
+        # Generic document type is not assignable
+        mock_event.assert_called_once()
+        assert mock_guess == clf._livefits[0].method.guess
 
 
 @pytest.mark.parametrize("axes", [None, "mock_axes"])
@@ -165,10 +167,12 @@ def test_livefit_has_no_result_assert(method: FitMethod, mock_doc: dict[str, dic
     clf = ChainedLiveFit(method=method, y=Y_VARS, x=X_VAR)
     clf._livefits[0].can_fit = MagicMock(return_value=True)
 
-    with patch.object(clf._livefits[0], "event"):
-        with pytest.raises(RuntimeError, match=r"LiveFit.result was None. Could not update fit."):
-            clf.event(mock_doc)  # pyright: ignore
-            # Generic document type is not assignable
+    with (
+        patch.object(clf._livefits[0], "event"),
+        pytest.raises(RuntimeError, match=r"LiveFit.result was None. Could not update fit."),
+    ):
+        clf.event(mock_doc)  # pyright: ignore
+        # Generic document type is not assignable
 
 
 def test_get_livefits(method: FitMethod):

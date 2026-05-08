@@ -170,7 +170,7 @@ def test_add_livefitplot_without_plot_then_plot_is_set_up_regardless():
         add_peak_stats=False,
         add_human_readable_file_cb=False,
     )
-    assert any([isinstance(i, LivePlot) for i in icc.subs])
+    assert any(isinstance(i, LivePlot) for i in icc.subs)
 
 
 def test_do_not_add_live_fit_logger_then_not_added():
@@ -188,7 +188,7 @@ def test_do_not_add_live_fit_logger_then_not_added():
         add_human_readable_file_cb=False,
         add_live_fit_logger=False,
     )
-    assert not any([isinstance(i, LiveFitLogger) for i in icc.subs])
+    assert not any(isinstance(i, LiveFitLogger) for i in icc.subs)
 
 
 def test_do_not_add_png_saver_then_not_added():
@@ -207,7 +207,7 @@ def test_do_not_add_png_saver_then_not_added():
         add_live_fit_logger=False,
         save_plot_to_png=False,
     )
-    assert not any([isinstance(i, PlotPNGSaver) for i in icc.subs])
+    assert not any(isinstance(i, PlotPNGSaver) for i in icc.subs)
 
 
 @pytest.mark.parametrize("matplotlib_using_qt", [True, False])

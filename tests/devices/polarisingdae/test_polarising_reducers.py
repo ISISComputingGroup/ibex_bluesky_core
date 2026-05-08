@@ -326,29 +326,31 @@ async def test_wavelength_bounded_normalizer(
         )
     )
 
-    with patch.object(normalizer_dual._wavelength_bands[0], "setter") as low_band_setter:
-        with patch.object(normalizer_dual._wavelength_bands[1], "setter") as high_band_setter:
-            await normalizer_dual.reduce_data(dae=mock_dae)
+    with (
+        patch.object(normalizer_dual._wavelength_bands[0], "setter") as low_band_setter,
+        patch.object(normalizer_dual._wavelength_bands[1], "setter") as high_band_setter,
+    ):
+        await normalizer_dual.reduce_data(dae=mock_dae)
 
-            # Test low wavelength band
-            low_band_setter.assert_called_once_with(
-                det_counts=pytest.approx(1022.2273083661819),
-                det_counts_stddev=pytest.approx(31.980108010545898),
-                mon_counts=pytest.approx(4055.568270915455),
-                mon_counts_stddev=pytest.approx(63.68334374791775),
-                intensity=pytest.approx(0.2520552583708415),
-                intensity_stddev=pytest.approx(0.00882304684703932),
-            )
+        # Test low wavelength band
+        low_band_setter.assert_called_once_with(
+            det_counts=pytest.approx(1022.2273083661819),
+            det_counts_stddev=pytest.approx(31.980108010545898),
+            mon_counts=pytest.approx(4055.568270915455),
+            mon_counts_stddev=pytest.approx(63.68334374791775),
+            intensity=pytest.approx(0.2520552583708415),
+            intensity_stddev=pytest.approx(0.00882304684703932),
+        )
 
-            # Test high wavelength band
-            high_band_setter.assert_called_once_with(
-                det_counts=pytest.approx(4977.772691633818),
-                det_counts_stddev=pytest.approx(70.55687558015744),
-                mon_counts=pytest.approx(10944.431729084547),
-                mon_counts_stddev=pytest.approx(104.6156380713923),
-                intensity=pytest.approx(0.45482239871856617),
-                intensity_stddev=pytest.approx(0.0077757859250577885),
-            )
+        # Test high wavelength band
+        high_band_setter.assert_called_once_with(
+            det_counts=pytest.approx(4977.772691633818),
+            det_counts_stddev=pytest.approx(70.55687558015744),
+            mon_counts=pytest.approx(10944.431729084547),
+            mon_counts_stddev=pytest.approx(104.6156380713923),
+            intensity=pytest.approx(0.45482239871856617),
+            intensity_stddev=pytest.approx(0.0077757859250577885),
+        )
 
 
 async def test_mutli_wavelength_band_normalizer_zero_counts(

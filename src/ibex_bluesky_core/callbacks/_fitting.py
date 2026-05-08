@@ -6,6 +6,7 @@ import os
 import warnings
 from itertools import zip_longest
 from pathlib import Path
+from stat import S_IRGRP, S_IROTH, S_IRUSR
 
 import lmfit
 import numpy as np
@@ -45,12 +46,20 @@ class LiveFit(_DefaultLiveFit):
         update_every: int | None = 1,
         yerr: str | None = None,
     ) -> None:
-        """Call Bluesky LiveFit with assumption that there is only one independant variable.
+        """:py:obj:`bluesky.callbacks.LiveFit`, with support for uncertainties and dynamic guesses.
+
+        This callback extends the functionality of :py:obj:`bluesky.callbacks.LiveFit` by adding:
+
+        - Support for weighting fits by uncertainties. The weights are passed through to the
+          underlying :py:obj:`lmfit.model.Model.fit` routine as ``1/stddev``, if provided.
+
+        - Support for dynamic fit guesses, as performed by the models defined in
+          :py:obj:`ibex_bluesky_core.fitting`.
 
         Args:
             method (FitMethod): The FitMethod (Model & Guess) to use when fitting.
-            y (str): The name of the dependant variable.
-            x (str): The name of the independant variable.
+            y (str): The name of the dependent variable.
+            x (str): The name of the independent variable.
             update_every (int, optional): How often, in points, to update the fit.
             yerr (str or None, optional): Name of field in the Event document
                 that provides standard deviation for each Y value. None meaning
@@ -69,7 +78,10 @@ class LiveFit(_DefaultLiveFit):
         )
 
     def event(self, doc: Event) -> None:
-        """When an event is received, update caches."""
+        """When an event is received, update caches.
+
+        :meta private:
+        """
         weight = None
         if self.yerr is not None:
             try:
@@ -85,17 +97,26 @@ class LiveFit(_DefaultLiveFit):
         super().event(doc)
 
     def update_weight(self, weight: float | None = 0.0) -> None:
-        """Update uncertainties cache."""
+        """Update uncertainties cache.
+
+        :meta private:
+        """
         if self.yerr is not None:
             self.weight_data.append(weight)
 
     def can_fit(self) -> bool:
-        """Check if enough data points have been collected to fit."""
+        """Check if enough data points have been collected to fit.
+
+        :meta private:
+        """
         n = len(self.model.param_names)
         return len(self.ydata) >= n
 
     def update_fit(self) -> None:
-        """Use the guess function with the most recent x and y values after every update."""
+        """Use the guess function with the most recent x and y values after every update.
+
+        :meta private:
+        """
         if not self.can_fit():
             warnings.warn(
                 f"""LiveFitPlot cannot update fit until there are at least
@@ -132,7 +153,7 @@ class LiveFitLogger(CallbackBase):
         output_dir: str | os.PathLike[str] | None,
         yerr: str | None = None,
     ) -> None:
-        """Initialise LiveFitLogger callback.
+        """Write data files containing the results of a fit.
 
         Args:
             livefit (LiveFit): A reference to LiveFit callback to collect fit info from.
@@ -165,6 +186,8 @@ class LiveFitLogger(CallbackBase):
         Args:
             doc (RunStart): The start bluesky document.
 
+        :meta private:
+
         """
         title_format_datetime = format_time(doc)
         self.output_dir.mkdir(parents=True, exist_ok=True)
@@ -172,14 +195,17 @@ class LiveFitLogger(CallbackBase):
         file = f"{get_instrument()}_{self.x}_{self.y}_{title_format_datetime}Z{self.postfix}.txt"
 
         rb_num = _get_rb_num(doc)
+        rb_num_str = rb_num if rb_num == "Unknown RB" else f"RB{rb_num}"
 
-        self.filename = self.output_dir / f"{rb_num}" / file
+        self.filename = self.output_dir / f"{rb_num_str}" / "bluesky_scans" / file
 
     def event(self, doc: Event) -> Event:
         """Start collecting, y, x, and yerr data.
 
         Args:
             doc: (Event): An event document.
+
+        :meta private:
 
         """
         event_data = doc[DATA]
@@ -205,6 +231,8 @@ class LiveFitLogger(CallbackBase):
 
         Args:
             doc (RunStop): The stop bluesky document.
+
+        :meta private:
 
         """
         if self.livefit.result is None:
@@ -237,9 +265,13 @@ class LiveFitLogger(CallbackBase):
                 self.write_fields_table_uncertainty()
 
             logger.info("Fitting information successfully written to: %s", self.filename.resolve())
+        os.chmod(self.filename, S_IRUSR | S_IRGRP | S_IROTH)
 
     def write_fields_table(self) -> None:
-        """Write collected run info to the fitting file."""
+        """Write collected run info to the fitting file.
+
+        :meta private:
+        """
         row = ["x", "y", "modelled y"]
         self.csvwriter.writerow(row)
 
@@ -247,7 +279,10 @@ class LiveFitLogger(CallbackBase):
         self.csvwriter.writerows(rows)
 
     def write_fields_table_uncertainty(self) -> None:
-        """Write collected run info to the fitting file with uncertainties."""
+        """Write collected run info to the fitting file with uncertainties.
+
+        :meta private:
+        """
         row = ["x", "y", "y uncertainty", "modelled y"]
         self.csvwriter.writerow(row)
 
@@ -256,13 +291,7 @@ class LiveFitLogger(CallbackBase):
 
 
 class ChainedLiveFit(CallbackBase):
-    """Processes multiple LiveFits, each fit's results inform the next, with optional plotting.
-
-    This callback handles a sequence of LiveFit instances where the parameters from each
-    completed fit serve as the initial guess for the subsequent fit. Optional plotting
-    is built in using LivePlotFits. Note that you should not subscribe to the LiveFit/LiveFitPlot
-    callbacks directly, but rather subscribe just this callback.
-    """
+    """Chained live fit."""
 
     def __init__(
         self,
@@ -273,14 +302,26 @@ class ChainedLiveFit(CallbackBase):
         yerr: list[str] | None = None,
         ax: list[Axes] | None = None,
     ) -> None:
-        """Initialise ChainedLiveFit with multiple LiveFits.
+        """Chained live fitting manages a series of sequential fits.
+
+        This callback manages multiple :py:obj:`~ibex_bluesky_core.callbacks.LiveFit` instances,
+        where the parameters from each completed fit serve as the initial guesses for the
+        next fit.
+
+        Optional plotting is built in, using :py:obj:`~bluesky.callbacks.mpl_plotting.LiveFitPlot`
+        callbacks.
+
+        The :py:obj:`~ibex_bluesky_core.callbacks.LiveFit` and
+        :py:obj:`~bluesky.callbacks.mpl_plotting.LiveFitPlot` callbacks should not be subscribed
+        directly, but rather only via this callback.
 
         Args:
-            method: FitMethod instance for fitting
+            method: :py:obj:`~ibex_bluesky_core.fitting.FitMethod` instance for fitting
             y: List of y-axis variable names
             x: x-axis variable name
             yerr: Optional list of error values corresponding to y variables
-            ax: A list of axes to plot fits on to. Creates LiveFitPlot instances.
+            ax: A list of :py:obj:`~matplotlib.axes.Axes` to plot fits on to.
+                Creates :py:obj:`~bluesky.callbacks.mpl_plotting.LiveFitPlot` instances.
 
         """
         super().__init__()
@@ -322,6 +363,8 @@ class ChainedLiveFit(CallbackBase):
         Args:
             doc: RunStart document
 
+        :meta private:
+
         """
         self._process_doc(doc, "start")
 
@@ -331,6 +374,8 @@ class ChainedLiveFit(CallbackBase):
         Args:
             doc: EventDescriptor document.
 
+        :meta private:
+
         """
         self._process_doc(doc, "descriptor")
 
@@ -339,6 +384,8 @@ class ChainedLiveFit(CallbackBase):
 
         Args:
             doc: Event document
+
+        :meta private:
 
         """
         init_guess = {}
@@ -383,15 +430,17 @@ class ChainedLiveFit(CallbackBase):
         Args:
             doc: RunStop document
 
+        :meta private:
+
         """
         self._process_doc(doc, "stop")
 
     @property
     def live_fits(self) -> list[LiveFit]:
-        """Return a list of the livefits."""
+        """Return a list of the ``LiveFit`` instances used by this callback."""
         return self._livefits
 
     @property
     def live_fit_plots(self) -> list[LiveFitPlot]:
-        """Return a list of the livefitplots."""
+        """Return a list of the ``LiveFitPlot`` instances used by this callback."""
         return self._livefitplots

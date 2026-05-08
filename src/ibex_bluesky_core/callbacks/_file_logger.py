@@ -4,6 +4,7 @@ import csv
 import logging
 import os
 from pathlib import Path
+from stat import S_IRGRP, S_IROTH, S_IRUSR
 
 from bluesky.callbacks import CallbackBase
 from event_model.documents.event import Event
@@ -39,13 +40,13 @@ class HumanReadableFileCallback(CallbackBase):
     """Outputs bluesky runs to human-readable output files in the specified directory path."""
 
     def __init__(self, fields: list[str], *, output_dir: Path | None, postfix: str = "") -> None:
-        """Output human-readable output files of bluesky runs.
+        """Write human-readable files for each bluesky run.
 
-        If fields are given, just output those, otherwise output all hinted signals.
+        If fields are specified, just output those, otherwise output all hinted signals.
 
         Args:
             fields: a list of field names to include in output files
-            output_dir: filepath into which to write output files
+            output_dir: file path into which to write output files
             postfix: optional postfix to append to output file names
 
         """
@@ -62,11 +63,14 @@ class HumanReadableFileCallback(CallbackBase):
 
         This involves creating the file if it doesn't already exist
         then putting the metadata ie. start time, uid in the header.
+
+        :meta private:
         """
         self.output_dir.mkdir(parents=True, exist_ok=True)
         self.current_start_document = doc[UID]
 
         rb_num = _get_rb_num(doc)
+        rb_num_str = rb_num if rb_num == "Unknown RB" else f"RB{rb_num}"
 
         # motors is a tuple, we need to convert to a list to join the two below
         motors = list(doc.get(MOTORS, []))
@@ -75,7 +79,8 @@ class HumanReadableFileCallback(CallbackBase):
 
         self.filename = (
             self.output_dir
-            / f"{rb_num}"
+            / rb_num_str
+            / "bluesky_scans"
             / f"{get_instrument()}{'_' + '_'.join(motors) if motors else ''}_"
             f"{formatted_time}Z{self.postfix}.txt"
         )
@@ -98,7 +103,10 @@ class HumanReadableFileCallback(CallbackBase):
         logger.debug("successfully wrote header in %s", self.filename)
 
     def descriptor(self, doc: EventDescriptor) -> None:
-        """Add the descriptor data to descriptors."""
+        """Add the descriptor data to descriptors.
+
+        :meta private:
+        """
         logger.debug("event descriptor with name=%s", doc.get(NAME))
         if doc.get(NAME) != "primary":
             return
@@ -108,7 +116,10 @@ class HumanReadableFileCallback(CallbackBase):
         self.descriptors[descriptor_id] = doc
 
     def event(self, doc: Event) -> Event:
-        """Append an event's output to the file."""
+        """Append an event's output to the file.
+
+        :meta private:
+        """
         if not self.filename:
             logger.error("File has not been started yet - doing nothing")
             return doc
@@ -147,7 +158,12 @@ class HumanReadableFileCallback(CallbackBase):
         return doc
 
     def stop(self, doc: RunStop) -> RunStop | None:
-        """Clear descriptors."""
+        """Clear descriptors.
+
+        :meta private:
+        """
         logger.info("Stopping run, clearing descriptors, filename=%s", self.filename)
         self.descriptors.clear()
+        if self.filename is not None:
+            os.chmod(self.filename, S_IRUSR | S_IRGRP | S_IROTH)
         return super().stop(doc)

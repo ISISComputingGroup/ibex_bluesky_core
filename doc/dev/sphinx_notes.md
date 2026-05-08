@@ -1,15 +1,17 @@
 # Notes on Sphinx and addons
 
-This repository uses sphinx with some addons to build documentation and then deploy it to Github pages. The deployment only occurs when changes are made to main, and changes are published to the `gh-pages` branch which are then served via the page. 
+This repository uses sphinx with some addons to build documentation and then deploy it to GitHub pages. The deployment only occurs when changes are made to main, and changes are published to the `gh-pages` branch which are then served via the page. 
 
-We use the [MyST](https://myst-parser.readthedocs.io/en/latest/index.html) parser which lets us use a mixture of markdown and reStructuredText in documentation - though the latter is preferred by sphinx. 
+We use the [MyST](https://myst-parser.readthedocs.io/en/latest/index.html) parser which lets us use a mixture of markdown and restructured text in documentation - though the latter is preferred by sphinx. 
 
 ## Using MyST admonitions
 To use [MyST admonitions](https://myst-parser.readthedocs.io/en/latest/syntax/admonitions.html), you need to use backticks instead of triple colons, ie. 
 
-\`\`\`{tip}\
-Let's give readers a helpful hint!\
-\`\`\`
+:::{code}
+```{tip}
+Let's give readers a helpful hint!
+```
+:::
 
 becomes
 
@@ -48,3 +50,7 @@ To add code blocks within the docstrings of classes or functions, use the `::` m
     ...
     """
 ```
+
+You can also use any other restructured text formatting in docstrings, including links
+to documentation pages, python objects, and so on. Unfortunately it is not possible to
+use markdown syntax in docstrings; restructured text formatting must be used.

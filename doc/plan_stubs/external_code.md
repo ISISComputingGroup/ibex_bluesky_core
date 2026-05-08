@@ -1,6 +1,4 @@
-# `call_sync` (calling external code)
-
-API reference: [`call_sync`](ibex_bluesky_core.plan_stubs.call_sync)
+# Calling external code ({py:obj}`~ibex_bluesky_core.plan_stubs.call_sync`)
 
 All interaction with the "outside world" should be via bluesky messages, and **not** directly called from
 within a plan. For example, the following is **bad**:
@@ -16,10 +14,10 @@ def bad_plan():
 ```
 
 ```{danger}
-External I/O - including most `genie_python` or `inst` functions -  should never be done directly in a plan,
+External I/O - including most {py:obj}`genie_python <genie>` or `inst` functions -  should never be done directly in a plan,
 as it will break:
 - Rewindability (for example, the ability to interrupt a scan and then later seamlessly continue it)
-- Simulation (the `cset` above would be executed during a simulation)
+- Simulation (the {py:obj}`~genie.cset` above would be executed during a simulation)
 - Error handling (including ctrl-c handling)
 - Ability to emit documents
 - Ability to use bluesky signals
@@ -27,7 +25,7 @@ as it will break:
 ```
 
 In the above case, a good plan, which uses bluesky messages in a better way using 
-a bluesky-native `Block` object, would be:
+a [bluesky-native block object](/devices/blocks), would be:
 
 ```python
 import bluesky.plan_stubs as bps
@@ -44,7 +42,7 @@ def good_plan():
 ```
 
 However, if the functionality you want to use is not yet natively available in bluesky, a fallback option
-for synchronous functions is available using the [`call_sync`](ibex_bluesky_core.plan_stubs.call_sync) plan stub:
+for synchronous functions is available using the {py:obj}`ibex_bluesky_core.plan_stubs.call_sync` plan stub:
 
 ```python
 import bluesky.plan_stubs as bps
@@ -61,6 +59,6 @@ def good_plan():
 ```
 
 It is strongly recommended that any functions run in this way are "fast" (i.e. less than a few seconds).
-In particular, avoid doing arbitrarily-long waits - for example, waiting for detector data
-or sample environment. For these long-running tasks, seek to implement at least the long-running parts using 
+In particular, avoid doing arbitrarily long waits - for example, waiting for detector data
+or sample environment. For these long running tasks, seek to implement at least the long-running parts using 
 native bluesky mechanisms.

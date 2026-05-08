@@ -42,30 +42,34 @@ classifiers = [
 
 dependencies = [
   "bluesky",  # Bluesky framework
-  "ophyd-async[ca] == 0.13.4",  # Device abstraction. When changing, also change in doc/conf.py
-  "matplotlib",  # Plotting
+  "confluent-kafka",  # Kafka producer
+  "ophyd-async[ca] == 0.16",  # Device abstraction.
   "lmfit",  # Fitting
-  "scipy",  # Definitions of erf/erfc functions
+  "matplotlib",  # Plotting
+  "msgpack-numpy",  # Encoding kafka messages
   "numpy",  # General array support
   "orjson", # json module which handles numpy arrays transparently
   "scipp",  # support for arrays with variances/units
+  "scipy",  # Definitions of erf/erfc functions
   "scippneutron",  # neutron-specific utilities for scipp
   "typing-extensions",  # TypeVar with default-arg support
   "tzdata",  # Windows timezone support
+  "ibex-non-ca-helpers"  # ibex utilies ie. compress_and_hex
 ]
 
 [project.optional-dependencies]
 doc = [
-  "sphinx", 
+  "sphinx<9",
   "sphinx_rtd_theme", 
   "myst_parser",
   "sphinx-autobuild",
   "sphinxcontrib-mermaid",
+  "sphinxcontrib-spelling",
 ]
 dev = [
   "ibex_bluesky_core[doc]",
-  "ruff>=0.8",
-  "pyright",
+  "ruff==0.15.12",  # Update manually so we don't get new rules 'by accident'
+  "pyright==1.1.409",  # Update manually
   "pytest",
   "pytest-asyncio",
   "pytest-cov",

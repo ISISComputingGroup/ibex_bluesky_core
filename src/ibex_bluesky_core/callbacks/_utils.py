@@ -1,6 +1,6 @@
 import logging
 import os
-from datetime import datetime
+from datetime import UTC, datetime
 from pathlib import Path
 from platform import node
 from zoneinfo import ZoneInfo
@@ -33,17 +33,12 @@ def get_instrument() -> str:
 
 def get_default_output_path() -> Path:
     output_dir_env = os.environ.get(OUTPUT_DIR_ENV_VAR)
-    return (
-        Path("//isis.cclrc.ac.uk/inst$") / node() / "user" / "bluesky_scans"
-        if output_dir_env is None
-        else Path(output_dir_env)
-    )
+    return Path("C:/Data") if output_dir_env is None else Path(output_dir_env)
 
 
 def format_time(doc: Event | RunStart | RunStop) -> str:
-    datetime_obj = datetime.fromtimestamp(doc[TIME])
-    title_format_datetime = datetime_obj.astimezone(ZoneInfo("UTC")).strftime("%Y-%m-%d_%H-%M-%S")
-    return title_format_datetime
+    datetime_obj = datetime.fromtimestamp(doc[TIME], tz=UTC)
+    return datetime_obj.astimezone(ZoneInfo("UTC")).strftime("%Y-%m-%d_%H-%M-%S")
 
 
 def _get_rb_num(doc: Event | RunStart | RunStop) -> str:

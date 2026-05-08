@@ -1,7 +1,13 @@
-"""Bluesky callbacks which may be attached to the RunEngine."""
+"""ISIS-specific bluesky callbacks.
+
+See Also:
+    - :external+bluesky:doc:`Bluesky callbacks documentation <callbacks>`.
+
+"""
 
 import logging
 import threading
+import typing
 from collections.abc import Callable, Generator
 from os import PathLike
 from pathlib import Path
@@ -9,7 +15,9 @@ from typing import Any
 
 import bluesky.preprocessors as bpp
 import matplotlib.pyplot as plt
-from bluesky.callbacks import CallbackBase, LiveFitPlot, LiveTable
+import numpy as np
+import numpy.typing as npt
+from bluesky.callbacks import CallbackBase, CollectThenCompute, LiveFitPlot, LiveTable
 from bluesky.callbacks.fitting import PeakStats
 from bluesky.callbacks.mpl_plotting import QtAwareCallback
 from bluesky.utils import Msg, make_decorator
@@ -28,6 +36,7 @@ from ibex_bluesky_core.callbacks._fitting import (
     LiveFit,
     LiveFitLogger,
 )
+from ibex_bluesky_core.callbacks._kafka import KafkaCallback
 from ibex_bluesky_core.callbacks._plotting import LivePColorMesh, LivePlot, PlotPNGSaver, show_plot
 from ibex_bluesky_core.callbacks._utils import get_default_output_path
 from ibex_bluesky_core.fitting import FitMethod
@@ -41,9 +50,12 @@ logger = logging.getLogger(__name__)
 __all__ = [
     "CentreOfMass",
     "ChainedLiveFit",
+    "CustomCallback",
+    "CustomCallbackFunc",
     "DocLoggingCallback",
     "HumanReadableFileCallback",
     "ISISCallbacks",
+    "KafkaCallback",
     "LiveFit",
     "LiveFitLogger",
     "LivePColorMesh",
@@ -55,7 +67,7 @@ __all__ = [
 
 
 class ISISCallbacks:
-    """ISIS standard callbacks for use within plans."""
+    """ISIS standard callbacks."""
 
     def __init__(  # noqa: PLR0912, PLR0915
         self,
@@ -85,27 +97,35 @@ class ISISCallbacks:
         live_fit_update_every: int | None = 1,
         live_plot_update_on_every_event: bool = True,
     ) -> None:
-        """A collection of ISIS standard callbacks for use within plans.
+        """A collection of ISIS standard callbacks.
 
-        By default, this adds:
+        This callback collection represents a common set of callbacks used for
+        many scans across ISIS instruments, which are bundled together in this
+        callback collection for convenience. However, for fine-grained control
+        over the exact set of callbacks to be used, individual callbacks may
+        be more appropriate.
 
-        - HumanReadableFileCallback
+        By default, the following callbacks are included and enabled:
 
-        - LiveTable
+        - :py:obj:`ibex_bluesky_core.callbacks.HumanReadableFileCallback`
 
-        - PeakStats
+        - :py:obj:`bluesky.callbacks.LiveTable`
 
-        - LiveFit
+        - :py:obj:`bluesky.callbacks.fitting.PeakStats`
 
-        - LiveFitPlot
+        - :py:obj:`ibex_bluesky_core.callbacks.LiveFit`
 
-        - LivePlot
+        - :py:obj:`bluesky.callbacks.mpl_plotting.LiveFitPlot`
 
-        - CentreOfMass
+        - :py:obj:`ibex_bluesky_core.callbacks.LivePlot`
 
-        Results can be accessed from the `live_fit`, `com` and `peak_stats` properties.
+        - :py:obj:`ibex_bluesky_core.callbacks.CentreOfMass`
 
-        This is to be used as a member and then as a decorator if results are needed ie::
+        Results can be accessed from the :py:obj:`~ibex_bluesky_core.callbacks.ISISCallbacks.live_fit`,
+        :py:obj:`~ibex_bluesky_core.callbacks.ISISCallbacks.com` and
+        :py:obj:`~ibex_bluesky_core.callbacks.ISISCallbacks.peak_stats` properties.
+
+        This can be defined in a plan and then as a decorator if results are needed::
 
             def dae_scan_plan():
                 ...
@@ -229,7 +249,11 @@ class ISISCallbacks:
                     # where a fit result can be returned before
                     # the QtAwareCallback has had a chance to process it.
                     self._subs.append(self._live_fit)
-                self._subs.append(LiveFitPlot(livefit=self._live_fit, ax=ax))
+
+                # Sample 5000 points as this strikes a reasonable balance between displaying
+                # 'enough' points for almost any scan (even after zooming in on a peak), while
+                # not taking 'excessive' compute time to generate these samples.
+                self._subs.append(LiveFitPlot(livefit=self._live_fit, ax=ax, num_points=5000))
             else:
                 self._subs.append(self._live_fit)
 
@@ -270,28 +294,28 @@ class ISISCallbacks:
 
     @property
     def live_fit(self) -> LiveFit:
-        """The live fit object containing fitting results."""
+        """The live fit callback, containing fitting results."""
         if self._live_fit is None:
             raise ValueError("live_fit was not added as a callback.")
         return self._live_fit
 
     @property
     def peak_stats(self) -> PeakStats:
-        """The peak stats object containing statistics ie. bluesky's centre of mass."""
+        """The peak stats callback, containing simple peak statistics such as min/max."""
         if self._peak_stats is None:
             raise ValueError("peak stats was not added as a callback.")
         return self._peak_stats
 
     @property
     def com(self) -> CentreOfMass:
-        """The centre of mass object containing ibex_bluesky_core's centre of mass."""
+        """The :py:obj:`~ibex_bluesky_core.callbacks.CentreOfMass` callback."""
         if self._com is None:
             raise ValueError("centre of mass was not added as a callback.")
         return self._com
 
     @property
     def subs(self) -> list[CallbackBase]:
-        """The list of subscribed callbacks."""
+        """The list of all subscribed callbacks."""
         return self._subs
 
     def _icbc_wrapper(self, plan: Generator[Msg, None, None]) -> Generator[Msg, None, None]:
@@ -304,3 +328,144 @@ class ISISCallbacks:
     def __call__(self, f: Callable[..., Any]) -> Callable[..., Any]:
         """Make a decorator to wrap the plan and subscribe to all callbacks."""
         return make_decorator(self._icbc_wrapper)()(f)
+
+
+T_co = typing.TypeVar("T_co", covariant=True)
+
+
+class CustomCallbackFunc(typing.Protocol[T_co]):
+    """Typing protocol describing functions passed to :py:obj:`~CustomCallback`.
+
+    The should be a function of the form:
+
+    .. code-block:: python
+
+        def func(
+            x: npt.NDArray[np.float64],
+            y: npt.NDArray[np.float64],
+            y_err: npt.NDArray[np.float64] | None
+        ) -> float:
+            # Fiddle with the arrays in a user-specified way
+            return 42.0
+
+    The function may return any type; the return value will be exposed by :py:obj:`~CustomCallback`.
+
+    ``y_err`` will be passed as :py:obj:`None` to this function if no ``y_err`` argument is provided
+    to :py:obj:`~CustomCallback`.
+    """
+
+    def __call__(  # noqa: D102 (protocol)
+        self,
+        x: npt.NDArray[np.float64],
+        y: npt.NDArray[np.float64],
+        y_err: npt.NDArray[np.float64] | None,
+    ) -> T_co: ...  # pragma: no cover (it's a protocol)
+
+
+class CustomCallback(CollectThenCompute, typing.Generic[T_co]):
+    """Callback for user-specified logic."""
+
+    def __init__(
+        self,
+        func: CustomCallbackFunc[T_co],
+        x: str,
+        y: str,
+        y_err: str | None = None,
+    ) -> None:
+        """User-specified logic callback.
+
+        This callback takes an argument with a user-specified function, and once
+        a scan completes, will run that user-specified function on the results of
+        the scan and make the result available in the :py:obj:`CustomCallback.result`
+        attribute.
+
+        This simplified callback is only suitable for scans with scalar ``x``, ``y``
+        and ``y_err`` data. For a more flexible (but more complex) option, derive from
+        ``bluesky.callbacks.CollectThenCompute`` directly.
+
+        An example usage of this class is:
+
+        .. code-block:: python
+
+            import bluesky.preprocessors as bpp
+            import bluesky.plans as bp
+            from ibex_bluesky_core.callbacks import CustomCallback
+
+            def callback(
+                x: npt.NDArray[np.float64],
+                y: npt.NDArray[np.float64],
+                y_err: npt.NDArray[np.float64] | None
+            ) -> tuple[float, float, float, float]:
+                if y_err is None:
+                    return x.mean(), y.mean(), 0, 42
+                else:
+                    return x.mean(), y.mean(), y_err.mean(), 42
+
+            def plan():
+                custom_callback = CustomCallback(
+                    func=callback,
+                    x="my_x",
+                    y="my_y",
+                    y_err="my_y_err",
+                )
+
+                @bpp.subs_decorator([custom_callback])
+                def _inner():
+                    yield from bp.count([x, y, y_err])
+
+                yield from _inner()
+
+                average_x, average_y, average_y_err, the_answer = custom_callback.result
+                return average_x, average_y, average_y_err, the_answer
+        """
+        super().__init__()
+        self._func = func
+        self._x_name = x
+        self._y_name = y
+        self._y_err_name = y_err
+
+        self._result: T_co | None = None
+
+    @property
+    def result(self) -> T_co | None:
+        """The result of running the user-specified callback.
+
+        This may be :py:obj:`None` if the callback has not yet run. Otherwise,
+        it will contain the result of running the user-specified function on
+        the results of the scan.
+        """
+        return self._result
+
+    def compute(self) -> None:
+        """Run the user-specified function.
+
+        :meta private:
+        """
+        x = []
+        y = []
+        y_err = []
+
+        for event in self._events:
+            x.append(event["data"][self._x_name])
+            y.append(event["data"][self._y_name])
+
+            if self._y_err_name is not None:
+                y_err.append(event["data"][self._y_err_name])
+
+        logger.info("Running user-specified callback function %s", self._func)
+
+        if self._y_err_name is None:
+            result = self._func(np.array(x, dtype=np.float64), np.array(y, dtype=np.float64), None)
+        else:
+            result = self._func(
+                np.array(x, dtype=np.float64),
+                np.array(y, dtype=np.float64),
+                np.array(y_err, dtype=np.float64),
+            )
+        logger.info(
+            "User-specified callback function %s ran successfully. Result = %s",
+            self._func,
+            result,
+        )
+
+        self._result = result

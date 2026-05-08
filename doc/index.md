@@ -47,6 +47,7 @@ callbacks/fitting
 callbacks/centre_of_mass
 callbacks/plotting
 callbacks/file_writing
+callbacks/custom_callback
 ```
 
 ```{toctree}
@@ -71,6 +72,7 @@ plan_stubs/*
 :caption: Reference
 
 _api
+replotting_scans
 architectural_decisions
 developer_information
 ```

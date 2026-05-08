@@ -7,12 +7,12 @@ Accepted
 ## Context
 
 Our bluesky implementation contains bluesky callbacks which produce scientist-facing output files, for example:
-- [Human-readable scan result files](/callbacks/file_writing): {py:obj}`HumanReadableFileCallback <ibex_bluesky_core.callbacks.HumanReadableFileCallback>`
-- [Fitting results](/callbacks/fitting/livefit_logger): {py:obj}`LiveFitLogger <ibex_bluesky_core.callbacks.LiveFitLogger>`
-- [Plot PNGs](#plot_png_saver): {py:obj}`PlotPNGSaver <ibex_bluesky_core.callbacks.PlotPNGSaver>`
+- [Human-readable scan result files](/callbacks/file_writing): {py:obj}`~ibex_bluesky_core.callbacks.HumanReadableFileCallback`
+- [Fitting results](/callbacks/fitting/livefit_logger): {py:obj}`~ibex_bluesky_core.callbacks.LiveFitLogger`
+- [Plot PNGs](#plot_png_saver): {py:obj}`~ibex_bluesky_core.callbacks.PlotPNGSaver`
 
 In addition, we have a {ref}`developer-facing callback for diagnostics <event_doc_cb>`, 
-{py:obj}`DocLoggingCallback <ibex_bluesky_core.callbacks.DocLoggingCallback>`.
+{py:obj}`~ibex_bluesky_core.callbacks.DocLoggingCallback`.
 
 The above callbacks produce files on disk in response to a bluesky scan. These files contain valuable data and so we
 need to consider how these files are archived for the long term. This must align with the 
@@ -268,7 +268,7 @@ unachievable - it would require too much work relative to using the existing `au
 
 At present, our scan file output format is explicitly designed to be "human-readable" (and, in fact, the callback which
 generates these files is explicitly called
-{py:obj}`HumanReadableFileCallback <ibex_bluesky_core.callbacks.HumanReadableFileCallback>`).
+{py:obj}`~ibex_bluesky_core.callbacks.HumanReadableFileCallback`).
 
 We have [issue 26](https://github.com/ISISComputingGroup/ibex_bluesky_core/issues/26) which will implement
 machine-readable files, using a format such as `.hdf5` or `.nxs`. These files will sit alongside the existing

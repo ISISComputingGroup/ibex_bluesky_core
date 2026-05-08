@@ -1,4 +1,4 @@
-"""Muon specific bluesky device helpers."""
+"""Muon-specific bluesky devices and utilities."""
 
 import asyncio
 import logging
@@ -190,7 +190,7 @@ class MuonAsymmetryReducer(Reducer, StandardReadable):
             model: :external:py:obj:`lmfit.model.Model` object describing the model to fit to
                 the muon data. The independent variable must be :math:`t` (time, in nanoseconds).
             fit_parameters: :external:py:obj:`lmfit.parameter.Parameters` object describing
-                the initial parameters (and contraints) for each fit parameter.
+                the initial parameters (and constraints) for each fit parameter.
 
         """
         self._forward_detectors = forward_detectors
@@ -247,15 +247,13 @@ class MuonAsymmetryReducer(Reducer, StandardReadable):
         bin_edges = asymmetry.coords["tof"].to(unit=sc.units.ns, dtype="float64").values
         bin_centers = (bin_edges[:-1] + bin_edges[1:]) / 2
 
-        result = self._model.fit(
+        return self._model.fit(
             asymmetry.values,
             t=bin_centers,
             weights=1.0 / (asymmetry.variances**0.5),
             params=self._fit_parameters,
             nan_policy="omit",
         )
-
-        return result
 
     def _calculate_asymmetry(
         self, current_period_data: NDArray[np.int32], first_spec_dataarray: sc.DataArray
