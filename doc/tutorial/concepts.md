@@ -1,4 +1,4 @@
-# Getting started
+# Concepts
 
 {py:obj}`ibex_bluesky_core` is a library which bridges the 
 [IBEX control system](https://github.com/ISISComputingGroup/ibex_user_manual/wiki/What-Is-IBEX) 
