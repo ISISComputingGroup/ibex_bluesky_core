@@ -88,10 +88,10 @@ When only using the standard fits provided by the {py:obj}`ibex_bluesky_core.fit
 
 ```python
 from bluesky.callbacks import LiveFitPlot
-from ibex_bluesky_core.fitting import [FIT]
+from ibex_bluesky_core.fitting import Gaussian  # Or another type of fit
 
-# Pass [FIT].fit() to the first parameter of LiveFit
-lf = LiveFit([FIT].fit(), y="y_signal", x="x_signal", update_every=0.5)
+# Pass fit type to the first parameter of LiveFit
+lf = LiveFit(Gaussian().fit(), y="y_signal", x="x_signal", update_every=0.5)
 
 # Then subscribe to LiveFitPlot(lf, ...)
 ```

@@ -175,11 +175,11 @@ result.plan_result
 
 If a plan was interrupted and resumed later, the result is returned by the `RE.resume()` call:
 
-```python
-RE(some_plan())
+```
+>>> RE(some_plan())
 <KeyboardInterrupt>
-result = RE.resume()
-result.plan_result
+>>> result = RE.resume()
+>>> result.plan_result
 ```
 
 ```{tip}

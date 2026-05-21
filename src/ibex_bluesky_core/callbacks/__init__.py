@@ -141,9 +141,10 @@ class ISISCallbacks:
                 @icc
                 def _inner():
                     yield from ...
-                    ...
-                    print(icc.live_fit.result.fit_report())
-                    print(f"COM: {icc.peak_stats['com']}")
+
+                yield from _inner()
+                print(icc.live_fit.result.fit_report())
+                print(f"COM: {icc.peak_stats['com']}")
 
         Args:
             x: The signal name to use for X within plots and fits.

@@ -4,7 +4,7 @@
 [IBEX control system](https://github.com/ISISComputingGroup/ibex_user_manual/wiki/What-Is-IBEX) 
 and the [bluesky data acquisition framework](https://blueskyproject.io/).
 
-Bluesky is a highly flexible data acquisition system, which has previously been used at
+Bluesky is a highly flexible data acquisition system, which is used at
 large-scale research facilities such as [NSLS-II](https://www.bnl.gov/nsls2/) and 
 [Diamond](https://www.diamond.ac.uk/Home.html), along with many other large-scale scientific facilities.
 

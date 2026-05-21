@@ -62,6 +62,8 @@ doc = [
   "sphinx_rtd_theme", 
   "myst_parser",
   "sphinx-autobuild",
+  "sphinx-codeautolink",
+  "sphinx-design",
   "sphinxcontrib-mermaid",
   "sphinxcontrib-spelling",
 ]
