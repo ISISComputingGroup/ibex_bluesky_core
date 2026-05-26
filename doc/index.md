@@ -27,8 +27,8 @@ abstraction library, which allows bluesky to communicate with an underlying cont
 :glob:
 
 tutorial/concepts
+tutorial/user_cheat_sheet
 tutorial/first_time_setup
-tutorial/cheat_sheet
 ```
 
 ```{toctree}
