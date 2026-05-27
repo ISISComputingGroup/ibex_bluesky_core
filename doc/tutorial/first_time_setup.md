@@ -22,25 +22,24 @@ import inst.bluesky as pb
 
 ## The `devices` module
 
+:::{note}
+**What is a device?**
+
+Device objects encapsulate the details of how some specific device is controlled, reading or writing to EPICS PVs.
+Each device object may contain logic including:
+- Which data can be read back from this hardware.
+- How to acquire a new reading; this may range from a simple PV read, through to specialised data reductions on DAE data.
+- How to set a device to a new value; this may range from a simple PV write, through to more complex sequences required to drive a specific device. This also includes detecting when a "set" has completed.
+- How to set up hardware before and after a whole scan.
+
+{py:obj}`ibex_bluesky_core` provides utility constructors for common devices, such as {py:obj}`~ibex_bluesky_core.devices.block.block_rw`. See the {py:obj}`ibex_bluesky_core.devices` module for specialised device classes provided by {py:obj}`ibex_bluesky_core`.
+:::
+
 The devices module should contain {py:obj}`ophyd_async` device objects for devices that may be involved in a scan, for
 example common {doc}`/devices/blocks` involved in scans.
-It may also include one or more {py:obj}`~ibex_bluesky_core.devices.simpledae.SimpleDae` instances, for data-collection
-in different modes.
+It may also include one or more {py:obj}`~ibex_bluesky_core.devices.simpledae.SimpleDae` instances, for data-collection in different modes.
 
-Devices do not _need_ to be statically defined here; if it is more convenient, device objects can be defined on-the-fly
-during the execution of a plan.
-
-:::{note}
-Why do we need {py:obj}`ophyd_async` devices at all? Why can't scans just use string block names?
-
-A string block name does not provide enough information to know when a set is "complete", and therefore when data
-collection can start. Different devices may each have a very different "definition of done", or may require
-device-specific logic to set them.
-
-By defining this device-specific behaviour in an {py:obj}`ophyd_async` _device_, we allow bluesky _plans_ to
-operate on _any_ device, without knowing details of the underlying behaviour. {py:obj}`ibex_bluesky_core` provides
-utility constructors for common devices, such as {py:obj}`~ibex_bluesky_core.devices.block.block_rw`.
-:::
+Devices do not _need_ to be statically defined here; if it is more convenient, device objects can be defined on-the-fly during the execution of a plan.
 
 An example `devices` module is:
 
@@ -91,6 +90,12 @@ autoalign_dae = monitor_normalising_dae(
 
 ## The `plans` module
 
+:::{note}
+**What is a plan?**
+
+A "plan" is a sequence of bluesky instructions (for example, move a motor or count from a detector), which are combined to make scanning routines. Plans are almost always written as [python generator functions](https://wiki.python.org/moin/Generators), using Python's `yield` and `yield from` syntax.
+:::
+
 The `plans` module contains instrument-specific bluesky plans. These plans may range from simple beamline-specific
 interfaces for a specific type of scan, to complex plan sequences incorporating multiple scans (such as
 reflectometry auto-alignment procedures).
@@ -118,6 +123,8 @@ def sample_changer_scan(full_range=30):
     
     The scan is a relative scan around the current position, with a user-specified total scan range.
     """
+    # Bluesky connects devices up-front for efficiency, and so that plans fail-fast if a
+    # required PV is not available.
     yield from ensure_connected(sample_changer, diode_readback)
     
     # ISISCallbacks is a helper for a typical set of 'simple' callbacks
@@ -131,6 +138,7 @@ def sample_changer_scan(full_range=30):
         fit=Gaussian().fit(),
     )
     
+    # Apply the callbacks defined above to a "scan" command.
     @icc
     def _inner():
         # We delegate to bluesky's built-in relative scan command.
@@ -154,6 +162,8 @@ RE(pb.sample_changer_scan())
 # ... or
 RE(pb.sample_changer_scan(50))
 ```
+
+The `RE` object, the {ref}`bluesky run engine <concept_run_engine>`, is available by default in the IBEX scripting console. It is used to interactively execute any bluesky plan.
 
 In this example, this command will leave the sample changer aligned in its optimum
 position, along with displaying plots, live feedback, and saving files.
@@ -191,6 +201,9 @@ def detector_scan(block: NamedMovable, start, stop, num, frames=200):
         save_run=False,
         monitor=2,
     )
+    
+    # Bluesky connects devices up-front for efficiency, and so that plans fail-fast if a
+    # required PV is not available.
     yield from ensure_connected(block, dae)
 
     # When read, the DAE _may_ provide multiple readbacks per scan point.
@@ -203,11 +216,15 @@ def detector_scan(block: NamedMovable, start, stop, num, frames=200):
         fit=Gaussian().fit(),
     )
     
+    # Apply the callbacks defined above to a "scan" command.
     @icc
     def _inner():
         # We delegate to bluesky's built-in absolute scan command.
         yield from bp.scan([dae], block, start, stop, num)
 
+    # This ensures that the DAE is configured with sufficient DAE periods before the scan,
+    # and then puts the number of DAE periods back to what it was before after the scan
+    # (including if the scan failed with an exception).
     yield from with_num_periods(_inner(), dae=dae, number_of_periods=num)
 
     if icc.live_fit.result is not None:

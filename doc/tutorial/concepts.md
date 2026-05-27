@@ -117,6 +117,7 @@ def my_plan(det_block_name: str, mot_block_name: str, start: float, stop: float,
 For details about plans which are available directly from `bluesky` - like `bp.scan` above - see 
 [bluesky's plan documentation](https://blueskyproject.io/bluesky/main/plans.html#pre-assembled-plans).
 
+{#concept_run_engine}
 ## The `RunEngine`
 
 The `RunEngine` is the central "conductor" in bluesky - it is responsible for reading a plan and
