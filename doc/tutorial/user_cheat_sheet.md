@@ -37,8 +37,8 @@ result = RE(motor_scan(
     num=11, 
     model=Gaussian().fit(), 
     frames=100, 
-    det=10, 
-    mon=1
+    det=66, 
+    mon=2
 ))
 print(result.plan_result.live_fit.result.values["x0"])
 ```
@@ -63,8 +63,8 @@ def an_external_script_function():
         num=11,
         model=Gaussian().fit(),
         frames=100,
-        det=10,
-        mon=1
+        det=66,
+        mon=2
     ))
     print(result.plan_result.live_fit.result.values["x0"])
 ```

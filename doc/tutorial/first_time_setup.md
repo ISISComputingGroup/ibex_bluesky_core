@@ -108,7 +108,7 @@ We'll use aligning an imaginary sample changer, using a diode block readback as 
 
 :::{dropdown} Click to expand `sample_changer_scan` plan
 ```python
-from inst.devices import sample_changer, diode_readback  # Define these devices in the "devices" module
+from inst.bluesky.devices import sample_changer, diode_readback  # Define these devices in the "devices" module
 from ophyd_async.plan_stubs import ensure_connected
 import bluesky.plans as bp
 import bluesky.plan_stubs as bps
