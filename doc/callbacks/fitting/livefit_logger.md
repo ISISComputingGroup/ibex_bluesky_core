@@ -14,7 +14,7 @@ The files written by this callback contain:
 
 <summary>Example output file from this callback (click to expand)</summary>
 
-```python
+```
 [[Model]]
     Model(Gaussian  [amp * exp(-((x - x0) ** 2) / (2 * sigma**2)) + background])
 [[Fit Statistics]]
@@ -66,10 +66,10 @@ def some_plan() -> Generator[Msg, None, None]:
                 y=reducer.intensity.name,
                 x=block.name,
                 output_dir=Path(f"C:\\Instrument\\Var\\logs\\bluesky\\fitting"),
-                postfix="bob" # Make sure to have different postfixes if using 
+                postfix="bob",  # Make sure to have different postfixes if using 
                     # more than 1 LiveFitLogger per run
                 yerr=reducer.intensity_stddev.name, # Not required
-            )
+            ),
             ... # Other callbacks ie. live table/plot here - you can use multiple!
         ]
     )

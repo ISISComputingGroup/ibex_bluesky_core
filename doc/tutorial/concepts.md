@@ -1,10 +1,10 @@
-# Getting started
+# Concepts
 
 {py:obj}`ibex_bluesky_core` is a library which bridges the 
 [IBEX control system](https://github.com/ISISComputingGroup/ibex_user_manual/wiki/What-Is-IBEX) 
 and the [bluesky data acquisition framework](https://blueskyproject.io/).
 
-Bluesky is a highly flexible data acquisition system, which has previously been used at
+Bluesky is a highly flexible data acquisition system, which is used at
 large-scale research facilities such as [NSLS-II](https://www.bnl.gov/nsls2/) and 
 [Diamond](https://www.diamond.ac.uk/Home.html), along with many other large-scale scientific facilities.
 
@@ -117,6 +117,7 @@ def my_plan(det_block_name: str, mot_block_name: str, start: float, stop: float,
 For details about plans which are available directly from `bluesky` - like `bp.scan` above - see 
 [bluesky's plan documentation](https://blueskyproject.io/bluesky/main/plans.html#pre-assembled-plans).
 
+{#concept_run_engine}
 ## The `RunEngine`
 
 The `RunEngine` is the central "conductor" in bluesky - it is responsible for reading a plan and

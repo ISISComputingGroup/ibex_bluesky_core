@@ -1,6 +1,7 @@
 addons
 areadetector
 async
+autocomplete
 autoreduction
 backend
 backends
@@ -37,6 +38,7 @@ matplotlib
 mbbi
 mbbo
 microamp
+namespaces
 NaN
 natively
 ns

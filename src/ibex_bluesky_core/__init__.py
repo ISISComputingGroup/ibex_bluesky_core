@@ -11,7 +11,7 @@ providing:
 
 See Also:
     - :doc:`User documentation </index>`.
-    - :doc:`/tutorial/overview` for an introduction to concepts in ``ibex_bluesky_core``.
+    - :doc:`/tutorial/concepts` for an introduction to concepts in ``ibex_bluesky_core``.
 
 """
 
