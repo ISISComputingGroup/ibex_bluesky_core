@@ -392,7 +392,7 @@ class ChainedLiveFit(CallbackBase):
 
         for livefit in self._livefits:
             rem_guess = livefit.method.guess
-            try:
+            try:  # noqa: PLW0717
                 if init_guess:
                     # Use previous fit results as initial guess for next fit
                     def guess_func(
