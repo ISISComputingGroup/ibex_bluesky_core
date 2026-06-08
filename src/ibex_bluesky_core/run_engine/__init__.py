@@ -178,7 +178,7 @@ def run_plan(
             "To call a sub plan from within an outer plan, "
             "use 'yield from subplan(...)' instead.\n"
         )
-    try:  # noqa: PLW0717
+    try:
         if RE.state != "idle":
             raise RuntimeError(
                 "Cannot run plan; RunEngine is not idle at start of run_plan call. "
