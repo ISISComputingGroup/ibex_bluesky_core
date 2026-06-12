@@ -1,0 +1,182 @@
+
+<!DOCTYPE html>
+
+<html class="writer-html5" data-content_root="../" lang="en">
+<head>
+<meta charset="utf-8"/><meta content="width=device-width, initial-scale=1" name="viewport"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Redefinition — ibex_bluesky_core 0.1 documentation</title>
+<link href="../_static/pygments.css?v=b86133f3" rel="stylesheet" type="text/css"/>
+<link href="../_static/css/theme.css?v=9edc463e" rel="stylesheet" type="text/css"/>
+<link href="../_static/sphinx-codeautolink.css?v=b2176991" rel="stylesheet" type="text/css"/>
+<link href="../_static/sphinx-design.min.css?v=95c83b7e" rel="stylesheet" type="text/css"/>
+<link href="../_static/css/custom.css?v=1c789acd" rel="stylesheet" type="text/css"/>
+<link href="../_static/favicon.svg" rel="shortcut icon"/>
+<script src="../_static/jquery.js?v=5d32c60e"></script>
+<script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+<script src="../_static/documentation_options.js?v=2709fde1"></script>
+<script src="../_static/doctools.js?v=9bcbadda"></script>
+<script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+<script src="../_static/design-tabs.js?v=f930bc37"></script>
+<script src="../_static/js/theme.js"></script>
+<link href="../genindex.html" rel="index" title="Index"/>
+<link href="../search.html" rel="search" title="Search"/>
+<link href="user_input.html" rel="next" title="User input helpers"/>
+<link href="polling.html" rel="prev" title="Continuous polling"/>
+</head>
+<body class="wy-body-for-nav">
+<div class="wy-grid-for-nav">
+<nav class="wy-nav-side" data-toggle="wy-nav-shift">
+<div class="wy-side-scroll">
+<div class="wy-side-nav-search" style="background: #343131">
+<a class="icon icon-home" href="../index.html">
+            ibex_bluesky_core
+              <img alt="Logo" class="logo" src="../_static/logo.svg"/>
+</a>
+<div role="search">
+<form action="../search.html" class="wy-form" id="rtd-search-form" method="get">
+<input aria-label="Search docs" name="q" placeholder="Search docs" type="text"/>
+<input name="check_keywords" type="hidden" value="yes"/>
+<input name="area" type="hidden" value="default"/>
+</form>
+</div>
+</div><div aria-label="Navigation menu" class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation">
+<p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/concepts.html">Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/user_cheat_sheet.html">User cheat-sheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/first_time_setup.html">First-time setup guide</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Devices</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../devices/blocks.html">Blocks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devices/dae.html">DAE (Data Acquisition Electronics)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Callbacks</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../callbacks/isiscallbacks.html">ISIS Standard Callbacks (<code class="xref py py-obj docutils literal notranslate"><span class="pre">ISISCallbacks</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../callbacks/fitting.html">Fits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../callbacks/centre_of_mass.html">Centre of Mass</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../callbacks/plotting.html">Plotting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../callbacks/file_writing.html">File writing callbacks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../callbacks/custom_callback.html">Custom callbacks (<code class="xref py py-obj docutils literal notranslate"><span class="pre">CustomCallback</span></code>)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Plans</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../plans/plans.html">General Plans</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plans/reflectometry.html">Reflectometry-specific Plans</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Plan stubs</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="external_code.html">Calling external code (<code class="xref py py-obj docutils literal notranslate"><span class="pre">call_sync</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="matplotlib_helpers.html">Matplotlib helpers (<code class="xref py py-obj docutils literal notranslate"><span class="pre">call_qt_aware</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plan_wrappers.html">Plan wrappers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="polling.html">Continuous polling</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Redefinition</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#redefine-motor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">redefine_motor</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#redefine-refl-parameter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">redefine_refl_parameter</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="user_input.html">User input helpers</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../_api.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../replotting_scans.html">Replaying documents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../architectural_decisions.html">Architectural Decisions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer_information.html">Developer Information</a></li>
+</ul>
+</div>
+</div>
+</nav>
+<section class="wy-nav-content-wrap" data-toggle="wy-nav-shift"><nav aria-label="Mobile navigation menu" class="wy-nav-top" style="background: #343131">
+<i class="fa fa-bars" data-toggle="wy-nav-top"></i>
+<a href="../index.html">ibex_bluesky_core</a>
+</nav>
+<div class="wy-nav-content">
+<div class="rst-content">
+<div aria-label="Page navigation" role="navigation">
+<ul class="wy-breadcrumbs">
+<li><a aria-label="Home" class="icon icon-home" href="../index.html"></a></li>
+<li class="breadcrumb-item active">Redefinition</li>
+<li class="wy-breadcrumbs-aside">
+<a class="fa fa-github" href="https://github.com/ISISComputingGroup/ibex_bluesky_core/blob/main/doc/plan_stubs/redefining.md"> Edit on GitHub</a>
+</li>
+</ul>
+<hr/>
+</div>
+<div class="document" itemscope="itemscope" itemtype="http://schema.org/Article" role="main">
+<div itemprop="articleBody">
+<section class="tex2jax_ignore mathjax_ignore" id="redefinition">
+<h1>Redefinition<a class="headerlink" href="#redefinition" title="Link to this heading"></a></h1>
+<p>The plan stubs in this module implement ‘redefinition’ of a parameter, where supported. That is, no physical movement
+occurs, but the reported position changes to the given position.</p>
+<section id="redefine-motor">
+<h2><a class="reference internal" href="../generated/ibex_bluesky_core.plan_stubs.html#ibex_bluesky_core.plan_stubs.redefine_motor" title="ibex_bluesky_core.plan_stubs.redefine_motor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">redefine_motor</span></code></a><a class="headerlink" href="#redefine-motor" title="Link to this heading"></a></h2>
+<p>The <a class="reference internal" href="../generated/ibex_bluesky_core.plan_stubs.html#ibex_bluesky_core.plan_stubs.redefine_motor" title="ibex_bluesky_core.plan_stubs.redefine_motor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">redefine_motor</span></code></a> plan stub can be used to redefine the current
+position of a motor (for example a <a class="reference internal" href="../generated/ibex_bluesky_core.devices.block.html#ibex_bluesky_core.devices.block.BlockMot" title="ibex_bluesky_core.devices.block.BlockMot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BlockMot</span></code></a>) to a new value.</p>
+<p>The motor does not physically move, but after this plan stub executes, the current position will be defined
+as <code class="docutils literal notranslate"><span class="pre">value</span></code>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><a class="sphinx-codeautolink-a" href="../generated/ibex_bluesky_core.plan_stubs.html#module-ibex_bluesky_core.plan_stubs" title="ibex_bluesky_core.plan_stubs"><span class="nn">ibex_bluesky_core.plan_stubs</span></a><span class="w"> </span><span class="kn">import</span> <a class="sphinx-codeautolink-a" href="../generated/ibex_bluesky_core.plan_stubs.html#ibex_bluesky_core.plan_stubs.redefine_motor" title="ibex_bluesky_core.plan_stubs.redefine_motor"><span class="n">redefine_motor</span></a>
+<span class="kn">from</span><span class="w"> </span><a class="sphinx-codeautolink-a" href="../generated/ibex_bluesky_core.devices.block.html#module-ibex_bluesky_core.devices.block" title="ibex_bluesky_core.devices.block"><span class="nn">ibex_bluesky_core.devices.block</span></a><span class="w"> </span><span class="kn">import</span> <a class="sphinx-codeautolink-a" href="../generated/ibex_bluesky_core.devices.block.html#ibex_bluesky_core.devices.block.block_mot" title="ibex_bluesky_core.devices.block.block_mot"><span class="n">block_mot</span></a><span class="p">,</span> <a class="sphinx-codeautolink-a" href="../generated/ibex_bluesky_core.devices.block.html#ibex_bluesky_core.devices.block.BlockMot" title="ibex_bluesky_core.devices.block.BlockMot"><span class="n">BlockMot</span></a>
+<span class="kn">import</span><span class="w"> </span><span class="nn">bluesky.plan_stubs</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">bps</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">my_plan</span><span class="p">():</span>
+    <a class="sphinx-codeautolink-a" href="../generated/ibex_bluesky_core.devices.block.html#ibex_bluesky_core.devices.block.BlockMot" title="ibex_bluesky_core.devices.block.BlockMot"><span class="n">motor</span></a><span class="p">:</span> <a class="sphinx-codeautolink-a" href="../generated/ibex_bluesky_core.devices.block.html#ibex_bluesky_core.devices.block.BlockMot" title="ibex_bluesky_core.devices.block.BlockMot"><span class="n">BlockMot</span></a> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="../generated/ibex_bluesky_core.devices.block.html#ibex_bluesky_core.devices.block.block_mot" title="ibex_bluesky_core.devices.block.block_mot"><span class="n">block_mot</span></a><span class="p">(</span><span class="s2">"my_motor"</span><span class="p">)</span>
+    <span class="n">optimimum_value</span><span class="p">:</span> <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/library/functions.html#float" title="float"><span class="nb">float</span></a> <span class="o">=</span> <span class="o">...</span>
+    
+    <span class="c1"># Physically move the motor to it's optimum position</span>
+    <span class="c1"># (bps.mv automatically waits for movements to complete)</span>
+    <span class="k">yield from</span> <a class="sphinx-codeautolink-a" href="https://blueskyproject.io/bluesky/main/generated/bluesky.plan_stubs.mv.html#bluesky.plan_stubs.mv" title="bluesky.plan_stubs.mv"><span class="n">bps</span><span class="o">.</span><span class="n">mv</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="../generated/ibex_bluesky_core.devices.block.html#ibex_bluesky_core.devices.block.BlockMot" title="ibex_bluesky_core.devices.block.BlockMot"><span class="n">motor</span></a><span class="p">,</span> <span class="n">optimimum_value</span><span class="p">)</span>
+    
+    <span class="c1"># Redefine the current position as zero</span>
+    <span class="k">yield from</span> <a class="sphinx-codeautolink-a" href="../generated/ibex_bluesky_core.plan_stubs.html#ibex_bluesky_core.plan_stubs.redefine_motor" title="ibex_bluesky_core.plan_stubs.redefine_motor"><span class="n">redefine_motor</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="../generated/ibex_bluesky_core.devices.block.html#ibex_bluesky_core.devices.block.BlockMot" title="ibex_bluesky_core.devices.block.BlockMot"><span class="n">motor</span></a><span class="p">,</span> <span class="mf">0.</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>By default, the <a class="reference internal" href="../generated/ibex_bluesky_core.plan_stubs.html#ibex_bluesky_core.plan_stubs.redefine_motor" title="ibex_bluesky_core.plan_stubs.redefine_motor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">redefine_motor</span></code></a>
+plan stub sleeps for 1 second after redefining the motor. This avoids race conditions, where a motor is moved too soon
+after being redefined to a new position, and the redefined position has not yet been read back from the controller.
+This behaviour can be controlled with the <code class="docutils literal notranslate"><span class="pre">sleep</span></code> keyword argument to
+<a class="reference internal" href="../generated/ibex_bluesky_core.plan_stubs.html#ibex_bluesky_core.plan_stubs.redefine_motor" title="ibex_bluesky_core.plan_stubs.redefine_motor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">redefine_motor</span></code></a>.</p>
+</section>
+<section id="redefine-refl-parameter">
+<h2><a class="reference internal" href="../generated/ibex_bluesky_core.plan_stubs.html#ibex_bluesky_core.plan_stubs.redefine_refl_parameter" title="ibex_bluesky_core.plan_stubs.redefine_refl_parameter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">redefine_refl_parameter</span></code></a><a class="headerlink" href="#redefine-refl-parameter" title="Link to this heading"></a></h2>
+<p>The <a class="reference internal" href="../generated/ibex_bluesky_core.plan_stubs.html#ibex_bluesky_core.plan_stubs.redefine_refl_parameter" title="ibex_bluesky_core.plan_stubs.redefine_refl_parameter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">redefine_refl_parameter</span></code></a> plan stub can be used to redefine the current
+position of a <a class="reference internal" href="../generated/ibex_bluesky_core.devices.reflectometry.html#ibex_bluesky_core.devices.reflectometry.ReflParameter" title="ibex_bluesky_core.devices.reflectometry.ReflParameter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ReflParameter</span></code></a> to a new value.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Some reflectometry parameters (e.g. Theta) cannot be redefined, so these must be constructed with <code class="docutils literal notranslate"><span class="pre">has_redefine=False</span></code>. <a class="reference internal" href="../generated/ibex_bluesky_core.plan_stubs.html#ibex_bluesky_core.plan_stubs.redefine_refl_parameter" title="ibex_bluesky_core.plan_stubs.redefine_refl_parameter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">redefine_refl_parameter</span></code></a> will raise an error if a user tries to redefine a <a class="reference internal" href="../generated/ibex_bluesky_core.devices.reflectometry.html#ibex_bluesky_core.devices.reflectometry.ReflParameter" title="ibex_bluesky_core.devices.reflectometry.ReflParameter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ReflParameter</span></code></a> that was created with <code class="docutils literal notranslate"><span class="pre">has_redefine=False</span></code>.</p>
+</div>
+<p>This plan stub has an identical API to that of the <a class="reference internal" href="../generated/ibex_bluesky_core.plan_stubs.html#ibex_bluesky_core.plan_stubs.redefine_motor" title="ibex_bluesky_core.plan_stubs.redefine_motor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">redefine_motor</span></code></a> plan stub
+described above, but operates on a reflectometry parameter rather than a motor.</p>
+</section>
+</section>
+</div>
+</div>
+<footer><div aria-label="Footer" class="rst-footer-buttons" role="navigation">
+<a accesskey="p" class="btn btn-neutral float-left" href="polling.html" rel="prev" title="Continuous polling"><span aria-hidden="true" class="fa fa-arrow-circle-left"></span> Previous</a>
+<a accesskey="n" class="btn btn-neutral float-right" href="user_input.html" rel="next" title="User input helpers">Next <span aria-hidden="true" class="fa fa-arrow-circle-right"></span></a>
+</div>
+<hr/>
+<div role="contentinfo">
+<p>© Copyright .</p>
+</div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+</div>
+</div>
+</section>
+</div>
+<script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+</body>
+</html>

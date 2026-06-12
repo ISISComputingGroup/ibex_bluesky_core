@@ -1,0 +1,191 @@
+
+<!DOCTYPE html>
+
+<html class="writer-html5" data-content_root="../../" lang="en">
+<head>
+<meta charset="utf-8"/><meta content="width=device-width, initial-scale=1" name="viewport"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Chained Fitting (ChainedLiveFit) — ibex_bluesky_core 0.1 documentation</title>
+<link href="../../_static/pygments.css?v=b86133f3" rel="stylesheet" type="text/css"/>
+<link href="../../_static/css/theme.css?v=9edc463e" rel="stylesheet" type="text/css"/>
+<link href="../../_static/sphinx-codeautolink.css?v=b2176991" rel="stylesheet" type="text/css"/>
+<link href="../../_static/sphinx-design.min.css?v=95c83b7e" rel="stylesheet" type="text/css"/>
+<link href="../../_static/css/custom.css?v=1c789acd" rel="stylesheet" type="text/css"/>
+<link href="../../_static/favicon.svg" rel="shortcut icon"/>
+<script src="../../_static/jquery.js?v=5d32c60e"></script>
+<script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+<script src="../../_static/documentation_options.js?v=2709fde1"></script>
+<script src="../../_static/doctools.js?v=9bcbadda"></script>
+<script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+<script src="../../_static/design-tabs.js?v=f930bc37"></script>
+<script src="../../_static/js/theme.js"></script>
+<link href="../../genindex.html" rel="index" title="Index"/>
+<link href="../../search.html" rel="search" title="Search"/>
+<link href="fitting.html" rel="next" title="Fitting (LiveFit)"/>
+<link href="../fitting.html" rel="prev" title="Fits"/>
+</head>
+<body class="wy-body-for-nav">
+<div class="wy-grid-for-nav">
+<nav class="wy-nav-side" data-toggle="wy-nav-shift">
+<div class="wy-side-scroll">
+<div class="wy-side-nav-search" style="background: #343131">
+<a class="icon icon-home" href="../../index.html">
+            ibex_bluesky_core
+              <img alt="Logo" class="logo" src="../../_static/logo.svg"/>
+</a>
+<div role="search">
+<form action="../../search.html" class="wy-form" id="rtd-search-form" method="get">
+<input aria-label="Search docs" name="q" placeholder="Search docs" type="text"/>
+<input name="check_keywords" type="hidden" value="yes"/>
+<input name="area" type="hidden" value="default"/>
+</form>
+</div>
+</div><div aria-label="Navigation menu" class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation">
+<p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial/concepts.html">Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial/user_cheat_sheet.html">User cheat-sheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial/first_time_setup.html">First-time setup guide</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Devices</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../devices/blocks.html">Blocks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devices/dae.html">DAE (Data Acquisition Electronics)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Callbacks</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../isiscallbacks.html">ISIS Standard Callbacks (<code class="xref py py-obj docutils literal notranslate"><span class="pre">ISISCallbacks</span></code>)</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../fitting.html">Fits</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Chained Fitting (<code class="xref py py-obj docutils literal notranslate"><span class="pre">ChainedLiveFit</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="fitting.html">Fitting (<code class="xref py py-obj docutils literal notranslate"><span class="pre">LiveFit</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="livefit_logger.html">Saving fit results to file (<code class="xref py py-obj docutils literal notranslate"><span class="pre">LiveFitLogger</span></code>)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="standard_fits.html">Standard Fitting Models</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../centre_of_mass.html">Centre of Mass</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plotting.html">Plotting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../file_writing.html">File writing callbacks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../custom_callback.html">Custom callbacks (<code class="xref py py-obj docutils literal notranslate"><span class="pre">CustomCallback</span></code>)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Plans</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../plans/plans.html">General Plans</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../plans/reflectometry.html">Reflectometry-specific Plans</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Plan stubs</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../plan_stubs/external_code.html">Calling external code (<code class="xref py py-obj docutils literal notranslate"><span class="pre">call_sync</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../plan_stubs/matplotlib_helpers.html">Matplotlib helpers (<code class="xref py py-obj docutils literal notranslate"><span class="pre">call_qt_aware</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../plan_stubs/plan_wrappers.html">Plan wrappers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../plan_stubs/polling.html">Continuous polling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../plan_stubs/redefining.html">Redefinition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../plan_stubs/user_input.html">User input helpers</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../_api.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../replotting_scans.html">Replaying documents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../architectural_decisions.html">Architectural Decisions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer_information.html">Developer Information</a></li>
+</ul>
+</div>
+</div>
+</nav>
+<section class="wy-nav-content-wrap" data-toggle="wy-nav-shift"><nav aria-label="Mobile navigation menu" class="wy-nav-top" style="background: #343131">
+<i class="fa fa-bars" data-toggle="wy-nav-top"></i>
+<a href="../../index.html">ibex_bluesky_core</a>
+</nav>
+<div class="wy-nav-content">
+<div class="rst-content">
+<div aria-label="Page navigation" role="navigation">
+<ul class="wy-breadcrumbs">
+<li><a aria-label="Home" class="icon icon-home" href="../../index.html"></a></li>
+<li class="breadcrumb-item"><a href="../fitting.html">Fits</a></li>
+<li class="breadcrumb-item active">Chained Fitting (<code class="xref py py-obj docutils literal notranslate"><span class="pre">ChainedLiveFit</span></code>)</li>
+<li class="wy-breadcrumbs-aside">
+<a class="fa fa-github" href="https://github.com/ISISComputingGroup/ibex_bluesky_core/blob/main/doc/callbacks/fitting/chained_fitting.md"> Edit on GitHub</a>
+</li>
+</ul>
+<hr/>
+</div>
+<div class="document" itemscope="itemscope" itemtype="http://schema.org/Article" role="main">
+<div itemprop="articleBody">
+<section class="tex2jax_ignore mathjax_ignore" id="chained-fitting-chainedlivefit">
+<h1>Chained Fitting (<a class="reference internal" href="../../generated/ibex_bluesky_core.callbacks.html#ibex_bluesky_core.callbacks.ChainedLiveFit" title="ibex_bluesky_core.callbacks.ChainedLiveFit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ChainedLiveFit</span></code></a>)<a class="headerlink" href="#chained-fitting-chainedlivefit" title="Link to this heading"></a></h1>
+<p><a class="reference internal" href="../../generated/ibex_bluesky_core.callbacks.html#ibex_bluesky_core.callbacks.ChainedLiveFit" title="ibex_bluesky_core.callbacks.ChainedLiveFit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ChainedLiveFit</span></code></a> is a specialised callback that manages multiple <a class="reference internal" href="../../generated/ibex_bluesky_core.callbacks.html#ibex_bluesky_core.callbacks.LiveFit" title="ibex_bluesky_core.callbacks.LiveFit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LiveFit</span></code></a> instances in a chain, where each fit’s results inform the next fit’s initial parameters. This is particularly useful when fitting datasets where the initial guess for each fit depends on the parameters obtained from a previous fit.</p>
+<p>This is useful for when you need to be careful with your curve fitting due to the presence of noisy data. It allows you to fit your widest (full) wavelength band first and then using its fit parameters as the initial guess of the parameters for the next fit</p>
+<p>To show how we expect this to be used, we will use a <a class="reference internal" href="../../generated/ibex_bluesky_core.devices.polarisingdae.html#ibex_bluesky_core.devices.polarisingdae.DualRunDae" title="ibex_bluesky_core.devices.polarisingdae.DualRunDae"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DualRunDae</span></code></a> configured with multiple wavelength bands, to highlight the need to carry over fitting parameters. The example below shows two wavelength bands, first wider than the second. We will fit to the data in the widest wavelength band first, and carry over the results of that fit to the guess of the next fit, to improve the chances of that fit converging.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/library/typing.html#module-typing" title="typing"><span class="nn">typing</span></a><span class="w"> </span><span class="kn">import</span> <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/library/typing.html#typing.Generator" title="typing.Generator"><span class="n">Generator</span></a>
+<span class="kn">import</span><span class="w"> </span><span class="nn">scipp</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sc</span>
+<span class="kn">import</span><span class="w"> </span><a class="sphinx-codeautolink-a" href="https://matplotlib.org/stable/api/pyplot_summary.html#module-matplotlib.pyplot" title="matplotlib.pyplot"><span class="nn">matplotlib.pyplot</span></a><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">from</span><span class="w"> </span><a class="sphinx-codeautolink-a" href="../../generated/ibex_bluesky_core.devices.block.html#module-ibex_bluesky_core.devices.block" title="ibex_bluesky_core.devices.block"><span class="nn">ibex_bluesky_core.devices.block</span></a><span class="w"> </span><span class="kn">import</span> <a class="sphinx-codeautolink-a" href="../../generated/ibex_bluesky_core.devices.block.html#ibex_bluesky_core.devices.block.block_rw" title="ibex_bluesky_core.devices.block.block_rw"><span class="n">block_rw</span></a><span class="p">,</span> <a class="sphinx-codeautolink-a" href="../../generated/ibex_bluesky_core.devices.block.html#ibex_bluesky_core.devices.block.BlockWriteConfig" title="ibex_bluesky_core.devices.block.BlockWriteConfig"><span class="n">BlockWriteConfig</span></a>
+<span class="kn">from</span><span class="w"> </span><a class="sphinx-codeautolink-a" href="../../generated/ibex_bluesky_core.devices.polarisingdae.html#module-ibex_bluesky_core.devices.polarisingdae" title="ibex_bluesky_core.devices.polarisingdae"><span class="nn">ibex_bluesky_core.devices.polarisingdae</span></a><span class="w"> </span><span class="kn">import</span> <a class="sphinx-codeautolink-a" href="../../generated/ibex_bluesky_core.devices.polarisingdae.html#ibex_bluesky_core.devices.polarisingdae.polarising_dae" title="ibex_bluesky_core.devices.polarisingdae.polarising_dae"><span class="n">polarising_dae</span></a>
+<span class="kn">from</span><span class="w"> </span><a class="sphinx-codeautolink-a" href="../../generated/ibex_bluesky_core.plan_stubs.html#module-ibex_bluesky_core.plan_stubs" title="ibex_bluesky_core.plan_stubs"><span class="nn">ibex_bluesky_core.plan_stubs</span></a><span class="w"> </span><span class="kn">import</span> <a class="sphinx-codeautolink-a" href="../../generated/ibex_bluesky_core.plan_stubs.html#ibex_bluesky_core.plan_stubs.call_qt_aware" title="ibex_bluesky_core.plan_stubs.call_qt_aware"><span class="n">call_qt_aware</span></a>
+<span class="kn">from</span><span class="w"> </span><a class="sphinx-codeautolink-a" href="../../generated/ibex_bluesky_core.fitting.html#module-ibex_bluesky_core.fitting" title="ibex_bluesky_core.fitting"><span class="nn">ibex_bluesky_core.fitting</span></a><span class="w"> </span><span class="kn">import</span> <a class="sphinx-codeautolink-a" href="../../generated/ibex_bluesky_core.fitting.html#ibex_bluesky_core.fitting.Linear" title="ibex_bluesky_core.fitting.Linear"><span class="n">Linear</span></a>
+<span class="kn">from</span><span class="w"> </span><a class="sphinx-codeautolink-a" href="../../generated/ibex_bluesky_core.callbacks.html#module-ibex_bluesky_core.callbacks" title="ibex_bluesky_core.callbacks"><span class="nn">ibex_bluesky_core.callbacks</span></a><span class="w"> </span><span class="kn">import</span> <a class="sphinx-codeautolink-a" href="../../generated/ibex_bluesky_core.callbacks.html#ibex_bluesky_core.callbacks.ChainedLiveFit" title="ibex_bluesky_core.callbacks._fitting.ChainedLiveFit"><span class="n">ChainedLiveFit</span></a>
+<span class="kn">from</span><span class="w"> </span><a class="sphinx-codeautolink-a" href="https://blueskyproject.io/bluesky/main/utils.html#module-bluesky.utils" title="bluesky.utils"><span class="nn">bluesky.utils</span></a><span class="w"> </span><span class="kn">import</span> <a class="sphinx-codeautolink-a" href="https://blueskyproject.io/bluesky/main/generated/bluesky.utils.Msg.html#bluesky.utils.Msg" title="bluesky.utils.Msg"><span class="n">Msg</span></a>
+
+
+<span class="c1"># Needed for PolarisingDae</span>
+<a class="sphinx-codeautolink-a" href="../../generated/ibex_bluesky_core.devices.block.html#ibex_bluesky_core.devices.block.BlockRw" title="ibex_bluesky_core.devices.block.BlockRw"><span class="n">flipper</span></a> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="../../generated/ibex_bluesky_core.devices.block.html#ibex_bluesky_core.devices.block.block_rw" title="ibex_bluesky_core.devices.block.block_rw"><span class="n">block_rw</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/library/functions.html#float" title="float"><span class="nb">float</span></a><span class="p">,</span> <span class="s2">"flipper"</span><span class="p">)</span>
+<a class="sphinx-codeautolink-a" href="https://scipp.github.io/generated/classes/scipp.Variable.html#scipp.Variable" title="scipp._scipp.core.Variable"><span class="n">total_flight_path_length</span></a> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="https://scipp.github.io/generated/functions/scipp.scalar.html#scipp.scalar" title="scipp.scalar"><span class="n">sc</span><span class="o">.</span><span class="n">scalar</span></a><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="n">sc</span><span class="o">.</span><span class="n">units</span><span class="o">.</span><span class="n">m</span><span class="p">)</span>
+
+<a class="sphinx-codeautolink-a" href="../../generated/ibex_bluesky_core.devices.block.html#ibex_bluesky_core.devices.block.BlockRw" title="ibex_bluesky_core.devices.block.BlockRw"><span class="n">x_axis</span></a> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="../../generated/ibex_bluesky_core.devices.block.html#ibex_bluesky_core.devices.block.block_rw" title="ibex_bluesky_core.devices.block.block_rw"><span class="n">block_rw</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/library/functions.html#float" title="float"><span class="nb">float</span></a><span class="p">,</span> <span class="s2">"x_axis"</span><span class="p">,</span> <span class="n">write_config</span><span class="o">=</span><a class="sphinx-codeautolink-a" href="../../generated/ibex_bluesky_core.devices.block.html#ibex_bluesky_core.devices.block.BlockWriteConfig" title="ibex_bluesky_core.devices.block.BlockWriteConfig"><span class="n">BlockWriteConfig</span></a><span class="p">(</span><span class="n">settle_time_s</span><span class="o">=</span><span class="mf">0.5</span><span class="p">))</span>
+<a class="sphinx-codeautolink-a" href="https://scipp.github.io/generated/classes/scipp.Variable.html#scipp.Variable" title="scipp._scipp.core.Variable"><span class="n">wavelength_band_0</span></a> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="https://scipp.github.io/generated/functions/scipp.array.html#scipp.array" title="scipp.array"><span class="n">sc</span><span class="o">.</span><span class="n">array</span></a><span class="p">(</span><span class="n">dims</span><span class="o">=</span><span class="p">[</span><span class="s2">"tof"</span><span class="p">],</span> <span class="n">values</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">9999999999.0</span><span class="p">],</span> <span class="n">unit</span><span class="o">=</span><span class="n">sc</span><span class="o">.</span><span class="n">units</span><span class="o">.</span><span class="n">angstrom</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">"float64"</span><span class="p">)</span>
+<a class="sphinx-codeautolink-a" href="https://scipp.github.io/generated/classes/scipp.Variable.html#scipp.Variable" title="scipp._scipp.core.Variable"><span class="n">wavelength_band_1</span></a> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="https://scipp.github.io/generated/functions/scipp.array.html#scipp.array" title="scipp.array"><span class="n">sc</span><span class="o">.</span><span class="n">array</span></a><span class="p">(</span><span class="n">dims</span><span class="o">=</span><span class="p">[</span><span class="s2">"tof"</span><span class="p">],</span> <span class="n">values</span><span class="o">=</span><span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.07</span><span class="p">],</span> <span class="n">unit</span><span class="o">=</span><span class="n">sc</span><span class="o">.</span><span class="n">units</span><span class="o">.</span><span class="n">angstrom</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">"float64"</span><span class="p">)</span>
+
+<a class="sphinx-codeautolink-a" href="../../generated/ibex_bluesky_core.devices.polarisingdae.html#ibex_bluesky_core.devices.polarisingdae.DualRunDae" title="ibex_bluesky_core.devices.polarisingdae.DualRunDae"><span class="n">dae</span></a> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="../../generated/ibex_bluesky_core.devices.polarisingdae.html#ibex_bluesky_core.devices.polarisingdae.polarising_dae" title="ibex_bluesky_core.devices.polarisingdae.polarising_dae"><span class="n">polarising_dae</span></a><span class="p">(</span><span class="n">det_pixels</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">frames</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">movable</span><span class="o">=</span><a class="sphinx-codeautolink-a" href="../../generated/ibex_bluesky_core.devices.block.html#ibex_bluesky_core.devices.block.BlockRw" title="ibex_bluesky_core.devices.block.BlockRw"><span class="n">flipper</span></a><span class="p">,</span> <span class="n">movable_states</span><span class="o">=</span><span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">],</span>
+                     <span class="n">intervals</span><span class="o">=</span><span class="p">[</span><a class="sphinx-codeautolink-a" href="https://scipp.github.io/generated/classes/scipp.Variable.html#scipp.Variable" title="scipp._scipp.core.Variable"><span class="n">wavelength_band_0</span></a><span class="p">,</span> <a class="sphinx-codeautolink-a" href="https://scipp.github.io/generated/classes/scipp.Variable.html#scipp.Variable" title="scipp._scipp.core.Variable"><span class="n">wavelength_band_1</span></a><span class="p">],</span>
+                     <span class="n">total_flight_path_length</span><span class="o">=</span><a class="sphinx-codeautolink-a" href="https://scipp.github.io/generated/classes/scipp.Variable.html#scipp.Variable" title="scipp._scipp.core.Variable"><span class="n">total_flight_path_length</span></a><span class="p">,</span> <span class="n">monitor</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">plan</span><span class="p">()</span> <span class="o">-&gt;</span> <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/library/typing.html#typing.Generator" title="typing.Generator"><span class="n">Generator</span></a><span class="p">[</span><a class="sphinx-codeautolink-a" href="https://blueskyproject.io/bluesky/main/generated/bluesky.utils.Msg.html#bluesky.utils.Msg" title="bluesky.utils.Msg"><span class="n">Msg</span></a><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+    <span class="n">fig</span><span class="p">,</span> <span class="p">(</span><span class="n">ax1</span><span class="p">,</span> <span class="n">ax2</span><span class="p">)</span> <span class="o">=</span> <span class="k">yield from</span> <a class="sphinx-codeautolink-a" href="../../generated/ibex_bluesky_core.plan_stubs.html#ibex_bluesky_core.plan_stubs.call_qt_aware" title="ibex_bluesky_core.plan_stubs.call_qt_aware"><span class="n">call_qt_aware</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.subplots.html#matplotlib.pyplot.subplots" title="matplotlib.pyplot.subplots"><span class="n">plt</span><span class="o">.</span><span class="n">subplots</span></a><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+    <a class="sphinx-codeautolink-a" href="../../generated/ibex_bluesky_core.callbacks.html#ibex_bluesky_core.callbacks.ChainedLiveFit" title="ibex_bluesky_core.callbacks._fitting.ChainedLiveFit"><span class="n">chained_fit</span></a> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="../../generated/ibex_bluesky_core.callbacks.html#ibex_bluesky_core.callbacks.ChainedLiveFit" title="ibex_bluesky_core.callbacks._fitting.ChainedLiveFit"><span class="n">ChainedLiveFit</span></a><span class="p">(</span><span class="n">method</span><span class="o">=</span><a class="sphinx-codeautolink-a" href="../../generated/ibex_bluesky_core.fitting.html#ibex_bluesky_core.fitting.Fit.fit" title="ibex_bluesky_core.fitting.Fit.fit"><span class="n">Linear</span><span class="o">.</span><span class="n">fit</span></a><span class="p">(),</span> <span class="n">y</span><span class="o">=</span><span class="p">[</span><span class="n">dae</span><span class="o">.</span><span class="n">reducer</span><span class="o">.</span><span class="n">wavelength_bands</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">calculate_polarisation</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                                                       <span class="n">dae</span><span class="o">.</span><span class="n">reducer</span><span class="o">.</span><span class="n">wavelength_bands</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">calculate_polarisation</span><span class="o">.</span><span class="n">name</span><span class="p">],</span>
+                               <span class="n">x</span><span class="o">=</span><a class="sphinx-codeautolink-a" href="https://blueskyproject.io/ophyd-async/v0.18/_api/ophyd_async/ophyd_async.core.html#ophyd_async.core.Device.name" title="ophyd_async.core._device.Device.name"><span class="n">x_axis</span><span class="o">.</span><span class="n">name</span></a><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="p">[</span><span class="n">ax1</span><span class="p">,</span> <span class="n">ax2</span><span class="p">])</span>
+    
+    <span class="o">...</span>  <span class="c1"># perform a scan with chained_fit subscribed</span>
+    
+    <span class="c1"># will give you the fitting results for the last wavelength band</span>
+    <span class="n">chained_fit</span><span class="o">.</span><span class="n">get_livefits</span><span class="p">()[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">result</span>
+</pre></div>
+</div>
+<p>The list of signal names for each independent variable should be passed in the same order that the fits are to be applied.</p>
+<p>A list of matplotlib axes is accepted, which will mean that <a class="reference external" href="https://blueskyproject.io/bluesky/main/callbacks.html#bluesky.callbacks.mpl_plotting.LiveFitPlot" title="(in bluesky v1.15.2.dev20+gd276e2bf8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LiveFitPlots</span></code></a> are created per <a class="reference internal" href="../../generated/ibex_bluesky_core.callbacks.html#ibex_bluesky_core.callbacks.LiveFit" title="ibex_bluesky_core.callbacks.LiveFit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LiveFit</span></code></a>, and it will plot the each respective fit to an axis. <a class="reference external" href="https://blueskyproject.io/bluesky/main/callbacks.html#bluesky.callbacks.mpl_plotting.LiveFitPlot" title="(in bluesky v1.15.2.dev20+gd276e2bf8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LiveFitPlots</span></code></a> are not created if you do not pass <code class="docutils literal notranslate"><span class="pre">ax</span></code>.</p>
+<p>Similar to the <code class="docutils literal notranslate"><span class="pre">y</span></code> parameter, uncertainties for each dependent variable are accepted in <code class="docutils literal notranslate"><span class="pre">yerr</span></code>.</p>
+<p><a class="reference internal" href="../../generated/ibex_bluesky_core.callbacks.html#ibex_bluesky_core.callbacks.ChainedLiveFit" title="ibex_bluesky_core.callbacks.ChainedLiveFit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ChainedLiveFit</span></code></a> currently has the following limitations:</p>
+<ul class="simple">
+<li><p>The method for fitting must be the same across all dependent variables.</p></li>
+<li><p>Parameter uncertainties are not carried over between fits</p></li>
+<li><p>If a fit fails to converge, the next fits will use their default guess functions</p></li>
+</ul>
+</section>
+</div>
+</div>
+<footer><div aria-label="Footer" class="rst-footer-buttons" role="navigation">
+<a accesskey="p" class="btn btn-neutral float-left" href="../fitting.html" rel="prev" title="Fits"><span aria-hidden="true" class="fa fa-arrow-circle-left"></span> Previous</a>
+<a accesskey="n" class="btn btn-neutral float-right" href="fitting.html" rel="next" title="Fitting (LiveFit)">Next <span aria-hidden="true" class="fa fa-arrow-circle-right"></span></a>
+</div>
+<hr/>
+<div role="contentinfo">
+<p>© Copyright .</p>
+</div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+</div>
+</div>
+</section>
+</div>
+<script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+</body>
+</html>

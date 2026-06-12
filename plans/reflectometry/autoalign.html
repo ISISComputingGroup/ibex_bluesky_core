@@ -1,0 +1,263 @@
+
+<!DOCTYPE html>
+
+<html class="writer-html5" data-content_root="../../" lang="en">
+<head>
+<meta charset="utf-8"/><meta content="width=device-width, initial-scale=1" name="viewport"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Auto-alignment — ibex_bluesky_core 0.1 documentation</title>
+<link href="../../_static/pygments.css?v=b86133f3" rel="stylesheet" type="text/css"/>
+<link href="../../_static/css/theme.css?v=9edc463e" rel="stylesheet" type="text/css"/>
+<link href="../../_static/sphinx-codeautolink.css?v=b2176991" rel="stylesheet" type="text/css"/>
+<link href="../../_static/sphinx-design.min.css?v=95c83b7e" rel="stylesheet" type="text/css"/>
+<link href="../../_static/css/custom.css?v=1c789acd" rel="stylesheet" type="text/css"/>
+<link href="../../_static/favicon.svg" rel="shortcut icon"/>
+<script src="../../_static/jquery.js?v=5d32c60e"></script>
+<script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+<script src="../../_static/documentation_options.js?v=2709fde1"></script>
+<script src="../../_static/doctools.js?v=9bcbadda"></script>
+<script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+<script src="../../_static/design-tabs.js?v=f930bc37"></script>
+<script src="../../_static/js/theme.js"></script>
+<link href="../../genindex.html" rel="index" title="Index"/>
+<link href="../../search.html" rel="search" title="Search"/>
+<link href="detector_mapping_alignment.html" rel="next" title="Detector-mapping alignment"/>
+<link href="../reflectometry.html" rel="prev" title="Reflectometry-specific Plans"/>
+</head>
+<body class="wy-body-for-nav">
+<div class="wy-grid-for-nav">
+<nav class="wy-nav-side" data-toggle="wy-nav-shift">
+<div class="wy-side-scroll">
+<div class="wy-side-nav-search" style="background: #343131">
+<a class="icon icon-home" href="../../index.html">
+            ibex_bluesky_core
+              <img alt="Logo" class="logo" src="../../_static/logo.svg"/>
+</a>
+<div role="search">
+<form action="../../search.html" class="wy-form" id="rtd-search-form" method="get">
+<input aria-label="Search docs" name="q" placeholder="Search docs" type="text"/>
+<input name="check_keywords" type="hidden" value="yes"/>
+<input name="area" type="hidden" value="default"/>
+</form>
+</div>
+</div><div aria-label="Navigation menu" class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation">
+<p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial/concepts.html">Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial/user_cheat_sheet.html">User cheat-sheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorial/first_time_setup.html">First-time setup guide</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Devices</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../devices/blocks.html">Blocks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devices/dae.html">DAE (Data Acquisition Electronics)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Callbacks</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../callbacks/isiscallbacks.html">ISIS Standard Callbacks (<code class="xref py py-obj docutils literal notranslate"><span class="pre">ISISCallbacks</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../callbacks/fitting.html">Fits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../callbacks/centre_of_mass.html">Centre of Mass</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../callbacks/plotting.html">Plotting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../callbacks/file_writing.html">File writing callbacks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../callbacks/custom_callback.html">Custom callbacks (<code class="xref py py-obj docutils literal notranslate"><span class="pre">CustomCallback</span></code>)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Plans</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../plans.html">General Plans</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../reflectometry.html">Reflectometry-specific Plans</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Auto-alignment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="detector_mapping_alignment.html">Detector-mapping alignment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="psi_scan_linear_detector.html">Psi scanning</a></li>
+<li class="toctree-l2"><a class="reference internal" href="refl_param_scan.html">Reflectometry parameter scans</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Plan stubs</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../plan_stubs/external_code.html">Calling external code (<code class="xref py py-obj docutils literal notranslate"><span class="pre">call_sync</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../plan_stubs/matplotlib_helpers.html">Matplotlib helpers (<code class="xref py py-obj docutils literal notranslate"><span class="pre">call_qt_aware</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../plan_stubs/plan_wrappers.html">Plan wrappers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../plan_stubs/polling.html">Continuous polling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../plan_stubs/redefining.html">Redefinition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../plan_stubs/user_input.html">User input helpers</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../_api.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../replotting_scans.html">Replaying documents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../architectural_decisions.html">Architectural Decisions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../developer_information.html">Developer Information</a></li>
+</ul>
+</div>
+</div>
+</nav>
+<section class="wy-nav-content-wrap" data-toggle="wy-nav-shift"><nav aria-label="Mobile navigation menu" class="wy-nav-top" style="background: #343131">
+<i class="fa fa-bars" data-toggle="wy-nav-top"></i>
+<a href="../../index.html">ibex_bluesky_core</a>
+</nav>
+<div class="wy-nav-content">
+<div class="rst-content">
+<div aria-label="Page navigation" role="navigation">
+<ul class="wy-breadcrumbs">
+<li><a aria-label="Home" class="icon icon-home" href="../../index.html"></a></li>
+<li class="breadcrumb-item"><a href="../reflectometry.html">Reflectometry-specific Plans</a></li>
+<li class="breadcrumb-item active">Auto-alignment</li>
+<li class="wy-breadcrumbs-aside">
+<a class="fa fa-github" href="https://github.com/ISISComputingGroup/ibex_bluesky_core/blob/main/doc/plans/reflectometry/autoalign.md"> Edit on GitHub</a>
+</li>
+</ul>
+<hr/>
+</div>
+<div class="document" itemscope="itemscope" itemtype="http://schema.org/Article" role="main">
+<div itemprop="articleBody">
+<section class="tex2jax_ignore mathjax_ignore" id="auto-alignment">
+<h1>Auto-alignment<a class="headerlink" href="#auto-alignment" title="Link to this heading"></a></h1>
+<p>For reflectometers, we provide a few generic plans which can be used as helpers for automated beamline alignment.</p>
+<p>The <a class="reference internal" href="../../generated/ibex_bluesky_core.plans.reflectometry.html#ibex_bluesky_core.plans.reflectometry.optimise_axis_against_intensity" title="ibex_bluesky_core.plans.reflectometry.optimise_axis_against_intensity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">optimise_axis_against_intensity</span></code></a> plan is designed to scan a <a class="reference external" href="https://blueskyproject.io/bluesky/main/hardware.html#bluesky.protocols.Movable" title="(in bluesky v1.15.2.dev20+gd276e2bf8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Movable</span></code></a> against beam intensity, and given a fitting routine, will aim to find an optimum value. <a class="reference internal" href="../../callbacks/fitting/standard_fits.html"><span class="std std-doc">Standard fits</span></a> have been implemented and can be used easily, or custom fits can also be used.</p>
+<p>Once a fit has been performed, <a class="reference internal" href="../../generated/ibex_bluesky_core.plans.reflectometry.html#ibex_bluesky_core.plans.reflectometry.optimise_axis_against_intensity" title="ibex_bluesky_core.plans.reflectometry.optimise_axis_against_intensity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">optimise_axis_against_intensity</span></code></a> will check that the fit parameters are ‘sensible’ - there are some default checks, but the user is encouraged to provide their own checks. If the checks pass, the motor will be moved to the fit value, otherwise it will run a user-provided callback, and then ask the user if they want to rescan or move anyway.</p>
+<p>Reflectometer auto-alignment routines will generally be structured as a series of calls which:</p>
+<ul class="simple">
+<li><p>Put the beamline into a suitable state for the alignment</p></li>
+<li><p>Call <a class="reference internal" href="../../generated/ibex_bluesky_core.plans.reflectometry.html#ibex_bluesky_core.plans.reflectometry.optimise_axis_against_intensity" title="ibex_bluesky_core.plans.reflectometry.optimise_axis_against_intensity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">optimise_axis_against_intensity</span></code></a> to optimise the axis. This will leave the axis parked at its optimal position.</p></li>
+<li><p>Redefine that position as zero (note: this is fully optional, but common on reflectometers)</p></li>
+<li><p>Repeat the above steps for subsequent axes</p></li>
+</ul>
+<p>For example, using a reflectometry parameter as your <a class="reference external" href="https://blueskyproject.io/bluesky/main/hardware.html#bluesky.protocols.Movable" title="(in bluesky v1.15.2.dev20+gd276e2bf8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Movable</span></code></a>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">full_autoalign_plan</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="n">Msg</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+ 
+    <span class="n">det_pixels</span> <span class="o">=</span> <span class="n">centred_pixel</span><span class="p">(</span><span class="n">DEFAULT_DET</span><span class="p">,</span> <span class="n">PIXEL_RANGE</span><span class="p">)</span>
+    <span class="n">dae</span> <span class="o">=</span> <span class="n">monitor_normalising_dae</span><span class="p">(</span>
+        <span class="n">det_pixels</span><span class="o">=</span><span class="n">det_pixels</span><span class="p">,</span>
+        <span class="n">frames</span><span class="o">=</span><span class="n">FRAMES</span><span class="p">,</span>
+        <span class="n">periods</span><span class="o">=</span><span class="n">PERIODS</span><span class="p">,</span>
+        <span class="n">save_run</span><span class="o">=</span><span class="n">SAVE_RUN</span><span class="p">,</span>
+        <span class="n">monitor</span><span class="o">=</span><span class="n">DEFAULT_MON</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Interfaces with the reflectometry server</span>
+    <span class="n">s1vg</span> <span class="o">=</span> <span class="n">ReflParameter</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="n">PREFIX</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"S1VG"</span><span class="p">,</span> <span class="n">changing_timeout_s</span><span class="o">=</span><span class="mi">60</span><span class="p">)</span>
+
+    <span class="k">yield from</span> <span class="n">ensure_connected</span><span class="p">(</span><span class="n">s1vg</span><span class="p">,</span> <span class="n">dae</span><span class="p">)</span>
+
+    <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/library/functions.html#print" title="print"><span class="nb">print</span></a><span class="p">(</span><span class="s2">"Starting auto-alignment..."</span><span class="p">)</span>
+
+    <span class="c1"># S1VG</span>
+
+    <span class="k">yield from</span> <span class="n">bps</span><span class="o">.</span><span class="n">mv</span><span class="p">(</span><span class="n">s1vg</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.1</span><span class="p">)</span>
+    <span class="k">yield from</span> <span class="n">optimise_axis_against_intensity</span><span class="p">(</span>
+        <span class="n">dae</span><span class="o">=</span><span class="n">dae</span><span class="p">,</span>
+        <span class="n">alignment_param</span><span class="o">=</span><span class="n">s1vg</span><span class="p">,</span>
+        <span class="n">fit_method</span><span class="o">=</span><span class="n">SlitScan</span><span class="o">.</span><span class="n">fit</span><span class="p">(),</span> <span class="c1"># What form of data do you expect</span>
+        <span class="n">fit_param</span><span class="o">=</span><span class="s2">"inflection0"</span><span class="p">,</span> <span class="c1"># Which fitting parameter do you want to optimise</span>
+        <span class="n">rel_scan_ranges</span><span class="o">=</span><span class="p">[</span><span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">],</span> <span class="c1"># Scan with range of 0.3, then 0.05</span>
+        <span class="n">num_points</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="c1"># Number of points in a scan.</span>
+    <span class="p">)</span>
+    <span class="k">yield from</span> <span class="n">bps</span><span class="o">.</span><span class="n">mv</span><span class="p">(</span><span class="n">s1vg</span><span class="o">.</span><span class="n">redefine</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>  <span class="c1"># Redefine current motor position to be 0</span>
+
+    <span class="c1"># Other params</span>
+    <span class="c1"># ....</span>
+
+    <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/library/functions.html#print" title="print"><span class="nb">print</span></a><span class="p">(</span><span class="s2">"Auto alignment complete."</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>As mentioned prior, it is recommended that for each <a class="reference external" href="https://blueskyproject.io/bluesky/main/hardware.html#bluesky.protocols.Movable" title="(in bluesky v1.15.2.dev20+gd276e2bf8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Movable</span></code></a> to be aligned, you should provide a checking function, to make sure that for the value you receive for the chosen fitting parameter e.g centre of a Gaussian, is physically reasonable. If the optimised value fails the check, then you will have the option to either restart the alignment for this axis, or continue moving this axis to the located value despite the failing check.</p>
+<p>The following is how you would define a check function and pass it to <a class="reference internal" href="../../generated/ibex_bluesky_core.plans.reflectometry.html#ibex_bluesky_core.plans.reflectometry.optimise_axis_against_intensity" title="ibex_bluesky_core.plans.reflectometry.optimise_axis_against_intensity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">optimise_axis_against_intensity</span></code></a>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><a class="sphinx-codeautolink-a" href="https://lmfit.github.io/lmfit-py/model.html#module-lmfit.model" title="lmfit.model"><span class="nn">lmfit.model</span></a><span class="w"> </span><span class="kn">import</span> <a class="sphinx-codeautolink-a" href="https://lmfit.github.io/lmfit-py/model.html#lmfit.model.ModelResult" title="lmfit.model.ModelResult"><span class="n">ModelResult</span></a>
+<span class="kn">from</span><span class="w"> </span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/library/math.html#module-math" title="math"><span class="nn">math</span></a><span class="w"> </span><span class="kn">import</span> <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/library/math.html#math.isclose" title="math.isclose"><span class="n">isclose</span></a>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">s1vg_checks</span><span class="p">(</span><a class="sphinx-codeautolink-a" href="https://lmfit.github.io/lmfit-py/model.html#lmfit.model.ModelResult" title="lmfit.model.ModelResult"><span class="n">result</span></a><span class="p">:</span> <a class="sphinx-codeautolink-a" href="https://lmfit.github.io/lmfit-py/model.html#lmfit.model.ModelResult" title="lmfit.model.ModelResult"><span class="n">ModelResult</span></a><span class="p">,</span> <span class="n">alignment_param_value</span><span class="p">:</span> <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/library/functions.html#float" title="float"><span class="nb">float</span></a><span class="p">)</span> <span class="o">-&gt;</span> <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/library/stdtypes.html#str" title="str"><span class="nb">str</span></a> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span> <span class="c1"># Must take a ModelResult and a float</span>
+<span class="w">    </span><span class="sd">"""Check for optimised S1VG value. Returns True if sensible."""</span>
+    <span class="n">rsquared_confidence</span> <span class="o">=</span> <span class="mf">0.9</span>
+    <span class="n">expected_param_value</span> <span class="o">=</span> <span class="mf">1.0</span>
+    <span class="n">expected_param_value_tol</span> <span class="o">=</span> <span class="mf">0.1</span>
+    <span class="n">max_peak_factor</span> <span class="o">=</span> <span class="mf">5.0</span>
+
+    <span class="c1"># Check that r-squared is above a tolerance</span>
+    <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">rsquared</span> <span class="o">&lt;</span> <span class="n">rsquared_confidence</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">"R-squared below confidence level."</span>
+
+    <span class="c1"># For S1VG, provide a value you would expect for it,</span>
+    <span class="c1"># assert if its not close by a provided factor</span>
+    <span class="k">if</span> <span class="ow">not</span> <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/library/math.html#math.isclose" title="math.isclose"><span class="n">isclose</span></a><span class="p">(</span><span class="n">expected_param_value</span><span class="p">,</span> <span class="n">alignment_param_value</span><span class="p">,</span> <span class="n">abs_tol</span><span class="o">=</span><span class="n">expected_param_value_tol</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">"Optimised value is not close to expected value."</span>
+
+    <span class="c1"># Is the peak above the background by some factor (optional because param may not be for</span>
+    <span class="c1"># a peak, or background may not be a parameter in the model).</span>
+    <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="s2">"background"</span><span class="p">]</span> <span class="o">/</span> <span class="n">result</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">func</span><span class="p">(</span><span class="n">alignment_param_value</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">max_peak_factor</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">"Peak was not above the background by factor."</span>
+    
+    <span class="c1"># Everything is fine, so return None</span>
+    <span class="k">return</span> <span class="kc">None</span>
+
+<span class="c1"># ...</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">plan</span><span class="p">():</span>
+    <span class="k">yield from</span> <span class="n">optimise_axis_against_intensity</span><span class="p">(</span>
+        <span class="n">dae</span><span class="o">=</span><span class="n">dae</span><span class="p">,</span>
+        <span class="n">alignment_param</span><span class="o">=</span><span class="n">s1vg</span><span class="p">,</span>
+        <span class="n">fit_method</span><span class="o">=</span><span class="n">SlitScan</span><span class="o">.</span><span class="n">fit</span><span class="p">(),</span>
+        <span class="n">fit_param</span><span class="o">=</span><span class="s2">"inflection0"</span><span class="p">,</span>
+        <span class="n">rel_scan_ranges</span><span class="o">=</span><span class="p">[</span><span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">],</span> <span class="c1"># Scan with range of 0.3, then 0.05</span>
+        <span class="n">num_points</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+        <span class="n">is_good_fit</span><span class="o">=</span><span class="n">s1vg_checks</span> <span class="c1"># Pass s1vg_checks</span>
+    <span class="p">)</span>
+
+</pre></div>
+</div>
+<p>To determine what to do in the event of a value being “invalid” you can use a plan like so:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><a class="sphinx-codeautolink-a" href="../../generated/ibex_bluesky_core.plans.reflectometry.html#module-ibex_bluesky_core.plans.reflectometry" title="ibex_bluesky_core.plans.reflectometry"><span class="nn">ibex_bluesky_core.plans.reflectometry</span></a><span class="w"> </span><span class="kn">import</span> <a class="sphinx-codeautolink-a" href="../../generated/ibex_bluesky_core.plans.reflectometry.html#ibex_bluesky_core.plans.reflectometry.optimise_axis_against_intensity" title="ibex_bluesky_core.plans.reflectometry.optimise_axis_against_intensity"><span class="n">optimise_axis_against_intensity</span></a>
+<span class="kn">from</span><span class="w"> </span><a class="sphinx-codeautolink-a" href="../../generated/ibex_bluesky_core.fitting.html#module-ibex_bluesky_core.fitting" title="ibex_bluesky_core.fitting"><span class="nn">ibex_bluesky_core.fitting</span></a><span class="w"> </span><span class="kn">import</span> <a class="sphinx-codeautolink-a" href="../../generated/ibex_bluesky_core.fitting.html#ibex_bluesky_core.fitting.SlitScan" title="ibex_bluesky_core.fitting.SlitScan"><span class="n">SlitScan</span></a>
+<span class="kn">from</span><span class="w"> </span><a class="sphinx-codeautolink-a" href="https://docs.python.org/3/library/typing.html#module-typing" title="typing"><span class="nn">typing</span></a><span class="w"> </span><span class="kn">import</span> <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/library/typing.html#typing.Generator" title="typing.Generator"><span class="n">Generator</span></a>
+<span class="kn">from</span><span class="w"> </span><a class="sphinx-codeautolink-a" href="https://blueskyproject.io/bluesky/main/utils.html#module-bluesky.utils" title="bluesky.utils"><span class="nn">bluesky.utils</span></a><span class="w"> </span><span class="kn">import</span> <a class="sphinx-codeautolink-a" href="https://blueskyproject.io/bluesky/main/generated/bluesky.utils.Msg.html#bluesky.utils.Msg" title="bluesky.utils.Msg"><span class="n">Msg</span></a>
+<span class="kn">import</span><span class="w"> </span><span class="nn">bluesky.plan_stubs</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">bps</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">problem_found_plan</span><span class="p">()</span> <span class="o">-&gt;</span> <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/library/typing.html#typing.Generator" title="typing.Generator"><span class="n">Generator</span></a><span class="p">[</span><a class="sphinx-codeautolink-a" href="https://blueskyproject.io/bluesky/main/generated/bluesky.utils.Msg.html#bluesky.utils.Msg" title="bluesky.utils.Msg"><span class="n">Msg</span></a><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+    <span class="c1"># This must be a plan, if it doesn't otherwise yield, make it a plan</span>
+    <span class="c1"># by yielding from bps.null()</span>
+    <span class="k">yield from</span> <a class="sphinx-codeautolink-a" href="https://blueskyproject.io/bluesky/main/generated/bluesky.plan_stubs.null.html#bluesky.plan_stubs.null" title="bluesky.plan_stubs.null"><span class="n">bps</span><span class="o">.</span><span class="n">null</span></a><span class="p">()</span>
+    <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/library/functions.html#print" title="print"><span class="nb">print</span></a><span class="p">(</span><span class="s2">"There was a problem - oh no!"</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">plan</span><span class="p">():</span>
+    <span class="k">yield from</span> <a class="sphinx-codeautolink-a" href="../../generated/ibex_bluesky_core.plans.reflectometry.html#ibex_bluesky_core.plans.reflectometry.optimise_axis_against_intensity" title="ibex_bluesky_core.plans.reflectometry.optimise_axis_against_intensity"><span class="n">optimise_axis_against_intensity</span></a><span class="p">(</span>
+        <span class="n">dae</span><span class="o">=</span><span class="n">dae</span><span class="p">,</span>
+        <span class="n">alignment_param</span><span class="o">=</span><span class="n">s1vg</span><span class="p">,</span>
+        <span class="n">fit_method</span><span class="o">=</span><a class="sphinx-codeautolink-a" href="../../generated/ibex_bluesky_core.fitting.html#ibex_bluesky_core.fitting.Fit.fit" title="ibex_bluesky_core.fitting.Fit.fit"><span class="n">SlitScan</span><span class="o">.</span><span class="n">fit</span></a><span class="p">(),</span>
+        <span class="n">fit_param</span><span class="o">=</span><span class="s2">"inflection0"</span><span class="p">,</span>
+        <span class="n">rel_scan_ranges</span><span class="o">=</span><span class="p">[</span><span class="mf">0.1</span><span class="p">],</span>
+        <span class="n">num_points</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>  <span class="c1"># Fit will never converge with just 1 point which should cause a "problem".</span>
+        <span class="n">problem_found_plan</span><span class="o">=</span><span class="n">problem_found_plan</span>
+    <span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</div>
+</div>
+<footer><div aria-label="Footer" class="rst-footer-buttons" role="navigation">
+<a accesskey="p" class="btn btn-neutral float-left" href="../reflectometry.html" rel="prev" title="Reflectometry-specific Plans"><span aria-hidden="true" class="fa fa-arrow-circle-left"></span> Previous</a>
+<a accesskey="n" class="btn btn-neutral float-right" href="detector_mapping_alignment.html" rel="next" title="Detector-mapping alignment">Next <span aria-hidden="true" class="fa fa-arrow-circle-right"></span></a>
+</div>
+<hr/>
+<div role="contentinfo">
+<p>© Copyright .</p>
+</div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+</div>
+</div>
+</section>
+</div>
+<script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+</body>
+</html>

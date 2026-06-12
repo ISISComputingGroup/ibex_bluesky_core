@@ -1,0 +1,199 @@
+
+<!DOCTYPE html>
+
+<html class="writer-html5" data-content_root="../" lang="en">
+<head>
+<meta charset="utf-8"/><meta content="width=device-width, initial-scale=1" name="viewport"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Notes on Sphinx and addons — ibex_bluesky_core 0.1 documentation</title>
+<link href="../_static/pygments.css?v=b86133f3" rel="stylesheet" type="text/css"/>
+<link href="../_static/css/theme.css?v=9edc463e" rel="stylesheet" type="text/css"/>
+<link href="../_static/sphinx-codeautolink.css?v=b2176991" rel="stylesheet" type="text/css"/>
+<link href="../_static/sphinx-design.min.css?v=95c83b7e" rel="stylesheet" type="text/css"/>
+<link href="../_static/css/custom.css?v=1c789acd" rel="stylesheet" type="text/css"/>
+<link href="../_static/favicon.svg" rel="shortcut icon"/>
+<script src="../_static/jquery.js?v=5d32c60e"></script>
+<script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+<script src="../_static/documentation_options.js?v=2709fde1"></script>
+<script src="../_static/doctools.js?v=9bcbadda"></script>
+<script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+<script src="../_static/design-tabs.js?v=f930bc37"></script>
+<script src="../_static/js/theme.js"></script>
+<link href="../genindex.html" rel="index" title="Index"/>
+<link href="../search.html" rel="search" title="Search"/>
+<link href="troubleshooting.html" rel="next" title="Troubleshooting"/>
+<link href="set_up_dev_environment.html" rel="prev" title="Local development"/>
+</head>
+<body class="wy-body-for-nav">
+<div class="wy-grid-for-nav">
+<nav class="wy-nav-side" data-toggle="wy-nav-shift">
+<div class="wy-side-scroll">
+<div class="wy-side-nav-search" style="background: #343131">
+<a class="icon icon-home" href="../index.html">
+            ibex_bluesky_core
+              <img alt="Logo" class="logo" src="../_static/logo.svg"/>
+</a>
+<div role="search">
+<form action="../search.html" class="wy-form" id="rtd-search-form" method="get">
+<input aria-label="Search docs" name="q" placeholder="Search docs" type="text"/>
+<input name="check_keywords" type="hidden" value="yes"/>
+<input name="area" type="hidden" value="default"/>
+</form>
+</div>
+</div><div aria-label="Navigation menu" class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation">
+<p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/concepts.html">Concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/user_cheat_sheet.html">User cheat-sheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/first_time_setup.html">First-time setup guide</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Devices</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../devices/blocks.html">Blocks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devices/dae.html">DAE (Data Acquisition Electronics)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Callbacks</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../callbacks/isiscallbacks.html">ISIS Standard Callbacks (<code class="xref py py-obj docutils literal notranslate"><span class="pre">ISISCallbacks</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../callbacks/fitting.html">Fits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../callbacks/centre_of_mass.html">Centre of Mass</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../callbacks/plotting.html">Plotting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../callbacks/file_writing.html">File writing callbacks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../callbacks/custom_callback.html">Custom callbacks (<code class="xref py py-obj docutils literal notranslate"><span class="pre">CustomCallback</span></code>)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Plans</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../plans/plans.html">General Plans</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plans/reflectometry.html">Reflectometry-specific Plans</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Plan stubs</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/external_code.html">Calling external code (<code class="xref py py-obj docutils literal notranslate"><span class="pre">call_sync</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/matplotlib_helpers.html">Matplotlib helpers (<code class="xref py py-obj docutils literal notranslate"><span class="pre">call_qt_aware</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/plan_wrappers.html">Plan wrappers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/polling.html">Continuous polling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/redefining.html">Redefinition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/user_input.html">User input helpers</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../_api.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../replotting_scans.html">Replaying documents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../architectural_decisions.html">Architectural Decisions</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../developer_information.html">Developer Information</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="archiving.html">Bluesky output archiving</a></li>
+<li class="toctree-l2"><a class="reference internal" href="create_a_release.html">Release Process</a></li>
+<li class="toctree-l2"><a class="reference internal" href="kafka.html">Kafka</a></li>
+<li class="toctree-l2"><a class="reference internal" href="logging.html">Logging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="manual_system_testing.html">Manual system testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rbnumberpp.html">RB Number injection preprocessor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="set_up_dev_environment.html">Local development</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Notes on Sphinx and addons</a></li>
+<li class="toctree-l2"><a class="reference internal" href="troubleshooting.html">Troubleshooting</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+</nav>
+<section class="wy-nav-content-wrap" data-toggle="wy-nav-shift"><nav aria-label="Mobile navigation menu" class="wy-nav-top" style="background: #343131">
+<i class="fa fa-bars" data-toggle="wy-nav-top"></i>
+<a href="../index.html">ibex_bluesky_core</a>
+</nav>
+<div class="wy-nav-content">
+<div class="rst-content">
+<div aria-label="Page navigation" role="navigation">
+<ul class="wy-breadcrumbs">
+<li><a aria-label="Home" class="icon icon-home" href="../index.html"></a></li>
+<li class="breadcrumb-item"><a href="../developer_information.html">Developer Information</a></li>
+<li class="breadcrumb-item active">Notes on Sphinx and addons</li>
+<li class="wy-breadcrumbs-aside">
+<a class="fa fa-github" href="https://github.com/ISISComputingGroup/ibex_bluesky_core/blob/main/doc/dev/sphinx_notes.md"> Edit on GitHub</a>
+</li>
+</ul>
+<hr/>
+</div>
+<div class="document" itemscope="itemscope" itemtype="http://schema.org/Article" role="main">
+<div itemprop="articleBody">
+<section class="tex2jax_ignore mathjax_ignore" id="notes-on-sphinx-and-addons">
+<h1>Notes on Sphinx and addons<a class="headerlink" href="#notes-on-sphinx-and-addons" title="Link to this heading"></a></h1>
+<p>This repository uses sphinx with some addons to build documentation and then deploy it to GitHub pages. The deployment only occurs when changes are made to main, and changes are published to the <code class="docutils literal notranslate"><span class="pre">gh-pages</span></code> branch which are then served via the page.</p>
+<p>We use the <a class="reference external" href="https://myst-parser.readthedocs.io/en/latest/index.html">MyST</a> parser which lets us use a mixture of markdown and restructured text in documentation - though the latter is preferred by sphinx.</p>
+<section id="using-myst-admonitions">
+<h2>Using MyST admonitions<a class="headerlink" href="#using-myst-admonitions" title="Link to this heading"></a></h2>
+<p>To use <a class="reference external" href="https://myst-parser.readthedocs.io/en/latest/syntax/admonitions.html">MyST admonitions</a>, you need to use backticks instead of triple colons, ie.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>```{tip}
+Let's give readers a helpful hint!
+```
+</pre></div>
+</div>
+<p>becomes</p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>Let’s give readers a helpful hint!</p>
+</div>
+</section>
+<section id="code-blocks-in-docstrings">
+<h2>Code blocks in docstrings<a class="headerlink" href="#code-blocks-in-docstrings" title="Link to this heading"></a></h2>
+<p>To add code blocks within the docstrings of classes or functions, use the <code class="docutils literal notranslate"><span class="pre">::</span></code> marker along with a newline then the indented code. For example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="w"> </span><span class="sd">"""...</span>
+
+<span class="sd">    Basic usage:</span>
+
+<span class="sd">    - Get the IBEX run engine::</span>
+
+<span class="sd">        RE = get_run_engine()</span>
+
+<span class="sd">    - Run a plan::</span>
+
+<span class="sd">        from bluesky.plans import count  # Or any other plan</span>
+<span class="sd">        det = ...  # A "detector" object, for example a Block or Dae device.</span>
+<span class="sd">        RE(count([det]))</span>
+
+<span class="sd">    - Control the state of the run engine::</span>
+
+<span class="sd">        RE.abort(reason="...")  # Stop a plan, do cleanup, and mark as failed (e.g. bad data).</span>
+<span class="sd">        RE.stop()  # Stop a plan, do cleanup, mark as success"(e.g. scan has moved past peak).</span>
+<span class="sd">        RE.halt()  # Stop a plan, don't do any cleanup, just abort with no further action.</span>
+<span class="sd">        RE.resume()  # Resume running a previously-paused plan.</span>
+
+<span class="sd">    - Subscribe to data emitted by this run engine::</span>
+<span class="sd">    </span>
+<span class="sd">        RE.subscribe(lambda name, document: ...)</span>
+<span class="sd">    ...</span>
+<span class="sd">    """</span>
+</pre></div>
+</div>
+<p>You can also use any other restructured text formatting in docstrings, including links
+to documentation pages, python objects, and so on. Unfortunately it is not possible to
+use markdown syntax in docstrings; restructured text formatting must be used.</p>
+</section>
+</section>
+</div>
+</div>
+<footer><div aria-label="Footer" class="rst-footer-buttons" role="navigation">
+<a accesskey="p" class="btn btn-neutral float-left" href="set_up_dev_environment.html" rel="prev" title="Local development"><span aria-hidden="true" class="fa fa-arrow-circle-left"></span> Previous</a>
+<a accesskey="n" class="btn btn-neutral float-right" href="troubleshooting.html" rel="next" title="Troubleshooting">Next <span aria-hidden="true" class="fa fa-arrow-circle-right"></span></a>
+</div>
+<hr/>
+<div role="contentinfo">
+<p>© Copyright .</p>
+</div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+</div>
+</div>
+</section>
+</div>
+<script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+</body>
+</html>
