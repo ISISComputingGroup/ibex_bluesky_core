@@ -4,8 +4,8 @@ import logging
 from enum import IntFlag
 
 from bluesky.protocols import Movable
-from ophyd_async.core import AsyncStatus, SignalW, SignalX, StandardReadable
-from ophyd_async.epics.core import epics_signal_w, epics_signal_x
+from ophyd_async.core import AsyncStatus, SignalW, StandardReadable, TriggerableCommand
+from ophyd_async.epics.core import epics_signal_w, epics_triggerable_command
 
 logger = logging.getLogger(__name__)
 
@@ -15,7 +15,7 @@ class DaeControls(StandardReadable):
 
     def __init__(self, dae_prefix: str, name: str = "") -> None:
         """DAE run controls, for example to begin and end runs."""
-        self.begin_run: SignalX = epics_signal_x(f"{dae_prefix}BEGINRUN")
+        self.begin_run: TriggerableCommand = epics_triggerable_command(f"{dae_prefix}BEGINRUN")
         """
         Begin a run.
         """
@@ -23,35 +23,35 @@ class DaeControls(StandardReadable):
         """
         Begin a run, with options.
         """
-        self.end_run: SignalX = epics_signal_x(f"{dae_prefix}ENDRUN")
+        self.end_run: TriggerableCommand = epics_triggerable_command(f"{dae_prefix}ENDRUN")
         """
         End a run.
         """
-        self.pause_run: SignalX = epics_signal_x(f"{dae_prefix}PAUSERUN")
+        self.pause_run: TriggerableCommand = epics_triggerable_command(f"{dae_prefix}PAUSERUN")
         """
         Pause the current run.
         """
-        self.resume_run: SignalX = epics_signal_x(f"{dae_prefix}RESUMERUN")
+        self.resume_run: TriggerableCommand = epics_triggerable_command(f"{dae_prefix}RESUMERUN")
         """
         Resume the current run.
         """
-        self.abort_run: SignalX = epics_signal_x(f"{dae_prefix}ABORTRUN")
+        self.abort_run: TriggerableCommand = epics_triggerable_command(f"{dae_prefix}ABORTRUN")
         """
         Abort the current run (does not save data files).
         """
-        self.recover_run: SignalX = epics_signal_x(f"{dae_prefix}RECOVERRUN")
+        self.recover_run: TriggerableCommand = epics_triggerable_command(f"{dae_prefix}RECOVERRUN")
         """
         Recover a previously-aborted run.
         """
-        self.save_run: SignalX = epics_signal_x(f"{dae_prefix}SAVERUN")
+        self.save_run: TriggerableCommand = epics_triggerable_command(f"{dae_prefix}SAVERUN")
         """
         Save a data file for the current run (equivalent to update & store).
         """
-        self.update_run: SignalX = epics_signal_x(f"{dae_prefix}UPDATERUN")
+        self.update_run: TriggerableCommand = epics_triggerable_command(f"{dae_prefix}UPDATERUN")
         """
         Ensure that data in the DAE has been downloaded to the ICP.
         """
-        self.store_run: SignalX = epics_signal_x(f"{dae_prefix}STORERUN")
+        self.store_run: TriggerableCommand = epics_triggerable_command(f"{dae_prefix}STORERUN")
         """
         Write data currently in-memory in the ICP to a data file.
         """
