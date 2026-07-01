@@ -1,0 +1,208 @@
+
+<!DOCTYPE html>
+
+<html class="writer-html5" data-content_root="../" lang="en">
+<head>
+<meta charset="utf-8"/><meta content="width=device-width, initial-scale=1" name="viewport"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>User cheat-sheet — ibex_bluesky_core 0.1 documentation</title>
+<link href="../_static/pygments.css?v=b86133f3" rel="stylesheet" type="text/css"/>
+<link href="../_static/css/theme.css?v=9edc463e" rel="stylesheet" type="text/css"/>
+<link href="../_static/sphinx-codeautolink.css?v=b2176991" rel="stylesheet" type="text/css"/>
+<link href="../_static/sphinx-design.min.css?v=95c83b7e" rel="stylesheet" type="text/css"/>
+<link href="../_static/css/custom.css?v=1c789acd" rel="stylesheet" type="text/css"/>
+<link href="../_static/favicon.svg" rel="shortcut icon"/>
+<script src="../_static/jquery.js?v=5d32c60e"></script>
+<script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+<script src="../_static/documentation_options.js?v=2709fde1"></script>
+<script src="../_static/doctools.js?v=9bcbadda"></script>
+<script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+<script src="../_static/design-tabs.js?v=f930bc37"></script>
+<script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+<script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<script src="../_static/js/theme.js"></script>
+<link href="../genindex.html" rel="index" title="Index"/>
+<link href="../search.html" rel="search" title="Search"/>
+<link href="first_time_setup.html" rel="next" title="First-time setup guide"/>
+<link href="concepts.html" rel="prev" title="Concepts"/>
+</head>
+<body class="wy-body-for-nav">
+<div class="wy-grid-for-nav">
+<nav class="wy-nav-side" data-toggle="wy-nav-shift">
+<div class="wy-side-scroll">
+<div class="wy-side-nav-search" style="background: #343131">
+<a class="icon icon-home" href="../index.html">
+            ibex_bluesky_core
+              <img alt="Logo" class="logo" src="../_static/logo.svg"/>
+</a>
+<div role="search">
+<form action="../search.html" class="wy-form" id="rtd-search-form" method="get">
+<input aria-label="Search docs" name="q" placeholder="Search docs" type="text"/>
+<input name="check_keywords" type="hidden" value="yes"/>
+<input name="area" type="hidden" value="default"/>
+</form>
+</div>
+</div><div aria-label="Navigation menu" class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation">
+<p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="concepts.html">Concepts</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">User cheat-sheet</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#running-a-scan">Running a scan</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="first_time_setup.html">First-time setup guide</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Devices</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../devices/blocks.html">Blocks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devices/dae.html">DAE (Data Acquisition Electronics)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Callbacks</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../callbacks/isiscallbacks.html">ISIS Standard Callbacks (<code class="xref py py-obj docutils literal notranslate"><span class="pre">ISISCallbacks</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../callbacks/fitting.html">Fits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../callbacks/centre_of_mass.html">Centre of Mass</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../callbacks/plotting.html">Plotting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../callbacks/file_writing.html">File writing callbacks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../callbacks/custom_callback.html">Custom callbacks (<code class="xref py py-obj docutils literal notranslate"><span class="pre">CustomCallback</span></code>)</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Plans</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../plans/plans.html">General Plans</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plans/reflectometry.html">Reflectometry-specific Plans</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Plan stubs</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/external_code.html">Calling external code (<code class="xref py py-obj docutils literal notranslate"><span class="pre">call_sync</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/matplotlib_helpers.html">Matplotlib helpers (<code class="xref py py-obj docutils literal notranslate"><span class="pre">call_qt_aware</span></code>)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/plan_wrappers.html">Plan wrappers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/polling.html">Continuous polling</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/redefining.html">Redefinition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plan_stubs/user_input.html">User input helpers</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../_api.html">API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../replotting_scans.html">Replaying documents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../architectural_decisions.html">Architectural Decisions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer_information.html">Developer Information</a></li>
+</ul>
+</div>
+</div>
+</nav>
+<section class="wy-nav-content-wrap" data-toggle="wy-nav-shift"><nav aria-label="Mobile navigation menu" class="wy-nav-top" style="background: #343131">
+<i class="fa fa-bars" data-toggle="wy-nav-top"></i>
+<a href="../index.html">ibex_bluesky_core</a>
+</nav>
+<div class="wy-nav-content">
+<div class="rst-content">
+<div aria-label="Page navigation" role="navigation">
+<ul class="wy-breadcrumbs">
+<li><a aria-label="Home" class="icon icon-home" href="../index.html"></a></li>
+<li class="breadcrumb-item active">User cheat-sheet</li>
+<li class="wy-breadcrumbs-aside">
+<a class="fa fa-github" href="https://github.com/ISISComputingGroup/ibex_bluesky_core/blob/main/doc/tutorial/user_cheat_sheet.md"> Edit on GitHub</a>
+</li>
+</ul>
+<hr/>
+</div>
+<div class="document" itemscope="itemscope" itemtype="http://schema.org/Article" role="main">
+<div itemprop="articleBody">
+<section class="tex2jax_ignore mathjax_ignore" id="user-cheat-sheet">
+<h1>User cheat-sheet<a class="headerlink" href="#user-cheat-sheet" title="Link to this heading"></a></h1>
+<p>This guide is targeted at a beamline user or instrument scientist wanting to <em>run</em> scans, either interactively or from a user python script.</p>
+<section id="running-a-scan">
+<h2>Running a scan<a class="headerlink" href="#running-a-scan" title="Link to this heading"></a></h2>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This guide assumes that the scan you want to run is either a <a class="reference internal" href="../plans/plans.html"><span class="doc">general plan</span></a>, or has
+already been defined by an instrument scientist as an instrument-specific scan.</p>
+<p>To find out which instrument-specific scans are available on your beamline, consult the beamline instrument
+scientist or the beamline manual if available.</p>
+</div>
+<p>In this example, we will run a <a class="reference internal" href="../generated/ibex_bluesky_core.plans.html#ibex_bluesky_core.plans.motor_scan" title="ibex_bluesky_core.plans.motor_scan"><code class="xref py py-obj docutils literal notranslate"><span class="pre">motor_scan</span></code></a>. This is a <a class="reference internal" href="../plans/plans.html"><span class="doc">generic plan</span></a> provided by the <a class="reference internal" href="../generated/ibex_bluesky_core.html#module-ibex_bluesky_core" title="ibex_bluesky_core"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ibex_bluesky_core</span></code></a> library, which performs a one-dimensional step-scan
+of a motor block against monitor-normalised intensity, <span class="math notranslate nohighlight">\(I/I_0\)</span>, from one or more detector pixels. We’ll then fit
+a <a class="reference internal" href="../callbacks/fitting/standard_fits.html#fit-gaussian"><span class="std std-ref">Gaussian</span></a> to the resulting curve and extract the centre (<code class="docutils literal notranslate"><span class="pre">x0</span></code>) of the fit.</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-0" name="sd-tab-set-0" type="radio"/>
+<label class="sd-tab-label" data-sync-group="call-from" data-sync-id="interactive" for="sd-tab-item-0">
+Run interactively</label><div class="sd-tab-content docutils">
+<p>To run a bluesky plan interactively, use the <code class="docutils literal notranslate"><span class="pre">RE</span></code> object which is automatically created by the IBEX scripting console:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Note: imports may have been done automatically in `init_&lt;instrument&gt;.py` for your instrument.</span>
+<span class="kn">from</span><span class="w"> </span><a class="sphinx-codeautolink-a" href="../generated/ibex_bluesky_core.plans.html#module-ibex_bluesky_core.plans" title="ibex_bluesky_core.plans"><span class="nn">ibex_bluesky_core.plans</span></a><span class="w"> </span><span class="kn">import</span> <a class="sphinx-codeautolink-a" href="../generated/ibex_bluesky_core.plans.html#ibex_bluesky_core.plans.motor_scan" title="ibex_bluesky_core.plans.motor_scan"><span class="n">motor_scan</span></a>
+<span class="kn">from</span><span class="w"> </span><a class="sphinx-codeautolink-a" href="../generated/ibex_bluesky_core.fitting.html#module-ibex_bluesky_core.fitting" title="ibex_bluesky_core.fitting"><span class="nn">ibex_bluesky_core.fitting</span></a><span class="w"> </span><span class="kn">import</span> <a class="sphinx-codeautolink-a" href="../generated/ibex_bluesky_core.fitting.html#ibex_bluesky_core.fitting.Gaussian" title="ibex_bluesky_core.fitting.Gaussian"><span class="n">Gaussian</span></a>
+
+
+<span class="n">result</span> <span class="o">=</span> <span class="n">RE</span><span class="p">(</span><a class="sphinx-codeautolink-a" href="../generated/ibex_bluesky_core.plans.html#ibex_bluesky_core.plans.motor_scan" title="ibex_bluesky_core.plans.motor_scan"><span class="n">motor_scan</span></a><span class="p">(</span>
+    <span class="s2">"motor_block"</span><span class="p">,</span> 
+    <span class="n">start</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> 
+    <span class="n">stop</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> 
+    <span class="n">num</span><span class="o">=</span><span class="mi">11</span><span class="p">,</span> 
+    <span class="n">model</span><span class="o">=</span><a class="sphinx-codeautolink-a" href="../generated/ibex_bluesky_core.fitting.html#ibex_bluesky_core.fitting.Gaussian" title="ibex_bluesky_core.fitting.Gaussian"><span class="n">Gaussian</span></a><span class="p">()</span><span class="o">.</span><a class="sphinx-codeautolink-a" href="../generated/ibex_bluesky_core.fitting.html#ibex_bluesky_core.fitting.Fit.fit" title="ibex_bluesky_core.fitting.Fit.fit"><span class="n">fit</span></a><span class="p">(),</span> 
+    <span class="n">frames</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> 
+    <span class="n">det</span><span class="o">=</span><span class="mi">66</span><span class="p">,</span> 
+    <span class="n">mon</span><span class="o">=</span><span class="mi">2</span>
+<span class="p">))</span>
+<a class="sphinx-codeautolink-a" href="https://docs.python.org/3/library/functions.html#print" title="print"><span class="nb">print</span></a><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">plan_result</span><span class="o">.</span><span class="n">live_fit</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="s2">"x0"</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<input id="sd-tab-item-1" name="sd-tab-set-0" type="radio"/>
+<label class="sd-tab-label" data-sync-group="call-from" data-sync-id="script" for="sd-tab-item-1">
+Call from a script</label><div class="sd-tab-content docutils">
+<p>To run a bluesky plan non-interactively, use <a class="reference internal" href="../generated/ibex_bluesky_core.run_engine.html#ibex_bluesky_core.run_engine.run_plan" title="ibex_bluesky_core.run_engine.run_plan"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ibex_bluesky_core.run_engine.run_plan</span></code></a>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><a class="sphinx-codeautolink-a" href="../generated/ibex_bluesky_core.plans.html#module-ibex_bluesky_core.plans" title="ibex_bluesky_core.plans"><span class="nn">ibex_bluesky_core.plans</span></a><span class="w"> </span><span class="kn">import</span> <a class="sphinx-codeautolink-a" href="../generated/ibex_bluesky_core.plans.html#ibex_bluesky_core.plans.motor_scan" title="ibex_bluesky_core.plans.motor_scan"><span class="n">motor_scan</span></a>
+<span class="kn">from</span><span class="w"> </span><a class="sphinx-codeautolink-a" href="../generated/ibex_bluesky_core.run_engine.html#module-ibex_bluesky_core.run_engine" title="ibex_bluesky_core.run_engine"><span class="nn">ibex_bluesky_core.run_engine</span></a><span class="w"> </span><span class="kn">import</span> <a class="sphinx-codeautolink-a" href="../generated/ibex_bluesky_core.run_engine.html#ibex_bluesky_core.run_engine.run_plan" title="ibex_bluesky_core.run_engine.run_plan"><span class="n">run_plan</span></a>
+<span class="kn">from</span><span class="w"> </span><a class="sphinx-codeautolink-a" href="../generated/ibex_bluesky_core.fitting.html#module-ibex_bluesky_core.fitting" title="ibex_bluesky_core.fitting"><span class="nn">ibex_bluesky_core.fitting</span></a><span class="w"> </span><span class="kn">import</span> <a class="sphinx-codeautolink-a" href="../generated/ibex_bluesky_core.fitting.html#ibex_bluesky_core.fitting.Gaussian" title="ibex_bluesky_core.fitting.Gaussian"><span class="n">Gaussian</span></a>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">an_external_script_function</span><span class="p">():</span>
+    <a class="sphinx-codeautolink-a" href="https://blueskyproject.io/bluesky/main/generated/bluesky.run_engine.RunEngineResult.html#bluesky.run_engine.RunEngineResult" title="bluesky.run_engine.RunEngineResult"><span class="n">result</span></a> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="../generated/ibex_bluesky_core.run_engine.html#ibex_bluesky_core.run_engine.run_plan" title="ibex_bluesky_core.run_engine.run_plan"><span class="n">run_plan</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="../generated/ibex_bluesky_core.plans.html#ibex_bluesky_core.plans.motor_scan" title="ibex_bluesky_core.plans.motor_scan"><span class="n">motor_scan</span></a><span class="p">(</span>
+        <span class="s2">"motor_block"</span><span class="p">,</span>
+        <span class="n">start</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+        <span class="n">stop</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span>
+        <span class="n">num</span><span class="o">=</span><span class="mi">11</span><span class="p">,</span>
+        <span class="n">model</span><span class="o">=</span><a class="sphinx-codeautolink-a" href="../generated/ibex_bluesky_core.fitting.html#ibex_bluesky_core.fitting.Gaussian" title="ibex_bluesky_core.fitting.Gaussian"><span class="n">Gaussian</span></a><span class="p">()</span><span class="o">.</span><a class="sphinx-codeautolink-a" href="../generated/ibex_bluesky_core.fitting.html#ibex_bluesky_core.fitting.Fit.fit" title="ibex_bluesky_core.fitting.Fit.fit"><span class="n">fit</span></a><span class="p">(),</span>
+        <span class="n">frames</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+        <span class="n">det</span><span class="o">=</span><span class="mi">66</span><span class="p">,</span>
+        <span class="n">mon</span><span class="o">=</span><span class="mi">2</span>
+    <span class="p">))</span>
+    <a class="sphinx-codeautolink-a" href="https://docs.python.org/3/library/functions.html#print" title="print"><span class="nb">print</span></a><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">plan_result</span><span class="o">.</span><span class="n">live_fit</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="s2">"x0"</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Plans provided in the <a class="reference internal" href="../generated/ibex_bluesky_core.plans.html#module-ibex_bluesky_core.plans" title="ibex_bluesky_core.plans"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ibex_bluesky_core.plans</span></code></a> module have reference documentation describing their
+arguments and return values (for example, click on <a class="reference internal" href="../generated/ibex_bluesky_core.plans.html#ibex_bluesky_core.plans.motor_scan" title="ibex_bluesky_core.plans.motor_scan"><code class="xref py py-obj docutils literal notranslate"><span class="pre">motor_scan</span></code></a>).
+For documentation on instrument-specific plans (under the <code class="docutils literal notranslate"><span class="pre">inst.bluesky.plans</span></code> module), consult the
+instrument scientist or beamline manual for your instrument.</p>
+</section>
+</section>
+</div>
+</div>
+<footer><div aria-label="Footer" class="rst-footer-buttons" role="navigation">
+<a accesskey="p" class="btn btn-neutral float-left" href="concepts.html" rel="prev" title="Concepts"><span aria-hidden="true" class="fa fa-arrow-circle-left"></span> Previous</a>
+<a accesskey="n" class="btn btn-neutral float-right" href="first_time_setup.html" rel="next" title="First-time setup guide">Next <span aria-hidden="true" class="fa fa-arrow-circle-right"></span></a>
+</div>
+<hr/>
+<div role="contentinfo">
+<p>© Copyright .</p>
+</div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+</div>
+</div>
+</section>
+</div>
+<script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+</body>
+</html>

@@ -1,0 +1,39 @@
+
+
+``ibex_bluesky_core.plans``
+===========================
+        
+        
+        
+        
+
+.. automodule:: ibex_bluesky_core.plans
+    :members:
+    :show-inheritance:
+
+    
+    
+    .. rubric:: Submodules
+
+    .. autosummary::
+        :toctree:
+        :template: custom-module-template.rst
+        :recursive:
+    
+        reflectometry
+    
+    
+
+    
+    
+    .. rubric:: Members
+
+    .. autosummary::
+        :nosignatures:
+    
+        adaptive_scan
+        motor_adaptive_scan
+        motor_scan
+        scan
+    
+    
