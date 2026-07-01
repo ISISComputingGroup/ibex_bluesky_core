@@ -437,10 +437,10 @@ class ChainedLiveFit(CallbackBase):
 
     @property
     def live_fits(self) -> list[LiveFit]:
-        """Return a list of the ``LiveFit`` instances used by this callback."""
+        """A list of the ``LiveFit`` instances used by this callback."""
         return self._livefits
 
     @property
     def live_fit_plots(self) -> list[LiveFitPlot]:
-        """Return a list of the ``LiveFitPlot`` instances used by this callback."""
+        """A list of the ``LiveFitPlot`` instances used by this callback."""
         return self._livefitplots
