@@ -144,7 +144,7 @@ class HumanReadableFileCallback(CallbackBase):
             if doc[SEQ_NUM] == 1:
                 # If this is the first event, write out the units before writing event data.
                 units_line = file_delimiter.join(
-                    f"{field_name}{f'({descriptor_data[field_name].get(UNITS, None)})' if descriptor_data[field_name].get(UNITS, None) else ''}"  # noqa: E501
+                    f"{field_name}{f'({descriptor_data[field_name].get(UNITS, None)})' if descriptor_data[field_name].get(UNITS, None) else ''}"  # ruff:ignore[line-too-long]
                     for field_name in self.fields
                 )
                 outfile.write(f"\n{units_line}\n")

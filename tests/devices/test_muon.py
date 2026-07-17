@@ -205,8 +205,8 @@ async def test_asymmetry_reducer_real_data():
     dae.trigger_and_get_specdata = AsyncMock(return_value=None)
     dae.reducer._first_det.read_spectrum_dataarray = AsyncMock(return_value=None)
 
-    B = 0.1  # noqa: N806
-    A_0 = 1  # noqa: N806
+    B = 0.1  # ruff:ignore[non-lowercase-variable-in-function]
+    A_0 = 1  # ruff:ignore[non-lowercase-variable-in-function]
     omega_0 = 0.1
     phi_0 = 0
     lambda_0 = 0.001

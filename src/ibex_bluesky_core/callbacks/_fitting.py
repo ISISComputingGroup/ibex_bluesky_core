@@ -401,7 +401,7 @@ class ChainedLiveFit(CallbackBase):
                         nonlocal init_guess
                         return {
                             name: Parameter(name, value.value)
-                            for name, value in init_guess.items()  # noqa: B023
+                            for name, value in init_guess.items()  # ruff:ignore[function-uses-loop-variable]
                         }  # ruff doesn't understand nonlocal
 
                     # Using value.value means that parameter uncertainty

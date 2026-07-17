@@ -44,7 +44,7 @@ from ibex_bluesky_core.utils import is_matplotlib_backend_qt
 
 logger = logging.getLogger(__name__)
 
-# ruff: noqa: PLR0913
+# ruff:file-ignore[too-many-arguments]
 
 
 __all__ = [
@@ -69,7 +69,7 @@ __all__ = [
 class ISISCallbacks:
     """ISIS standard callbacks."""
 
-    def __init__(  # noqa: PLR0912, PLR0915
+    def __init__(  # ruff:ignore[too-many-branches, too-many-statements]
         self,
         *,
         x: str,
@@ -171,7 +171,7 @@ class ISISCallbacks:
             plot_png_postfix: the postfix to add to PNG plot files.
             live_fit_update_every: How often, in points, to recompute the fit. If None, do not compute until the end.
             live_plot_update_on_every_event: whether to show the live plot on every event, or just at the end.
-        """  # noqa
+        """  # ruff:ignore[line-too-long, non-imperative-mood, missing-blank-line-after-last-section]
         fig = None
         self._subs = []
         self._peak_stats = None
@@ -355,7 +355,7 @@ class CustomCallbackFunc(typing.Protocol[T_co]):
     to :py:obj:`~CustomCallback`.
     """
 
-    def __call__(  # noqa: D102 (protocol)
+    def __call__(  # ruff:ignore[undocumented-public-method] (protocol)
         self,
         x: npt.NDArray[np.float64],
         y: npt.NDArray[np.float64],

@@ -124,7 +124,7 @@ _RUN_PLAN_LOCK = Lock()  # Explicitly *not* an RLock - RunEngine is not reentran
 
 def run_plan(
     plan: Generator[Msg, Any, Any],
-    **metadata_kw: Any,  # noqa ANN401 - this really does accept anything serializable
+    **metadata_kw: Any,  # ruff:ignore[any-type] ANN401 - this really does accept anything serializable
 ) -> RunEngineResult:
     """Run a plan non-interactively.
 

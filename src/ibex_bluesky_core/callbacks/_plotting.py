@@ -48,9 +48,9 @@ class LivePlot(_DefaultLivePlot):
         y: str,
         x: str | None = None,
         yerr: str | None = None,
-        *args: Any,  # noqa: ANN401
+        *args: Any,  # ruff:ignore[any-type]
         update_on_every_event: bool = True,
-        **kwargs: Any,  # noqa: ANN401
+        **kwargs: Any,  # ruff:ignore[any-type]
     ) -> None:
         """:py:obj:`bluesky.callbacks.mpl_plotting.LivePlot` with support for uncertainties.
 
@@ -73,7 +73,7 @@ class LivePlot(_DefaultLivePlot):
 
         """
         self.update_on_every_event = update_on_every_event
-        super().__init__(y=y, x=x, *args, **kwargs)  # noqa: B026
+        super().__init__(y=y, x=x, *args, **kwargs)  # ruff:ignore[star-arg-unpacking-after-keyword-arg]
         if yerr is not None:
             self.yerr, *_others = get_obj_fields([yerr])
         else:
@@ -146,7 +146,7 @@ class LivePColorMesh(QtAwareCallback):
         x_coord: npt.NDArray[np.float64],
         ax: Axes,
         x_name: str | None = None,
-        **kwargs: Any,  # noqa: ANN401
+        **kwargs: Any,  # ruff:ignore[any-type]
     ) -> None:
         """Live :py:obj:`PColorMesh<matplotlib.pyplot.pcolormesh>`-based heatmap.
 
