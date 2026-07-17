@@ -69,7 +69,7 @@ class DualRunDae(
     and will perform two runs, changing the flipper device at the start and inbetween runs.
     """
 
-    def __init__(  # noqa: PLR0913
+    def __init__(  # ruff:ignore[too-many-arguments]
         self,
         *,
         prefix: str,
@@ -177,7 +177,7 @@ PolarisingDualRunDae: TypeAlias = DualRunDae[
 ]
 
 
-def polarising_dae(  # noqa: PLR0913
+def polarising_dae(  # ruff:ignore[too-many-arguments]
     *,
     det_pixels: list[int],
     frames: int,

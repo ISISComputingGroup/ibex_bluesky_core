@@ -66,7 +66,7 @@ def _check_parameter(
     return is_good
 
 
-def _optimise_axis_over_range(  # noqa: PLR0913 PLR0917
+def _optimise_axis_over_range(  # ruff:ignore[too-many-arguments, too-many-positional-arguments]
     dae: SimpleDae,
     alignment_param: NamedMovable[float],
     fit_param: str,
@@ -167,7 +167,7 @@ def _optimise_axis_over_range(  # noqa: PLR0913 PLR0917
     return icc, True
 
 
-def optimise_axis_against_intensity(  # noqa: PLR0913
+def optimise_axis_against_intensity(  # ruff:ignore[too-many-arguments]
     dae: SimpleDae,
     alignment_param: NamedMovable[float],
     fit_method: FitMethod,

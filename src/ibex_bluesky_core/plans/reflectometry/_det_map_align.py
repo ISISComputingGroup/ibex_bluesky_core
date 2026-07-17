@@ -240,7 +240,7 @@ class DetMapAlignResult(TypedDict):
     """
 
 
-def height_and_angle_scan_plan(  # noqa PLR0913
+def height_and_angle_scan_plan(  # ruff:ignore[too-many-arguments] PLR0913
     dae: SimpleDae[PeriodPerPointController, Waiter, PeriodSpecIntegralsReducer],
     height: NamedMovable[float],
     start: float,
