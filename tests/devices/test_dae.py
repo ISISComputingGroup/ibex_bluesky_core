@@ -1,6 +1,5 @@
 # pyright: reportMissingParameterType=false
 from enum import Enum
-from unittest.mock import AsyncMock
 from xml.etree import ElementTree as ET
 
 import bluesky.plan_stubs as bps
@@ -10,7 +9,7 @@ import scipp as sc
 import scipp.testing
 from bluesky.run_engine import RunEngine
 from ibex_non_ca_helpers.compress_hex import compress_and_hex, dehex_and_decompress
-from ophyd_async.core import get_mock_put, set_mock_value
+from ophyd_async.core import get_mock_put, set_mock_units, set_mock_value
 
 from ibex_bluesky_core.devices.dae import (
     BeginRunExBits,
@@ -962,8 +961,7 @@ async def test_read_spectrum_dataarray(spectrum: DaeSpectra):
     set_mock_value(spectrum.counts_size, 3)
     set_mock_value(spectrum.tof_edges, np.array([0, 1, 2, 3], dtype=np.float32))
     set_mock_value(spectrum.tof_edges_size, 4)
-
-    spectrum.tof_edges.describe = AsyncMock(return_value={spectrum.tof_edges.name: {"units": "us"}})
+    set_mock_units(spectrum.tof_edges, "us")
     da = await spectrum.read_spectrum_dataarray()
 
     scipp.testing.assert_identical(
@@ -1008,7 +1006,7 @@ async def test_if_tof_edges_has_no_units_then_read_spec_dataarray_gives_error(
     set_mock_value(spectrum.counts_size, 1)
     set_mock_value(spectrum.tof_edges, np.array([0, 0]))
     set_mock_value(spectrum.tof_edges_size, 2)
-    spectrum.tof_edges.describe = AsyncMock(return_value={spectrum.tof_edges.name: {"units": None}})
+    set_mock_units(spectrum.tof_edges, None)  # pyright: ignore reportArgumentType
 
     with pytest.raises(ValueError, match="Could not determine engineering units"):
         await spectrum.read_spectrum_dataarray()
