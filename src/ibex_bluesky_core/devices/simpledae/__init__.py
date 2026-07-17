@@ -215,7 +215,9 @@ def monitor_normalising_dae(
         monitor_spectra=[monitor],
     )
 
-    dae = SimpleDae(
+    dae: SimpleDae[
+        PeriodPerPointController | RunPerPointController, PeriodGoodFramesWaiter, MonitorNormalizer
+    ] = SimpleDae(
         prefix=prefix,
         controller=controller,
         waiter=waiter,

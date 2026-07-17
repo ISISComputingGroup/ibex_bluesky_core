@@ -92,7 +92,10 @@ def test_double_damped_oscillator():
     )
 
 
-def test_asymmetry_reducer_readable_signals(simpledae, rebinning_asymmetry_reducer):
+def test_asymmetry_reducer_readable_signals(
+    simpledae: SimpleDae[PeriodPerPointController, MEventsWaiter, MuonAsymmetryReducer],
+    rebinning_asymmetry_reducer,
+):
     assert set(rebinning_asymmetry_reducer.additional_readable_signals(simpledae)) == {
         simpledae.reducer.B,
         simpledae.reducer.B_err,
@@ -194,7 +197,7 @@ async def test_asymmetry_reducer_real_data():
         fit_parameters=damped_oscillator_params,
     )
 
-    dae = SimpleDae(
+    dae: SimpleDae[PeriodPerPointController, MEventsWaiter, MuonAsymmetryReducer] = SimpleDae(
         prefix="UNITTEST:",
         reducer=reducer,
         waiter=MEventsWaiter(5000),
