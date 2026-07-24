@@ -57,24 +57,23 @@ x,y,y uncertainty,modelled y
 
 ```python
 def some_plan() -> Generator[Msg, None, None]:
-    ... # Set up prefix, reducers, controllers etc. here
+    ...  # Set up prefix, reducers, controllers etc. here
 
     @subs_decorator(
         [
             LiveFitLogger(
-                lf, # LiveFit
+                lf,  # LiveFit
                 y=reducer.intensity.name,
                 x=block.name,
                 output_dir=Path(f"C:\\Instrument\\Var\\logs\\bluesky\\fitting"),
-                postfix="bob",  # Make sure to have different postfixes if using 
-                    # more than 1 LiveFitLogger per run
-                yerr=reducer.intensity_stddev.name, # Not required
+                postfix="bob",  # Make sure to have different postfixes if using
+                # more than 1 LiveFitLogger per run
+                yerr=reducer.intensity_stddev.name,  # Not required
             ),
-            ... # Other callbacks ie. live table/plot here - you can use multiple!
+            ...,  # Other callbacks ie. live table/plot here - you can use multiple!
         ]
     )
-    def _inner() -> Generator[Msg, None, None]:
-        ... # Continue to plan
+    def _inner() -> Generator[Msg, None, None]: ...  # Continue to plan
 ```
 
 </details>

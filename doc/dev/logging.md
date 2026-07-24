@@ -3,6 +3,7 @@ To invoke the [`ibex_bluesky_core`](ibex_bluesky_core) logger, create and use a 
 
 ```python
 import logging
+
 logger = logging.getLogger(__name__)
 logger.warning("Message to be logged")
 ```
@@ -22,6 +23,7 @@ To change the logging level for all bluesky libraries simultaneously, call:
 
 ```python
 from ibex_bluesky_core.log import set_bluesky_log_levels
+
 set_bluesky_log_levels("DEBUG")
 ```
 
@@ -30,5 +32,6 @@ python {py:obj}`logging` mechanisms:
 
 ```python
 import logging
+
 logging.getLogger("ophyd_async").setLevel("DEBUG")
 ```

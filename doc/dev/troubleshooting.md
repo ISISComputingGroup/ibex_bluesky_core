@@ -360,6 +360,7 @@ def plan_that_returns():
     yield from something()
     return "hello, world"
 
+
 def plan():
     returned_value = yield from plan_that_returns()
 ```

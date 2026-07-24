@@ -54,10 +54,10 @@ from ophyd_async.epics.core import epics_signal_rw
 # Configure a read-write block, whose moves will be "complete" when setpoint and actual
 # are equal to within a tolerance.
 motor_block = block_rw(
-    float, 
+    float,
     "motor_block",
     write_config=BlockWriteConfig(
-        set_success_func=lambda setpoint, actual: abs(setpoint-actual) < 0.1
+        set_success_func=lambda setpoint, actual: abs(setpoint - actual) < 0.1
     ),
 )
 
@@ -108,7 +108,10 @@ We'll use aligning an imaginary sample changer, using a diode block readback as 
 
 :::{dropdown} Click to expand `sample_changer_scan` plan
 ```python
-from inst.bluesky.devices import sample_changer, diode_readback  # Define these devices in the "devices" module
+from inst.bluesky.devices import (
+    sample_changer,
+    diode_readback,
+)  # Define these devices in the "devices" module
 from ophyd_async.plan_stubs import ensure_connected
 import bluesky.plans as bp
 import bluesky.plan_stubs as bps
@@ -120,13 +123,13 @@ def sample_changer_scan(full_range=30):
     """
     Optimise the sample changer position by fitting a Gaussian to the readback position of a diode,
     and moving the sample changer to the optimum value.
-    
+
     The scan is a relative scan around the current position, with a user-specified total scan range.
     """
     # Bluesky connects devices up-front for efficiency, and so that plans fail-fast if a
     # required PV is not available.
     yield from ensure_connected(sample_changer, diode_readback)
-    
+
     # ISISCallbacks is a helper for a typical set of 'simple' callbacks
     # (plotting, fitting, live feedback, file-writing),
     # for scans with one independent and one dependent variable.
@@ -137,12 +140,14 @@ def sample_changer_scan(full_range=30):
         y=diode_readback.name,
         fit=Gaussian().fit(),
     )
-    
+
     # Apply the callbacks defined above to a "scan" command.
     @icc
     def _inner():
         # We delegate to bluesky's built-in relative scan command.
-        yield from bp.rel_scan([diode_readback], sample_changer, -full_range/2, full_range/2, num=21)
+        yield from bp.rel_scan(
+            [diode_readback], sample_changer, -full_range / 2, full_range / 2, num=21
+        )
 
     yield from _inner()
 
@@ -189,6 +194,7 @@ from ibex_bluesky_core.devices.simpledae import monitor_normalising_dae
 from ibex_bluesky_core.utils import centred_pixel
 from ibex_bluesky_core.plan_stubs import with_num_periods
 
+
 def detector_scan(block: NamedMovable, start, stop, num, frames=200):
     """
     Optimise the position of a block by fitting a Gaussian to the intensity on the detector,
@@ -201,7 +207,7 @@ def detector_scan(block: NamedMovable, start, stop, num, frames=200):
         save_run=False,
         monitor=2,
     )
-    
+
     # Bluesky connects devices up-front for efficiency, and so that plans fail-fast if a
     # required PV is not available.
     yield from ensure_connected(block, dae)
@@ -215,7 +221,7 @@ def detector_scan(block: NamedMovable, start, stop, num, frames=200):
         yerr=dae.reducer.intensity_stddev.name,
         fit=Gaussian().fit(),
     )
-    
+
     # Apply the callbacks defined above to a "scan" command.
     @icc
     def _inner():

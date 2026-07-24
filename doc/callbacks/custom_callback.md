@@ -21,6 +21,7 @@ x = ...
 y = ...
 y_err = ...
 
+
 def calculate_mean(
     x: npt.NDArray[np.float64],
     y: npt.NDArray[np.float64],
@@ -28,6 +29,7 @@ def calculate_mean(
 ) -> tuple[float, float]:
     # Could be any user-defined logic operating on numpy arrays of x, y and y_err data
     return x.mean(), y.mean()
+
 
 def plan():
     custom_callback = CustomCallback(
@@ -40,7 +42,7 @@ def plan():
     @bpp.subs_decorator([custom_callback])
     def _inner():
         yield from bp.count([x, y, y_err])
-        
+
     yield from _inner()
     average_x, average_y = custom_callback.result
 ```
