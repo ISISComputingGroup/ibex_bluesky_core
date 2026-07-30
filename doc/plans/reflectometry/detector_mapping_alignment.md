@@ -45,7 +45,7 @@ from ibex_bluesky_core.devices.simpledae import (
     PeriodGoodFramesWaiter,
     PeriodPerPointController,
     PeriodSpecIntegralsReducer,
-    SimpleDae
+    SimpleDae,
 )
 from ibex_bluesky_core.plans.reflectometry import angle_scan_plan
 
@@ -131,12 +131,9 @@ from ibex_bluesky_core.devices.simpledae import (
     PeriodGoodFramesWaiter,
     PeriodPerPointController,
     PeriodSpecIntegralsReducer,
-    SimpleDae
+    SimpleDae,
 )
-from ibex_bluesky_core.plans.reflectometry import (
-    DetMapAlignResult,
-    height_and_angle_scan_plan
-)
+from ibex_bluesky_core.plans.reflectometry import DetMapAlignResult, height_and_angle_scan_plan
 
 
 def map_align() -> Generator[Msg, None, DetMapAlignResult]:

@@ -33,6 +33,7 @@ import matplotlib.pyplot as plt
 from ibex_bluesky_core.callbacks import LivePlot
 from ibex_bluesky_core.plan_stubs import call_qt_aware
 
+
 def plan():
     # Create a new figure to plot onto.
     yield from call_qt_aware(plt.figure)
@@ -93,6 +94,7 @@ import matplotlib.pyplot as plt
 from ibex_bluesky_core.callbacks import LivePlot, PlotPNGSaver
 from ibex_bluesky_core.plan_stubs import call_qt_aware
 
+
 def plan():
     # Create a new figure to plot onto.
     yield from call_qt_aware(plt.figure)
@@ -103,7 +105,13 @@ def plan():
     # Use the above axes in a LivePlot callback
     plot_callback = LivePlot(y="y_variable", x="x_variable", ax=ax, yerr="yerr_variable")
     # Add a PNG saving callback
-    png_callback = PlotPNGSaver(y="y_variable", x="x_variable", ax=ax, output_dir=Path("C://", "Some", "Custom", "Directory"), postfix="test123")
+    png_callback = PlotPNGSaver(
+        y="y_variable",
+        x="x_variable",
+        ax=ax,
+        output_dir=Path("C://", "Some", "Custom", "Directory"),
+        postfix="test123",
+    )
 ```
 
 ## Replotting a previous scan

@@ -30,16 +30,11 @@ from ibex_bluesky_core.plans import motor_scan
 from ibex_bluesky_core.fitting import Gaussian
 
 
-result = RE(motor_scan(
-    "motor_block", 
-    start=5, 
-    stop=15, 
-    num=11, 
-    model=Gaussian().fit(), 
-    frames=100, 
-    det=66, 
-    mon=2
-))
+result = RE(
+    motor_scan(
+        "motor_block", start=5, stop=15, num=11, model=Gaussian().fit(), frames=100, det=66, mon=2
+    )
+)
 print(result.plan_result.live_fit.result.values["x0"])
 ```
 :::
@@ -56,16 +51,18 @@ from ibex_bluesky_core.fitting import Gaussian
 
 
 def an_external_script_function():
-    result = run_plan(motor_scan(
-        "motor_block",
-        start=5,
-        stop=15,
-        num=11,
-        model=Gaussian().fit(),
-        frames=100,
-        det=66,
-        mon=2
-    ))
+    result = run_plan(
+        motor_scan(
+            "motor_block",
+            start=5,
+            stop=15,
+            num=11,
+            model=Gaussian().fit(),
+            frames=100,
+            det=66,
+            mon=2,
+        )
+    )
     print(result.plan_result.live_fit.result.values["x0"])
 ```
 :::
