@@ -175,11 +175,11 @@ result.plan_result
 
 If a plan was interrupted and resumed later, the result is returned by the `RE.resume()` call:
 
-```python
-RE(some_plan())
+```
+>>> RE(some_plan())
 <KeyboardInterrupt>
-result = RE.resume()
-result.plan_result
+>>> result = RE.resume()
+>>> result.plan_result
 ```
 
 ```{tip}
@@ -359,6 +359,7 @@ Return values from plans can be captured:
 def plan_that_returns():
     yield from something()
     return "hello, world"
+
 
 def plan():
     returned_value = yield from plan_that_returns()

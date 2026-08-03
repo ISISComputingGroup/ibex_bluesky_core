@@ -401,7 +401,7 @@ class ChainedLiveFit(CallbackBase):
                         nonlocal init_guess
                         return {
                             name: Parameter(name, value.value)
-                            for name, value in init_guess.items()  # noqa: B023
+                            for name, value in init_guess.items()  # ruff:ignore[function-uses-loop-variable]
                         }  # ruff doesn't understand nonlocal
 
                     # Using value.value means that parameter uncertainty
@@ -437,10 +437,10 @@ class ChainedLiveFit(CallbackBase):
 
     @property
     def live_fits(self) -> list[LiveFit]:
-        """Return a list of the ``LiveFit`` instances used by this callback."""
+        """A list of the ``LiveFit`` instances used by this callback."""
         return self._livefits
 
     @property
     def live_fit_plots(self) -> list[LiveFitPlot]:
-        """Return a list of the ``LiveFitPlot`` instances used by this callback."""
+        """A list of the ``LiveFitPlot`` instances used by this callback."""
         return self._livefitplots

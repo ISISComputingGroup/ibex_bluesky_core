@@ -1,10 +1,10 @@
-# Getting started
+# Concepts
 
 {py:obj}`ibex_bluesky_core` is a library which bridges the 
 [IBEX control system](https://github.com/ISISComputingGroup/ibex_user_manual/wiki/What-Is-IBEX) 
 and the [bluesky data acquisition framework](https://blueskyproject.io/).
 
-Bluesky is a highly flexible data acquisition system, which has previously been used at
+Bluesky is a highly flexible data acquisition system, which is used at
 large-scale research facilities such as [NSLS-II](https://www.bnl.gov/nsls2/) and 
 [Diamond](https://www.diamond.ac.uk/Home.html), along with many other large-scale scientific facilities.
 
@@ -37,6 +37,7 @@ using python [generators](https://peps.python.org/pep-0255/), using [python's
 
 ```python
 import bluesky.plan_stubs as bps
+
 
 def plan():
     yield from bps.null()
@@ -73,6 +74,7 @@ Bluesky provides plan stubs for setting & reading values from bluesky devices: `
 from ibex_bluesky_core.devices.block import BlockMot
 import bluesky.plan_stubs as bps
 
+
 def multiply_motor_pos_by_2(mot: BlockMot):
     current_value = yield from bps.rd(mot)
     yield from bps.mv(mot, current_value * 2.0)
@@ -102,6 +104,7 @@ from ophyd_async.plan_stubs import ensure_connected
 import bluesky.plans as bp
 from ibex_bluesky_core.devices.block import block_r, block_mot
 
+
 def my_plan(det_block_name: str, mot_block_name: str, start: float, stop: float, num: int):
     mot = block_mot(mot_block_name)
     det = block_r(float, det_block_name)
@@ -109,7 +112,7 @@ def my_plan(det_block_name: str, mot_block_name: str, start: float, stop: float,
     # Devices connect up-front - this means that plans are generally "fail-fast", and
     # will detect problems such as typos in block names before the whole plan runs.
     yield from ensure_connected(det, mot, force_reconnect=True)
-    
+
     # Delegate to bluesky's scan plan.
     yield from bp.scan([det], mot, start, stop, num)
 ```
@@ -117,6 +120,7 @@ def my_plan(det_block_name: str, mot_block_name: str, start: float, stop: float,
 For details about plans which are available directly from `bluesky` - like `bp.scan` above - see 
 [bluesky's plan documentation](https://blueskyproject.io/bluesky/main/plans.html#pre-assembled-plans).
 
+{#concept_run_engine}
 ## The `RunEngine`
 
 The `RunEngine` is the central "conductor" in bluesky - it is responsible for reading a plan and
@@ -124,6 +128,7 @@ performing the associated actions on the hardware. To get a run engine instance,
 
 ```python
 from ibex_bluesky_core.run_engine import get_run_engine
+
 RE = get_run_engine()
 ```
 
@@ -174,16 +179,20 @@ from bluesky.preprocessors import subs_decorator
 from bluesky.callbacks import LiveTable
 import bluesky.plans as bp
 
+
 def my_plan(det_block_name: str, mot_block_name: str, start: float, stop: float, num: int):
     mot = block_mot(mot_block_name)
     det = block_r(float, det_block_name)
 
-    @subs_decorator([
-      LiveTable([mot.name, det.name]),
-    ])
+    @subs_decorator(
+        [
+            LiveTable([mot.name, det.name]),
+        ]
+    )
     def _inner():
-      yield from ensure_connected(det, mot, force_reconnect=True)
-      yield from bp.scan([det], mot, start, stop, num)
+        yield from ensure_connected(det, mot, force_reconnect=True)
+        yield from bp.scan([det], mot, start, stop, num)
+
     yield from _inner()
 ```
 

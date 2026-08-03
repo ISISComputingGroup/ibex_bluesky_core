@@ -42,7 +42,7 @@ def _get_additional_md(
         return {}
 
 
-def scan(  # noqa: PLR0913
+def scan(  # ruff:ignore[too-many-arguments]
     dae: "SimpleDae",
     block: NamedMovable[float],
     start: float,
@@ -117,7 +117,7 @@ def _set_up_fields_and_icc(
     )
 
 
-def adaptive_scan(  # noqa: PLR0913, PLR0917
+def adaptive_scan(  # ruff:ignore[too-many-arguments, too-many-positional-arguments]
     dae: "SimpleDae",
     block: NamedMovable[float],
     start: float,
@@ -190,7 +190,7 @@ def adaptive_scan(  # noqa: PLR0913, PLR0917
     return icc
 
 
-def motor_scan(  # noqa: PLR0913
+def motor_scan(  # ruff:ignore[too-many-arguments]
     block_name: str,
     start: float,
     stop: float,
@@ -258,7 +258,7 @@ def motor_scan(  # noqa: PLR0913
     )
 
 
-def motor_adaptive_scan(  # noqa: PLR0913
+def motor_adaptive_scan(  # ruff:ignore[too-many-arguments]
     block_name: str,
     start: float,
     stop: float,

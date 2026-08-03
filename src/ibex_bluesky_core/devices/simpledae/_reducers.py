@@ -415,12 +415,12 @@ class PeriodSpecIntegralsReducer(Reducer, StandardReadable):
 
     @property
     def detectors(self) -> npt.NDArray[np.int64]:
-        """Get the detectors used by this reducer."""
+        """The detectors used by this reducer."""
         return self._detectors
 
     @property
     def monitors(self) -> npt.NDArray[np.int64]:
-        """Get the monitors used by this reducer."""
+        """The monitors used by this reducer."""
         return self._monitors
 
     async def reduce_data(self, dae: Dae) -> None:

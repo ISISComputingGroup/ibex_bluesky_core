@@ -23,22 +23,38 @@ flipper = block_rw(float, "flipper")
 total_flight_path_length = sc.scalar(value=10, unit=sc.units.m)
 
 x_axis = block_rw(float, "x_axis", write_config=BlockWriteConfig(settle_time_s=0.5))
-wavelength_band_0 = sc.array(dims=["tof"], values=[0, 9999999999.0], unit=sc.units.angstrom, dtype="float64")
-wavelength_band_1 = sc.array(dims=["tof"], values=[0.0, 0.07], unit=sc.units.angstrom, dtype="float64")
+wavelength_band_0 = sc.array(
+    dims=["tof"], values=[0, 9999999999.0], unit=sc.units.angstrom, dtype="float64"
+)
+wavelength_band_1 = sc.array(
+    dims=["tof"], values=[0.0, 0.07], unit=sc.units.angstrom, dtype="float64"
+)
 
-dae = polarising_dae(det_pixels=[1], frames=50, movable=flipper, movable_states=[0.0, 1.0],
-                     intervals=[wavelength_band_0, wavelength_band_1],
-                     total_flight_path_length=total_flight_path_length, monitor=2)
+dae = polarising_dae(
+    det_pixels=[1],
+    frames=50,
+    movable=flipper,
+    movable_states=[0.0, 1.0],
+    intervals=[wavelength_band_0, wavelength_band_1],
+    total_flight_path_length=total_flight_path_length,
+    monitor=2,
+)
 
 
 def plan() -> Generator[Msg, None, None]:
     fig, (ax1, ax2) = yield from call_qt_aware(plt.subplots, 2)
-    chained_fit = ChainedLiveFit(method=Linear.fit(), y=[dae.reducer.wavelength_bands[0].calculate_polarisation.name,
-                                                       dae.reducer.wavelength_bands[1].calculate_polarisation.name],
-                               x=x_axis.name, ax=[ax1, ax2])
-    
+    chained_fit = ChainedLiveFit(
+        method=Linear.fit(),
+        y=[
+            dae.reducer.wavelength_bands[0].calculate_polarisation.name,
+            dae.reducer.wavelength_bands[1].calculate_polarisation.name,
+        ],
+        x=x_axis.name,
+        ax=[ax1, ax2],
+    )
+
     ...  # perform a scan with chained_fit subscribed
-    
+
     # will give you the fitting results for the last wavelength band
     chained_fit.get_livefits()[-1].result
 ```

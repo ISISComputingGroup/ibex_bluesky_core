@@ -16,7 +16,7 @@ For example, using a reflectometry parameter as your {py:obj}`~bluesky.protocols
 
 ```python
 def full_autoalign_plan() -> Generator[Msg, None, None]:
- 
+
     det_pixels = centred_pixel(DEFAULT_DET, PIXEL_RANGE)
     dae = monitor_normalising_dae(
         det_pixels=det_pixels,
@@ -39,10 +39,10 @@ def full_autoalign_plan() -> Generator[Msg, None, None]:
     yield from optimise_axis_against_intensity(
         dae=dae,
         alignment_param=s1vg,
-        fit_method=SlitScan.fit(), # What form of data do you expect
-        fit_param="inflection0", # Which fitting parameter do you want to optimise
-        rel_scan_ranges=[0.3, 0.05], # Scan with range of 0.3, then 0.05
-        num_points=10, # Number of points in a scan.
+        fit_method=SlitScan.fit(),  # What form of data do you expect
+        fit_param="inflection0",  # Which fitting parameter do you want to optimise
+        rel_scan_ranges=[0.3, 0.05],  # Scan with range of 0.3, then 0.05
+        num_points=10,  # Number of points in a scan.
     )
     yield from bps.mv(s1vg.redefine, 0.0)  # Redefine current motor position to be 0
 
@@ -61,7 +61,9 @@ from lmfit.model import ModelResult
 from math import isclose
 
 
-def s1vg_checks(result: ModelResult, alignment_param_value: float) -> str | None: # Must take a ModelResult and a float
+def s1vg_checks(
+    result: ModelResult, alignment_param_value: float
+) -> str | None:  # Must take a ModelResult and a float
     """Check for optimised S1VG value. Returns True if sensible."""
     rsquared_confidence = 0.9
     expected_param_value = 1.0
@@ -81,11 +83,13 @@ def s1vg_checks(result: ModelResult, alignment_param_value: float) -> str | None
     # a peak, or background may not be a parameter in the model).
     if result.values["background"] / result.model.func(alignment_param_value) <= max_peak_factor:
         return "Peak was not above the background by factor."
-    
+
     # Everything is fine, so return None
     return None
 
+
 # ...
+
 
 def plan():
     yield from optimise_axis_against_intensity(
@@ -93,11 +97,10 @@ def plan():
         alignment_param=s1vg,
         fit_method=SlitScan.fit(),
         fit_param="inflection0",
-        rel_scan_ranges=[0.3, 0.05], # Scan with range of 0.3, then 0.05
+        rel_scan_ranges=[0.3, 0.05],  # Scan with range of 0.3, then 0.05
         num_points=10,
-        is_good_fit=s1vg_checks # Pass s1vg_checks
+        is_good_fit=s1vg_checks,  # Pass s1vg_checks
     )
-
 ```
 
 To determine what to do in the event of a value being "invalid" you can use a plan like so:
@@ -125,6 +128,6 @@ def plan():
         fit_param="inflection0",
         rel_scan_ranges=[0.1],
         num_points=1,  # Fit will never converge with just 1 point which should cause a "problem".
-        problem_found_plan=problem_found_plan
+        problem_found_plan=problem_found_plan,
     )
 ```

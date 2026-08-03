@@ -41,10 +41,11 @@ def my_plan():
     fig, ax = yield from call_qt_aware(plt.subplots)
 
     # Pass the matplotlib ax object to other callbacks
-    @subs_decorator([
-        LiveFitPlot(..., ax=ax),
-        LivePlot(..., ax=ax),
-    ])
-    def inner_plan():
-        ...
+    @subs_decorator(
+        [
+            LiveFitPlot(..., ax=ax),
+            LivePlot(..., ax=ax),
+        ]
+    )
+    def inner_plan(): ...
 ```

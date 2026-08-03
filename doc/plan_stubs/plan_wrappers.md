@@ -9,13 +9,7 @@ Plan wrappers that temporarily modify [DAE (Data Acquisition Electronics)](/devi
 A function that wraps a plan to temporarily modify the DAE wiring/detector/spectra tables.
 
 ```python
-RE(
-    with_dae_tables(
-        bps.null(),
-        dae=dae,
-        new_settings=modified_settings
-    )
-)
+RE(with_dae_tables(bps.null(), dae=dae, new_settings=modified_settings))
 ```
 ```python
 def plan():
@@ -31,13 +25,7 @@ def plan():
 A function that wraps a plan to temporarily modify the number of DAE software periods.
 
 ```python
-RE(
-    with_num_periods(
-        bps.null(),
-        dae=dae,
-        number_of_periods=1000 
-    )
-)
+RE(with_num_periods(bps.null(), dae=dae, number_of_periods=1000))
 ```
 ```python
 def plan():
@@ -50,13 +38,7 @@ def plan():
 A function that wraps a plan to temporarily modify the DAE time channel boundaries.
 
 ```python
-RE(
-    with_time_channels(
-        bps.null(),
-        dae=dae,
-        new_settings=modified_settings
-    )
-)
+RE(with_time_channels(bps.null(), dae=dae, new_settings=modified_settings))
 ```
 ```python
 def plan():
@@ -72,7 +54,8 @@ To use these wrappers, pass a user plan as the first argument to the wrappers in
 from ibex_bluesky_core.plan_stubs import with_num_periods
 from ibex_bluesky_core.devices.simpledae import SimpleDae
 
-dae = SimpleDae() # Give your DAE options here
+dae = SimpleDae()  # Give your DAE options here
+
 
 def plan():
     yield from with_num_periods(scan(...), dae=dae, number_of_periods=1000)

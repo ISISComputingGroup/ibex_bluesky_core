@@ -16,7 +16,21 @@ from ibex_bluesky_core.plans.reflectometry import refl_scan
 from ibex_bluesky_core.fitting import Gaussian
 
 
-result = RE(refl_scan("S1VG", 1, 10, 21, model=Gaussian().fit(), frames=500, det=100, mon=3, pixel_range=6, periods=True, save_run=False))
+result = RE(
+    refl_scan(
+        "S1VG",
+        1,
+        10,
+        21,
+        model=Gaussian().fit(),
+        frames=500,
+        det=100,
+        mon=3,
+        pixel_range=6,
+        periods=True,
+        save_run=False,
+    )
+)
 ```
 
 or this: 
@@ -28,7 +42,19 @@ from ibex_bluesky_core.fitting import Gaussian
 
 def my_plan():
     ...  # Some stuff before scan
-    icc = yield from refl_scan("S1VG", 1, 10, 21, model=Gaussian().fit(), frames=500, det=100, mon=3, pixel_range=6, periods=True, save_run=False)
+    icc = yield from refl_scan(
+        "S1VG",
+        1,
+        10,
+        21,
+        model=Gaussian().fit(),
+        frames=500,
+        det=100,
+        mon=3,
+        pixel_range=6,
+        periods=True,
+        save_run=False,
+    )
     ...  # Some stuff after scan
 ```
 
@@ -36,8 +62,22 @@ The scanning plans documented on this page will return a {py:obj}`~ibex_bluesky_
 
 ```python
 from ibex_bluesky_core.plans import motor_scan
+
+
 def my_plan():
-    icc = (yield from motor_scan("MyBlock1", 1, 10, 21, model=Gaussian().fit(), frames=500, det=100, mon=3, pixel_range=6, periods=True, save_run=False))
+    icc = yield from motor_scan(
+        "MyBlock1",
+        1,
+        10,
+        21,
+        model=Gaussian().fit(),
+        frames=500,
+        det=100,
+        mon=3,
+        pixel_range=6,
+        periods=True,
+        save_run=False,
+    )
     print(icc.live_fit.result.fit_report())
     print(f"COM: {icc.com.result}")
 ```
@@ -57,12 +97,14 @@ from ibex_bluesky_core.devices.block import BlockRw, BlockWriteConfig
 from ibex_bluesky_core.plans import scan
 from ibex_bluesky_core.fitting import Linear
 
-def my_plan():
-    dae = SimpleDae(...) # Give your DAE options here
-    block = BlockRw("my_block", write_config=BlockWriteConfig(settle_time_s=5)) # This block needs a settle time of 5 seconds
-    icc = (yield from scan(dae, block, 1, 10, 21, model=Linear().fit()))
-    print(icc.peak_stats['com']) # print the centre of mass
 
+def my_plan():
+    dae = SimpleDae(...)  # Give your DAE options here
+    block = BlockRw(
+        "my_block", write_config=BlockWriteConfig(settle_time_s=5)
+    )  # This block needs a settle time of 5 seconds
+    icc = yield from scan(dae, block, 1, 10, 21, model=Linear().fit())
+    print(icc.peak_stats["com"])  # print the centre of mass
 ```
 
 which would be used on the console as: `RE(my_plan())`

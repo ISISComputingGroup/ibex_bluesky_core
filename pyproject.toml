@@ -43,7 +43,7 @@ classifiers = [
 dependencies = [
   "bluesky",  # Bluesky framework
   "confluent-kafka",  # Kafka producer
-  "ophyd-async[ca] == 0.16",  # Device abstraction.
+  "ophyd-async[ca] == 0.20.1",  # Device abstraction.
   "lmfit",  # Fitting
   "matplotlib",  # Plotting
   "msgpack-numpy",  # Encoding kafka messages
@@ -63,13 +63,15 @@ doc = [
   "sphinx_rtd_theme", 
   "myst_parser",
   "sphinx-autobuild",
+  "sphinx-codeautolink",
+  "sphinx-design",
   "sphinxcontrib-mermaid",
   "sphinxcontrib-spelling",
 ]
 dev = [
   "ibex_bluesky_core[doc]",
-  "ruff==0.15.12",  # Update manually so we don't get new rules 'by accident'
-  "pyright==1.1.409",  # Update manually
+  "ruff==0.16.0",  # Update manually so we don't get new rules 'by accident'
+  "pyright==1.1.411",  # Update manually
   "pytest",
   "pytest-asyncio",
   "pytest-cov",

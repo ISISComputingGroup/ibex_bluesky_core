@@ -20,7 +20,7 @@ class _ExternalFunctionInterrupted(BaseException):
     """An external sync function running in a worker thread is being interrupted."""
 
 
-async def call_sync_handler(msg: Msg) -> Any:  # noqa: ANN401
+async def call_sync_handler(msg: Msg) -> Any:  # ruff:ignore[any-type]
     """Handle ibex_bluesky_core.plan_stubs.call_sync."""
     func = msg.obj
     ret = None
@@ -28,7 +28,7 @@ async def call_sync_handler(msg: Msg) -> Any:  # noqa: ANN401
     done_event = Event()
     loop = get_running_loop()
 
-    def _wrapper() -> Any:  # noqa: ANN401
+    def _wrapper() -> Any:  # ruff:ignore[any-type]
         nonlocal ret, exc
         logger.info("Running '%s' with args=(%s), kwargs=(%s)", func.__name__, msg.args, msg.kwargs)
         try:
@@ -37,7 +37,7 @@ async def call_sync_handler(msg: Msg) -> Any:  # noqa: ANN401
         except _ExternalFunctionInterrupted:
             # Suppress stack traces from our special interruption exception.
             logger.debug("Running '%s' was interrupted by user", func.__name__)
-        except BaseException as e:  # noqa: BLE001
+        except BaseException as e:  # ruff:ignore[blind-except]
             logger.error("Running '%s' failed with %s: %s", func.__name__, e.__class__.__name__, e)
             exc = e
         finally:
@@ -99,7 +99,7 @@ async def call_sync_handler(msg: Msg) -> Any:  # noqa: ANN401
     return ret
 
 
-async def call_qt_aware_handler(msg: Msg) -> Any:  # noqa: ANN401
+async def call_qt_aware_handler(msg: Msg) -> Any:  # ruff:ignore[any-type]
     """Handle ibex_bluesky_core.plan_stubs.call_qt_aware."""
     func = msg.obj
     done_event = Event()
@@ -121,11 +121,11 @@ async def call_qt_aware_handler(msg: Msg) -> Any:  # noqa: ANN401
                     msg.kwargs,
                 )
                 result = func(*msg.args, **msg.kwargs)
-                import matplotlib.pyplot as plt  # noqa: PLC0415
+                import matplotlib.pyplot as plt  # ruff:ignore[import-outside-top-level]
 
                 plt.show()
                 logger.debug("Running '%s' (Qt) successful", func.__name__)
-            except BaseException as e:  # noqa: BLE001
+            except BaseException as e:  # ruff:ignore[blind-except]
                 logger.error(
                     "Running '%s' failed with %s: %s", func.__name__, e.__class__.__name__, e
                 )

@@ -7,6 +7,7 @@ within a plan. For example, the following is **bad**:
 import bluesky.plan_stubs as bps
 from genie_python import genie as g
 
+
 def bad_plan():
     yield from bps.open_run()
     g.cset("foo", 123)  # This is bad - must not do this
@@ -34,6 +35,7 @@ from ibex_bluesky_core.devices.block import block_rw
 
 foo = block_rw(float, "foo")
 
+
 def good_plan():
     yield from ensure_connected(foo)
     yield from bps.open_run()
@@ -49,9 +51,10 @@ import bluesky.plan_stubs as bps
 from ibex_bluesky_core.plan_stubs import call_sync
 from genie_python import genie as g
 
+
 def good_plan():
     yield from bps.open_run()
-    
+
     # Note use of g.some_function, rather than g.some_function() - i.e. a function reference
     # We can also access the returned value from the call.
     return_value = yield from call_sync(g.some_function, 123, keyword_argument=456)

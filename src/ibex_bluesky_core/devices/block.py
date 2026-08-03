@@ -479,7 +479,7 @@ class BlockMot(Motor, Movable[float], HasName):
     def set(  # pyright: ignore
         self, value: float, timeout: CalculatableTimeout = CALCULATE_TIMEOUT
     ) -> WatchableAsyncStatus[float]:
-        """Pass through ``set`` to :py:obj:`ophyd_async.epics.motor.Motor.set`.
+        """Pass through ``set`` to :py:obj:`ophyd_async.core.StandardMovable.set`.
 
         This is needed so that type-checker correctly understands the type of set.
 

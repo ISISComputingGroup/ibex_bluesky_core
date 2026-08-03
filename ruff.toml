@@ -7,7 +7,7 @@ extend-select = [
     "N",     # pep8-naming
     "D",     # pydocstyle
     "I",     # isort (for imports)
-    "E501",  # Line too long ({width} > {limit})
+    "line-too-long",  # Line too long ({width} > {limit})
     "E",     # Pycodestyle errors
     "W",     # Pycodestyle warnings
     "F",     # Pyflakes
@@ -28,28 +28,28 @@ extend-select = [
     "PERF",  # Performance-related rules
 ]
 ignore = [
-    "D406",    # Section name should end with a newline ("{name}")
-    "D407",    # Missing dashed underline after section ("{name}")
-    "D213",    # Incompatible with D212
-    "D203",    # Incompatible with D211
-    "B901",    # This is a standard, expected, pattern in bluesky
-    "PLR6301", # Too noisy
-    "RUF067",  # We use this pattern in various places
-    "RUF069",   # Catches ... == pytest.approx(...) which is a standard pattern
+    "missing-new-line-after-section-name",    # Section name should end with a newline ("{name}")
+    "missing-dashed-underline-after-section",    # Missing dashed underline after section ("{name}")
+    "multi-line-summary-second-line",    # Incompatible with D212
+    "incorrect-blank-line-before-class",    # Incompatible with D211
+    "return-in-generator",    # This is a standard, expected, pattern in bluesky
+    "no-self-use", # Too noisy
+    "non-empty-init-module",  # We use this pattern in various places
+    "float-equality-comparison",   # Catches ... == pytest.approx(...) which is a standard pattern
 ]
 [lint.per-file-ignores]
 "tests/*" = [
-    "N802",     # Allow test names to be long / not pep8
+    "invalid-function-name",     # Allow test names to be long / not pep8
     "D",        # Don't require method documentation for test methods
     "ANN",      # Don't require tests to use type annotations
-    "PLR2004",  # Allow magic numbers in tests
-    "PLR0915",  # Allow complex tests
-    "PLR0914",  # Allow complex tests
-    "PLC2701",  # Allow tests to import "private" things
-    "SLF001",   # Allow tests to use "private" things
+    "magic-value-comparison",  # Allow magic numbers in tests
+    "too-many-statements",  # Allow complex tests
+    "too-many-locals",  # Allow complex tests
+    "import-private-name",  # Allow tests to import "private" things
+    "private-member-access",   # Allow tests to use "private" things
 ]
 "doc/conf.py" = [
-    "D100"
+    "undocumented-public-module"
 ]
 
 [lint.pep8-naming]

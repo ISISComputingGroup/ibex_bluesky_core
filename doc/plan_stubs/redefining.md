@@ -20,13 +20,13 @@ import bluesky.plan_stubs as bps
 def my_plan():
     motor: BlockMot = block_mot("my_motor")
     optimimum_value: float = ...
-    
+
     # Physically move the motor to it's optimum position
     # (bps.mv automatically waits for movements to complete)
     yield from bps.mv(motor, optimimum_value)
-    
+
     # Redefine the current position as zero
-    yield from redefine_motor(motor, 0.)
+    yield from redefine_motor(motor, 0.0)
 ```
 
 By default, the {py:obj}`~ibex_bluesky_core.plan_stubs.redefine_motor`

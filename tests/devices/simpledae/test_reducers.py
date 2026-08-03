@@ -6,7 +6,7 @@ from unittest.mock import AsyncMock
 import numpy as np
 import pytest
 import scipp as sc
-from ophyd_async.core import get_mock_put, set_mock_value
+from ophyd_async.core import get_mock_put, set_mock_units, set_mock_value
 
 from ibex_bluesky_core.devices.simpledae import (
     VARIANCE_ADDITION,
@@ -1075,9 +1075,7 @@ async def test_dspacing_reducer(simpledae: SimpleDae):
     set_mock_value(reducer._first_det.counts_size, 2)
     set_mock_value(reducer._first_det.tof_edges, np.linspace(1, 1000, num=3, dtype=np.float32))
     set_mock_value(reducer._first_det.tof_edges_size, 3)
-    reducer._first_det.tof_edges.describe = AsyncMock(
-        return_value={reducer._first_det.tof_edges.name: {"units": "us"}}
-    )
+    set_mock_units(reducer._first_det.tof_edges, "us")
 
     await reducer.reduce_data(simpledae)
 
