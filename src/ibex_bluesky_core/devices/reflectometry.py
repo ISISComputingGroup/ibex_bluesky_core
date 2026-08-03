@@ -2,6 +2,7 @@
 
 import asyncio
 import logging
+import typing
 
 import numpy as np
 import numpy.typing as npt
@@ -285,4 +286,4 @@ class AngleMappingReducer(Reducer, StandardReadable):
         self._background_setter(result.params["background"].value)
         self._background_err_setter(result.params["background"].stderr)
 
-        self._r_squared_setter(result.rsquared)
+        self._r_squared_setter(typing.cast(float, result.rsquared))

@@ -3,6 +3,7 @@
 import asyncio
 import logging
 import math
+import typing
 from abc import ABC, abstractmethod
 from collections.abc import Awaitable, Callable, Collection, Sequence
 
@@ -449,8 +450,8 @@ class PeriodSpecIntegralsReducer(Reducer, StandardReadable):
         self._det_integrals_setter(det_integrals)
         self._mon_integrals_setter(mon_integrals)
 
-        scalar_det_sum = det_integrals.sum()
-        scalar_mon_sum = mon_integrals.sum()
+        scalar_det_sum = typing.cast(int, det_integrals.sum())
+        scalar_mon_sum = typing.cast(int, mon_integrals.sum())
         self._det_sum_setter(scalar_det_sum)
         self._mon_sum_setter(scalar_mon_sum)
 
