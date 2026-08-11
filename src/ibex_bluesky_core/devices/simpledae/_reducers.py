@@ -444,8 +444,8 @@ class PeriodSpecIntegralsReducer(Reducer, StandardReadable):
         all_current_period_data = await dae.trigger_and_get_specdata()
 
         # After this sum, we are left with a 1D array of size nspectra
-        det_integrals = np.sum(all_current_period_data[self._detectors], axis=1)
-        mon_integrals = np.sum(all_current_period_data[self._monitors], axis=1)
+        det_integrals = np.sum(all_current_period_data[self._detectors], axis=1).astype(np.int32)
+        mon_integrals = np.sum(all_current_period_data[self._monitors], axis=1).astype(np.int32)
 
         self._det_integrals_setter(det_integrals)
         self._mon_integrals_setter(mon_integrals)
