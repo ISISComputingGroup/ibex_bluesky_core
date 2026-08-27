@@ -46,6 +46,7 @@ class FitMethod:
         guess: Callable[
             [npt.NDArray[np.float64], npt.NDArray[np.float64]], dict[str, lmfit.Parameter]
         ],
+        interesting_params: list[str]
     ) -> None:
         """Tell :py:obj:`~ibex_bluesky_core.callbacks.LiveFit` how to fit to data points.
 
@@ -54,9 +55,11 @@ class FitMethod:
         Args:
             model: The model function to use.
             guess: The guess function to use.
+            interesting_params: Interesting params for ie. plots to show results
 
         """
         self.guess = guess
+        self.interesting_params = interesting_params
 
         if callable(model):
             self.model = lmfit.Model(model)
@@ -104,7 +107,14 @@ class Fit(ABC):
     @classmethod
     def fit(cls, *args: int) -> FitMethod:
         """Return a FitMethod given model and guess functions to pass to LiveFit."""
-        return FitMethod(model=cls.model(*args), guess=cls.guess(*args))
+        return FitMethod(model=cls.model(*args), guess=cls.guess(*args), interesting_params=cls.interesting_params())
+
+    
+    @classmethod
+    @abstractmethod
+    def interesting_params(cls) -> list[str]:
+        """Return parameters that are interesting for ie. the plot title."""
+        
 
 
 def _guess_cen_and_width(
@@ -129,6 +139,10 @@ class Gaussian(Fit):
     """
 
     equation = "amp * exp(-((x - x0) ** 2) / (2 * sigma**2)) + background"
+
+    @classmethod
+    def interesting_params(cls) -> list[str]:
+        return ["x0"]
 
     @classmethod
     def model(cls, *args: int) -> lmfit.Model:
@@ -188,6 +202,10 @@ class Lorentzian(Fit):
     """
 
     equation = "amp / (1 + ((x - center) / sigma) ** 2) + background"
+
+    @classmethod
+    def interesting_params(cls) -> list[str]:
+        return ["center"]
 
     @classmethod
     def model(cls, *args: int) -> lmfit.Model:
@@ -271,6 +289,10 @@ class Linear(Fit):
     equation = "c1 * x + c0"
 
     @classmethod
+    def interesting_params(cls) -> list[str]:
+        return ["c0"]
+
+    @classmethod
     def model(cls, *args: int) -> lmfit.Model:
         """Linear Model.
 
@@ -302,6 +324,10 @@ class Polynomial(Fit):
     """
 
     equation = "cn * x^n + ... + c1 * x^1 + c0"
+
+    @classmethod
+    def interesting_params(cls) -> list[str]:
+        return ["c0"]
 
     @classmethod
     def _check_degree(cls, args: tuple[int, ...]) -> int:
@@ -357,6 +383,10 @@ class DampedOsc(Fit):
     equation = "amp * cos((x - center) * freq) * exp(-(((x - center) / width) ** 2))"
 
     @classmethod
+    def interesting_params(cls) -> list[str]:
+        return ["center"]
+
+    @classmethod
     def model(cls, *args: int) -> lmfit.Model:
         """Damped Oscillator Model.
 
@@ -402,6 +432,10 @@ class SlitScan(Fit):
         :ref:`fit_slitscan` model and parameter descriptions
 
     """
+
+    @classmethod
+    def interesting_params(cls) -> list[str]:
+        return ["center"]
 
     equation = """See
     https://isiscomputinggroup.github.io/ibex_bluesky_core/fitting/standard_fits.html#fit_slitscan
@@ -549,6 +583,10 @@ class ERF(Fit):
     equation = "background + scale * erf(stretch * (x - cen))"
 
     @classmethod
+    def interesting_params(cls) -> list[str]:
+        return ["cen"]
+
+    @classmethod
     def model(cls, *args: int) -> lmfit.Model:
         """Error Function Model.
 
@@ -598,6 +636,10 @@ class ERFC(Fit):
     """
 
     equation = "background + scale * erfc(stretch * (x - cen))"
+
+    @classmethod
+    def interesting_params(cls) -> list[str]:
+        return ["cen"]
 
     @classmethod
     def model(cls, *args: int) -> lmfit.Model:
@@ -650,6 +692,10 @@ class TopHat(Fit):
 
     equation = "if (abs(x - cen) < width / 2) { background + height } else { background }"
 
+    @classmethod
+    def interesting_params(cls) -> list[str]:
+        return ["cen"]
+        
     @classmethod
     def model(cls, *args: int) -> lmfit.Model:
         """Top Hat Model.
@@ -710,8 +756,13 @@ class Trapezoid(Fit):
     """
 
     equation = """
+
     y = clip(y_offset + height + background - gradient * abs(x - cen),
      background, background + height)"""
+
+    @classmethod
+    def interesting_params(cls) -> list[str]:
+        return ["cen"]
 
     @classmethod
     def model(cls, *args: int) -> lmfit.Model:
@@ -772,10 +823,14 @@ class NegativeTrapezoid(Fit):
 
     """
 
-    equation = """
-    y = clip(y_offset - height + background + gradient * abs(x - cen),
+    equation = """y = clip(y_offset - height + background + gradient * abs(x - cen),
      background - height, background)"""
 
+
+    @classmethod
+    def interesting_params(cls) -> list[str]:
+        return ["cen"]
+    
     @classmethod
     def model(cls, *args: int) -> lmfit.Model:
         """Negative Trapezoid Model.
@@ -837,6 +892,10 @@ class MuonMomentum(Fit):
 
     equation = """
         y=(erfc((x-x0/w))*(r/2)+b)*((x/x0)**p)"""
+
+    @classmethod
+    def interesting_params(cls) -> list[str]:
+        return ["x0"]
 
     @classmethod
     def model(cls, *args: int) -> lmfit.Model:
