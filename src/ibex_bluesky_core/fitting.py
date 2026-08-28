@@ -47,8 +47,8 @@ class FitMethod:
         guess: Callable[
             [npt.NDArray[np.float64], npt.NDArray[np.float64]], dict[str, lmfit.Parameter]
         ],
-        interesting_params: list[str],
-        fit_name: str,
+        interesting_params: list[str] | None = None,
+        fit_name: str = "",
     ) -> None:
         """Tell :py:obj:`~ibex_bluesky_core.callbacks.LiveFit` how to fit to data points.
 
@@ -62,7 +62,7 @@ class FitMethod:
 
         """
         self.guess = guess
-        self.interesting_params = interesting_params
+        self.interesting_params = interesting_params if interesting_params is not None else []
         self.fit_name = fit_name
 
         if callable(model):

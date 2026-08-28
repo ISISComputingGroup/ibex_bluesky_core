@@ -149,7 +149,12 @@ def test_file_not_written_if_no_fitting_result(RE: run_engine.RunEngine):
     model = Linear.model()
     model.fit = MagicMock()
     model.fit.return_value = None
-    method = FitMethod(model=model, guess=Linear.guess())
+    method = FitMethod(
+        model=model,
+        guess=Linear.guess(),
+        fit_name="name",
+        interesting_params=["x0"],
+    )
     lf = LiveFit(method, y="invariant", x="motor")
     lfl = LiveFitLogger(lf, y="invariant", x="motor", postfix=postfix, output_dir=filepath)
 

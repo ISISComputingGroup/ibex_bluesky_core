@@ -7,7 +7,7 @@ from matplotlib.axes import Axes
 from matplotlib.figure import Figure
 
 from ibex_bluesky_core.callbacks import LiveFitPlot, LivePlot, PlotPNGSaver, show_plot
-from ibex_bluesky_core.callbacks._fitting import LiveFit
+from ibex_bluesky_core.callbacks._fitting import FitMethod, LiveFit
 from ibex_bluesky_core.callbacks._utils import RB
 
 
@@ -165,11 +165,15 @@ def test_no_filename_raises():
 
 def test_livefitplot_stop_set_title():
     mock_livefit = MagicMock(spec=LiveFit)
+    mock_livefit.method = MagicMock(spec=FitMethod)
+    mock_livefit.method.interesting_params = ["cen"]
+    mock_livefit.method.fit_name = "Gaussian"
+
     mock_livefit.y = "y"
     mock_livefit.independent_vars = {"x": "x"}
     mock_livefit.model = MagicMock()
     mock_livefit.model.param_names = ["cen", "sigma", "amplitude"]
-    mock_livefit.model.name = "GaussianModel  [Gaussian]"
+    mock_livefit.model.name = "Gaussian"
     mock_livefit.result = MagicMock()
     mock_livefit.result.values = {"cen": 1.23456, "sigma": 0.12345, "amplitude": 10.0}
 
@@ -186,12 +190,14 @@ def test_livefitplot_stop_set_title():
 
     ax.set_title.assert_called_once()
     title_called = ax.set_title.call_args[0][0]
-    assert "GaussianModel" in title_called
-    assert "cen: 1.23" in title_called
+    assert title_called == "Gaussian:\ncen: 1.23"
 
 
 def test_livefitplot_stop_no_set_title():
     mock_livefit = MagicMock(spec=LiveFit)
+    mock_livefit.method = MagicMock(spec=FitMethod)
+    mock_livefit.method.interesting_params = []
+    mock_livefit.method.fit_name = ""
     mock_livefit.y = "y"
     mock_livefit.independent_vars = {"x": "x"}
 
@@ -203,30 +209,3 @@ def test_livefitplot_stop_no_set_title():
         lfp.stop({"time": 0, "uid": "0", "exit_status": "success", "run_start": ""})
 
     ax.set_title.assert_not_called()
-
-
-def test_livefitplot_stop_set_title_without_contains():
-    mock_livefit = MagicMock(spec=LiveFit)
-    mock_livefit.y = "y"
-    mock_livefit.independent_vars = {"x": "x"}
-    mock_livefit.model = MagicMock()
-    mock_livefit.model.param_names = ["sigma", "amplitude"]
-    mock_livefit.model.name = "GaussianModel  [Gaussian]"
-    mock_livefit.result = MagicMock()
-    mock_livefit.result.values = {"sigma": 0.12345, "amplitude": 10.0}
-
-    ax = MagicMock(spec=Axes)
-
-    lfp = LiveFitPlot(livefit=mock_livefit, ax=ax, set_title=True)
-    lfp.ax = ax
-
-    with (
-        patch("bluesky.callbacks.LiveFitPlot.stop"),
-        patch("ibex_bluesky_core.callbacks._plotting.plt.show"),
-    ):
-        lfp.stop({"time": 0, "uid": "0", "exit_status": "success", "run_start": ""})
-
-    ax.set_title.assert_called_once()
-    title_called = ax.set_title.call_args[0][0]
-    assert "GaussianModel" in title_called
-    assert "sigma: 0.12" in title_called
