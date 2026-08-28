@@ -3,6 +3,7 @@
 import asyncio
 import logging
 import math
+import typing
 from abc import ABC, abstractmethod
 from collections.abc import Awaitable, Callable, Collection, Sequence
 
@@ -415,12 +416,12 @@ class PeriodSpecIntegralsReducer(Reducer, StandardReadable):
 
     @property
     def detectors(self) -> npt.NDArray[np.int64]:
-        """Get the detectors used by this reducer."""
+        """The detectors used by this reducer."""
         return self._detectors
 
     @property
     def monitors(self) -> npt.NDArray[np.int64]:
-        """Get the monitors used by this reducer."""
+        """The monitors used by this reducer."""
         return self._monitors
 
     async def reduce_data(self, dae: Dae) -> None:
@@ -443,14 +444,14 @@ class PeriodSpecIntegralsReducer(Reducer, StandardReadable):
         all_current_period_data = await dae.trigger_and_get_specdata()
 
         # After this sum, we are left with a 1D array of size nspectra
-        det_integrals = np.sum(all_current_period_data[self._detectors], axis=1)
-        mon_integrals = np.sum(all_current_period_data[self._monitors], axis=1)
+        det_integrals = np.sum(all_current_period_data[self._detectors], axis=1).astype(np.int32)
+        mon_integrals = np.sum(all_current_period_data[self._monitors], axis=1).astype(np.int32)
 
         self._det_integrals_setter(det_integrals)
         self._mon_integrals_setter(mon_integrals)
 
-        scalar_det_sum = det_integrals.sum()
-        scalar_mon_sum = mon_integrals.sum()
+        scalar_det_sum = typing.cast(int, det_integrals.sum())
+        scalar_mon_sum = typing.cast(int, mon_integrals.sum())
         self._det_sum_setter(scalar_det_sum)
         self._mon_sum_setter(scalar_mon_sum)
 

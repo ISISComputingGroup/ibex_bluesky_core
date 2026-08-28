@@ -47,6 +47,10 @@ extensions = [
     "sphinx.ext.viewcode",
     # Mermaid diagrams
     "sphinxcontrib.mermaid",
+    # For code-tabs
+    "sphinx_design",
+    # For autolinking code-blocks to API docs
+    "sphinx_codeautolink",
 ]
 mermaid_d3_zoom = True
 napoleon_google_docstring = True
@@ -96,7 +100,7 @@ intersphinx_mapping = {
     "scipp": ("https://scipp.github.io/", None),
     "scippneutron": ("https://scipp.github.io/scippneutron/", None),
     "numpy": ("https://numpy.org/doc/stable/", None),
-    "scipy": ("https://docs.scipy.org/doc/scipy/", None),
+    "scipy": ("https://docs.scipy.org/doc/scipy/", "scipy.inv"),
     "matplotlib": ("https://matplotlib.org/stable/", None),
     "lmfit": ("https://lmfit.github.io/lmfit-py/", None),
     "typing_extensions": ("https://typing-extensions.readthedocs.io/en/latest/", None),

@@ -32,8 +32,8 @@ __all__ = [
 
 def damped_oscillator(
     t: NDArray[np.floating],
-    B: float,  # noqa: N803
-    A_0: float,  # noqa: N803
+    B: float,  # ruff:ignore[invalid-argument-name]
+    A_0: float,  # ruff:ignore[invalid-argument-name]
     omega_0: float,
     phi_0: float,
     lambda_0: float,
@@ -47,14 +47,14 @@ def damped_oscillator(
     return B + A_0 * np.cos(omega_0 * t + phi_0) * np.exp(-t * lambda_0)
 
 
-def double_damped_oscillator(  # noqa: PLR0913 PLR0917 (model is just this complex)
+def double_damped_oscillator(  # ruff:ignore[too-many-arguments, too-many-positional-arguments] (model is just this complex)
     t: NDArray[np.floating],
-    B: float,  # noqa: N803
-    A_0: float,  # noqa: N803
+    B: float,  # ruff:ignore[invalid-argument-name]
+    A_0: float,  # ruff:ignore[invalid-argument-name]
     omega_0: float,
     phi_0: float,
     lambda_0: float,
-    A_1: float,  # noqa: N803
+    A_1: float,  # ruff:ignore[invalid-argument-name]
     omega_1: float,
     phi_1: float,
     lambda_1: float,
@@ -157,7 +157,7 @@ class MuonAsymmetryReducer(Reducer, StandardReadable):
 
     """
 
-    def __init__(  # noqa: PLR0913 (complex function, mitigated by kw-only arguments)
+    def __init__(  # ruff:ignore[too-many-arguments] (complex function, mitigated by kw-only arguments)
         self,
         *,
         prefix: str,

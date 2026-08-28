@@ -14,12 +14,14 @@ In the PyDEV console in the GUI, type:
 
 ```
 # Should print that it has loaded a named plan
-g.load_script(r"c:\instrument\dev\ibex_bluesky_core\manual_system_tests\the_test.py")
+g.load_script(r"c:\instrument\dev\ibex_bluesky_core\manual_system_tests\dae_scan.py")
 # The RE object should already be defined in the PyDEV console
-RE(dae_scan())
+RE(dae_scan_plan())
 ```
 
 If the plan uses plotting, it should plot using matplotlib embedded in the IBEX GUI.
+
+Check the directory `c:\instrument\dev\ibex_bluesky_core\manual_system_tests` for other tests to run
 
 ## Running from a standalone python session
 
@@ -36,9 +38,9 @@ set IBEX_BLUESKY_CORE_OUTPUT=c:\instrument\var\bluesky\tmp
 
 Ensure that any prerequisites are met before running the selected test. These can be located within the `.py` file.
 
-- Run the test using:
+- Run the tests using syntax like:
 ```
-python c:\instrument\dev\ibex_bluesky_core\manual_system_tests\the_test.py
+python c:\instrument\dev\ibex_bluesky_core\manual_system_tests\dae_scan.py
 ```
 
 If the plan uses plotting, it should spawn a Qt matplotlib window.

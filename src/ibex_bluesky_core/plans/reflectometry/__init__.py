@@ -31,7 +31,7 @@ __all__ = [
 ]
 
 
-def refl_scan(  # noqa: PLR0913
+def refl_scan(  # ruff:ignore[too-many-arguments]
     param: str,
     start: float,
     stop: float,
@@ -92,7 +92,7 @@ def refl_scan(  # noqa: PLR0913
     )
 
 
-def refl_adaptive_scan(  # noqa: PLR0913
+def refl_adaptive_scan(  # ruff:ignore[too-many-arguments]
     param: str,
     start: float,
     stop: float,

@@ -43,6 +43,7 @@ prefix:
 
 ```python
 from ibex_bluesky_core.devices.block import block_r
+
 readable_block = block_r(float, "my_block_name")
 ```
 
@@ -69,12 +70,13 @@ prefix:
 
 ```python
 from ibex_bluesky_core.devices.block import block_rw, BlockWriteConfig
+
 writable_block = block_rw(
-    float, 
+    float,
     "my_block_name",
     # Example: configure to always wait 5 seconds after being set.
     # For further options, see docstring of BlockWriteConfig.
-    write_config=BlockWriteConfig(settle_time_s=5.0)
+    write_config=BlockWriteConfig(settle_time_s=5.0),
 )
 ```
 
@@ -95,12 +97,13 @@ A simple constructor ({py:obj}`~ibex_bluesky_core.devices.block.block_rw_rbv`) i
 
 ```python
 from ibex_bluesky_core.devices.block import block_rw_rbv, BlockWriteConfig
+
 rw_rbv_block = block_rw_rbv(
-    float, 
+    float,
     "my_block_name",
     # Example: configure to always wait 5 seconds after being set.
     # For further options, see docstring of BlockWriteConfig.
-    write_config=BlockWriteConfig(settle_time_s=5.0)
+    write_config=BlockWriteConfig(settle_time_s=5.0),
 )
 ```
 
@@ -130,6 +133,7 @@ require an explicit type as motors are always of `float` data type:
 
 ```python
 from ibex_bluesky_core.devices.block import block_mot
+
 mot_block = block_mot("motor_block")
 ```
 

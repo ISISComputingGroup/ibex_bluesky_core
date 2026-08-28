@@ -21,26 +21,31 @@ suitable; instead the {py:obj}`~ibex_bluesky_core.devices.dae.Dae` class should 
 ### Run-per-point
 
 ```python
-
 from ibex_bluesky_core.utils import get_pv_prefix
-from ibex_bluesky_core.devices.simpledae import SimpleDae, RunPerPointController, PeriodGoodFramesWaiter, PeriodGoodFramesNormalizer
+from ibex_bluesky_core.devices.simpledae import (
+    SimpleDae,
+    RunPerPointController,
+    PeriodGoodFramesWaiter,
+    PeriodGoodFramesNormalizer,
+)
+
 prefix = get_pv_prefix()
 # One DAE run for each scan point, save the runs after each point.
 controller = RunPerPointController(save_run=True)
-# Wait for 500 good frames on each run. 
+# Wait for 500 good frames on each run.
 # Note despite using RunPerPointController here we are still using PeriodGoodFramesWaiter and PeriodGoodFramesNormalizer.
 waiter = PeriodGoodFramesWaiter(500)
 # Sum spectra 1..99 inclusive, then normalize by total good frames
 reducer = PeriodGoodFramesNormalizer(
-  prefix=prefix,
-  detector_spectra=[i for i in range(1, 100)],
+    prefix=prefix,
+    detector_spectra=[i for i in range(1, 100)],
 )
 
 dae = SimpleDae(
-  prefix=prefix,
-  controller=controller,
-  waiter=waiter,
-  reducer=reducer,
+    prefix=prefix,
+    controller=controller,
+    waiter=waiter,
+    reducer=reducer,
 )
 
 # Can give signals user-friendly names if desired
@@ -51,9 +56,13 @@ reducer.intensity.set_name("normalized counts")
 ### Period-per-point
 
 ```python
-
 from ibex_bluesky_core.utils import get_pv_prefix
-from ibex_bluesky_core.devices.simpledae import SimpleDae, PeriodPerPointController, PeriodGoodFramesWaiter, PeriodGoodFramesNormalizer
+from ibex_bluesky_core.devices.simpledae import (
+    SimpleDae,
+    PeriodPerPointController,
+    PeriodGoodFramesWaiter,
+    PeriodGoodFramesNormalizer,
+)
 
 prefix = get_pv_prefix()
 # One DAE period for each scan point, save the runs after the scan.
@@ -62,15 +71,15 @@ controller = PeriodPerPointController(save_run=True)
 waiter = PeriodGoodFramesWaiter(500)
 # Sum spectra 1..99 inclusive, then normalize by period good frames
 reducer = PeriodGoodFramesNormalizer(
-  prefix=prefix,
-  detector_spectra=[i for i in range(1, 100)],
+    prefix=prefix,
+    detector_spectra=[i for i in range(1, 100)],
 )
 
 dae = SimpleDae(
-  prefix=prefix,
-  controller=controller,
-  waiter=waiter,
-  reducer=reducer,
+    prefix=prefix,
+    controller=controller,
+    waiter=waiter,
+    reducer=reducer,
 )
 ```
 
@@ -259,12 +268,10 @@ as the summation function:
 ```python
 import scipp
 
-bounds=scipp.array(dims=["tof"], values=[15000.0, 25000.0], unit=scipp.units.us)
+bounds = scipp.array(dims=["tof"], values=[15000.0, 25000.0], unit=scipp.units.us)
 
 reducer = PeriodGoodFramesNormalizer(
-    prefix=get_pv_prefix(),
-    detector_spectra=[1, 2],
-    summer=tof_bounded_spectra(bounds)
+    prefix=get_pv_prefix(), detector_spectra=[1, 2], summer=tof_bounded_spectra(bounds)
 )
 ```
 
@@ -275,8 +282,10 @@ used to sum the monitor component, and time of flight bounding for the detector 
 ```python
 import scipp
 
-wavelength_bounds = scipp.array(dims=["tof"], values=[0.0, 5.1], unit=scipp.units.angstrom, dtype="float64")
-total_flight_path_length = scipp.scalar(value=85.0, unit=sc.units.m),
+wavelength_bounds = scipp.array(
+    dims=["tof"], values=[0.0, 5.1], unit=scipp.units.angstrom, dtype="float64"
+)
+total_flight_path_length = (scipp.scalar(value=85.0, unit=sc.units.m),)
 tof_bounds = scipp.array(dims=["tof"], values=[15000, 25000], unit=scipp.units.us)
 
 reducer = MonitorNormalizer(
@@ -284,7 +293,7 @@ reducer = MonitorNormalizer(
     detector_spectra=[1],
     monitor_spectra=[2],
     detector_summer=wavelength_bounded_spectra(wavelength_bounds, total_flight_path_length),
-    monitor_summer=tof_bounded_spectra(tof_bounds)
+    monitor_summer=tof_bounded_spectra(tof_bounds),
 )
 ```
 
@@ -389,10 +398,20 @@ from ibex_bluesky_core.devices.block import block_rw
 from ibex_bluesky_core.devices.polarisingdae import polarising_dae
 
 flipper = block_rw(float, "alice")
-wavelength_interval = sc.array(dims=["tof"], values=[0, 9999999999.0], unit=sc.units.angstrom, dtype="float64") # Creates a wavelength interval of the whole sprectrum
+wavelength_interval = sc.array(
+    dims=["tof"], values=[0, 9999999999.0], unit=sc.units.angstrom, dtype="float64"
+)  # Creates a wavelength interval of the whole sprectrum
 total_flight_path_length = sc.scalar(value=10, unit=sc.units.m)
 
-dae = polarising_dae(det_pixels=[1], frames=500, movable=flipper, movable_states=[0.0, 1.0], intervals=[wavelength_interval], total_flight_path_length=total_flight_path_length, monitor=2)
+dae = polarising_dae(
+    det_pixels=[1],
+    frames=500,
+    movable=flipper,
+    movable_states=[0.0, 1.0],
+    intervals=[wavelength_interval],
+    total_flight_path_length=total_flight_path_length,
+    monitor=2,
+)
 ```
 
 :::{note}
@@ -506,15 +525,17 @@ from ibex_bluesky_core.devices.dae import Dae, DaeSettingsData
 
 
 def plan(dae: Dae):
-  # On read, settings are returned together as an instance of a dataclass.
-  current_settings: DaeSettingsData = yield from bps.rd(dae.dae_settings)
-  wiring_table: str = current_settings.wiring_filepath
+    # On read, settings are returned together as an instance of a dataclass.
+    current_settings: DaeSettingsData = yield from bps.rd(dae.dae_settings)
+    wiring_table: str = current_settings.wiring_filepath
 
-  # On set, any unprovided settings are left unchanged.
-  yield from bps.mv(dae.dae_settings, DaeSettingsData(
-    wiring_filepath="a_new_wiring_table.dat",
-    spectra_filepath="a_new_spectra_table.dat"
-  ))
+    # On set, any unprovided settings are left unchanged.
+    yield from bps.mv(
+        dae.dae_settings,
+        DaeSettingsData(
+            wiring_filepath="a_new_wiring_table.dat", spectra_filepath="a_new_spectra_table.dat"
+        ),
+    )
 ```
 
 

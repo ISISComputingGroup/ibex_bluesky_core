@@ -21,13 +21,15 @@ from bluesky.callbacks import LiveFitPlot
 # Create a new figure to plot onto.
 plt.figure()
 # Make a new set of axes on that figure
-ax = plt.gca() 
-# ax is shared by fit_callback and plot_callback 
+ax = plt.gca()
+# ax is shared by fit_callback and plot_callback
 
 plot_callback = LivePlot(y="y_signal", x="x_signal", ax=ax, yerr="yerr_signal")
-fit_callback = LiveFit(Gaussian.fit(), y="y_signal", x="x_signal", yerr="yerr_signal", update_every=0.5)
+fit_callback = LiveFit(
+    Gaussian.fit(), y="y_signal", x="x_signal", yerr="yerr_signal", update_every=0.5
+)
 # Using the yerr parameter allows you to use error bars.
-# update_every = in seconds, how often to recompute the fit. 
+# update_every = in seconds, how often to recompute the fit.
 #   If `None`, do not compute until the end. Default is 1.
 fit_plot_callback = LiveFitPlot(fit_callback, ax=ax, color="r")
 ```
@@ -44,14 +46,8 @@ The `plot_callback` and `fit_plot_callback` objects can then be subscribed to th
 from bluesky.preprocessors import subs_decorator
 
 
-@subs_decorator(
-    [
-        fit_plot_callback,
-        plot_callback
-    ]
-)
-def plan():
-   ...
+@subs_decorator([fit_plot_callback, plot_callback])
+def plan(): ...
 ```
 
 ## Models
@@ -88,10 +84,10 @@ When only using the standard fits provided by the {py:obj}`ibex_bluesky_core.fit
 
 ```python
 from bluesky.callbacks import LiveFitPlot
-from ibex_bluesky_core.fitting import [FIT]
+from ibex_bluesky_core.fitting import Gaussian  # Or another type of fit
 
-# Pass [FIT].fit() to the first parameter of LiveFit
-lf = LiveFit([FIT].fit(), y="y_signal", x="x_signal", update_every=0.5)
+# Pass fit type to the first parameter of LiveFit
+lf = LiveFit(Gaussian().fit(), y="y_signal", x="x_signal", update_every=0.5)
 
 # Then subscribe to LiveFitPlot(lf, ...)
 ```
@@ -104,7 +100,7 @@ For the fits in the above table that require parameters, you will need to pass v
 
 ```python
 # For a polynomial of degree 3
-lf = LiveFit(Polynomial.fit(3),  y="y_signal", x="x_signal", update_every=0.5)
+lf = LiveFit(Polynomial.fit(3), y="y_signal", x="x_signal", update_every=0.5)
 ```
 
 ## Custom Models
@@ -128,9 +124,11 @@ import lmfit
 from ibex_bluesky_core.fitting import FitMethod
 from ibex_bluesky_core.callbacks import LiveFit
 
+
 def model(x: float, c1: float, c0: float) -> float:
-    
-    return c1 * x + c0 # y = mx + c
+
+    return c1 * x + c0  # y = mx + c
+
 
 def guess(x: npt.NDArray[np.float64], y: npt.NDArray[np.float64]) -> dict[str, lmfit.Parameter]:
 
@@ -138,7 +136,7 @@ def guess(x: npt.NDArray[np.float64], y: npt.NDArray[np.float64]) -> dict[str, l
     # x = set of x data
     # y = set of respective y data
     # x[n] makes a pair with y[n]
-    
+
     numerator = sum(x * y) - sum(x) * sum(y)
     denominator = sum(x**2) - sum(x) ** 2
 
@@ -146,14 +144,15 @@ def guess(x: npt.NDArray[np.float64], y: npt.NDArray[np.float64]) -> dict[str, l
     c0 = (sum(y) - c1 * sum(x)) / len(x)
 
     init_guess = {
-        "c1": lmfit.Parameter("c1", c1), # gradient
-        "c0": lmfit.Parameter("c0", c0), # y - intercept
+        "c1": lmfit.Parameter("c1", c1),  # gradient
+        "c0": lmfit.Parameter("c0", c0),  # y - intercept
     }
 
     return init_guess
 
-fit_method = FitMethod(model, guess) 
-#Pass the model and guess function to FitMethod
+
+fit_method = FitMethod(model, guess)
+# Pass the model and guess function to FitMethod
 
 lf = LiveFit(fit_method, y="y_signal", x="x_signal", update_every=0.5)
 
@@ -174,7 +173,7 @@ from ibex_bluesky_core.fitting import FitMethod, Linear
 
 
 def different_model(x: float, c1: float, c0: float) -> float:
-    return c1 * x + c0 ** 2  # y = mx + (c ** 2)
+    return c1 * x + c0**2  # y = mx + (c ** 2)
 
 
 fit_method = FitMethod(different_model, Linear.guess())
@@ -195,12 +194,13 @@ from ibex_bluesky_core.fitting import FitMethod, Linear
 # This Guessing. function isn't very good because it's return values don't change on the data already collected in the Bluesky run
 # It always guesses that the linear function is y = x
 
+
 def different_guess(x: float, c1: float, c0: float) -> float:
     init_guess = {
-      "c1": lmfit.Parameter("c1", 1),  # gradient
-      "c0": lmfit.Parameter("c0", 0),  # y - intercept
+        "c1": lmfit.Parameter("c1", 1),  # gradient
+        "c0": lmfit.Parameter("c0", 0),  # y - intercept
     }
-  
+
     return init_guess
 
 
@@ -219,6 +219,6 @@ For fits that require arguments, you will need to pass values to their respectiv
 :::
 
 ```python
-fit_method = FitMethod(Polynomial.model(3), different_guess) # If using a custom guess function
+fit_method = FitMethod(Polynomial.model(3), different_guess)  # If using a custom guess function
 lf = LiveFit(fit_method, ...)
 ```

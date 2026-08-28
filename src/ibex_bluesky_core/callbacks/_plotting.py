@@ -4,6 +4,7 @@ import logging
 import os
 import threading
 from pathlib import Path
+from stat import S_IRGRP, S_IROTH, S_IRUSR
 from typing import Any
 
 import matplotlib
@@ -51,9 +52,9 @@ class LivePlot(_DefaultLivePlot):
         y: str,
         x: str | None = None,
         yerr: str | None = None,
-        *args: Any,  # noqa: ANN401
+        *args: Any,  # ruff:ignore[any-type]
         update_on_every_event: bool = True,
-        **kwargs: Any,  # noqa: ANN401
+        **kwargs: Any,  # ruff:ignore[any-type]
     ) -> None:
         """:py:obj:`bluesky.callbacks.mpl_plotting.LivePlot` with support for uncertainties.
 
@@ -76,7 +77,7 @@ class LivePlot(_DefaultLivePlot):
 
         """
         self.update_on_every_event = update_on_every_event
-        super().__init__(y=y, x=x, *args, **kwargs)  # noqa: B026
+        super().__init__(y=y, x=x, *args, **kwargs)  # ruff:ignore[star-arg-unpacking-after-keyword-arg]
         if yerr is not None:
             self.yerr, *_others = get_obj_fields([yerr])
         else:
@@ -215,7 +216,7 @@ class LivePColorMesh(QtAwareCallback):
         x_coord: npt.NDArray[np.float64],
         ax: Axes,
         x_name: str | None = None,
-        **kwargs: Any,  # noqa: ANN401
+        **kwargs: Any,  # ruff:ignore[any-type]
     ) -> None:
         """Live :py:obj:`PColorMesh<matplotlib.pyplot.pcolormesh>`-based heatmap.
 
@@ -331,9 +332,12 @@ class PlotPNGSaver(QtAwareCallback):
         self.filename = None
 
     def start(self, doc: RunStart) -> None:
+        rb_num = _get_rb_num(doc)
+        rb_num_str = rb_num if rb_num == "Unknown RB" else f"RB{rb_num}"
         self.filename = (
             self.output_dir
-            / f"{_get_rb_num(doc)}"
+            / f"{rb_num_str}"
+            / "bluesky_scans"
             / f"{get_instrument()}_{self.x}_{self.y}_{format_time(doc)}Z{self.postfix}.png"
         )
 
@@ -351,3 +355,4 @@ class PlotPNGSaver(QtAwareCallback):
 
         self.filename.parent.mkdir(parents=True, exist_ok=True)
         self.ax.figure.savefig(self.filename, format="png")  # pyright: ignore [reportAttributeAccessIssue]
+        os.chmod(self.filename, S_IRUSR | S_IRGRP | S_IROTH)

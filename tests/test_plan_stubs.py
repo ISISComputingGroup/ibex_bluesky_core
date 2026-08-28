@@ -9,11 +9,12 @@ import pytest
 from bluesky import RunEngine
 from bluesky import plan_stubs as bps
 from bluesky.utils import Msg
+from ibex_non_ca_helpers.compress_hex import compress_and_hex, dehex_and_decompress
 from ophyd_async.core import get_mock_put, set_mock_value
 from ophyd_async.epics.motor import UseSetMode
 from ophyd_async.plan_stubs import ensure_connected
 
-from ibex_bluesky_core.devices import NoYesChoice, compress_and_hex, dehex_and_decompress
+from ibex_bluesky_core.devices import NoYesChoice
 from ibex_bluesky_core.devices.block import BlockMot
 from ibex_bluesky_core.devices.dae import (
     Dae,
@@ -490,12 +491,12 @@ def test_time_channels_wrapper(dae: Dae, RE: RunEngine):
 
     # assert that modified settings are set
     assert _convert_xml_to_tcb_settings(modified_raw_tcb_settings) == _convert_xml_to_tcb_settings(
-        dehex_and_decompress(mock_set_calls[0].args[0]).decode()
+        dehex_and_decompress(mock_set_calls[0].args[0].encode("utf-8")).decode()
     )
 
     # assert that the original settings are restored
     assert _convert_xml_to_tcb_settings(original_tcb_settings) == _convert_xml_to_tcb_settings(
-        dehex_and_decompress(mock_set_calls[1].args[0]).decode()
+        dehex_and_decompress(mock_set_calls[1].args[0].encode("utf-8")).decode()
     )
 
 
