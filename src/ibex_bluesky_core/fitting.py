@@ -57,7 +57,7 @@ class FitMethod:
         Args:
             model: The model function to use.
             guess: The guess function to use.
-            interesting_params: Interesting params for ie. plots to show results
+            interesting_params: Interesting parameters for ie. plots to show results
             fit_name: Provides the model name
 
         """
