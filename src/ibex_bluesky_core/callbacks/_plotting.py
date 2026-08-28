@@ -169,39 +169,13 @@ class LiveFitPlot(_DefaultLiveFitPlot):
     def stop(self, doc: RunStop) -> None:
         """Process a stop document (delegate to superclass, then show the plot)."""
         super().stop(doc)
-        logger.error("got here")
         if self.set_title:
-            logger.error("got here1234")
-            param_name = self.livefit.model.param_names
-            result_values = self.livefit.result.values
-
-            model_title = self.livefit.model.__class__.__name__
-            logger.error(f"title: {model_title}")
-
             equation_values = [
-                    (key, value) for key, value in result_values.items() if key in self.livefit.method.interesting_params
+                    (key, value) for key, value in self.livefit.result.values.items() if key in self.livefit.method.interesting_params
                 ]
-            logger.error(f"equation values: {equation_values}")
-
-            # get interesting params
-
-            # get the values for these interesting params
-
-            #model_title = self.livefit.model.name.split("  [")[0] + ")"
-
-            #contains = [x for x in _selected_params if x in param_name]
-
-            # if contains:
-            #     equation_values = [
-            #         (key, value) for key, value in result_values.items() if key in contains
-            #     ]
-            # else:
-            #     equation_values = [
-            #         (key, value) for key, value in result_values.items() if key in param_name
-            #     ]
 
             title_formatted = ", ".join(f"{k}: {v:.{_precision}g}" for k, v in equation_values)
-            completed_title = f"{model_title}:\n{title_formatted}"
+            completed_title = f"{self.livefit.method.fit_name}:\n{title_formatted}"
             self.ax.set_title(completed_title, wrap=True)
 
 

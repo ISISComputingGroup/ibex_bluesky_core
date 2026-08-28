@@ -47,7 +47,8 @@ class FitMethod:
         guess: Callable[
             [npt.NDArray[np.float64], npt.NDArray[np.float64]], dict[str, lmfit.Parameter]
         ],
-        interesting_params: list[str]
+        interesting_params: list[str],
+        fit_name: str,
     ) -> None:
         """Tell :py:obj:`~ibex_bluesky_core.callbacks.LiveFit` how to fit to data points.
 
@@ -61,6 +62,7 @@ class FitMethod:
         """
         self.guess = guess
         self.interesting_params = interesting_params
+        self.fit_name = fit_name
 
         if callable(model):
             self.model = lmfit.Model(model)
@@ -108,7 +110,7 @@ class Fit(ABC):
     @classmethod
     def fit(cls, *args: int) -> FitMethod:
         """Return a FitMethod given model and guess functions to pass to LiveFit."""
-        return FitMethod(model=cls.model(*args), guess=cls.guess(*args), interesting_params=cls.interesting_params())
+        return FitMethod(model=cls.model(*args), guess=cls.guess(*args), interesting_params=cls.interesting_params(), fit_name=cls.__name__)
 
     
     @classmethod
