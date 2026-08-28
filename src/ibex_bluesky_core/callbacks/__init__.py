@@ -56,6 +56,7 @@ logger = logging.getLogger(__name__)
 __all__ = [
     "CentreOfMass",
     "ChainedLiveFit",
+    "LiveFitPlot",
     "CustomCallback",
     "CustomCallbackFunc",
     "DocLoggingCallback",

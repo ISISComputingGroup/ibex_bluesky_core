@@ -169,7 +169,7 @@ class LiveFitPlot(_DefaultLiveFitPlot):
     def stop(self, doc: RunStop) -> None:
         """Process a stop document (delegate to superclass, then show the plot)."""
         super().stop(doc)
-        if self.set_title:
+        if self.set_title and self.livefit.result is not None:
             equation_values = [
                     (key, value) for key, value in self.livefit.result.values.items() if key in self.livefit.method.interesting_params
                 ]
