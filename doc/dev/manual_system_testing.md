@@ -10,6 +10,15 @@ or expected results which you should manually verify.
 
 ## Running the tests from PyDEV in the GUI
 
+On a development machine you will need to set some environment variables before you can use bluesky as you likely won't have write access on the archive for logs and plot outputs.
+
+To fix this press `Ctrl-alt-p` in the GUI, then go to `PyDev -> Interactive Console -> Initial Commands` and add this to the commands: 
+```python
+os.environ["IBEX_BLUESKY_CORE_LOGS"] = "c:\\instrument\\var\\bluesky\\tmp"
+os.environ["IBEX_BLUESKY_CORE_OUTPUT"] = "c:\\instrument\\var\\bluesky\\tmp"
+```
+Restart any currently open consoles for this to take effect.
+
 In the PyDEV console in the GUI, type:
 
 ```
