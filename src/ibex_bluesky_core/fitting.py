@@ -58,6 +58,7 @@ class FitMethod:
             model: The model function to use.
             guess: The guess function to use.
             interesting_params: Interesting params for ie. plots to show results
+            fit_name: Provides the model name
 
         """
         self.guess = guess
@@ -110,14 +111,17 @@ class Fit(ABC):
     @classmethod
     def fit(cls, *args: int) -> FitMethod:
         """Return a FitMethod given model and guess functions to pass to LiveFit."""
-        return FitMethod(model=cls.model(*args), guess=cls.guess(*args), interesting_params=cls.interesting_params(), fit_name=cls.__name__)
+        return FitMethod(
+            model=cls.model(*args),
+            guess=cls.guess(*args),
+            interesting_params=cls.interesting_params(),
+            fit_name=cls.__name__,
+        )
 
-    
     @classmethod
     @abstractmethod
     def interesting_params(cls) -> list[str]:
         """Return parameters that are interesting for ie. the plot title."""
-        
 
 
 def _guess_cen_and_width(
@@ -145,6 +149,7 @@ class Gaussian(Fit):
 
     @classmethod
     def interesting_params(cls) -> list[str]:
+        """Return parameters that are interesting for ie. the plot title."""
         return ["x0"]
 
     @classmethod
@@ -208,6 +213,7 @@ class Lorentzian(Fit):
 
     @classmethod
     def interesting_params(cls) -> list[str]:
+        """Return parameters that are interesting for ie. the plot title."""
         return ["center"]
 
     @classmethod
@@ -293,6 +299,7 @@ class Linear(Fit):
 
     @classmethod
     def interesting_params(cls) -> list[str]:
+        """Return parameters that are interesting for ie. the plot title."""
         return ["c0"]
 
     @classmethod
@@ -330,6 +337,7 @@ class Polynomial(Fit):
 
     @classmethod
     def interesting_params(cls) -> list[str]:
+        """Return parameters that are interesting for ie. the plot title."""
         return ["c0"]
 
     @classmethod
@@ -391,6 +399,7 @@ class DampedOsc(Fit):
 
     @classmethod
     def interesting_params(cls) -> list[str]:
+        """Return parameters that are interesting for ie. the plot title."""
         return ["center"]
 
     @classmethod
@@ -446,6 +455,7 @@ class SlitScan(Fit):
 
     @classmethod
     def interesting_params(cls) -> list[str]:
+        """Return parameters that are interesting for ie. the plot title."""
         return ["center"]
 
     equation = """See
@@ -602,6 +612,7 @@ class ERF(Fit):
 
     @classmethod
     def interesting_params(cls) -> list[str]:
+        """Return parameters that are interesting for ie. the plot title."""
         return ["cen"]
 
     @classmethod
@@ -657,6 +668,7 @@ class ERFC(Fit):
 
     @classmethod
     def interesting_params(cls) -> list[str]:
+        """Return parameters that are interesting for ie. the plot title."""
         return ["cen"]
 
     @classmethod
@@ -712,8 +724,9 @@ class TopHat(Fit):
 
     @classmethod
     def interesting_params(cls) -> list[str]:
+        """Return parameters that are interesting for ie. the plot title."""
         return ["cen"]
-        
+
     @classmethod
     def model(cls, *args: int) -> lmfit.Model:
         """Top Hat Model.
@@ -780,6 +793,7 @@ class Trapezoid(Fit):
 
     @classmethod
     def interesting_params(cls) -> list[str]:
+        """Return parameters that are interesting for ie. the plot title."""
         return ["cen"]
 
     @classmethod
@@ -852,11 +866,11 @@ class NegativeTrapezoid(Fit):
     equation = """y = clip(y_offset - height + background + gradient * abs(x - cen),
      background - height, background)"""
 
-
     @classmethod
     def interesting_params(cls) -> list[str]:
+        """Return parameters that are interesting for ie. the plot title."""
         return ["cen"]
-    
+
     @classmethod
     def model(cls, *args: int) -> lmfit.Model:
         """Negative Trapezoid Model.
@@ -929,6 +943,7 @@ class MuonMomentum(Fit):
 
     @classmethod
     def interesting_params(cls) -> list[str]:
+        """Return parameters that are interesting for ie. the plot title."""
         return ["x0"]
 
     @classmethod

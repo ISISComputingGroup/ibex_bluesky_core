@@ -17,7 +17,7 @@ import bluesky.preprocessors as bpp
 import matplotlib.pyplot as plt
 import numpy as np
 import numpy.typing as npt
-from bluesky.callbacks import CallbackBase, CollectThenCompute, LiveFitPlot, LiveTable
+from bluesky.callbacks import CallbackBase, CollectThenCompute, LiveTable
 from bluesky.callbacks.fitting import PeakStats
 from bluesky.callbacks.mpl_plotting import QtAwareCallback
 from bluesky.utils import Msg, make_decorator
@@ -56,7 +56,6 @@ logger = logging.getLogger(__name__)
 __all__ = [
     "CentreOfMass",
     "ChainedLiveFit",
-    "LiveFitPlot",
     "CustomCallback",
     "CustomCallbackFunc",
     "DocLoggingCallback",
@@ -65,6 +64,7 @@ __all__ = [
     "KafkaCallback",
     "LiveFit",
     "LiveFitLogger",
+    "LiveFitPlot",
     "LivePColorMesh",
     "LivePlot",
     "PlotPNGSaver",
@@ -181,7 +181,7 @@ class ISISCallbacks:
             live_plot_update_on_every_event: whether to show the live plot on every event, or just at the end.
             set_title_to_fit_result: whether to set the title of the fit plot to the fit result.
 
-        """  # ruff:ignore[line-too-long, non-imperative-mood, missing-blank-line-after-last-section]
+        """  # ruff:ignore[line-too-long, non-imperative-mood]
         fig = None
         self._subs = []
         self._peak_stats = None

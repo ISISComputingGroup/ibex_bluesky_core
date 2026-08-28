@@ -28,7 +28,7 @@ from ibex_bluesky_core.callbacks._utils import (
 
 logger = logging.getLogger(__name__)
 
-__all__ = ["LivePColorMesh", "LivePlot", "LiveFitPlot", "PlotPNGSaver", "show_plot"]
+__all__ = ["LiveFitPlot", "LivePColorMesh", "LivePlot", "PlotPNGSaver", "show_plot"]
 _selected_params = ["cen", "center", "x0", "inflections_diff", "centre"]
 _precision = 3
 
@@ -142,7 +142,7 @@ class LivePlot(_DefaultLivePlot):
 class LiveFitPlot(_DefaultLiveFitPlot):
     ax: Axes
 
-    def __init__(  # noqa: PLR0913
+    def __init__(  # ruff: ignore[too-many-arguments]
         self,
         livefit: LiveFit,
         *,
@@ -152,7 +152,7 @@ class LiveFitPlot(_DefaultLiveFitPlot):
         ylim: tuple[float, float] | None = None,
         ax: Axes | None = None,
         set_title: bool = False,
-        **kwargs: Any,  # noqa: ANN401
+        **kwargs: Any,  # ruff: ignore[any-type]
     ) -> None:
 
         super().__init__(
@@ -171,8 +171,10 @@ class LiveFitPlot(_DefaultLiveFitPlot):
         super().stop(doc)
         if self.set_title and self.livefit.result is not None:
             equation_values = [
-                    (key, value) for key, value in self.livefit.result.values.items() if key in self.livefit.method.interesting_params
-                ]
+                (key, value)
+                for key, value in self.livefit.result.values.items()
+                if key in self.livefit.method.interesting_params
+            ]
 
             title_formatted = ", ".join(f"{k}: {v:.{_precision}g}" for k, v in equation_values)
             completed_title = f"{self.livefit.method.fit_name}:\n{title_formatted}"
