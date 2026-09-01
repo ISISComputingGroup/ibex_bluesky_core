@@ -55,6 +55,10 @@ class MockFit(Fit):
 
         return guess
 
+    @classmethod
+    def interesting_params(cls) -> list[str]:
+        return ["offset"]
+
 
 def test_fit_method_uses_respective_model_and_guess():
     # Checks that model and guess are called atleast once each
@@ -74,6 +78,12 @@ def test_fit_method_uses_respective_model_and_guess():
     )
 
     assert MockFit.mocks_called()
+
+
+def test_fit_propagates_name_and_interesting_params():
+    res = MockFit.fit()
+    assert res.interesting_params == MockFit.interesting_params()
+    assert res.fit_name == "MockFit"
 
 
 class TestGaussian:
@@ -1188,3 +1198,25 @@ class TestFlatLines:
             outp = MuonMomentum.guess()(x, y)
             print(f"\n\n\n\\{outp}\n\n\n")
             assert pytest.approx(outp["w"].value) == 0.5
+
+
+@pytest.mark.parametrize(
+    "fit_method",
+    [
+        ERF,
+        ERFC,
+        DampedOsc,
+        Gaussian,
+        Linear,
+        Lorentzian,
+        MuonMomentum,
+        NegativeTrapezoid,
+        Polynomial,
+        SlitScan,
+        TopHat,
+        Trapezoid,
+    ],
+)
+def test_fit_method_has_interesting_params(fit_method: Fit):
+    # check that for a given fitting method, the lenght of interesting params is more than 0
+    assert len(fit_method().interesting_params()) > 0  # pyright: ignore reportCallIssue
