@@ -169,7 +169,7 @@ class LiveFitPlot(_DefaultLiveFitPlot):
                 The legend will always show the scan_id followed by a colon (“1: “).
             xlim (tuple or None, optional): passed to Axes.set_xlim.
             ylim (tuple or None, optional): passed to Axes.set_ylim.
-            ax (Axes or None, optional): matplotib Axes; if none specified, new figure and axes are made.
+            ax (Axes or None, optional): matplotlib Axes; if none specified, new figure and axes are made.
             set_title (bool): A title is created and added to the plot, 
                 using the name of the selected function and center point of the output.
             **kwargs: As per :py:obj:`bluesky.callbacks.mpl_plotting.LiveFitPlot`.
