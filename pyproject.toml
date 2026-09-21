@@ -43,7 +43,7 @@ classifiers = [
 dependencies = [
   "bluesky",  # Bluesky framework
   "confluent-kafka",  # Kafka producer
-  "ophyd-async[ca] == 0.21.1",  # Device abstraction.
+  "ophyd-async[ca] == 0.21.2",  # Device abstraction.
   "lmfit",  # Fitting
   "matplotlib",  # Plotting
   "msgpack-numpy",  # Encoding kafka messages
@@ -70,8 +70,8 @@ doc = [
 ]
 dev = [
   "ibex_bluesky_core[doc]",
-  "ruff==0.16.4",  # Update manually so we don't get new rules 'by accident'
-  "pyright==1.1.411",  # Update manually
+  "ruff==0.16.7",  # Update manually so we don't get new rules 'by accident'
+  "pyright==1.1.414",  # Update manually
   "pytest",
   "pytest-asyncio",
   "pytest-cov",
