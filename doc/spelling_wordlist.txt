@@ -82,4 +82,6 @@ Topcat
 uAh
 uktena
 unpauses
+xlim
+ylim
 μs
