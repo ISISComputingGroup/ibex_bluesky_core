@@ -1,0 +1,34 @@
+
+
+``ibex_bluesky_core.utils``
+===========================
+        
+        
+        
+        
+        
+        
+
+.. automodule:: ibex_bluesky_core.utils
+    :members:
+    :show-inheritance:
+
+    
+    
+    
+
+    
+    
+    .. rubric:: Members
+
+    .. autosummary::
+        :nosignatures:
+    
+        NamedReadableAndMovable
+        calculate_polarisation
+        center_of_mass_of_area_under_curve
+        centred_pixel
+        get_pv_prefix
+        is_matplotlib_backend_qt
+    
+    

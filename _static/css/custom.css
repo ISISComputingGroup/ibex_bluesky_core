@@ -1,0 +1,17 @@
+a:hover {
+    color: #559dc7;
+}
+
+.wy-menu-vertical p.caption {
+    color: #4d8cc1;
+}
+
+.sphinx-codeautolink-a{
+    border-bottom-color: #4d8cc1;
+    border-bottom-style: dashed;
+    border-bottom-width: 1px;
+}
+
+.sphinx-codeautolink-a:hover {
+    color: #888888;
+}
