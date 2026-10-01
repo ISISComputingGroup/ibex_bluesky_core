@@ -161,7 +161,8 @@ class LiveFitPlot(_DefaultLiveFitPlot):
         This callback is an extension of :py:obj:`bluesky.callbacks.mpl_plotting.LiveFitPlot`
         with the following additional features:
 
-        - Setting the title of the function used and the value of the assigned interesting parameter.
+        - Setting the title of the function used and the value of the assigned interesting
+        parameter.
 
         Args:
             livefit: an instance of LiveFit
@@ -175,7 +176,8 @@ class LiveFitPlot(_DefaultLiveFitPlot):
             ax (Axes or None, optional): matplotlib Axes; if none specified, new figure and axes
                 are made.
             set_title (bool): A title is created and added to the plot,
-                using the name of the selected function and value of the assigned interesting parameter.
+                using the name of the selected function and value of the assigned interesting
+                parameter.
             **kwargs: As per :py:obj:`bluesky.callbacks.mpl_plotting.LiveFitPlot`.
 
         """
