@@ -141,6 +141,7 @@ class LivePlot(_DefaultLivePlot):
 
 class LiveFitPlot(_DefaultLiveFitPlot):
     """LiveFitPlot, customized for IBEX."""
+
     ax: Axes
 
     def __init__(  # ruff: ignore[too-many-arguments]
@@ -164,18 +165,20 @@ class LiveFitPlot(_DefaultLiveFitPlot):
 
         Args:
             livefit: an instance of LiveFit
-            num_points (int, optional): number of points to sample when evaluating the model; default 100.
-            legend_keys (list or None, optional): The list of keys to extract from the RunStart document and format in the legend of the plot. 
-                The legend will always show the scan_id followed by a colon (“1: “).
+            num_points (int, optional): number of points to sample when evaluating the model;
+                default 100.
+            legend_keys (list or None, optional): The list of keys to extract from the
+                RunStart document and format in the legend of the plot. The legend will
+                always show the scan_id followed by a colon (“1: “).
             xlim (tuple or None, optional): passed to Axes.set_xlim.
             ylim (tuple or None, optional): passed to Axes.set_ylim.
-            ax (Axes or None, optional): matplotlib Axes; if none specified, new figure and axes are made.
-            set_title (bool): A title is created and added to the plot, 
+            ax (Axes or None, optional): matplotlib Axes; if none specified, new figure and axes
+                are made.
+            set_title (bool): A title is created and added to the plot,
                 using the name of the selected function and center point of the output.
             **kwargs: As per :py:obj:`bluesky.callbacks.mpl_plotting.LiveFitPlot`.
 
         """
-            
         super().__init__(
             livefit,
             num_points=num_points,
