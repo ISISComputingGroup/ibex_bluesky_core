@@ -63,6 +63,12 @@ The `plot_callback` object can then be subscribed to the run engine, using eithe
 By subsequently re-using the same `ax` object in later scans, rather than creating a new 
 `ax` object for each scan, two scans can be "overplotted" with each other for comparison.
 
+## {py:obj}`~ibex_bluesky_core.callbacks.LiveFitPlot`
+
+{py:obj}`~ibex_bluesky_core.callbacks.LiveFitPlot` adds a plot to an instance of 
+{py:obj}``~ibex_bluesky_core.callbacks.LivePlot`. An addtional parameter has been added to the existing Bluesky plotting callbacks allowing users to add a title containing information about the function used and the centre point of the resulting function.
+
+
 ## {py:obj}`~ibex_bluesky_core.callbacks.LivePColorMesh`
 
 {py:obj}`~ibex_bluesky_core.callbacks.LivePColorMesh` is a specialized heatmap
