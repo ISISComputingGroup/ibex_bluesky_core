@@ -33,6 +33,7 @@ ie
 IPython
 linter
 linters
+LivePlot
 mantid
 matplotlib
 mbbi
@@ -52,6 +53,7 @@ prepended
 preprocessor
 preprocessors
 programmatically
+py
 Pycharm
 pytest
 pyplot
