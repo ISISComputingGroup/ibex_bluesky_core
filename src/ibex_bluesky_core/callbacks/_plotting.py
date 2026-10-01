@@ -164,6 +164,7 @@ class LiveFitPlot(_DefaultLiveFitPlot):
         - Setting the title of the function used and the value of the assigned interesting
         parameter.
 
+
         Args:
             livefit: an instance of LiveFit
             num_points (int, optional): number of points to sample when evaluating the model;
