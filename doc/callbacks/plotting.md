@@ -66,7 +66,7 @@ By subsequently re-using the same `ax` object in later scans, rather than creati
 ## {py:obj}`~ibex_bluesky_core.callbacks.LiveFitPlot`
 
 {py:obj}`~ibex_bluesky_core.callbacks.LiveFitPlot` adds a plot to an instance of 
-{py:obj}``~ibex_bluesky_core.callbacks.LivePlot`. An additional parameter has been added to the existing Bluesky plotting callbacks allowing users to add a title containing information about the function used and the centre point of the resulting function.
+{py:obj}`~ibex_bluesky_core.callbacks.LivePlot`. An additional parameter has been added to the existing Bluesky plotting callbacks allowing users to add a title containing information about the function used and the value of the assigned interesting parameter in the resulting function.
 
 
 ## {py:obj}`~ibex_bluesky_core.callbacks.LivePColorMesh`
