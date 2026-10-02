@@ -17,7 +17,7 @@ import bluesky.preprocessors as bpp
 import matplotlib.pyplot as plt
 import numpy as np
 import numpy.typing as npt
-from bluesky.callbacks import CallbackBase, CollectThenCompute, LiveFitPlot, LiveTable
+from bluesky.callbacks import CallbackBase, CollectThenCompute, LiveTable
 from bluesky.callbacks.fitting import PeakStats
 from bluesky.callbacks.mpl_plotting import QtAwareCallback
 from bluesky.utils import Msg, make_decorator
@@ -37,7 +37,13 @@ from ibex_bluesky_core.callbacks._fitting import (
     LiveFitLogger,
 )
 from ibex_bluesky_core.callbacks._kafka import KafkaCallback
-from ibex_bluesky_core.callbacks._plotting import LivePColorMesh, LivePlot, PlotPNGSaver, show_plot
+from ibex_bluesky_core.callbacks._plotting import (
+    LiveFitPlot,
+    LivePColorMesh,
+    LivePlot,
+    PlotPNGSaver,
+    show_plot,
+)
 from ibex_bluesky_core.callbacks._utils import get_default_output_path
 from ibex_bluesky_core.fitting import FitMethod
 from ibex_bluesky_core.utils import is_matplotlib_backend_qt
@@ -58,6 +64,7 @@ __all__ = [
     "KafkaCallback",
     "LiveFit",
     "LiveFitLogger",
+    "LiveFitPlot",
     "LivePColorMesh",
     "LivePlot",
     "PlotPNGSaver",
@@ -96,6 +103,7 @@ class ISISCallbacks:
         plot_png_postfix: str = "",
         live_fit_update_every: int | None = 1,
         live_plot_update_on_every_event: bool = True,
+        set_title_to_fit_result: bool = False,
     ) -> None:
         """A collection of ISIS standard callbacks.
 
@@ -171,7 +179,9 @@ class ISISCallbacks:
             plot_png_postfix: the postfix to add to PNG plot files.
             live_fit_update_every: How often, in points, to recompute the fit. If None, do not compute until the end.
             live_plot_update_on_every_event: whether to show the live plot on every event, or just at the end.
-        """  # ruff:ignore[line-too-long, non-imperative-mood, missing-blank-line-after-last-section]
+            set_title_to_fit_result: whether to set the title of the fit plot to the fit result.
+
+        """  # ruff:ignore[line-too-long, non-imperative-mood]
         fig = None
         self._subs = []
         self._peak_stats = None
@@ -254,7 +264,14 @@ class ISISCallbacks:
                 # Sample 5000 points as this strikes a reasonable balance between displaying
                 # 'enough' points for almost any scan (even after zooming in on a peak), while
                 # not taking 'excessive' compute time to generate these samples.
-                self._subs.append(LiveFitPlot(livefit=self._live_fit, ax=ax, num_points=5000))
+                self._subs.append(
+                    LiveFitPlot(
+                        livefit=self._live_fit,
+                        ax=ax,
+                        num_points=5000,
+                        set_title=set_title_to_fit_result,
+                    )
+                )
             else:
                 self._subs.append(self._live_fit)
 
