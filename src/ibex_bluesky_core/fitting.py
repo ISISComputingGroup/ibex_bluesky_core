@@ -300,7 +300,7 @@ class Linear(Fit):
     @classmethod
     def interesting_params(cls) -> list[str]:
         """Return parameters that are interesting for ie. the plot title."""
-        return ["c0"]
+        return ["c1", "c0"]
 
     @classmethod
     def model(cls, *args: int) -> lmfit.Model:
@@ -338,7 +338,7 @@ class Polynomial(Fit):
     @classmethod
     def interesting_params(cls) -> list[str]:
         """Return parameters that are interesting for ie. the plot title."""
-        return ["c0"]
+        return []
 
     @classmethod
     def _check_degree(cls, args: tuple[int, ...]) -> int:
@@ -452,15 +452,14 @@ class SlitScan(Fit):
         :ref:`fit_slitscan` model and parameter descriptions
 
     """
+    equation = """See
+    https://isiscomputinggroup.github.io/ibex_bluesky_core/callbacks/fitting/standard_fits.html#fit-slitscan
+    for model function"""
 
     @classmethod
     def interesting_params(cls) -> list[str]:
         """Return parameters that are interesting for ie. the plot title."""
-        return ["center"]
-
-    equation = """See
-    https://isiscomputinggroup.github.io/ibex_bluesky_core/fitting/standard_fits.html#fit_slitscan
-    for model function"""
+        return ["inflection0"]
 
     @classmethod
     def model(cls, *args: int) -> lmfit.Model:
