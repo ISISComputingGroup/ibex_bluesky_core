@@ -18,15 +18,20 @@ from ophyd_async.core import (
 )
 
 from ibex_bluesky_core.devices.dae import Dae, DaeSpectra
-from ibex_bluesky_core.devices.simpledae import Reducer
+from ibex_bluesky_core.devices.simpledae import (
+    PeriodGoodFramesNormalizer,
+    Reducer,
+)
 from ibex_bluesky_core.utils import calculate_polarisation
 
 logger = logging.getLogger(__name__)
 
 __all__ = [
     "MuonAsymmetryReducer",
+    "MuonLifetimeReducer",
     "damped_oscillator",
     "double_damped_oscillator",
+    "double_exponential_decay",
 ]
 
 
@@ -73,7 +78,93 @@ def double_damped_oscillator(  # ruff:ignore[too-many-arguments, too-many-positi
     )
 
 
-class MuonAsymmetryReducer(Reducer, StandardReadable):
+def double_exponential_decay(
+    t: NDArray[np.floating],
+    n_0: float,
+    lambda_0: float,
+    n_1: float,
+    lambda_1: float,
+) -> NDArray[np.floating]:
+    r"""Equation for a double exponential decay, as a function of time :math:`t`.
+
+    .. math::
+
+        N_0 e^{-\lambda_0 t} + N_1 e^{-\lambda_1 t}
+    """
+    return n_0 * np.exp(-lambda_0 * t) + n_1 * np.exp(-lambda_1 * t)
+
+
+class _MuonReducerMixin:
+    """Shared behaviour for muon reducers which fit an ``lmfit`` model and expose its parameters.
+
+    Provides:
+      - creation of a ``{param}``/``{param}_err`` soft-signal pair for each model parameter.
+      - publishing those signals via `additional_readable_signals`.
+      - applying a fit result to those signals.
+    """
+
+    _model: Model
+    _fit_parameters: lmfit.Parameters
+    _parameter_setters: dict[str, typing.Callable[[float], None]]
+    _parameter_error_setters: dict[str, typing.Callable[[float], None]]
+
+    def _init_mixin(self, model: Model, fit_parameters: lmfit.Parameters) -> None:
+        self._model = model
+        self._fit_parameters = fit_parameters
+        self._parameter_setters = {}
+        self._parameter_error_setters = {}
+
+        missing = set(model.param_names) - set(fit_parameters.keys())
+        if missing:
+            raise ValueError(f"Missing parameters: {missing}")
+
+        for param in model.param_names:
+            signal, setter = soft_signal_r_and_setter(float, 0.0)
+            setattr(self, param, signal)
+            self._parameter_setters[param] = setter
+
+            error_signal, error_setter = soft_signal_r_and_setter(float, 0.0)
+            setattr(self, f"{param}_err", error_signal)
+            self._parameter_error_setters[param] = error_setter
+
+    def _apply_fit_result(self, fit_result: ModelResult | None, error_message: str) -> None:
+        if fit_result is None:
+            raise ValueError(error_message)
+
+        for param in self._parameter_setters:
+            result = fit_result.params[param]
+
+            self._parameter_setters[param](result.value)
+            self._parameter_error_setters[param](result.stderr)
+
+    def _fit_data(self, data: sc.DataArray) -> ModelResult | None:
+        bin_edges = data.coords["tof"].to(unit=sc.units.ns, dtype="float64").values
+        bin_centers = (bin_edges[:-1] + bin_edges[1:]) / 2
+
+        return self._model.fit(
+            data.values,
+            t=bin_centers,
+            weights=1.0 / (data.variances**0.5),
+            params=self._fit_parameters,
+            nan_policy="omit",
+        )
+
+    def additional_readable_signals(self, dae: Dae) -> list[Device]:
+        """Publish interesting signals derived or used by this reducer."""
+        signal_values = []
+        signal_errors = []
+
+        for param in self._model.param_names:
+            signal_values.append(getattr(self, param))
+            signal_errors.append(getattr(self, f"{param}_err"))
+
+        return signal_values + signal_errors
+
+    # As we have dynamic attributes, tell pyright that __getattr__ may return any type.
+    __getattr__: typing.Callable[[str], typing.Any]
+
+
+class MuonAsymmetryReducer(_MuonReducerMixin, Reducer, StandardReadable):
     r"""DAE reducer which exposes a fitted asymmetry quantity.
 
     This reducer takes two lists of detectors; a forward scattering set of detectors,
@@ -196,30 +287,13 @@ class MuonAsymmetryReducer(Reducer, StandardReadable):
         self._forward_detectors = forward_detectors
         self._backward_detectors = backward_detectors
         self._alpha = alpha
-        self._model = model
         self._time_bin_edges = time_bin_edges
 
         self._first_det = DaeSpectra(
             dae_prefix=prefix + "DAE:", spectra=int(forward_detectors[0]), period=0
         )
-        # ask for independent variables which should be a single T
 
-        self._fit_parameters = fit_parameters
-        self._parameter_setters = {}
-        self._parameter_error_setters = {}
-
-        missing = set(model.param_names) - set(fit_parameters.keys())
-        if missing:
-            raise ValueError(f"Missing parameters: {missing}")
-
-        for param in model.param_names:
-            signal, setter = soft_signal_r_and_setter(float, 0.0)
-            setattr(self, param, signal)
-            self._parameter_setters[param] = setter
-
-            error_signal, error_setter = soft_signal_r_and_setter(float, 0.0)
-            setattr(self, f"{param}_err", error_signal)
-            self._parameter_error_setters[param] = error_setter
+        self._init_mixin(model, fit_parameters)
 
         super().__init__(name="")
 
@@ -242,18 +316,6 @@ class MuonAsymmetryReducer(Reducer, StandardReadable):
             da = da.rebin({"tof": self._time_bin_edges})
 
         return da
-
-    def _fit_data(self, asymmetry: sc.DataArray) -> ModelResult | None:
-        bin_edges = asymmetry.coords["tof"].to(unit=sc.units.ns, dtype="float64").values
-        bin_centers = (bin_edges[:-1] + bin_edges[1:]) / 2
-
-        return self._model.fit(
-            asymmetry.values,
-            t=bin_centers,
-            weights=1.0 / (asymmetry.variances**0.5),
-            params=self._fit_parameters,
-            nan_policy="omit",
-        )
 
     def _calculate_asymmetry(
         self, current_period_data: NDArray[np.int32], first_spec_dataarray: sc.DataArray
@@ -284,30 +346,55 @@ class MuonAsymmetryReducer(Reducer, StandardReadable):
         asymmetry = self._calculate_asymmetry(current_period_data, first_spec_dataarray)
         fit_result = self._fit_data(asymmetry)
 
-        if fit_result is None:
-            raise ValueError(
-                "MuonAsymmetryReducer failed to fit asymmetry model to muon data.\n"
-                "Check beamline setup."
-            )
-
-        for param in self._parameter_setters:
-            result = fit_result.params[param]
-
-            self._parameter_setters[param](result.value)
-            self._parameter_error_setters[param](result.stderr)
+        self._apply_fit_result(
+            fit_result,
+            "MuonAsymmetryReducer failed to fit asymmetry model to muon data.\n"
+            "Check beamline setup.",
+        )
 
         logger.info("reduction complete")
 
-    def additional_readable_signals(self, dae: Dae) -> list[Device]:
-        """Publish interesting signals derived or used by this reducer."""
-        signal_values = []
-        signal_errors = []
 
-        for param in self._model.param_names:
-            signal_values.append(getattr(self, param))
-            signal_errors.append(getattr(self, f"{param}_err"))
+class MuonLifetimeReducer(_MuonReducerMixin, PeriodGoodFramesNormalizer):
+    r"""DAE reducer which exposes muon a lifetime/decay quantity.
 
-        return signal_values + signal_errors
+    - Measures spectra from N detectors
+    - Sums the N detectors together
+    - Normalizes by good frames
+    - Fits with provided model e.g., `double_exponential_decay`
+    """
 
-    # As we have dynamic attributes, tell pyright that __getattr__ may return any type.
-    __getattr__: typing.Callable[[str], typing.Any]
+    def __init__(
+        self,
+        *,
+        prefix: str,
+        detectors: npt.NDArray[np.int32],
+        model: Model,
+        fit_parameters: lmfit.Parameters,
+    ) -> None:
+        """Create a new Muon lifetime reducer.
+
+        Args:
+            prefix: PV prefix for the
+                :py:obj:`SimpleDae <ibex_bluesky_core.devices.simpledae.SimpleDae>`.
+            detectors: numpy :external+numpy:py:obj:`array <numpy.array>` of detector spectra
+                to sum together before fitting.
+            model: :external:py:obj:`lmfit.model.Model` object describing the model to fit to
+                the muon data. The independent variable must be :math:`t` (time, in nanoseconds).
+            fit_parameters: :external:py:obj:`lmfit.parameter.Parameters` object describing
+                the initial parameters (and constraints) for each fit parameter.
+
+        """
+        self._init_mixin(model, fit_parameters)
+        super().__init__(prefix, [int(d) for d in detectors])
+
+    async def reduce_data(self, dae: Dae) -> None:
+        """Fitting a decay model to a set of DAE data."""
+        await super().reduce_data(dae)
+
+        fit_result = self._fit_data(self.summed_counts)
+
+        self._apply_fit_result(
+            fit_result,
+            "MuonLifetimeReducer failed to fit decay model to muon data.\nCheck beamline setup.",
+        )
