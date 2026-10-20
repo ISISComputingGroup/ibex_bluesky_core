@@ -343,7 +343,7 @@ def _tof_coord(edges: np.typing.NDArray[np.float64]) -> sc.Variable:
 
 def _mock_summed_counts(values, variances, edges):
 
-    async def _fake_super_reduce_data(self, dae) -> None:  # ruff: ignore[unused-async] Needs to reflect function signatrue of reduce_data
+    async def _fake_super_reduce_data(self, dae) -> None:  # ruff: ignore[unused-async] Needs to reflect function signature of reduce_data
         self.summed_counts = sc.DataArray(
             data=sc.array(
                 dims=["tof"],
