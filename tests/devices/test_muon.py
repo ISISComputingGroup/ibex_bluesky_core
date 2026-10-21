@@ -71,17 +71,6 @@ def lifetime_reducer():
 
 
 @pytest.fixture
-def rebinning_lifetime_reducer():
-    return MuonLifetimeReducer(
-        prefix="UNITTEST:",
-        detector_spectra=[1, 2],
-        fit_parameters=lifetime_model_params,
-        model=lifetime_model,
-        time_bin_edges=sc.linspace("tof", 0, 5, num=6, unit=sc.units.ns, dtype="float64"),
-    )
-
-
-@pytest.fixture
 async def asymmetry_dae(rebinning_asymmetry_reducer):
     dae = SimpleDae(
         prefix="UNITTEST:",
@@ -94,10 +83,10 @@ async def asymmetry_dae(rebinning_asymmetry_reducer):
 
 
 @pytest.fixture
-async def lifetime_dae(rebinning_lifetime_reducer):
+async def lifetime_dae(lifetime_reducer):
     dae = SimpleDae(
         prefix="UNITTEST:",
-        reducer=rebinning_lifetime_reducer,
+        reducer=lifetime_reducer,
         waiter=MEventsWaiter(5000),
         controller=PeriodPerPointController(save_run=False),
     )
@@ -370,4 +359,17 @@ def test_lifetime_reducer_readable_signals(lifetime_dae, lifetime_reducer):
         lifetime_reducer.n_1_err,
         lifetime_reducer.lambda_1,
         lifetime_reducer.lambda_1_err,
+        lifetime_reducer.det_counts,
+        lifetime_reducer.intensity,
+        lifetime_reducer.denominator(lifetime_dae),
+        lifetime_reducer.det_counts_stddev,
+        lifetime_reducer.intensity_stddev,
     }
+
+
+# test:
+# overall check that given n different detector spectra, muon lifetime reducer adds them,
+# normalizes (patches dae.period.good_frames) and fits and assert correct params
+# test that n different spectra get added in the correct way using lifetime reducer
+# test that a dataarray gets normalized (patches dae.period.good_frames) properly with
+# lifetime reducer

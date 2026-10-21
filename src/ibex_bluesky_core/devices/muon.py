@@ -175,7 +175,7 @@ class _MuonReducerMixin:
 
             logger.info("reduction complete")
 
-    def additional_readable_signals(self, dae: Dae) -> list[Device]:
+    def _additional_readable_signals_mixin(self, dae: Dae) -> list[Device]:
         """Publish interesting signals derived or used by this reducer."""
         signal_values = []
         signal_errors = []
@@ -371,6 +371,15 @@ class MuonAsymmetryReducer(_MuonReducerMixin, Reducer, StandardReadable):
         asymmetry = self._calculate_asymmetry(current_period_data, first_spec_dataarray)
         self._fit_and_publish_params(asymmetry)
 
+    def additional_readable_signals(self, dae: Dae) -> list[Device]:
+        """Publish interesting signals derived or used by this reducer.
+
+        :meta private:
+        """
+        return super().additional_readable_signals(dae) + self._additional_readable_signals_mixin(
+            dae
+        )
+
 
 class MuonLifetimeReducer(_MuonReducerMixin, SpectraNormalizer[Array1D[np.float64]]):
     r"""DAE reducer which exposes a fitted muon lifetime/decay quantity.
@@ -435,7 +444,6 @@ class MuonLifetimeReducer(_MuonReducerMixin, SpectraNormalizer[Array1D[np.float6
         detector_spectra: typing.Sequence[int],
         fit_parameters: lmfit.Parameters,
         model: lmfit.Model | None = None,
-        time_bin_edges: sc.Variable | None = None,
     ) -> None:
         """Create a new Muon lifetime reducer.
 
@@ -451,11 +459,6 @@ class MuonLifetimeReducer(_MuonReducerMixin, SpectraNormalizer[Array1D[np.float6
                 the initial parameters (and constraints) for each fit parameter.
             model: :external:py:obj:`lmfit.model.Model` object describing the model to fit to
                 the muon data. The independent variable must be :math:`t` (time, in nanoseconds).
-            time_bin_edges: Optional scipp :external+scipp:py:obj:`Variable <scipp.Variable>`
-                describing bin-edges for rebinning the data before fitting.
-                This must be bin edge coordinates, aligned along a scipp dimension label of
-                "tof", have a unit of time, for example nanoseconds, and must be strictly ascending.
-                Use :py:obj:`None` to not apply any rebinning to the data.
 
         """
         super().__init__(
@@ -470,8 +473,6 @@ class MuonLifetimeReducer(_MuonReducerMixin, SpectraNormalizer[Array1D[np.float6
             model if model is not None else lmfit.Model(muon_lifetime), fit_parameters
         )
 
-        self._time_bin_edges = time_bin_edges
-
     def denominator(self, dae: Dae) -> SignalR[int]:
         """Get normalization denominator (period good frames).
 
@@ -485,10 +486,6 @@ class MuonLifetimeReducer(_MuonReducerMixin, SpectraNormalizer[Array1D[np.float6
         intensity: sc.Variable | sc.DataArray,
     ) -> None:
 
-        if self._time_bin_edges is not None:
-            counts = typing.cast(sc.DataArray, counts).rebin({"tof": self._time_bin_edges})
-            intensity = typing.cast(sc.DataArray, intensity).rebin({"tof": self._time_bin_edges})
-
         self._det_counts_setter(counts.values)
         self._det_counts_stddev_setter(sc.sqrt(counts.variances))
 
@@ -496,3 +493,12 @@ class MuonLifetimeReducer(_MuonReducerMixin, SpectraNormalizer[Array1D[np.float6
         self._intensity_stddev_setter(sc.sqrt(intensity.variances))
 
         self._fit_and_publish_params(intensity.values)
+
+    def additional_readable_signals(self, dae: Dae) -> list[Device]:
+        """Publish interesting signals derived or used by this reducer.
+
+        :meta private:
+        """
+        return super().additional_readable_signals(dae) + self._additional_readable_signals_mixin(
+            dae
+        )
