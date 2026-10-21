@@ -30,6 +30,11 @@ logger = logging.getLogger(__name__)
 INTENSITY_PRECISION = 6
 VARIANCE_ADDITION = 0.5
 
+def _add_variance_offset(data: sc.Variable | sc.DataArray) -> None:
+    if isinstance(data, sc.DataArray):
+        data.variances += VARIANCE_ADDITION
+    else:
+        data.variance += VARIANCE_ADDITION
 
 async def sum_spectra(spectra: Collection[DaeSpectra]) -> sc.Variable | sc.DataArray:
     """Read and sum a number of spectra from the DAE.
@@ -130,9 +135,88 @@ def wavelength_bounded_spectra(
     return sum_spectra_with_wavelength
 
 
-class ScalarNormalizer(Reducer, StandardReadable, ABC):
-    """Sum a set of user-specified spectra, then normalize by a scalar signal."""
+T = typing.TypeVar("T")
 
+
+class SpectraNormalizer(Reducer, StandardReadable, ABC, typing.Generic[T]):
+    def __init__(
+        self,
+        prefix: str,
+        detector_spectra: Sequence[int],
+        sum_detector: Callable[[Collection[DaeSpectra]], Awaitable[sc.Variable | sc.DataArray]],
+        datatype: type[T],
+        default: T,
+    ) -> None:
+
+        self.detectors = DeviceVector(
+            {
+                i: DaeSpectra(dae_prefix=prefix + "DAE:", spectra=i, period=0)
+                for i in detector_spectra
+            }
+        )
+
+        self.det_counts, self._det_counts_setter = soft_signal_r_and_setter(datatype, default)
+        """Total detector counts."""
+        self.intensity, self._intensity_setter = soft_signal_r_and_setter(
+            datatype, default, precision=INTENSITY_PRECISION
+        )
+        """Normalised intensity."""
+
+        self.det_counts_stddev, self._det_counts_stddev_setter = soft_signal_r_and_setter(
+            datatype, default
+        )
+        """Standard deviation of detector counts."""
+
+        self.intensity_stddev, self._intensity_stddev_setter = soft_signal_r_and_setter(
+            datatype, default, precision=INTENSITY_PRECISION
+        )
+        """Standard deviation of intensity."""
+
+        self.sum_detector = sum_detector
+
+        super().__init__(name="")
+
+    @abstractmethod
+    def denominator(self, dae: Dae) -> SignalR[int] | SignalR[float]:
+        ...
+
+    @abstractmethod
+    def _publish_result(
+        self,
+        counts: sc.Variable | sc.DataArray,
+        intensity: sc.Variable | sc.DataArray,
+    ) -> None:
+        """Push the reduced counts/intensity (and anything derived) into signals."""
+        ...
+
+    async def reduce_data(self, dae: Dae) -> None:
+        logger.info("starting reduction")
+        summed_counts, denominator = await asyncio.gather(
+            self.sum_detector(self.detectors.values()), self.denominator(dae).get_value()
+        )
+
+        if denominator == 0.0:
+            raise ValueError("Cannot normalize; denominator is zero. Check beamline configuration.")
+
+        _add_variance_offset(summed_counts)
+
+        intensity = summed_counts / denominator
+
+        self._publish_result(summed_counts, intensity)
+
+        logger.info("reduction complete")
+
+    def additional_readable_signals(self, dae: Dae) -> list[Device]:
+        return [
+            self.det_counts,
+            self.intensity,
+            self.denominator(dae),
+            self.det_counts_stddev,
+            self.intensity_stddev,
+        ]
+
+class ScalarNormalizer(SpectraNormalizer[float], ABC):
+    """Sum a set of user-specified spectra, then normalize by a scalar signal."""
     def __init__(
         self,
         prefix: str,
@@ -151,77 +235,24 @@ class ScalarNormalizer(Reducer, StandardReadable, ABC):
                 describing the detector intensity. Defaults to summing over the entire spectrum.
 
         """
-        self.detectors = DeviceVector(
-            {
-                i: DaeSpectra(dae_prefix=prefix + "DAE:", spectra=i, period=0)
-                for i in detector_spectra
-            }
+        super().__init__(
+            prefix=prefix,
+            detector_spectra=detector_spectra,
+            sum_detector=sum_detector,
+            datatype=float,
+            default=0.0,
         )
 
-        self.det_counts, self._det_counts_setter = soft_signal_r_and_setter(float, 0.0)
-        """Total detector counts."""
-        self.intensity, self._intensity_setter = soft_signal_r_and_setter(
-            float, 0.0, precision=INTENSITY_PRECISION
-        )
-        "Normalised intensity."
-
-        self.det_counts_stddev, self._det_counts_stddev_setter = soft_signal_r_and_setter(
-            float, 0.0
-        )
-        """Standard deviation of detector counts."""
-
-        self.intensity_stddev, self._intensity_stddev_setter = soft_signal_r_and_setter(
-            float, 0.0, precision=INTENSITY_PRECISION
-        )
-        """Standard deviation of intensity."""
-
-        self.sum_detector = sum_detector
-
-        super().__init__(name="")
-
-    @abstractmethod
-    def denominator(self, dae: Dae) -> SignalR[int] | SignalR[float]:
-        """Get the normalization denominator, which is assumed to be a scalar signal."""
-
-    async def reduce_data(self, dae: Dae) -> None:
-        """Apply the normalization.
-
-        :meta private:
-        """
-        logger.info("starting reduction")
-        summed_counts, denominator = await asyncio.gather(
-            self.sum_detector(self.detectors.values()), self.denominator(dae).get_value()
-        )
-
-        if denominator == 0.0:
-            raise ValueError("Cannot normalize; denominator is zero. Check beamline configuration.")
-
-        # See doc\architectural_decisions\005-variance-addition.md
-        # for justification of this addition to variances.
-        summed_counts.variance += VARIANCE_ADDITION
-
-        intensity = summed_counts / denominator
-
-        self._det_counts_setter(float(summed_counts.value))
-        self._det_counts_stddev_setter(math.sqrt(summed_counts.variance))
+    def _publish_result(
+        self,
+        counts: sc.Variable | sc.DataArray,
+        intensity: sc.Variable | sc.DataArray,
+    ) -> None:
+        self._det_counts_setter(float(counts.value))
+        self._det_counts_stddev_setter(math.sqrt(counts.variance))
 
         self._intensity_setter(intensity.value)
         self._intensity_stddev_setter(math.sqrt(intensity.variance))
-
-        logger.info("reduction complete")
-
-    def additional_readable_signals(self, dae: Dae) -> list[Device]:
-        """Publish interesting signals derived or used by this reducer.
-
-        :meta private:
-        """
-        return [
-            self.det_counts,
-            self.intensity,
-            self.denominator(dae),
-            self.det_counts_stddev,
-            self.intensity_stddev,
-        ]
 
 
 class PeriodGoodFramesNormalizer(ScalarNormalizer):

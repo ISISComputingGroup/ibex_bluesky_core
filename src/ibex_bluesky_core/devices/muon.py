@@ -14,14 +14,14 @@ from numpy.typing import NDArray
 from ophyd_async.core import (
     Device,
     StandardReadable,
-    soft_signal_r_and_setter,
+    soft_signal_r_and_setter, SignalR, Array1D,
 )
 
 from ibex_bluesky_core.devices.dae import Dae, DaeSpectra
 from ibex_bluesky_core.devices.simpledae import (
-    PeriodGoodFramesNormalizer,
     Reducer,
 )
+from ibex_bluesky_core.devices.simpledae._reducers import SpectraNormalizer
 from ibex_bluesky_core.utils import calculate_polarisation
 
 logger = logging.getLogger(__name__)
@@ -34,6 +34,8 @@ __all__ = [
     "double_exponential_decay",
 ]
 
+INTENSITY_PRECISION = 6
+VARIANCE_ADDITION = 0.5
 
 def damped_oscillator(
     t: NDArray[np.floating],
@@ -93,6 +95,19 @@ def double_exponential_decay(
     """
     return n_0 * np.exp(-lambda_0 * t) + n_1 * np.exp(-lambda_1 * t)
 
+async def sum_spectra_over_detectors(spectra: typing.Collection[DaeSpectra]) -> sc.DataArray:
+    """Sum spectra element-wise, preserving time of flight."""
+    summed: sc.DataArray | None = None
+
+    for spec in asyncio.as_completed([s.read_spectrum_dataarray() for s in spectra]):
+        da = await spec
+        summed = da if summed is None else summed + da
+
+    if summed is None:
+        raise ValueError("No spectra to sum")
+
+    return summed
+
 
 class _MuonReducerMixin:
     """Shared behaviour for muon reducers which fit an ``lmfit`` model and expose its parameters.
@@ -113,6 +128,7 @@ class _MuonReducerMixin:
         self._fit_parameters = fit_parameters
         self._parameter_setters = {}
         self._parameter_error_setters = {}
+        self._fit_result: ModelResult | None = None
 
         missing = set(model.param_names) - set(fit_parameters.keys())
         if missing:
@@ -127,12 +143,10 @@ class _MuonReducerMixin:
             setattr(self, f"{param}_err", error_signal)
             self._parameter_error_setters[param] = error_setter
 
-    def _apply_fit_result(self, fit_result: ModelResult | None, error_message: str) -> None:
-        if fit_result is None:
-            raise ValueError(error_message)
+    def _apply_fit_result(self) -> None:
 
         for param in self._parameter_setters:
-            result = fit_result.params[param]
+            result = self._fit_result.params[param]
 
             self._parameter_setters[param](result.value)
             self._parameter_error_setters[param](result.stderr)
@@ -141,13 +155,32 @@ class _MuonReducerMixin:
         bin_edges = data.coords["tof"].to(unit=sc.units.ns, dtype="float64").values
         bin_centers = (bin_edges[:-1] + bin_edges[1:]) / 2
 
-        return self._model.fit(
+        self._fit_result = self._model.fit(
             data.values,
             t=bin_centers,
             weights=1.0 / (data.variances**0.5),
             params=self._fit_parameters,
             nan_policy="omit",
         )
+
+    def _fit_and_publish_params(self, data: sc.DataArray) -> None:
+
+        self._fit_data(data)
+
+        if self._fit_result is None:
+            raise ValueError(f"{self.__class__.__name__} failed to fit asymmetry model to muon data.\n"
+            "Check beamline setup.")
+
+        else:
+            self._apply_fit_result()
+
+            for param in self._parameter_setters:
+                result = self._fit_result.params[param]
+
+                self._parameter_setters[param](result.value)
+                self._parameter_error_setters[param](result.stderr)
+
+            logger.info("reduction complete")
 
     def additional_readable_signals(self, dae: Dae) -> list[Device]:
         """Publish interesting signals derived or used by this reducer."""
@@ -344,57 +377,19 @@ class MuonAsymmetryReducer(_MuonReducerMixin, Reducer, StandardReadable):
         logger.info("starting reduction")
 
         asymmetry = self._calculate_asymmetry(current_period_data, first_spec_dataarray)
-        fit_result = self._fit_data(asymmetry)
-
-        self._apply_fit_result(
-            fit_result,
-            "MuonAsymmetryReducer failed to fit asymmetry model to muon data.\n"
-            "Check beamline setup.",
-        )
-
-        logger.info("reduction complete")
+        self._fit_and_publish_params(asymmetry)
 
 
-class MuonLifetimeReducer(_MuonReducerMixin, PeriodGoodFramesNormalizer):
-    r"""DAE reducer which exposes muon a lifetime/decay quantity.
+class MuonLifetimeReducer(_MuonReducerMixin, SpectraNormalizer[Array1D[np.float64]]):
 
-    - Measures spectra from N detectors
-    - Sums the N detectors together
-    - Normalizes by good frames
-    - Fits with provided model e.g., `double_exponential_decay`
-    """
+    def denominator(self, dae: Dae) -> SignalR[int]:
+        return dae.period.good_frames
 
-    def __init__(
-        self,
-        *,
-        prefix: str,
-        detectors: npt.NDArray[np.int32],
-        model: Model,
-        fit_parameters: lmfit.Parameters,
-    ) -> None:
-        """Create a new Muon lifetime reducer.
+    def _publish_result(self, counts, intensity) -> None:
+        self._det_counts_setter(counts.values)
+        self._det_counts_stddev_setter(sc.sqrt(counts.variances))
 
-        Args:
-            prefix: PV prefix for the
-                :py:obj:`SimpleDae <ibex_bluesky_core.devices.simpledae.SimpleDae>`.
-            detectors: numpy :external+numpy:py:obj:`array <numpy.array>` of detector spectra
-                to sum together before fitting.
-            model: :external:py:obj:`lmfit.model.Model` object describing the model to fit to
-                the muon data. The independent variable must be :math:`t` (time, in nanoseconds).
-            fit_parameters: :external:py:obj:`lmfit.parameter.Parameters` object describing
-                the initial parameters (and constraints) for each fit parameter.
+        self._intensity_setter(intensity.values)
+        self._intensity_stddev_setter(sc.sqrt(intensity.variances))
 
-        """
-        self._init_mixin(model, fit_parameters)
-        super().__init__(prefix, [int(d) for d in detectors])
-
-    async def reduce_data(self, dae: Dae) -> None:
-        """Fitting a decay model to a set of DAE data."""
-        await super().reduce_data(dae)
-
-        fit_result = self._fit_data(self.summed_counts)
-
-        self._apply_fit_result(
-            fit_result,
-            "MuonLifetimeReducer failed to fit decay model to muon data.\nCheck beamline setup.",
-        )
+        self._fit_and_publish_params(intensity.values)
