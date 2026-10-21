@@ -416,7 +416,7 @@ class MuonLifetimeReducer(_MuonReducerMixin, SpectraNormalizer[Array1D[np.float6
         reducer = MuonLifetimeReducer(
             prefix=prefix,
             # Selects spectra 1-4
-            detector_spectra=np.array([1, 2, 3, 4]),
+            detector_spectra=[1, 2, 3, 4],
             model=lmfit.Model(linear),
             fit_parameters=parameters
         )
@@ -433,8 +433,9 @@ class MuonLifetimeReducer(_MuonReducerMixin, SpectraNormalizer[Array1D[np.float6
         self,
         prefix: str,
         detector_spectra: typing.Sequence[int],
-        model: lmfit.Model,
         fit_parameters: lmfit.Parameters,
+        model: lmfit.Model | None = None,
+        time_bin_edges: sc.Variable | None = None,
     ) -> None:
         """Create a new Muon lifetime reducer.
 
@@ -443,13 +444,18 @@ class MuonLifetimeReducer(_MuonReducerMixin, SpectraNormalizer[Array1D[np.float6
                 :py:obj:`SimpleDae <ibex_bluesky_core.devices.simpledae.SimpleDae>`.
             detector_spectra: numpy :external+numpy:py:obj:`array <numpy.array>` of detector
                 spectra to select.
-                For example, ``np.array([1, 2, 3])`` selects spectra 1-3 inclusive.
+                For example, ``[1, 2, 3]`` selects spectra 1-3 inclusive.
                 All detectors in this list are assumed to have the same time
                 channel boundaries.
-            model: :external:py:obj:`lmfit.model.Model` object describing the model to fit to
-                the muon data. The independent variable must be :math:`t` (time, in nanoseconds).
             fit_parameters: :external:py:obj:`lmfit.parameter.Parameters` object describing
                 the initial parameters (and constraints) for each fit parameter.
+            model: :external:py:obj:`lmfit.model.Model` object describing the model to fit to
+                the muon data. The independent variable must be :math:`t` (time, in nanoseconds).
+            time_bin_edges: Optional scipp :external+scipp:py:obj:`Variable <scipp.Variable>`
+                describing bin-edges for rebinning the data before fitting.
+                This must be bin edge coordinates, aligned along a scipp dimension label of
+                "tof", have a unit of time, for example nanoseconds, and must be strictly ascending.
+                Use :py:obj:`None` to not apply any rebinning to the data.
 
         """
         super().__init__(
@@ -460,7 +466,11 @@ class MuonLifetimeReducer(_MuonReducerMixin, SpectraNormalizer[Array1D[np.float6
             default=np.array([], dtype=np.float64),
         )
 
-        super()._init_mixin(model, fit_parameters)
+        super()._init_mixin(
+            model if model is not None else lmfit.Model(muon_lifetime), fit_parameters
+        )
+
+        self._time_bin_edges = time_bin_edges
 
     def denominator(self, dae: Dae) -> SignalR[int]:
         """Get normalization denominator (period good frames).
@@ -474,6 +484,11 @@ class MuonLifetimeReducer(_MuonReducerMixin, SpectraNormalizer[Array1D[np.float6
         counts: sc.Variable | sc.DataArray,
         intensity: sc.Variable | sc.DataArray,
     ) -> None:
+
+        if self._time_bin_edges is not None:
+            counts = typing.cast(sc.DataArray, counts).rebin({"tof": self._time_bin_edges})
+            intensity = typing.cast(sc.DataArray, intensity).rebin({"tof": self._time_bin_edges})
+
         self._det_counts_setter(counts.values)
         self._det_counts_stddev_setter(sc.sqrt(counts.variances))
 

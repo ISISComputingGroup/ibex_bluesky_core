@@ -249,7 +249,7 @@ class SpectraNormalizer(Reducer, StandardReadable, ABC, typing.Generic[T]):
 
 
 class ScalarNormalizer(SpectraNormalizer[float], ABC):
-    """Sum a set of user-specified spectra, then normalize by a scalar signal."""
+    """Sum all counts across a set of user-specified spectra, then normalize by a scalar signal."""
 
     def __init__(
         self,

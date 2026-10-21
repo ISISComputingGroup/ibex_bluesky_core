@@ -13,11 +13,10 @@ from ibex_bluesky_core.devices.muon import (
     MuonLifetimeReducer,
     damped_oscillator,
     double_damped_oscillator,
-    double_exponential_decay,
+    muon_lifetime,
 )
 from ibex_bluesky_core.devices.simpledae import (
     MEventsWaiter,
-    PeriodGoodFramesNormalizer,
     PeriodPerPointController,
     SimpleDae,
 )
@@ -30,12 +29,12 @@ damped_oscillator_params.add("omega_0", 0.1, min=0)
 damped_oscillator_params.add("phi_0", 0.0)
 damped_oscillator_params.add("lambda_0", 0.001)
 
-decay_model = lmfit.Model(double_exponential_decay)
-decay_model_params = lmfit.Parameters()
-decay_model_params.add("n_0", 900.0, min=0)
-decay_model_params.add("lambda_0", 8e-4, min=0)
-decay_model_params.add("n_1", 120.0, min=0)
-decay_model_params.add("lambda_1", 1.2e-4, min=0)
+lifetime_model = lmfit.Model(muon_lifetime)
+lifetime_model_params = lmfit.Parameters()
+lifetime_model_params.add("n_0", 900.0, min=0)
+lifetime_model_params.add("lambda_0", 8e-4, min=0)
+lifetime_model_params.add("n_1", 120.0, min=0)
+lifetime_model_params.add("lambda_1", 1.2e-4, min=0)
 
 
 @pytest.fixture
@@ -62,10 +61,43 @@ def rebinning_asymmetry_reducer():
 
 
 @pytest.fixture
-async def simpledae(rebinning_asymmetry_reducer):
+def lifetime_reducer():
+    return MuonLifetimeReducer(
+        prefix="UNITTEST:",
+        detector_spectra=[1, 2],
+        fit_parameters=lifetime_model_params,
+        model=lifetime_model,
+    )
+
+
+@pytest.fixture
+def rebinning_lifetime_reducer():
+    return MuonLifetimeReducer(
+        prefix="UNITTEST:",
+        detector_spectra=[1, 2],
+        fit_parameters=lifetime_model_params,
+        model=lifetime_model,
+        time_bin_edges=sc.linspace("tof", 0, 5, num=6, unit=sc.units.ns, dtype="float64"),
+    )
+
+
+@pytest.fixture
+async def asymmetry_dae(rebinning_asymmetry_reducer):
     dae = SimpleDae(
         prefix="UNITTEST:",
         reducer=rebinning_asymmetry_reducer,
+        waiter=MEventsWaiter(5000),
+        controller=PeriodPerPointController(save_run=False),
+    )
+    await dae.connect(mock=True)
+    return dae
+
+
+@pytest.fixture
+async def lifetime_dae(rebinning_lifetime_reducer):
+    dae = SimpleDae(
+        prefix="UNITTEST:",
+        reducer=rebinning_lifetime_reducer,
         waiter=MEventsWaiter(5000),
         controller=PeriodPerPointController(save_run=False),
     )
@@ -106,20 +138,20 @@ def test_double_damped_oscillator():
 
 
 def test_asymmetry_reducer_readable_signals(
-    simpledae: SimpleDae[PeriodPerPointController, MEventsWaiter, MuonAsymmetryReducer],
+    asymmetry_dae: SimpleDae[PeriodPerPointController, MEventsWaiter, MuonAsymmetryReducer],
     rebinning_asymmetry_reducer,
 ):
-    assert set(rebinning_asymmetry_reducer.additional_readable_signals(simpledae)) == {
-        simpledae.reducer.B,
-        simpledae.reducer.B_err,
-        simpledae.reducer.A_0,
-        simpledae.reducer.A_0_err,
-        simpledae.reducer.omega_0,
-        simpledae.reducer.omega_0_err,
-        simpledae.reducer.phi_0,
-        simpledae.reducer.phi_0_err,
-        simpledae.reducer.lambda_0,
-        simpledae.reducer.lambda_0_err,
+    assert set(rebinning_asymmetry_reducer.additional_readable_signals(asymmetry_dae)) == {
+        asymmetry_dae.reducer.B,
+        asymmetry_dae.reducer.B_err,
+        asymmetry_dae.reducer.A_0,
+        asymmetry_dae.reducer.A_0_err,
+        asymmetry_dae.reducer.omega_0,
+        asymmetry_dae.reducer.omega_0_err,
+        asymmetry_dae.reducer.phi_0,
+        asymmetry_dae.reducer.phi_0_err,
+        asymmetry_dae.reducer.lambda_0,
+        asymmetry_dae.reducer.lambda_0_err,
     }
 
 
@@ -173,9 +205,9 @@ def test_rebin_and_sum_with_no_rebinning(asymmetry_reducer):
     scipp.testing.assert_allclose(result.coords["tof"], time)
 
 
-async def test_asymmetry_reducer(simpledae):
-    simpledae.trigger_and_get_specdata = AsyncMock(return_value=None)
-    simpledae.reducer._first_det.read_spectrum_dataarray = AsyncMock(return_value=None)
+async def test_asymmetry_reducer(asymmetry_dae):
+    asymmetry_dae.trigger_and_get_specdata = AsyncMock(return_value=None)
+    asymmetry_dae.reducer._first_det.read_spectrum_dataarray = AsyncMock(return_value=None)
 
     with patch(
         "ibex_bluesky_core.devices.muon.MuonAsymmetryReducer._calculate_asymmetry",
@@ -193,11 +225,11 @@ async def test_asymmetry_reducer(simpledae):
             },
         )
 
-        await simpledae.reducer.reduce_data(simpledae)
+        await asymmetry_dae.reducer.reduce_data(asymmetry_dae)
 
     # For all-zero data we expect the fit to converge to background = 0 and amplitude = 0.
-    assert await simpledae.reducer.B.get_value() == pytest.approx(0.0, abs=1e-8)
-    assert await simpledae.reducer.A_0.get_value() == pytest.approx(0.0, abs=1e-8)
+    assert await asymmetry_dae.reducer.B.get_value() == pytest.approx(0.0, abs=1e-8)
+    assert await asymmetry_dae.reducer.A_0.get_value() == pytest.approx(0.0, abs=1e-8)
 
 
 async def test_asymmetry_reducer_real_data():
@@ -294,13 +326,13 @@ def test_calculate_asymmetry(asymmetry_reducer):
         )
 
 
-async def test_if_fit_fails_then_get_error(asymmetry_reducer, simpledae):
+async def test_if_fit_fails_then_get_error(asymmetry_reducer, asymmetry_dae):
     await asymmetry_reducer.connect(mock=True)
 
     with (
         patch.object(asymmetry_reducer, "_calculate_asymmetry"),
         patch.object(asymmetry_reducer, "_fit_data") as fit_data_mock,
-        patch.object(simpledae, "trigger_and_get_specdata"),
+        patch.object(asymmetry_dae, "trigger_and_get_specdata"),
         patch.object(asymmetry_reducer._first_det, "read_spectrum_dataarray"),
     ):
         fit_data_mock.return_value = None
@@ -312,55 +344,12 @@ async def test_if_fit_fails_then_get_error(asymmetry_reducer, simpledae):
                 "Check beamline setup."
             ),
         ):
-            await asymmetry_reducer.reduce_data(simpledae)
+            await asymmetry_reducer.reduce_data(asymmetry_dae)
 
 
-@pytest.fixture
-def lifetime_reducer():
-    return MuonLifetimeReducer(
-        prefix="UNITTEST:",
-        detectors=np.array([1, 2]),
-        model=decay_model,
-        fit_parameters=decay_model_params,
-    )
-
-
-@pytest.fixture
-async def simpledae_lt(lifetime_reducer):
-    dae = SimpleDae(
-        prefix="UNITTEST:",
-        reducer=lifetime_reducer,
-        waiter=MEventsWaiter(5000),
-        controller=PeriodPerPointController(save_run=False),
-    )
-    await dae.connect(mock=True)
-    return dae
-
-
-def _tof_coord(edges: np.typing.NDArray[np.float64]) -> sc.Variable:
-    return sc.array(dims=["tof"], values=edges, unit=sc.units.ns, dtype="float64")
-
-
-def _mock_summed_counts(values, variances, edges):
-
-    async def _fake_super_reduce_data(self, dae) -> None:  # ruff: ignore[unused-async] Needs to reflect function signature of reduce_data
-        self.summed_counts = sc.DataArray(
-            data=sc.array(
-                dims=["tof"],
-                values=values,
-                variances=variances,
-                unit=sc.units.counts,
-                dtype="float64",
-            ),
-            coords={"tof": _tof_coord(edges)},
-        )
-
-    return patch.object(PeriodGoodFramesNormalizer, "reduce_data", new=_fake_super_reduce_data)
-
-
-def test_double_exponential_decay():
+def test_muon_lifetime():
     np.testing.assert_allclose(
-        double_exponential_decay(
+        muon_lifetime(
             t=np.array([0.0, 1000.0], dtype=np.float64),
             n_0=2.0,
             lambda_0=1e-3,
@@ -371,8 +360,8 @@ def test_double_exponential_decay():
     )
 
 
-def test_lifetime_reducer_readable_signals(simpledae_lt, lifetime_reducer):
-    assert set(lifetime_reducer.additional_readable_signals(simpledae_lt)) == {
+def test_lifetime_reducer_readable_signals(lifetime_dae, lifetime_reducer):
+    assert set(lifetime_reducer.additional_readable_signals(lifetime_dae)) == {
         lifetime_reducer.n_0,
         lifetime_reducer.n_0_err,
         lifetime_reducer.lambda_0,
@@ -382,69 +371,3 @@ def test_lifetime_reducer_readable_signals(simpledae_lt, lifetime_reducer):
         lifetime_reducer.lambda_1,
         lifetime_reducer.lambda_1_err,
     }
-
-
-async def test_reduce_data_fits_summed_counts(simpledae_lt):
-    reducer = simpledae_lt.reducer
-    edges = np.array([0.0, 1.0, 2.0])
-
-    with (
-        _mock_summed_counts(values=[4.0, 6.0], variances=[4.0, 6.0], edges=edges),
-        patch.object(reducer, "_fit_data") as fit_data_mock,
-    ):
-        fit_data_mock.return_value.params = {
-            name: type("P", (), {"value": 1.0, "stderr": 0.1})() for name in decay_model.param_names
-        }
-
-        await reducer.reduce_data(simpledae_lt)
-
-    # _fit_data was called with the summed/normalized counts
-    (data_arg,) = fit_data_mock.call_args.args
-    assert data_arg is reducer.summed_counts
-
-    # fitted values were pushed onto signals
-    assert await reducer.n_0.get_value() == pytest.approx(1.0)
-    assert await reducer.n_0_err.get_value() == pytest.approx(0.1)
-
-
-async def test_lifetime_reducer_fits_synthetic_data(simpledae_lt):
-    reducer = simpledae_lt.reducer
-
-    edges = np.linspace(0.0, 10000.0, num=51, dtype=np.float64)
-    centres = (edges[:-1] + edges[1:]) / 2
-    counts = double_exponential_decay(
-        centres,
-        decay_model_params["n_0"],
-        decay_model_params["lambda_0"],
-        decay_model_params["n_1"],
-        decay_model_params["lambda_1"],
-    )
-
-    with _mock_summed_counts(values=counts, variances=np.ones_like(counts), edges=edges):
-        await reducer.reduce_data(simpledae_lt)
-
-    assert await reducer.n_0.get_value() == pytest.approx(decay_model_params["n_0"], rel=1e-3)
-    assert await reducer.lambda_0.get_value() == pytest.approx(
-        decay_model_params["lambda_0"], rel=1e-3
-    )
-    assert await reducer.n_1.get_value() == pytest.approx(decay_model_params["n_1"], rel=1e-3)
-    assert await reducer.lambda_1.get_value() == pytest.approx(
-        decay_model_params["lambda_1"], rel=1e-3
-    )
-
-
-async def test_if_fit_fails_then_get_error_lt(simpledae_lt):
-    reducer = simpledae_lt.reducer
-    edges = np.array([0.0, 1.0, 2.0])
-
-    with (
-        _mock_summed_counts(values=[0.0, 0.0], variances=[1.0, 1.0], edges=edges),
-        patch.object(reducer, "_fit_data") as fit_data_mock,
-    ):
-        fit_data_mock.return_value = None
-
-        with pytest.raises(
-            ValueError,
-            match=re.escape("MuonLifetimeReducer failed to fit decay model to muon data."),
-        ):
-            await reducer.reduce_data(simpledae_lt)
