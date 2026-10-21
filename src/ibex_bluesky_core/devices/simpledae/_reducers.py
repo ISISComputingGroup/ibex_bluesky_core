@@ -14,6 +14,7 @@ from ophyd_async.core import (
     Array1D,
     Device,
     DeviceVector,
+    SignalDatatype,
     SignalR,
     StandardReadable,
     soft_signal_r_and_setter,
@@ -30,11 +31,6 @@ logger = logging.getLogger(__name__)
 INTENSITY_PRECISION = 6
 VARIANCE_ADDITION = 0.5
 
-def _add_variance_offset(data: sc.Variable | sc.DataArray) -> None:
-    if isinstance(data, sc.DataArray):
-        data.variances += VARIANCE_ADDITION
-    else:
-        data.variance += VARIANCE_ADDITION
 
 async def sum_spectra(spectra: Collection[DaeSpectra]) -> sc.Variable | sc.DataArray:
     """Read and sum a number of spectra from the DAE.
@@ -135,10 +131,34 @@ def wavelength_bounded_spectra(
     return sum_spectra_with_wavelength
 
 
-T = typing.TypeVar("T")
+async def sum_spectra_over_detectors(spectra: typing.Collection[DaeSpectra]) -> sc.DataArray:
+    """Sum spectra element-wise, preserving time of flight."""
+    summed: sc.DataArray | None = None
+
+    for spec in asyncio.as_completed([s.read_spectrum_dataarray() for s in spectra]):
+        da = await spec
+        summed = da if summed is None else summed + da
+
+    if summed is None:
+        raise ValueError("No spectra to sum")
+
+    return summed
+
+
+T = typing.TypeVar("T", bound=SignalDatatype)
 
 
 class SpectraNormalizer(Reducer, StandardReadable, ABC, typing.Generic[T]):
+    """Sum a set of user-specified spectra, then normalize by a scalar denominator.
+
+    This is a generic base class for reducers which sum spectra in some way and
+    divide the result by a scalar denominator signal. Subclasses choose the
+    datatype used to store the summed counts/intensity, and must implement
+    :py:meth:`denominator` and :py:meth:`_publish_result`.
+
+    :meta private:
+    """
+
     def __init__(
         self,
         prefix: str,
@@ -178,6 +198,7 @@ class SpectraNormalizer(Reducer, StandardReadable, ABC, typing.Generic[T]):
 
     @abstractmethod
     def denominator(self, dae: Dae) -> SignalR[int] | SignalR[float]:
+        """Get the normalization denominator, which is assumed to be a scalar signal."""
         ...
 
     @abstractmethod
@@ -190,6 +211,10 @@ class SpectraNormalizer(Reducer, StandardReadable, ABC, typing.Generic[T]):
         ...
 
     async def reduce_data(self, dae: Dae) -> None:
+        """Apply the normalization.
+
+        :meta private:
+        """
         logger.info("starting reduction")
         summed_counts, denominator = await asyncio.gather(
             self.sum_detector(self.detectors.values()), self.denominator(dae).get_value()
@@ -198,7 +223,10 @@ class SpectraNormalizer(Reducer, StandardReadable, ABC, typing.Generic[T]):
         if denominator == 0.0:
             raise ValueError("Cannot normalize; denominator is zero. Check beamline configuration.")
 
-        _add_variance_offset(summed_counts)
+        if isinstance(summed_counts, sc.DataArray):
+            summed_counts.variances += VARIANCE_ADDITION
+        else:
+            summed_counts.variance += VARIANCE_ADDITION
 
         intensity = summed_counts / denominator
 
@@ -207,6 +235,10 @@ class SpectraNormalizer(Reducer, StandardReadable, ABC, typing.Generic[T]):
         logger.info("reduction complete")
 
     def additional_readable_signals(self, dae: Dae) -> list[Device]:
+        """Publish interesting signals derived or used by this reducer.
+
+        :meta private:
+        """
         return [
             self.det_counts,
             self.intensity,
@@ -215,8 +247,10 @@ class SpectraNormalizer(Reducer, StandardReadable, ABC, typing.Generic[T]):
             self.intensity_stddev,
         ]
 
+
 class ScalarNormalizer(SpectraNormalizer[float], ABC):
     """Sum a set of user-specified spectra, then normalize by a scalar signal."""
+
     def __init__(
         self,
         prefix: str,

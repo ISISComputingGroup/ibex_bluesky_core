@@ -12,16 +12,19 @@ from lmfit import Model
 from lmfit.model import ModelResult
 from numpy.typing import NDArray
 from ophyd_async.core import (
+    Array1D,
     Device,
+    SignalR,
     StandardReadable,
-    soft_signal_r_and_setter, SignalR, Array1D,
+    soft_signal_r_and_setter,
 )
 
 from ibex_bluesky_core.devices.dae import Dae, DaeSpectra
 from ibex_bluesky_core.devices.simpledae import (
     Reducer,
+    SpectraNormalizer,
+    sum_spectra_over_detectors,
 )
-from ibex_bluesky_core.devices.simpledae._reducers import SpectraNormalizer
 from ibex_bluesky_core.utils import calculate_polarisation
 
 logger = logging.getLogger(__name__)
@@ -31,11 +34,12 @@ __all__ = [
     "MuonLifetimeReducer",
     "damped_oscillator",
     "double_damped_oscillator",
-    "double_exponential_decay",
+    "muon_lifetime",
 ]
 
 INTENSITY_PRECISION = 6
 VARIANCE_ADDITION = 0.5
+
 
 def damped_oscillator(
     t: NDArray[np.floating],
@@ -80,33 +84,20 @@ def double_damped_oscillator(  # ruff:ignore[too-many-arguments, too-many-positi
     )
 
 
-def double_exponential_decay(
+def muon_lifetime(
     t: NDArray[np.floating],
     n_0: float,
     lambda_0: float,
     n_1: float,
     lambda_1: float,
 ) -> NDArray[np.floating]:
-    r"""Equation for a double exponential decay, as a function of time :math:`t`.
+    r"""Equation for a muon decay/lifetime, as a function of time :math:`t`.
 
     .. math::
 
         N_0 e^{-\lambda_0 t} + N_1 e^{-\lambda_1 t}
     """
     return n_0 * np.exp(-lambda_0 * t) + n_1 * np.exp(-lambda_1 * t)
-
-async def sum_spectra_over_detectors(spectra: typing.Collection[DaeSpectra]) -> sc.DataArray:
-    """Sum spectra element-wise, preserving time of flight."""
-    summed: sc.DataArray | None = None
-
-    for spec in asyncio.as_completed([s.read_spectrum_dataarray() for s in spectra]):
-        da = await spec
-        summed = da if summed is None else summed + da
-
-    if summed is None:
-        raise ValueError("No spectra to sum")
-
-    return summed
 
 
 class _MuonReducerMixin:
@@ -143,10 +134,10 @@ class _MuonReducerMixin:
             setattr(self, f"{param}_err", error_signal)
             self._parameter_error_setters[param] = error_setter
 
-    def _apply_fit_result(self) -> None:
+    def _apply_fit_result(self, fit_result: ModelResult) -> None:
 
         for param in self._parameter_setters:
-            result = self._fit_result.params[param]
+            result = fit_result.params[param]
 
             self._parameter_setters[param](result.value)
             self._parameter_error_setters[param](result.stderr)
@@ -168,11 +159,13 @@ class _MuonReducerMixin:
         self._fit_data(data)
 
         if self._fit_result is None:
-            raise ValueError(f"{self.__class__.__name__} failed to fit asymmetry model to muon data.\n"
-            "Check beamline setup.")
+            raise ValueError(
+                f"{self.__class__.__name__} failed to fit asymmetry model to muon data.\n"
+                "Check beamline setup."
+            )
 
         else:
-            self._apply_fit_result()
+            self._apply_fit_result(self._fit_result)
 
             for param in self._parameter_setters:
                 result = self._fit_result.params[param]
@@ -326,9 +319,8 @@ class MuonAsymmetryReducer(_MuonReducerMixin, Reducer, StandardReadable):
             dae_prefix=prefix + "DAE:", spectra=int(forward_detectors[0]), period=0
         )
 
-        self._init_mixin(model, fit_parameters)
-
         super().__init__(name="")
+        self._init_mixin(model, fit_parameters)
 
     def _rebin_and_sum(self, counts: NDArray[np.int32], time_coord: sc.Variable) -> sc.DataArray:
         da = sc.DataArray(
@@ -381,11 +373,107 @@ class MuonAsymmetryReducer(_MuonReducerMixin, Reducer, StandardReadable):
 
 
 class MuonLifetimeReducer(_MuonReducerMixin, SpectraNormalizer[Array1D[np.float64]]):
+    r"""DAE reducer which exposes a fitted muon lifetime/decay quantity.
+
+    This reducer takes a list of detectors, sums the spectra together element wise, as
+    to preserve time of flight dimensionality and normalizes by good frames. This results
+    in an array of noramalized counts (:math:`C`) against time.
+
+    The array of normalized counts (:math:`C`) against time (:math:`t`, in nanoseconds)
+    is fitted using a user-specified model - for example,
+    :py:obj:`muon_decay <ibex_bluesky_core.devices.muon.muon_decay>`
+
+    The resulting fit parameters, along with their uncertainties, are exposed as
+    signals from this reducer. For example, for a model like:
+
+    .. code-block:: python
+
+        def my_model(t, m, c):
+            return m * t + c
+
+        model = lmfit.Model(my_model)
+
+    The exposed signals will include ``m``, ``m_err``, ``c``, and ``c_err``.
+
+    .. note::
+
+        The independent variable must be called `t` (time).
+
+    An example setup showing how to fit a linear model to asymmetry using this
+    reducer is:
+
+    .. code-block:: python
+        def linear(t, m, c):
+            return m * t + c
+
+        # lmfit Parameters describing initial guesses and fitting constraints
+        parameters = lmfit.Parameters()
+        parameters.add("m", 0)
+        parameters.add("c", 0, min=0, max=1000)
+
+        controller = RunPerPointController(save_run=True)
+        waiter = PeriodGoodFramesWaiter(500)
+        reducer = MuonLifetimeReducer(
+            prefix=prefix,
+            # Selects spectra 1-4
+            detector_spectra=np.array([1, 2, 3, 4]),
+            model=lmfit.Model(linear),
+            fit_parameters=parameters
+        )
+
+        dae = SimpleDae(
+            prefix=prefix,
+            controller=controller,
+            waiter=waiter,
+            reducer=reducer
+        )
+    """
+
+    def __init__(
+        self,
+        prefix: str,
+        detector_spectra: typing.Sequence[int],
+        model: lmfit.Model,
+        fit_parameters: lmfit.Parameters,
+    ) -> None:
+        """Create a new Muon lifetime reducer.
+
+        Args:
+            prefix: PV prefix for the
+                :py:obj:`SimpleDae <ibex_bluesky_core.devices.simpledae.SimpleDae>`.
+            detector_spectra: numpy :external+numpy:py:obj:`array <numpy.array>` of detector
+                spectra to select.
+                For example, ``np.array([1, 2, 3])`` selects spectra 1-3 inclusive.
+                All detectors in this list are assumed to have the same time
+                channel boundaries.
+            model: :external:py:obj:`lmfit.model.Model` object describing the model to fit to
+                the muon data. The independent variable must be :math:`t` (time, in nanoseconds).
+            fit_parameters: :external:py:obj:`lmfit.parameter.Parameters` object describing
+                the initial parameters (and constraints) for each fit parameter.
+
+        """
+        super().__init__(
+            prefix=prefix,
+            detector_spectra=detector_spectra,
+            sum_detector=sum_spectra_over_detectors,
+            datatype=Array1D[np.float64],
+            default=np.array([], dtype=np.float64),
+        )
+
+        super()._init_mixin(model, fit_parameters)
 
     def denominator(self, dae: Dae) -> SignalR[int]:
+        """Get normalization denominator (period good frames).
+
+        :meta private:
+        """
         return dae.period.good_frames
 
-    def _publish_result(self, counts, intensity) -> None:
+    def _publish_result(
+        self,
+        counts: sc.Variable | sc.DataArray,
+        intensity: sc.Variable | sc.DataArray,
+    ) -> None:
         self._det_counts_setter(counts.values)
         self._det_counts_stddev_setter(sc.sqrt(counts.variances))
 
