@@ -37,9 +37,6 @@ __all__ = [
     "muon_lifetime",
 ]
 
-INTENSITY_PRECISION = 6
-VARIANCE_ADDITION = 0.5
-
 
 def damped_oscillator(
     t: NDArray[np.floating],
@@ -487,10 +484,10 @@ class MuonLifetimeReducer(_MuonReducerMixin, SpectraNormalizer[Array1D[np.float6
     ) -> None:
 
         self._det_counts_setter(counts.values)
-        self._det_counts_stddev_setter(sc.sqrt(counts.variances))
+        self._det_counts_stddev_setter(np.sqrt(counts.variances))
 
         self._intensity_setter(intensity.values)
-        self._intensity_stddev_setter(sc.sqrt(intensity.variances))
+        self._intensity_stddev_setter(np.sqrt(intensity.variances))
 
         self._fit_and_publish_params(intensity.values)
 

@@ -1,12 +1,14 @@
 # pyright: reportMissingParameterType=false
 import re
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import AsyncMock, MagicMock, patch, Mock
 
 import lmfit
 import numpy as np
 import pytest
 import scipp as sc
 import scipp.testing
+from numpy.ma.testutils import assert_equal
+from scipp.testing import assert_identical
 
 from ibex_bluesky_core.devices.muon import (
     MuonAsymmetryReducer,
@@ -18,7 +20,7 @@ from ibex_bluesky_core.devices.muon import (
 from ibex_bluesky_core.devices.simpledae import (
     MEventsWaiter,
     PeriodPerPointController,
-    SimpleDae,
+    SimpleDae, VARIANCE_ADDITION,
 )
 
 damped_oscillator_model = lmfit.Model(damped_oscillator)
@@ -366,10 +368,112 @@ def test_lifetime_reducer_readable_signals(lifetime_dae, lifetime_reducer):
         lifetime_reducer.intensity_stddev,
     }
 
+async def test_sum_normalize_lifetime_reducer(lifetime_dae, lifetime_reducer):
+    await lifetime_reducer.connect(mock=True)
+    da = sc.DataArray(
+        data=sc.array(
+            dims=["tof"],
+            values=list(range(0,5)),
+            variances=[1] * 5,
+            unit=sc.units.counts,
+            dtype="float64",
+        ),
+        coords={
+            "tof": sc.linspace(
+                "tof", start=0, stop=5, num=6, unit=sc.units.ns, dtype="float64"
+            )
+        },
+    )
 
-# test:
-# overall check that given n different detector spectra, muon lifetime reducer adds them,
-# normalizes (patches dae.period.good_frames) and fits and assert correct params
-# test that n different spectra get added in the correct way using lifetime reducer
-# test that a dataarray gets normalized (patches dae.period.good_frames) properly with
-# lifetime reducer
+    with (
+        patch.object(
+            lifetime_dae.period.good_frames, "get_value", new=AsyncMock(return_value=2.0)
+        ),
+        patch(
+            "ibex_bluesky_core.devices.dae._spectra.DaeSpectra.read_spectrum_dataarray",
+            new=AsyncMock(return_value=da),
+        ),
+        patch.object(lifetime_reducer, "_publish_result") as publish_mock,
+    ):
+        await lifetime_reducer.reduce_data(lifetime_dae)
+
+    expected_counts = da + da
+    expected_counts.variances += VARIANCE_ADDITION
+
+    counts_arg, intensity_arg = publish_mock.call_args.args
+    assert_identical(counts_arg, expected_counts)
+    assert_identical(intensity_arg, expected_counts / 2.0)
+
+async def test_fit_and_publish_params(lifetime_dae, lifetime_reducer):
+    await lifetime_reducer.connect(mock=True)
+
+    t = np.linspace(0.5, 19.5, 20)
+    y = lifetime_model.eval(lifetime_model_params, t=t)
+
+    da = sc.DataArray(
+            data=sc.Variable(
+                dims=["tof"],
+                values=y,
+                variances=[1] * 20,
+                unit=sc.units.counts,
+                dtype="float64",
+            ),
+            coords={
+                "tof": sc.linspace(
+                    "tof",
+                    start=0,
+                    stop=20,
+                    num=21,
+                    unit=sc.units.ns,
+                    dtype="float64",
+                )
+            },
+        )
+
+    lifetime_reducer._fit_and_publish_params(da)
+
+    for name, param in lifetime_model_params.items():
+        actual = await getattr(lifetime_dae.reducer, name).get_value()
+        assert_equal(actual, pytest.approx(param.value, abs=1e-3))
+
+async def test_publish_result_sets_counts_and_intensity_signals(lifetime_reducer):
+    await lifetime_reducer.connect(mock=True)
+
+    counts = sc.DataArray(
+        data=sc.array(
+            dims=["tof"],
+            values=[2.0, 4.0, 6.0],
+            variances=[1.0, 4.0, 9.0],
+            unit=sc.units.counts,
+            dtype="float64",
+        ),
+        coords={
+            "tof": sc.linspace(
+                "tof", start=0, stop=3, num=4, unit=sc.units.ns, dtype="float64"
+            )
+        },
+    )
+    intensity = counts / sc.scalar(2.0)
+
+    with patch.object(
+        lifetime_reducer, "_fit_and_publish_params", new=Mock()
+    ) as fit_mock:
+        lifetime_reducer._publish_result(counts, intensity)
+
+    assert_equal(
+        await lifetime_reducer.det_counts.get_value(), counts.values
+    )
+    assert_equal(
+        await lifetime_reducer.det_counts_stddev.get_value(),
+        np.sqrt(counts.variances),
+    )
+    assert_equal(
+        await lifetime_reducer.intensity.get_value(), intensity.values
+    )
+    assert_equal(
+        await lifetime_reducer.intensity_stddev.get_value(),
+        np.sqrt(intensity.variances),
+    )
+
+    fit_mock.assert_called_once()
+    np.testing.assert_array_equal(fit_mock.call_args.args[0], intensity.values)

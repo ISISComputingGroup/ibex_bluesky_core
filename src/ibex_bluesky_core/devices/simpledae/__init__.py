@@ -77,9 +77,9 @@ __all__ = [
     "check_dae_strategies",
     "monitor_normalising_dae",
     "sum_spectra",
-    "sum_spectra_over_detectors",
     "tof_bounded_spectra",
     "wavelength_bounded_spectra",
+    "sum_spectra_over_detectors"
 ]
 
 TController_co = TypeVar("TController_co", bound="Controller", default=Controller, covariant=True)
