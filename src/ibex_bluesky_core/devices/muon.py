@@ -83,9 +83,9 @@ def double_damped_oscillator(  # ruff:ignore[too-many-arguments, too-many-positi
 
 def muon_lifetime(
     t: NDArray[np.floating],
-    n_0: float,
+    N_0: float,
     lambda_0: float,
-    n_1: float,
+    N_1: float,
     lambda_1: float,
 ) -> NDArray[np.floating]:
     r"""Equation for a muon decay/lifetime, as a function of time :math:`t`.
@@ -94,7 +94,7 @@ def muon_lifetime(
 
         N_0 e^{-\lambda_0 t} + N_1 e^{-\lambda_1 t}
     """
-    return n_0 * np.exp(-lambda_0 * t) + n_1 * np.exp(-lambda_1 * t)
+    return N_0 * np.exp(-lambda_0 * t) + N_1 * np.exp(-lambda_1 * t)
 
 
 class _MuonReducerMixin:
@@ -104,6 +104,8 @@ class _MuonReducerMixin:
       - creation of a ``{param}``/``{param}_err`` soft-signal pair for each model parameter.
       - publishing those signals via `additional_readable_signals`.
       - applying a fit result to those signals.
+
+    :meta private:
     """
 
     _model: Model
