@@ -104,8 +104,6 @@ class _MuonReducerMixin:
       - creation of a ``{param}``/``{param}_err`` soft-signal pair for each model parameter.
       - publishing those signals via `additional_readable_signals`.
       - applying a fit result to those signals.
-
-    :meta private:
     """
 
     _model: Model
