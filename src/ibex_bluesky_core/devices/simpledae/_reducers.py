@@ -154,7 +154,7 @@ class SpectraNormalizer(Reducer, StandardReadable, ABC, typing.Generic[T]):
     This is a generic base class for reducers which sum spectra in some way and
     divide the result by a scalar denominator signal. Subclasses choose the
     datatype used to store the summed counts/intensity, and must implement
-    :py:meth:`denominator` and :py:meth:`_publish_result`.
+    :py:meth:`denominator` and ``_publish_result``.
     """
 
     def __init__(

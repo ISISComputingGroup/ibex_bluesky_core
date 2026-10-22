@@ -32,6 +32,7 @@ logger = logging.getLogger(__name__)
 __all__ = [
     "MuonAsymmetryReducer",
     "MuonLifetimeReducer",
+    "MuonReducerMixin",
     "damped_oscillator",
     "double_damped_oscillator",
     "muon_lifetime",
@@ -83,9 +84,9 @@ def double_damped_oscillator(  # ruff:ignore[too-many-arguments, too-many-positi
 
 def muon_lifetime(
     t: NDArray[np.floating],
-    N_0: float,
+    N_0: float,  # ruff:ignore[invalid-argument-name]
     lambda_0: float,
-    N_1: float,
+    N_1: float,  # ruff:ignore[invalid-argument-name]
     lambda_1: float,
 ) -> NDArray[np.floating]:
     r"""Equation for a muon decay/lifetime, as a function of time :math:`t`.
@@ -97,8 +98,13 @@ def muon_lifetime(
     return N_0 * np.exp(-lambda_0 * t) + N_1 * np.exp(-lambda_1 * t)
 
 
-class _MuonReducerMixin:
+class MuonReducerMixin:
     """Shared behaviour for muon reducers which fit an ``lmfit`` model and expose its parameters.
+
+    This is a mixin, intended to be combined with a :py:obj:`Reducer
+    <ibex_bluesky_core.devices.simpledae.Reducer>` subclass (see
+    :py:obj:`MuonAsymmetryReducer` and :py:obj:`MuonLifetimeReducer` for examples)
+    rather than being used standalone.
 
     Provides:
       - creation of a ``{param}``/``{param}_err`` soft-signal pair for each model parameter.
@@ -187,7 +193,7 @@ class _MuonReducerMixin:
     __getattr__: typing.Callable[[str], typing.Any]
 
 
-class MuonAsymmetryReducer(_MuonReducerMixin, Reducer, StandardReadable):
+class MuonAsymmetryReducer(MuonReducerMixin, Reducer, StandardReadable):
     r"""DAE reducer which exposes a fitted asymmetry quantity.
 
     This reducer takes two lists of detectors; a forward scattering set of detectors,
@@ -378,7 +384,7 @@ class MuonAsymmetryReducer(_MuonReducerMixin, Reducer, StandardReadable):
         )
 
 
-class MuonLifetimeReducer(_MuonReducerMixin, SpectraNormalizer[Array1D[np.float64]]):
+class MuonLifetimeReducer(MuonReducerMixin, SpectraNormalizer[Array1D[np.float64]]):
     r"""DAE reducer which exposes a fitted muon lifetime/decay quantity.
 
     This reducer takes a list of detectors, sums the spectra together element wise, as

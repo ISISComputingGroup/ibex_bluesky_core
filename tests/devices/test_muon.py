@@ -34,9 +34,9 @@ damped_oscillator_params.add("lambda_0", 0.001)
 
 lifetime_model = lmfit.Model(muon_lifetime)
 lifetime_model_params = lmfit.Parameters()
-lifetime_model_params.add("n_0", 900.0, min=0)
+lifetime_model_params.add("N_0", 900.0, min=0)
 lifetime_model_params.add("lambda_0", 8e-4, min=0)
-lifetime_model_params.add("n_1", 120.0, min=0)
+lifetime_model_params.add("N_1", 120.0, min=0)
 lifetime_model_params.add("lambda_1", 1.2e-4, min=0)
 
 
@@ -343,9 +343,9 @@ def test_muon_lifetime():
     np.testing.assert_allclose(
         muon_lifetime(
             t=np.array([0.0, 1000.0], dtype=np.float64),
-            n_0=2.0,
+            N_0=2.0,
             lambda_0=1e-3,
-            n_1=3.0,
+            N_1=3.0,
             lambda_1=2e-3,
         ),
         np.array([5.0, 2.0 * np.exp(-1.0) + 3.0 * np.exp(-2.0)], dtype=np.float64),
@@ -354,12 +354,12 @@ def test_muon_lifetime():
 
 def test_lifetime_reducer_readable_signals(lifetime_dae, lifetime_reducer):
     assert set(lifetime_reducer.additional_readable_signals(lifetime_dae)) == {
-        lifetime_reducer.n_0,
-        lifetime_reducer.n_0_err,
+        lifetime_reducer.N_0,
+        lifetime_reducer.N_0_err,
         lifetime_reducer.lambda_0,
         lifetime_reducer.lambda_0_err,
-        lifetime_reducer.n_1,
-        lifetime_reducer.n_1_err,
+        lifetime_reducer.N_1,
+        lifetime_reducer.N_1_err,
         lifetime_reducer.lambda_1,
         lifetime_reducer.lambda_1_err,
         lifetime_reducer.det_counts,
