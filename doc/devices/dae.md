@@ -338,7 +338,9 @@ For this use case, {math}`\alpha` is always equal to {math}`1`.
 
 A and B refer to Measurements from different detector banks. Muon instruments use the additional {math}`\alpha`
 term, which might not be equal to {math}`1`. A reducer which exposes muon spin asymmetry as a measured quantity
-is implemented by the {py:obj}`~ibex_bluesky_core.devices.muon.MuonAsymmetryReducer` class.
+is implemented by the {py:obj}`~ibex_bluesky_core.devices.muon.MuonAsymmetryReducer` class and a reducer which
+exposes muon decay rates as measured quantities is implemented by the
+{py:obj}`~ibex_bluesky_core.devices.muon.MuonLifetimeReducer` class.
 
 ## Waiters
 

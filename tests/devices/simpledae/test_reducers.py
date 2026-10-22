@@ -1,13 +1,15 @@
 # pyright: reportMissingParameterType=false
 import math
 import re
-from unittest.mock import AsyncMock
+from unittest.mock import AsyncMock, patch
 
 import numpy as np
 import pytest
 import scipp as sc
 from ophyd_async.core import get_mock_put, set_mock_units, set_mock_value
+from scipp.testing import assert_identical
 
+from ibex_bluesky_core.devices.dae import DaeSpectra
 from ibex_bluesky_core.devices.simpledae import (
     VARIANCE_ADDITION,
     DSpacingMappingReducer,
@@ -16,6 +18,7 @@ from ibex_bluesky_core.devices.simpledae import (
     PeriodSpecIntegralsReducer,
     ScalarNormalizer,
     SimpleDae,
+    sum_spectra_over_detectors,
     tof_bounded_spectra,
     wavelength_bounded_spectra,
 )
@@ -1123,3 +1126,104 @@ def test_dspacing_reducer_bad_two_theta_shape():
                 dims=["tof"], values=[0, 1], unit=sc.units.angstrom, dtype="float64"
             ),
         )
+
+
+async def test_scalar_normalizer_variable_sum_detector(
+    simpledae: SimpleDae, scalar_normalizer_bounded_sum_zero_to_one_half: ScalarNormalizer
+):
+    scalar_normalizer_bounded_sum_zero_to_one_half.sum_detector = AsyncMock(
+        return_value=sc.scalar(500.0, variance=25.0, unit=sc.units.counts)
+    )
+
+    await scalar_normalizer_bounded_sum_zero_to_one_half.reduce_data(simpledae)
+
+    det_counts = await scalar_normalizer_bounded_sum_zero_to_one_half.det_counts.get_value()
+    det_counts_stddev = (
+        await scalar_normalizer_bounded_sum_zero_to_one_half.det_counts_stddev.get_value()
+    )
+
+    assert det_counts == 500.0
+    assert det_counts_stddev == pytest.approx(math.sqrt(25.0 + VARIANCE_ADDITION))
+
+
+async def test_scalar_normalizer_dataarray_sum_detector(
+    simpledae: SimpleDae, scalar_normalizer_bounded_sum_zero_to_one_half: ScalarNormalizer
+):
+    scalar_normalizer_bounded_sum_zero_to_one_half.sum_detector = AsyncMock(
+        return_value=sc.DataArray(data=sc.scalar(500.0, variance=25.0, unit=sc.units.counts))
+    )
+
+    await scalar_normalizer_bounded_sum_zero_to_one_half.reduce_data(simpledae)
+
+    det_counts = await scalar_normalizer_bounded_sum_zero_to_one_half.det_counts.get_value()
+    det_counts_stddev = (
+        await scalar_normalizer_bounded_sum_zero_to_one_half.det_counts_stddev.get_value()
+    )
+
+    assert det_counts == 500.0
+    assert det_counts_stddev == pytest.approx(math.sqrt(25.0 + VARIANCE_ADDITION))
+
+
+async def test_scalar_normalizer_intensity_normalized_by_denominator(
+    simpledae: SimpleDae, scalar_normalizer_bounded_sum_zero_to_one_half: ScalarNormalizer
+):
+    scalar_normalizer_bounded_sum_zero_to_one_half.sum_detector = AsyncMock(
+        return_value=sc.scalar(500.0, variance=25.0, unit=sc.units.counts)
+    )
+
+    with patch.object(simpledae.period.good_frames, "get_value", new=AsyncMock(return_value=250.0)):
+        await scalar_normalizer_bounded_sum_zero_to_one_half.reduce_data(simpledae)
+
+    intensity = await scalar_normalizer_bounded_sum_zero_to_one_half.intensity.get_value()
+    intensity_stddev = (
+        await scalar_normalizer_bounded_sum_zero_to_one_half.intensity_stddev.get_value()
+    )
+
+    expected = sc.scalar(
+        500.0, variance=25.0 + VARIANCE_ADDITION, unit=sc.units.counts
+    ) / sc.scalar(250.0)
+
+    assert intensity == pytest.approx(expected.value)
+    assert intensity_stddev == pytest.approx(math.sqrt(expected.variance))
+
+
+async def test_sum_spectra_over_detectors(simpledae: SimpleDae):
+    da = sc.DataArray(
+        data=sc.array(
+            dims=["tof"],
+            values=list(range(5)),
+            variances=[1] * 5,
+            unit=sc.units.counts,
+            dtype="float64",
+        ),
+        coords={
+            "tof": sc.linspace("tof", start=0, stop=5, num=6, unit=sc.units.ns, dtype="float64")
+        },
+    )
+
+    with (
+        patch(
+            "ibex_bluesky_core.devices.dae._spectra.DaeSpectra.read_spectrum_dataarray",
+            new=AsyncMock(return_value=da),
+        ),
+    ):
+        result = await sum_spectra_over_detectors(
+            [DaeSpectra("", spectra=1, period=1), DaeSpectra("", spectra=2, period=1)]
+        )
+
+        assert_identical(result, da + da)
+
+
+async def test_sum_spectra_over_detectors_empty(simpledae: SimpleDae):
+
+    with (
+        patch(
+            "ibex_bluesky_core.devices.dae._spectra.DaeSpectra.read_spectrum_dataarray",
+            new=AsyncMock(return_value=None),
+        ),
+        pytest.raises(
+            ValueError,
+            match=re.escape("No spectra to sum"),
+        ),
+    ):
+        await sum_spectra_over_detectors([DaeSpectra("", spectra=1, period=1)])
