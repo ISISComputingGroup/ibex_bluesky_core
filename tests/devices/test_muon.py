@@ -1,6 +1,6 @@
 # pyright: reportMissingParameterType=false
 import re
-from unittest.mock import AsyncMock, MagicMock, patch, Mock
+from unittest.mock import AsyncMock, MagicMock, Mock, patch
 
 import lmfit
 import numpy as np
@@ -18,9 +18,10 @@ from ibex_bluesky_core.devices.muon import (
     muon_lifetime,
 )
 from ibex_bluesky_core.devices.simpledae import (
+    VARIANCE_ADDITION,
     MEventsWaiter,
     PeriodPerPointController,
-    SimpleDae, VARIANCE_ADDITION,
+    SimpleDae,
 )
 
 damped_oscillator_model = lmfit.Model(damped_oscillator)
@@ -368,27 +369,24 @@ def test_lifetime_reducer_readable_signals(lifetime_dae, lifetime_reducer):
         lifetime_reducer.intensity_stddev,
     }
 
+
 async def test_sum_normalize_lifetime_reducer(lifetime_dae, lifetime_reducer):
     await lifetime_reducer.connect(mock=True)
     da = sc.DataArray(
         data=sc.array(
             dims=["tof"],
-            values=list(range(0,5)),
+            values=list(range(5)),
             variances=[1] * 5,
             unit=sc.units.counts,
             dtype="float64",
         ),
         coords={
-            "tof": sc.linspace(
-                "tof", start=0, stop=5, num=6, unit=sc.units.ns, dtype="float64"
-            )
+            "tof": sc.linspace("tof", start=0, stop=5, num=6, unit=sc.units.ns, dtype="float64")
         },
     )
 
     with (
-        patch.object(
-            lifetime_dae.period.good_frames, "get_value", new=AsyncMock(return_value=2.0)
-        ),
+        patch.object(lifetime_dae.period.good_frames, "get_value", new=AsyncMock(return_value=2.0)),
         patch(
             "ibex_bluesky_core.devices.dae._spectra.DaeSpectra.read_spectrum_dataarray",
             new=AsyncMock(return_value=da),
@@ -404,6 +402,7 @@ async def test_sum_normalize_lifetime_reducer(lifetime_dae, lifetime_reducer):
     assert_identical(counts_arg, expected_counts)
     assert_identical(intensity_arg, expected_counts / 2.0)
 
+
 async def test_fit_and_publish_params(lifetime_dae, lifetime_reducer):
     await lifetime_reducer.connect(mock=True)
 
@@ -411,30 +410,31 @@ async def test_fit_and_publish_params(lifetime_dae, lifetime_reducer):
     y = lifetime_model.eval(lifetime_model_params, t=t)
 
     da = sc.DataArray(
-            data=sc.Variable(
-                dims=["tof"],
-                values=y,
-                variances=[1] * 20,
-                unit=sc.units.counts,
+        data=sc.Variable(
+            dims=["tof"],
+            values=y,
+            variances=[1] * 20,
+            unit=sc.units.counts,
+            dtype="float64",
+        ),
+        coords={
+            "tof": sc.linspace(
+                "tof",
+                start=0,
+                stop=20,
+                num=21,
+                unit=sc.units.ns,
                 dtype="float64",
-            ),
-            coords={
-                "tof": sc.linspace(
-                    "tof",
-                    start=0,
-                    stop=20,
-                    num=21,
-                    unit=sc.units.ns,
-                    dtype="float64",
-                )
-            },
-        )
+            )
+        },
+    )
 
     lifetime_reducer._fit_and_publish_params(da)
 
     for name, param in lifetime_model_params.items():
         actual = await getattr(lifetime_dae.reducer, name).get_value()
         assert_equal(actual, pytest.approx(param.value, abs=1e-3))
+
 
 async def test_publish_result_sets_counts_and_intensity_signals(lifetime_reducer):
     await lifetime_reducer.connect(mock=True)
@@ -448,28 +448,20 @@ async def test_publish_result_sets_counts_and_intensity_signals(lifetime_reducer
             dtype="float64",
         ),
         coords={
-            "tof": sc.linspace(
-                "tof", start=0, stop=3, num=4, unit=sc.units.ns, dtype="float64"
-            )
+            "tof": sc.linspace("tof", start=0, stop=3, num=4, unit=sc.units.ns, dtype="float64")
         },
     )
     intensity = counts / sc.scalar(2.0)
 
-    with patch.object(
-        lifetime_reducer, "_fit_and_publish_params", new=Mock()
-    ) as fit_mock:
+    with patch.object(lifetime_reducer, "_fit_and_publish_params", new=Mock()) as fit_mock:
         lifetime_reducer._publish_result(counts, intensity)
 
-    assert_equal(
-        await lifetime_reducer.det_counts.get_value(), counts.values
-    )
+    assert_equal(await lifetime_reducer.det_counts.get_value(), counts.values)
     assert_equal(
         await lifetime_reducer.det_counts_stddev.get_value(),
         np.sqrt(counts.variances),
     )
-    assert_equal(
-        await lifetime_reducer.intensity.get_value(), intensity.values
-    )
+    assert_equal(await lifetime_reducer.intensity.get_value(), intensity.values)
     assert_equal(
         await lifetime_reducer.intensity_stddev.get_value(),
         np.sqrt(intensity.variances),
