@@ -155,8 +155,6 @@ class SpectraNormalizer(Reducer, StandardReadable, ABC, typing.Generic[T]):
     divide the result by a scalar denominator signal. Subclasses choose the
     datatype used to store the summed counts/intensity, and must implement
     :py:meth:`denominator` and :py:meth:`_publish_result`.
-
-    :meta private:
     """
 
     def __init__(
@@ -199,7 +197,6 @@ class SpectraNormalizer(Reducer, StandardReadable, ABC, typing.Generic[T]):
     @abstractmethod
     def denominator(self, dae: Dae) -> SignalR[int] | SignalR[float]:
         """Get the normalization denominator, which is assumed to be a scalar signal."""
-        ...
 
     @abstractmethod
     def _publish_result(
@@ -208,7 +205,6 @@ class SpectraNormalizer(Reducer, StandardReadable, ABC, typing.Generic[T]):
         intensity: sc.Variable | sc.DataArray,
     ) -> None:
         """Push the reduced counts/intensity (and anything derived) into signals."""
-        ...
 
     async def reduce_data(self, dae: Dae) -> None:
         """Apply the normalization.
