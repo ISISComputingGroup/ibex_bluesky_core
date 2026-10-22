@@ -385,7 +385,7 @@ class MuonAsymmetryReducer(MuonReducerMixin, Reducer, StandardReadable):
 
 
 class MuonLifetimeReducer(MuonReducerMixin, SpectraNormalizer[Array1D[np.float64]]):
-    r"""DAE reducer which exposes a fitted muon lifetime/decay quantity.
+    r"""DAE reducer which exposes fitted muon decay rates.
 
     This reducer takes a list of detectors, sums the spectra together element wise, as
     to preserve time of flight dimensionality and normalizes by good frames. This results
