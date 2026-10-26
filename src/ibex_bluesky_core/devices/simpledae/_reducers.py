@@ -153,6 +153,7 @@ async def reduce_detector_data(
     Returns:
         Summed counts and intensity respectively.
             Type depends on the chosen sum_detector method.
+
     """
     summed_counts, denominator_val = await asyncio.gather(
         sum_detector(detectors.values()), denominator(dae).get_value()

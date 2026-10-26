@@ -170,8 +170,7 @@ def _fit_and_publish_muon_params(
 
     if fit_result is None:
         raise ValueError(
-            f"{owner.__class__.__name__} failed to fit model to muon data.\n"
-            "Check beamline setup."
+            f"{owner.__class__.__name__} failed to fit model to muon data.\nCheck beamline setup."
         )
 
     _apply_fit_result(fit_result, parameter_setters, parameter_error_setters)
@@ -390,9 +389,7 @@ class MuonAsymmetryReducer(Reducer, StandardReadable):
 
         :meta private:
         """
-        return _muon_fit_readable_signals(
-            self, self._model
-        )
+        return _muon_fit_readable_signals(self, self._model)
 
     # As we have dynamic attributes, tell pyright that __getattr__ may return any type.
     __getattr__: typing.Callable[[str], typing.Any]
