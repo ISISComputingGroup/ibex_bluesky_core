@@ -34,7 +34,7 @@ __all__ = [
     "damped_oscillator",
     "double_damped_oscillator",
     "muon_lifetime",
-    "sum_spectra_over_detectors"
+    "sum_spectra_over_detectors",
 ]
 
 
@@ -46,7 +46,8 @@ async def sum_spectra_over_detectors(spectra: typing.Collection[DaeSpectra]) -> 
 
     Returns:
         Sum of spectra element-wise.
-        """
+
+    """
     summed: sc.DataArray | None = None
 
     for spec in asyncio.as_completed([s.read_spectrum_dataarray() for s in spectra]):
