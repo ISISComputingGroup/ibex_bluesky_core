@@ -14,6 +14,7 @@ from ophyd_async.core import (
     Array1D,
     Device,
     DeviceVector,
+    SignalDatatype,
     SignalR,
     StandardReadable,
     soft_signal_r_and_setter,
@@ -130,6 +131,50 @@ def wavelength_bounded_spectra(
     return sum_spectra_with_wavelength
 
 
+T = typing.TypeVar("T", bound=SignalDatatype)
+
+
+async def reduce_detector_data(
+    sum_detector: Callable[[Collection[DaeSpectra]], Awaitable[sc.Variable | sc.DataArray]],
+    detectors: DeviceVector[DaeSpectra],
+    denominator: Callable[[Dae], SignalR[int] | SignalR[float]],
+    dae: Dae,
+) -> tuple[sc.Variable | sc.DataArray, sc.Variable | sc.DataArray]:
+    """Reduce detector data by summing detector counts and normalizing them by a denominator.
+
+    Args:
+        sum_detector: takes spectra objects, reads from them, and returns a
+                :py:obj:`scipp.scalar` or a :py:obj:`scipp.DataArray`
+                describing the detector intensity.
+        detectors: Device vector of detector counts.
+        denominator: A scalar to divide detector counts by.
+        dae: Dae
+
+    Returns:
+        Summed counts and intensity respectively.
+            Type depends on the chosen sum_detector method.
+
+    """
+    summed_counts, denominator_val = await asyncio.gather(
+        sum_detector(detectors.values()), denominator(dae).get_value()
+    )
+
+    if denominator_val == 0.0:
+        raise ValueError("Cannot normalize; denominator is zero. Check beamline configuration.")
+
+    # See doc\architectural_decisions\005-variance-addition.md
+    # for justification of this addition to variances.
+
+    if isinstance(summed_counts, sc.DataArray):
+        summed_counts.variances += VARIANCE_ADDITION
+    else:
+        summed_counts.variance += VARIANCE_ADDITION
+
+    intensity = summed_counts / denominator_val
+
+    return summed_counts, intensity
+
+
 class ScalarNormalizer(Reducer, StandardReadable, ABC):
     """Sum a set of user-specified spectra, then normalize by a scalar signal."""
 
@@ -189,18 +234,9 @@ class ScalarNormalizer(Reducer, StandardReadable, ABC):
         :meta private:
         """
         logger.info("starting reduction")
-        summed_counts, denominator = await asyncio.gather(
-            self.sum_detector(self.detectors.values()), self.denominator(dae).get_value()
+        summed_counts, intensity = await reduce_detector_data(
+            self.sum_detector, self.detectors, self.denominator, dae
         )
-
-        if denominator == 0.0:
-            raise ValueError("Cannot normalize; denominator is zero. Check beamline configuration.")
-
-        # See doc\architectural_decisions\005-variance-addition.md
-        # for justification of this addition to variances.
-        summed_counts.variance += VARIANCE_ADDITION
-
-        intensity = summed_counts / denominator
 
         self._det_counts_setter(float(summed_counts.value))
         self._det_counts_stddev_setter(math.sqrt(summed_counts.variance))

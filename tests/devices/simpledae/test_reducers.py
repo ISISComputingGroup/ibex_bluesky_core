@@ -1,13 +1,15 @@
 # pyright: reportMissingParameterType=false
 import math
 import re
-from unittest.mock import AsyncMock
+from unittest.mock import AsyncMock, Mock, patch
 
 import numpy as np
 import pytest
 import scipp as sc
-from ophyd_async.core import get_mock_put, set_mock_units, set_mock_value
+from ophyd_async.core import DeviceVector, get_mock_put, set_mock_units, set_mock_value
+from scipp.testing import assert_identical
 
+from ibex_bluesky_core.devices.dae import DaeSpectra
 from ibex_bluesky_core.devices.simpledae import (
     VARIANCE_ADDITION,
     DSpacingMappingReducer,
@@ -19,6 +21,7 @@ from ibex_bluesky_core.devices.simpledae import (
     tof_bounded_spectra,
     wavelength_bounded_spectra,
 )
+from ibex_bluesky_core.devices.simpledae._reducers import reduce_detector_data
 
 
 @pytest.fixture
@@ -1122,4 +1125,81 @@ def test_dspacing_reducer_bad_two_theta_shape():
             dspacing_bin_edges=sc.array(
                 dims=["tof"], values=[0, 1], unit=sc.units.angstrom, dtype="float64"
             ),
+        )
+
+
+@pytest.fixture
+def reduce_detectors() -> DeviceVector[DaeSpectra]:
+    return DeviceVector(
+        {i: DaeSpectra(dae_prefix="UNITTEST:DAE:", spectra=i, period=0) for i in (1, 2)}
+    )
+
+
+async def test_reduce_detector_data_variable(simpledae: SimpleDae, reduce_detectors):
+    sum_detector = AsyncMock(return_value=sc.scalar(100.0, variance=100.0, unit=sc.units.counts))
+
+    with patch.object(simpledae.period.good_frames, "get_value", new=AsyncMock(return_value=4)):
+        counts, intensity = await reduce_detector_data(
+            sum_detector, reduce_detectors, lambda dae: dae.period.good_frames, simpledae
+        )
+
+    expected_counts = sc.scalar(100.0, variance=100.0 + VARIANCE_ADDITION, unit=sc.units.counts)
+    assert isinstance(counts, sc.Variable)
+    assert isinstance(intensity, sc.Variable)
+    assert_identical(counts, expected_counts)
+    assert_identical(intensity, expected_counts / 4)
+
+
+async def test_reduce_detector_data_dataarray(simpledae: SimpleDae, reduce_detectors):
+    summed = sc.DataArray(
+        data=sc.array(
+            dims=["tof"],
+            values=[2.0, 4.0, 6.0],
+            variances=[2.0, 4.0, 6.0],
+            unit=sc.units.counts,
+        ),
+        coords={"tof": sc.linspace("tof", 0, 3, num=4, unit=sc.units.ns, dtype="float64")},
+    )
+    expected_counts = summed.copy()
+    expected_counts.variances += VARIANCE_ADDITION
+
+    with patch.object(simpledae.period.good_frames, "get_value", new=AsyncMock(return_value=2)):
+        counts, intensity = await reduce_detector_data(
+            AsyncMock(return_value=summed),
+            reduce_detectors,
+            lambda dae: dae.period.good_frames,
+            simpledae,
+        )
+
+    assert isinstance(counts, sc.DataArray)
+    assert isinstance(intensity, sc.DataArray)
+    assert_identical(counts, expected_counts)
+    assert_identical(intensity, expected_counts / 2)
+
+
+async def test_reduce_detector_data_passes_detectors_and_dae(
+    simpledae: SimpleDae, reduce_detectors
+):
+    sum_detector = AsyncMock(return_value=sc.scalar(1.0, variance=1.0, unit=sc.units.counts))
+    denominator = Mock(return_value=simpledae.period.good_frames)
+
+    with patch.object(simpledae.period.good_frames, "get_value", new=AsyncMock(return_value=1)):
+        await reduce_detector_data(sum_detector, reduce_detectors, denominator, simpledae)
+
+    assert list(sum_detector.call_args.args[0]) == list(reduce_detectors.values())
+    denominator.assert_called_once_with(simpledae)
+
+
+async def test_reduce_detector_data_zero_denominator(simpledae: SimpleDae, reduce_detectors):
+    sum_detector = AsyncMock(return_value=sc.scalar(1.0, variance=1.0, unit=sc.units.counts))
+
+    with (
+        patch.object(simpledae.period.good_frames, "get_value", new=AsyncMock(return_value=0)),
+        pytest.raises(
+            ValueError,
+            match=re.escape("Cannot normalize; denominator is zero. Check beamline configuration."),
+        ),
+    ):
+        await reduce_detector_data(
+            sum_detector, reduce_detectors, lambda dae: dae.period.good_frames, simpledae
         )
