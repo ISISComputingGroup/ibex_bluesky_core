@@ -390,7 +390,7 @@ class MuonAsymmetryReducer(Reducer, StandardReadable):
 
         :meta private:
         """
-        return super().additional_readable_signals(dae) + _muon_fit_readable_signals(
+        return _muon_fit_readable_signals(
             self, self._model
         )
 
