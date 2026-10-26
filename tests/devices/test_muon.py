@@ -339,7 +339,7 @@ async def test_if_fit_fails_then_get_error(asymmetry_reducer, asymmetry_dae):
         with pytest.raises(
             ValueError,
             match=re.escape(
-                "MuonAsymmetryReducer failed to fit asymmetry model to muon data.\n"
+                "MuonAsymmetryReducer failed to fit model to muon data.\n"
                 "Check beamline setup."
             ),
         ):
@@ -566,7 +566,7 @@ def test_fit_and_publish_muon_params_raises_if_fit_fails():
     with pytest.raises(
         ValueError,
         match=re.escape(
-            "SomeReducer failed to fit asymmetry model to muon data.\nCheck beamline setup."
+            "SomeReducer failed to fit model to muon data.\nCheck beamline setup."
         ),
     ):
         _fit_and_publish_muon_params(

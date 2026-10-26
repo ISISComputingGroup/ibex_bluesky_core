@@ -170,7 +170,7 @@ def _fit_and_publish_muon_params(
 
     if fit_result is None:
         raise ValueError(
-            f"{owner.__class__.__name__} failed to fit asymmetry model to muon data.\n"
+            f"{owner.__class__.__name__} failed to fit model to muon data.\n"
             "Check beamline setup."
         )
 

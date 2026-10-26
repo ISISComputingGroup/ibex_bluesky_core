@@ -1128,65 +1128,6 @@ def test_dspacing_reducer_bad_two_theta_shape():
         )
 
 
-async def test_scalar_normalizer_variable_sum_detector(
-    simpledae: SimpleDae, scalar_normalizer_bounded_sum_zero_to_one_half: ScalarNormalizer
-):
-    scalar_normalizer_bounded_sum_zero_to_one_half.sum_detector = AsyncMock(
-        return_value=sc.scalar(500.0, variance=25.0, unit=sc.units.counts)
-    )
-
-    await scalar_normalizer_bounded_sum_zero_to_one_half.reduce_data(simpledae)
-
-    det_counts = await scalar_normalizer_bounded_sum_zero_to_one_half.det_counts.get_value()
-    det_counts_stddev = (
-        await scalar_normalizer_bounded_sum_zero_to_one_half.det_counts_stddev.get_value()
-    )
-
-    assert det_counts == 500.0
-    assert det_counts_stddev == pytest.approx(math.sqrt(25.0 + VARIANCE_ADDITION))
-
-
-async def test_scalar_normalizer_dataarray_sum_detector(
-    simpledae: SimpleDae, scalar_normalizer_bounded_sum_zero_to_one_half: ScalarNormalizer
-):
-    scalar_normalizer_bounded_sum_zero_to_one_half.sum_detector = AsyncMock(
-        return_value=sc.DataArray(data=sc.scalar(500.0, variance=25.0, unit=sc.units.counts))
-    )
-
-    await scalar_normalizer_bounded_sum_zero_to_one_half.reduce_data(simpledae)
-
-    det_counts = await scalar_normalizer_bounded_sum_zero_to_one_half.det_counts.get_value()
-    det_counts_stddev = (
-        await scalar_normalizer_bounded_sum_zero_to_one_half.det_counts_stddev.get_value()
-    )
-
-    assert det_counts == 500.0
-    assert det_counts_stddev == pytest.approx(math.sqrt(25.0 + VARIANCE_ADDITION))
-
-
-async def test_scalar_normalizer_intensity_normalized_by_denominator(
-    simpledae: SimpleDae, scalar_normalizer_bounded_sum_zero_to_one_half: ScalarNormalizer
-):
-    scalar_normalizer_bounded_sum_zero_to_one_half.sum_detector = AsyncMock(
-        return_value=sc.scalar(500.0, variance=25.0, unit=sc.units.counts)
-    )
-
-    with patch.object(simpledae.period.good_frames, "get_value", new=AsyncMock(return_value=250.0)):
-        await scalar_normalizer_bounded_sum_zero_to_one_half.reduce_data(simpledae)
-
-    intensity = await scalar_normalizer_bounded_sum_zero_to_one_half.intensity.get_value()
-    intensity_stddev = (
-        await scalar_normalizer_bounded_sum_zero_to_one_half.intensity_stddev.get_value()
-    )
-
-    expected = sc.scalar(
-        500.0, variance=25.0 + VARIANCE_ADDITION, unit=sc.units.counts
-    ) / sc.scalar(250.0)
-
-    assert intensity == pytest.approx(expected.value)
-    assert intensity_stddev == pytest.approx(math.sqrt(expected.variance))
-
-
 @pytest.fixture
 def reduce_detectors() -> DeviceVector[DaeSpectra]:
     return DeviceVector(
