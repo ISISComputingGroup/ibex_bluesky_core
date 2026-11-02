@@ -184,8 +184,6 @@ def _fit_and_publish_muon_params(
 
     _apply_fit_result(fit_result, parameter_setters, parameter_error_setters)
 
-    logger.info("reduction complete")
-
 
 def _muon_fit_readable_signals(owner: object, model: Model) -> list[Device]:
     signal_values = []
@@ -393,6 +391,8 @@ class MuonAsymmetryReducer(Reducer, StandardReadable):
         asymmetry = self._calculate_asymmetry(current_period_data, first_spec_dataarray)
         self._fit_and_publish_params(asymmetry)
 
+        logger.info("reduction complete")
+
     def additional_readable_signals(self, dae: Dae) -> list[Device]:
         """Publish interesting signals derived or used by this reducer.
 
@@ -524,6 +524,7 @@ class MuonLifetimeReducer(Reducer, StandardReadable):
         )
 
         self._fit_and_publish_params(typing.cast(sc.DataArray, intensity))
+        logger.info("reduction complete")
 
     def denominator(self, dae: Dae) -> SignalR[int]:
         """Get normalization denominator (period good frames).
