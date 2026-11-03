@@ -7,31 +7,24 @@ import numpy as np
 import pytest
 import scipp as sc
 import scipp.testing
-from numpy.ma.testutils import assert_equal
 from scipp.testing import assert_identical
 
-from ibex_bluesky_core.devices.dae import DaeSpectra
 from ibex_bluesky_core.devices.muon import (
     MuonAsymmetryReducer,
     MuonLifetimeReducer,
-    _apply_fit_result,
     _create_fit_parameter_signals,
     _fit_and_publish_muon_params,
     _fit_muon_model,
     _muon_fit_readable_signals,
+    _rebin_and_sum,
     damped_oscillator,
     double_damped_oscillator,
     muon_lifetime,
-    sum_spectra_over_detectors,
 )
-from ibex_bluesky_core.devices.simpledae import (
-    VARIANCE_ADDITION,
-    MEventsWaiter,
-    PeriodPerPointController,
-    SimpleDae,
-)
+from ibex_bluesky_core.devices.simpledae import MEventsWaiter, PeriodPerPointController, SimpleDae
 
 damped_oscillator_model = lmfit.Model(damped_oscillator)
+
 damped_oscillator_params = lmfit.Parameters()
 damped_oscillator_params.add("B", 0.0)
 damped_oscillator_params.add("A_0", 0.1, min=0)
@@ -40,6 +33,7 @@ damped_oscillator_params.add("phi_0", 0.0)
 damped_oscillator_params.add("lambda_0", 0.001)
 
 lifetime_model = lmfit.Model(muon_lifetime)
+
 lifetime_model_params = lmfit.Parameters()
 lifetime_model_params.add("N_0", 900.0, min=0)
 lifetime_model_params.add("lambda_0", 8e-4, min=0)
@@ -71,32 +65,10 @@ def rebinning_asymmetry_reducer():
 
 
 @pytest.fixture
-def lifetime_reducer():
-    return MuonLifetimeReducer(
-        prefix="UNITTEST:",
-        detector_spectra=[1, 2],
-        fit_parameters=lifetime_model_params,
-        model=lifetime_model,
-    )
-
-
-@pytest.fixture
-async def asymmetry_dae(rebinning_asymmetry_reducer):
+async def simpledae(rebinning_asymmetry_reducer):
     dae = SimpleDae(
         prefix="UNITTEST:",
         reducer=rebinning_asymmetry_reducer,
-        waiter=MEventsWaiter(5000),
-        controller=PeriodPerPointController(save_run=False),
-    )
-    await dae.connect(mock=True)
-    return dae
-
-
-@pytest.fixture
-async def lifetime_dae(lifetime_reducer):
-    dae = SimpleDae(
-        prefix="UNITTEST:",
-        reducer=lifetime_reducer,
         waiter=MEventsWaiter(5000),
         controller=PeriodPerPointController(save_run=False),
     )
@@ -137,24 +109,24 @@ def test_double_damped_oscillator():
 
 
 def test_asymmetry_reducer_readable_signals(
-    asymmetry_dae: SimpleDae[PeriodPerPointController, MEventsWaiter, MuonAsymmetryReducer],
+    simpledae: SimpleDae[PeriodPerPointController, MEventsWaiter, MuonAsymmetryReducer],
     rebinning_asymmetry_reducer,
 ):
-    assert set(rebinning_asymmetry_reducer.additional_readable_signals(asymmetry_dae)) == {
-        asymmetry_dae.reducer.B,
-        asymmetry_dae.reducer.B_err,
-        asymmetry_dae.reducer.A_0,
-        asymmetry_dae.reducer.A_0_err,
-        asymmetry_dae.reducer.omega_0,
-        asymmetry_dae.reducer.omega_0_err,
-        asymmetry_dae.reducer.phi_0,
-        asymmetry_dae.reducer.phi_0_err,
-        asymmetry_dae.reducer.lambda_0,
-        asymmetry_dae.reducer.lambda_0_err,
+    assert set(rebinning_asymmetry_reducer.additional_readable_signals(simpledae)) == {
+        simpledae.reducer.B,
+        simpledae.reducer.B_err,
+        simpledae.reducer.A_0,
+        simpledae.reducer.A_0_err,
+        simpledae.reducer.omega_0,
+        simpledae.reducer.omega_0_err,
+        simpledae.reducer.phi_0,
+        simpledae.reducer.phi_0_err,
+        simpledae.reducer.lambda_0,
+        simpledae.reducer.lambda_0_err,
     }
 
 
-def test_rebin_and_sum(rebinning_asymmetry_reducer):
+def test_rebin_and_sum():
     raw_data = np.array(
         [
             [1, 2, 3, 4, 5],
@@ -164,7 +136,8 @@ def test_rebin_and_sum(rebinning_asymmetry_reducer):
     )
 
     time = sc.array(dims=["tof"], values=[0, 0.5, 1, 1.5, 2, 2.5], unit="ns", dtype="float64")
-    result = rebinning_asymmetry_reducer._rebin_and_sum(raw_data, time)
+    time_bin_edges = sc.linspace("tof", 0, 5, num=6, unit=sc.units.ns, dtype="float64")
+    result = _rebin_and_sum(raw_data, time, time_bin_edges)
 
     scipp.testing.assert_allclose(
         result.data,
@@ -176,10 +149,10 @@ def test_rebin_and_sum(rebinning_asymmetry_reducer):
             dtype="float64",
         ),
     )
-    scipp.testing.assert_allclose(result.coords["tof"], rebinning_asymmetry_reducer._time_bin_edges)
+    scipp.testing.assert_allclose(result.coords["tof"], time_bin_edges)
 
 
-def test_rebin_and_sum_with_no_rebinning(asymmetry_reducer):
+def test_rebin_and_sum_with_no_rebinning():
     raw_data = np.array(
         [
             [1, 2, 3, 4, 5],
@@ -189,7 +162,7 @@ def test_rebin_and_sum_with_no_rebinning(asymmetry_reducer):
     )
 
     time = sc.array(dims=["tof"], values=[0, 0.5, 1, 1.5, 2, 2.5], unit="ns", dtype="float64")
-    result = asymmetry_reducer._rebin_and_sum(raw_data, time)
+    result = _rebin_and_sum(raw_data, time, None)
 
     scipp.testing.assert_allclose(
         result.data,
@@ -204,9 +177,9 @@ def test_rebin_and_sum_with_no_rebinning(asymmetry_reducer):
     scipp.testing.assert_allclose(result.coords["tof"], time)
 
 
-async def test_asymmetry_reducer(asymmetry_dae):
-    asymmetry_dae.trigger_and_get_specdata = AsyncMock(return_value=None)
-    asymmetry_dae.reducer._first_det.read_spectrum_dataarray = AsyncMock(return_value=None)
+async def test_asymmetry_reducer(simpledae):
+    simpledae.trigger_and_get_specdata = AsyncMock(return_value=None)
+    simpledae.reducer._first_det.read_spectrum_dataarray = AsyncMock(return_value=None)
 
     with patch(
         "ibex_bluesky_core.devices.muon.MuonAsymmetryReducer._calculate_asymmetry",
@@ -224,11 +197,11 @@ async def test_asymmetry_reducer(asymmetry_dae):
             },
         )
 
-        await asymmetry_dae.reducer.reduce_data(asymmetry_dae)
+        await simpledae.reducer.reduce_data(simpledae)
 
     # For all-zero data we expect the fit to converge to background = 0 and amplitude = 0.
-    assert await asymmetry_dae.reducer.B.get_value() == pytest.approx(0.0, abs=1e-8)
-    assert await asymmetry_dae.reducer.A_0.get_value() == pytest.approx(0.0, abs=1e-8)
+    assert await simpledae.reducer.B.get_value() == pytest.approx(0.0, abs=1e-8)
+    assert await simpledae.reducer.A_0.get_value() == pytest.approx(0.0, abs=1e-8)
 
 
 async def test_asymmetry_reducer_real_data():
@@ -309,7 +282,7 @@ def test_missing_parameters():
 
 def test_calculate_asymmetry(asymmetry_reducer):
     with (
-        patch.object(asymmetry_reducer, "_rebin_and_sum") as rebin_sum_mock,
+        patch("ibex_bluesky_core.devices.muon._rebin_and_sum") as rebin_sum_mock,
         patch("ibex_bluesky_core.devices.muon.calculate_polarisation") as calculate_asymmetry_mock,
     ):
         fake_da = MagicMock(spec=sc.DataArray)
@@ -325,13 +298,13 @@ def test_calculate_asymmetry(asymmetry_reducer):
         )
 
 
-async def test_if_fit_fails_then_get_error(asymmetry_reducer, asymmetry_dae):
+async def test_if_fit_fails_then_get_error(asymmetry_reducer, simpledae):
     await asymmetry_reducer.connect(mock=True)
 
     with (
         patch.object(asymmetry_reducer, "_calculate_asymmetry"),
         patch.object(asymmetry_reducer, "_fit_data") as fit_data_mock,
-        patch.object(asymmetry_dae, "trigger_and_get_specdata"),
+        patch.object(simpledae, "trigger_and_get_specdata"),
         patch.object(asymmetry_reducer._first_det, "read_spectrum_dataarray"),
     ):
         fit_data_mock.return_value = None
@@ -342,132 +315,22 @@ async def test_if_fit_fails_then_get_error(asymmetry_reducer, asymmetry_dae):
                 "MuonAsymmetryReducer failed to fit model to muon data.\nCheck beamline setup."
             ),
         ):
-            await asymmetry_reducer.reduce_data(asymmetry_dae)
+            await asymmetry_reducer.reduce_data(simpledae)
 
 
-def test_muon_lifetime():
-    np.testing.assert_allclose(
-        muon_lifetime(
-            t=np.array([0.0, 1000.0], dtype=np.float64),
-            N_0=2.0,
-            lambda_0=1e-3,
-            N_1=3.0,
-            lambda_1=2e-3,
-        ),
-        np.array([5.0, 2.0 * np.exp(-1.0) + 3.0 * np.exp(-2.0)], dtype=np.float64),
-    )
-
-
-def test_lifetime_reducer_readable_signals(lifetime_dae, lifetime_reducer):
-    assert set(lifetime_reducer.additional_readable_signals(lifetime_dae)) == {
-        lifetime_reducer.N_0,
-        lifetime_reducer.N_0_err,
-        lifetime_reducer.lambda_0,
-        lifetime_reducer.lambda_0_err,
-        lifetime_reducer.N_1,
-        lifetime_reducer.N_1_err,
-        lifetime_reducer.lambda_1,
-        lifetime_reducer.lambda_1_err,
-    }
-
-
-async def test_sum_normalize_lifetime_reducer(lifetime_dae, lifetime_reducer):
-    await lifetime_reducer.connect(mock=True)
-    da = sc.DataArray(
-        data=sc.array(
-            dims=["tof"],
-            values=list(range(5)),
-            variances=[1] * 5,
-            unit=sc.units.counts,
-            dtype="float64",
-        ),
-        coords={
-            "tof": sc.linspace("tof", start=0, stop=5, num=6, unit=sc.units.ns, dtype="float64")
-        },
-    )
-
-    with (
-        patch.object(lifetime_dae.period.good_frames, "get_value", new=AsyncMock(return_value=2.0)),
-        patch(
-            "ibex_bluesky_core.devices.dae._spectra.DaeSpectra.read_spectrum_dataarray",
-            new=AsyncMock(return_value=da),
-        ),
-        patch.object(lifetime_reducer, "_fit_and_publish_params") as publish_mock,
-    ):
-        await lifetime_reducer.reduce_data(lifetime_dae)
-
-    expected_counts = da + da
-    expected_counts.variances += VARIANCE_ADDITION
-
-    publish_mock.assert_called_once()
-    assert_identical(publish_mock.call_args.args[0], expected_counts / 2.0)
-
-
-async def test_fit_and_publish_params(lifetime_dae, lifetime_reducer):
-    await lifetime_reducer.connect(mock=True)
-
-    t = np.linspace(0.5, 19.5, 20)
-    y = lifetime_model.eval(lifetime_model_params, t=t)
-
-    da = sc.DataArray(
-        data=sc.Variable(
-            dims=["tof"],
-            values=y,
-            variances=[1] * 20,
-            unit=sc.units.counts,
-            dtype="float64",
-        ),
-        coords={
-            "tof": sc.linspace(
-                "tof",
-                start=0,
-                stop=20,
-                num=21,
-                unit=sc.units.ns,
-                dtype="float64",
-            )
-        },
-    )
-
-    lifetime_reducer._fit_and_publish_params(da)
-
-    for name, param in lifetime_model_params.items():
-        actual = await getattr(lifetime_dae.reducer, name).get_value()
-        assert_equal(actual, pytest.approx(param.value, abs=1e-3))
-
-
-async def test_sum_spectra_over_detectors():
-    da = sc.DataArray(
-        data=sc.array(
-            dims=["tof"],
-            values=list(range(5)),
-            variances=[1] * 5,
-            unit=sc.units.counts,
-            dtype="float64",
-        ),
-        coords={
-            "tof": sc.linspace("tof", start=0, stop=5, num=6, unit=sc.units.ns, dtype="float64")
-        },
-    )
-
-    with patch(
-        "ibex_bluesky_core.devices.dae._spectra.DaeSpectra.read_spectrum_dataarray",
-        new=AsyncMock(return_value=da),
-    ):
-        result = await sum_spectra_over_detectors(
-            [DaeSpectra("", spectra=1, period=1), DaeSpectra("", spectra=2, period=1)]
-        )
-
-    assert_identical(result, da + da)
-
-
-async def test_sum_spectra_over_detectors_empty():
-    with pytest.raises(ValueError, match=re.escape("No spectra to sum")):
-        await sum_spectra_over_detectors([])
+# Shared composite functions
 
 
 def _linear(t, m, c):
     return m * t + c
+
+
+def _linear_params():
+    params = lmfit.Parameters()
+    params.add("m", 0.0)
+    params.add("c", 0.0)
+
+    return params
 
 
 def _linear_fit_data(m=2.0, c=1.0):
@@ -476,13 +339,6 @@ def _linear_fit_data(m=2.0, c=1.0):
         data=sc.array(dims=["tof"], values=m * t + c, variances=[1.0] * 10, unit=sc.units.counts),
         coords={"tof": sc.linspace("tof", 0, 10, num=11, unit=sc.units.ns, dtype="float64")},
     )
-
-
-def _linear_params():
-    params = lmfit.Parameters()
-    params.add("m", 0.0)
-    params.add("c", 0.0)
-    return params
 
 
 def test_create_fit_parameter_signals_sets_signals_and_returns_setters():
@@ -503,23 +359,6 @@ def test_create_fit_parameter_signals_missing_parameters():
 
     with pytest.raises(ValueError, match=r"Missing parameters: \{'c'\}"):
         _create_fit_parameter_signals(MagicMock(spec=[]), lmfit.Model(_linear), params)
-
-
-def test_apply_fit_result_calls_setters():
-    fit_result = MagicMock()
-    fit_result.params = {
-        "m": MagicMock(value=2.0, stderr=0.1),
-        "c": MagicMock(value=1.0, stderr=0.2),
-    }
-    setters = {"m": MagicMock(), "c": MagicMock()}
-    error_setters = {"m": MagicMock(), "c": MagicMock()}
-
-    _apply_fit_result(fit_result, setters, error_setters)
-
-    setters["m"].assert_called_once_with(2.0)
-    setters["c"].assert_called_once_with(1.0)
-    error_setters["m"].assert_called_once_with(0.1)
-    error_setters["c"].assert_called_once_with(0.2)
 
 
 def test_fit_muon_model_fits_against_bin_centres():
@@ -543,17 +382,23 @@ def test_fit_muon_model_converts_tof_to_nanoseconds():
 
 def test_fit_and_publish_muon_params_applies_result():
     fit_result = MagicMock()
-    fit_result.params = {"m": MagicMock(value=3.0, stderr=0.5)}
+    fit_result.params = {
+        "m": MagicMock(value=3.0, stderr=0.5),
+        "c": MagicMock(value=1.0, stderr=0.2),
+    }
+
     fit_data = MagicMock(return_value=fit_result)
-    setters = {"m": MagicMock()}
-    error_setters = {"m": MagicMock()}
+    setters = {"m": MagicMock(), "c": MagicMock()}
+    error_setters = {"m": MagicMock(), "c": MagicMock()}
     data = _linear_fit_data()
 
     _fit_and_publish_muon_params(object(), fit_data, setters, error_setters, data)
 
     fit_data.assert_called_once_with(data)
     setters["m"].assert_called_once_with(3.0)
+    setters["c"].assert_called_once_with(1.0)
     error_setters["m"].assert_called_once_with(0.5)
+    error_setters["c"].assert_called_once_with(0.2)
 
 
 def test_fit_and_publish_muon_params_raises_if_fit_fails():
@@ -580,3 +425,199 @@ def test_muon_fit_readable_signals_returns_values_then_errors():
     signals = _muon_fit_readable_signals(owner, lmfit.Model(_linear))
 
     assert signals == [owner.m, owner.c, owner.m_err, owner.c_err]
+
+
+# MuonLifetimeReducer
+
+
+def _spectrum_with_tof(tof_edges):
+    return sc.DataArray(
+        data=sc.zeros(dims=["tof"], shape=[tof_edges.sizes["tof"] - 1], unit=sc.units.counts),
+        coords={"tof": tof_edges},
+    )
+
+
+@pytest.fixture
+def lifetime_reducer():
+    return MuonLifetimeReducer(
+        prefix="UNITTEST:",
+        detectors=np.array([1, 2]),
+        fit_parameters=lifetime_model_params,
+        model=lifetime_model,
+    )
+
+
+@pytest.fixture
+async def lifetime_dae(lifetime_reducer):
+    dae = SimpleDae(
+        prefix="UNITTEST:",
+        reducer=lifetime_reducer,
+        waiter=MEventsWaiter(5000),
+        controller=PeriodPerPointController(save_run=False),
+    )
+
+    await dae.connect(mock=True)
+
+    return dae
+
+
+def test_muon_lifetime():
+    np.testing.assert_allclose(
+        muon_lifetime(
+            t=np.array([0.0, 1000.0], dtype=np.float64),
+            N_0=2.0,
+            lambda_0=1e-3,
+            N_1=3.0,
+            lambda_1=2e-3,
+        ),
+        np.array([5.0, 2.0 * np.exp(-1.0) + 3.0 * np.exp(-2.0)], dtype=np.float64),
+    )
+
+
+def test_lifetime_reducer_defaults_to_muon_lifetime_model():
+    reducer = MuonLifetimeReducer(
+        prefix="UNITTEST:", detectors=np.array([1]), fit_parameters=lifetime_model_params
+    )
+
+    assert reducer._model.func is muon_lifetime
+    assert reducer._time_bin_edges is None
+
+    for name in ("N_0", "N_0_err", "lambda_0", "lambda_0_err", "N_1", "lambda_1_err"):
+        assert hasattr(reducer, name)
+
+
+def test_lifetime_reducer_missing_parameters():
+    with pytest.raises(ValueError, match=r"Missing parameters: .*"):
+        MuonLifetimeReducer(
+            prefix="UNITTEST:", detectors=np.array([1]), fit_parameters=lmfit.Parameters()
+        )
+
+
+def test_lifetime_reducer_creates_detectors(lifetime_reducer):
+    assert set(lifetime_reducer.detectors) == {1, 2}
+    assert lifetime_reducer._first_det.tof.source == "ca://UNITTEST:DAE:SPEC:0:1:X"
+
+
+def test_lifetime_reducer_readable_signals(lifetime_dae, lifetime_reducer):
+    assert set(lifetime_reducer.additional_readable_signals(lifetime_dae)) == {
+        lifetime_reducer.N_0,
+        lifetime_reducer.N_0_err,
+        lifetime_reducer.lambda_0,
+        lifetime_reducer.lambda_0_err,
+        lifetime_reducer.N_1,
+        lifetime_reducer.N_1_err,
+        lifetime_reducer.lambda_1,
+        lifetime_reducer.lambda_1_err,
+    }
+
+
+def test_lifetime_reducer_fit_data_delegates(lifetime_reducer):
+    data = _linear_fit_data()
+
+    with patch("ibex_bluesky_core.devices.muon._fit_muon_model") as fit_mock:
+        result = lifetime_reducer._fit_data(data)
+
+    fit_mock.assert_called_once_with(lifetime_model, lifetime_model_params, data)
+    assert result is fit_mock.return_value
+
+
+@pytest.mark.parametrize(
+    "time_bin_edges",
+    [None, sc.linspace("tof", 0, 4, num=3, unit=sc.units.ns, dtype="float64")],
+)
+async def test_lifetime_reducer_reduce_data_normalises_and_fits(lifetime_dae, time_bin_edges):
+    reducer = lifetime_dae.reducer
+    reducer._time_bin_edges = time_bin_edges
+    current_period_data = np.array([[1, 2, 3, 4], [5, 6, 7, 8]])
+    tof = sc.linspace("tof", 0, 4, num=5, unit=sc.units.ns, dtype="float64")
+
+    with (
+        patch.object(
+            lifetime_dae, "trigger_and_get_specdata", AsyncMock(return_value=current_period_data)
+        ),
+        patch.object(
+            reducer._first_det,
+            "read_spectrum_dataarray",
+            AsyncMock(return_value=_spectrum_with_tof(tof)),
+        ),
+        patch.object(lifetime_dae.period.good_frames, "get_value", AsyncMock(return_value=2)),
+        patch("ibex_bluesky_core.devices.muon._fit_and_publish_muon_params") as publish_mock,
+    ):
+        await reducer.reduce_data(lifetime_dae)
+
+    publish_mock.assert_called_once()
+    owner, fit_data, setters, error_setters, data = publish_mock.call_args.args
+
+    assert owner is reducer
+    assert fit_data == reducer._fit_data
+    assert setters is reducer._parameter_setters
+    assert error_setters is reducer._parameter_error_setters
+
+    expected = _rebin_and_sum(current_period_data, tof, time_bin_edges)
+    expected.variances += 0.5
+    assert_identical(data, expected / 2)
+
+
+async def test_lifetime_reducer_real_data():
+    reducer = MuonLifetimeReducer(
+        prefix="UNITTEST:",
+        detectors=np.array([1, 2]),
+        fit_parameters=_linear_params(),
+        model=lmfit.Model(_linear),
+    )
+
+    dae: SimpleDae[PeriodPerPointController, MEventsWaiter, MuonLifetimeReducer] = SimpleDae(
+        prefix="UNITTEST:",
+        reducer=reducer,
+        waiter=MEventsWaiter(5000),
+        controller=PeriodPerPointController(save_run=False),
+    )
+
+    await dae.connect(mock=True)
+
+    good_frames = 10
+    tof = sc.linspace("tof", 0, 10, num=11, unit=sc.units.ns, dtype="float64")
+    t = np.linspace(0.5, 9.5, 10)
+    per_frame = 1000 * t + 500
+
+    # Split the counts across two spectra, which the reducer should sum back together.
+    total = per_frame * good_frames
+    current_period_data = np.array([total * 0.25, total * 0.75])
+
+    with (
+        patch.object(dae, "trigger_and_get_specdata", AsyncMock(return_value=current_period_data)),
+        patch.object(
+            reducer._first_det,
+            "read_spectrum_dataarray",
+            AsyncMock(return_value=_spectrum_with_tof(tof)),
+        ),
+        patch.object(dae.period.good_frames, "get_value", AsyncMock(return_value=good_frames)),
+    ):
+        await reducer.reduce_data(dae)
+
+    assert await reducer.m.get_value() == pytest.approx(1000, rel=1e-6)
+    assert await reducer.c.get_value() == pytest.approx(500, rel=1e-6)
+
+
+async def test_lifetime_reducer_fit_fails_raises(lifetime_dae, lifetime_reducer):
+    tof = sc.linspace("tof", 0, 4, num=5, unit=sc.units.ns, dtype="float64")
+
+    with (
+        patch.object(
+            lifetime_dae, "trigger_and_get_specdata", AsyncMock(return_value=np.ones((2, 4)))
+        ),
+        patch.object(
+            lifetime_reducer._first_det,
+            "read_spectrum_dataarray",
+            AsyncMock(return_value=_spectrum_with_tof(tof)),
+        ),
+        patch.object(lifetime_dae.period.good_frames, "get_value", AsyncMock(return_value=1)),
+        patch.object(lifetime_reducer, "_fit_data", return_value=None),
+        pytest.raises(
+            ValueError,
+            match=re.escape(
+                "MuonLifetimeReducer failed to fit model to muon data.\nCheck beamline setup."
+            ),
+        ),
+    ):
+        await lifetime_reducer.reduce_data(lifetime_dae)
