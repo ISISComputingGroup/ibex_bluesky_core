@@ -28,11 +28,15 @@ def test_after_fitting_callback_writes_to_file_successfully_no_y_uncertainty(
 
     lf = LiveFit(Linear.fit(), y="invariant", x="motor", update_every=50)
     lfl = LiveFitLogger(lf, y="invariant", x="motor", postfix=postfix, output_dir=filepath)
+
     with (
         patch("ibex_bluesky_core.callbacks._fitting.open", m),
         patch("ibex_bluesky_core.callbacks._fitting.os.makedirs"),
         patch("os.chmod"),
-        patch("time.time", MagicMock(return_value=time)),
+        patch(
+            "ibex_bluesky_core.callbacks._fitting.format_time",
+            MagicMock(return_value="2024-10-04_13-43-43"),
+        ),
     ):
         RE(
             scan([invariant], mot, -1, 1, 3),
@@ -74,7 +78,10 @@ def test_fitting_callback_handles_no_rb_number_save(
         patch("ibex_bluesky_core.callbacks._fitting.open", m),
         patch("ibex_bluesky_core.callbacks._fitting.os.makedirs"),
         patch("os.chmod"),
-        patch("time.time", MagicMock(return_value=time)),
+        patch(
+            "ibex_bluesky_core.callbacks._fitting.format_time",
+            MagicMock(return_value="2024-10-04_13-43-43"),
+        ),
     ):
         RE(
             scan([invariant], mot, -1, 1, 3),
@@ -112,7 +119,10 @@ def test_after_fitting_callback_writes_to_file_successfully_with_y_uncertainty(
         patch("ibex_bluesky_core.callbacks._fitting.open", m),
         patch("ibex_bluesky_core.callbacks._fitting.os.makedirs"),
         patch("os.chmod"),
-        patch("time.time", MagicMock(return_value=time)),
+        patch(
+            "ibex_bluesky_core.callbacks._fitting.format_time",
+            MagicMock(return_value="2024-10-04_13-43-43"),
+        ),
     ):
         RE(
             scan([invariant, uncertainty], mot, -1, 1, 3),
@@ -236,7 +246,10 @@ def test_file_set_readonly_after_written(
         patch("ibex_bluesky_core.callbacks._fitting.open", m),
         patch("ibex_bluesky_core.callbacks._fitting.os.makedirs"),
         patch("os.chmod") as mock_chmod,
-        patch("time.time", MagicMock(return_value=time)),
+        patch(
+            "ibex_bluesky_core.callbacks._fitting.format_time",
+            MagicMock(return_value="2024-10-04_13-43-43"),
+        ),
     ):
         RE(
             scan([invariant], mot, -1, 1, 3),
