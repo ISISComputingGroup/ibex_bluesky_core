@@ -258,14 +258,14 @@ class MuonAsymmetryReducer(Reducer, StandardReadable):
             # Scalar multiplier applied to backwards detectors in asymmetry calculation.
             alpha=1.0,
             model=lmfit.Model(linear),
-            fit_parameters=parameters,
+            fit_parameters=parameters
         )
 
         dae = SimpleDae(
             prefix=prefix,
             controller=controller,
             waiter=waiter,
-            reducer=reducer,
+            reducer=reducer
         )
 
     """
@@ -419,9 +419,9 @@ class MuonLifetimeReducer(Reducer, StandardReadable):
         reducer = MuonLifetimeReducer(
             prefix=prefix,
             # Selects spectra 1-4
-            detector_spectra=[1, 2, 3, 4],
+            detectors=[1, 2, 3, 4],
             model=lmfit.Model(linear),
-            fit_parameters=parameters,
+            fit_parameters=parameters
         )
 
         dae = SimpleDae(
