@@ -13,8 +13,8 @@ from ibex_bluesky_core.devices.muon import (
     MuonAsymmetryReducer,
     MuonLifetimeReducer,
     _create_fit_parameter_signals,
-    _fit_and_publish_muon_params,
-    _fit_muon_model,
+    _fit_and_publish_params,
+    _fit_model,
     _muon_fit_readable_signals,
     _rebin_and_sum,
     damped_oscillator,
@@ -362,7 +362,7 @@ def test_create_fit_parameter_signals_missing_parameters():
 
 
 def test_fit_muon_model_fits_against_bin_centres():
-    result = _fit_muon_model(lmfit.Model(_linear), _linear_params(), _linear_fit_data(2.0, 1.0))
+    result = _fit_model(lmfit.Model(_linear), _linear_params(), _linear_fit_data(2.0, 1.0))
 
     assert result is not None
     assert result.params["m"].value == pytest.approx(2.0)
@@ -373,14 +373,14 @@ def test_fit_muon_model_converts_tof_to_nanoseconds():
     data = _linear_fit_data(2.0, 1.0)
     data.coords["tof"] = data.coords["tof"].to(unit=sc.units.us)
 
-    result = _fit_muon_model(lmfit.Model(_linear), _linear_params(), data)
+    result = _fit_model(lmfit.Model(_linear), _linear_params(), data)
 
     assert result is not None
     assert result.params["m"].value == pytest.approx(2.0)
     assert result.params["c"].value == pytest.approx(1.0)
 
 
-def test_fit_and_publish_muon_params_applies_result():
+def test_fit_and_publish_params_applies_result():
     fit_result = MagicMock()
     fit_result.params = {
         "m": MagicMock(value=3.0, stderr=0.5),
@@ -392,7 +392,7 @@ def test_fit_and_publish_muon_params_applies_result():
     error_setters = {"m": MagicMock(), "c": MagicMock()}
     data = _linear_fit_data()
 
-    _fit_and_publish_muon_params(object(), fit_data, setters, error_setters, data)
+    _fit_and_publish_params(object(), fit_data, setters, error_setters, data)
 
     fit_data.assert_called_once_with(data)
     setters["m"].assert_called_once_with(3.0)
@@ -401,7 +401,7 @@ def test_fit_and_publish_muon_params_applies_result():
     error_setters["c"].assert_called_once_with(0.2)
 
 
-def test_fit_and_publish_muon_params_raises_if_fit_fails():
+def test_fit_and_publish_params_raises_if_fit_fails():
     class SomeReducer:
         pass
 
@@ -411,7 +411,7 @@ def test_fit_and_publish_muon_params_raises_if_fit_fails():
         ValueError,
         match=re.escape("SomeReducer failed to fit model to muon data.\nCheck beamline setup."),
     ):
-        _fit_and_publish_muon_params(
+        _fit_and_publish_params(
             SomeReducer(), MagicMock(return_value=None), setters, {}, _linear_fit_data()
         )
 
@@ -514,7 +514,7 @@ def test_lifetime_reducer_readable_signals(lifetime_dae, lifetime_reducer):
 def test_lifetime_reducer_fit_data_delegates(lifetime_reducer):
     data = _linear_fit_data()
 
-    with patch("ibex_bluesky_core.devices.muon._fit_muon_model") as fit_mock:
+    with patch("ibex_bluesky_core.devices.muon._fit_model") as fit_mock:
         result = lifetime_reducer._fit_data(data)
 
     fit_mock.assert_called_once_with(lifetime_model, lifetime_model_params, data)
@@ -541,7 +541,7 @@ async def test_lifetime_reducer_reduce_data_normalises_and_fits(lifetime_dae, ti
             AsyncMock(return_value=_spectrum_with_tof(tof)),
         ),
         patch.object(lifetime_dae.period.good_frames, "get_value", AsyncMock(return_value=2)),
-        patch("ibex_bluesky_core.devices.muon._fit_and_publish_muon_params") as publish_mock,
+        patch("ibex_bluesky_core.devices.muon._fit_and_publish_params") as publish_mock,
     ):
         await reducer.reduce_data(lifetime_dae)
 

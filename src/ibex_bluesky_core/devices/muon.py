@@ -19,6 +19,7 @@ from ophyd_async.core import (
 
 from ibex_bluesky_core.devices.dae import Dae, DaeSpectra
 from ibex_bluesky_core.devices.simpledae import (
+    VARIANCE_ADDITION,
     Reducer,
 )
 from ibex_bluesky_core.utils import calculate_polarisation
@@ -115,7 +116,7 @@ def _create_fit_parameter_signals(
     return parameter_setters, parameter_error_setters
 
 
-def _fit_muon_model(
+def _fit_model(
     model: Model, fit_parameters: lmfit.Parameters, data: sc.DataArray
 ) -> ModelResult | None:
     bin_edges = data.coords["tof"].to(unit=sc.units.ns, dtype="float64").values
@@ -130,7 +131,7 @@ def _fit_muon_model(
     )
 
 
-def _fit_and_publish_muon_params(
+def _fit_and_publish_params(
     owner: object,
     fit_data: typing.Callable[[sc.DataArray], ModelResult | None],
     parameter_setters: dict[str, typing.Callable[[float], None]],
@@ -324,12 +325,7 @@ class MuonAsymmetryReducer(Reducer, StandardReadable):
         )
 
     def _fit_data(self, data: sc.DataArray) -> ModelResult | None:
-        return _fit_muon_model(self._model, self._fit_parameters, data)
-
-    def _fit_and_publish_params(self, data: sc.DataArray) -> None:
-        _fit_and_publish_muon_params(
-            self, self._fit_data, self._parameter_setters, self._parameter_error_setters, data
-        )
+        return _fit_model(self._model, self._fit_parameters, data)
 
     def _calculate_asymmetry(
         self, current_period_data: NDArray[np.int32], first_spec_dataarray: sc.DataArray
@@ -344,8 +340,8 @@ class MuonAsymmetryReducer(Reducer, StandardReadable):
             first_spec_dataarray.coords["tof"],
             self._time_bin_edges,
         )
-        forward.variances += 0.5
-        backward.variances += 0.5
+        forward.variances += VARIANCE_ADDITION
+        backward.variances += VARIANCE_ADDITION
         return calculate_polarisation(forward, backward, self._alpha)
 
     async def reduce_data(self, dae: Dae) -> None:
@@ -362,7 +358,9 @@ class MuonAsymmetryReducer(Reducer, StandardReadable):
         logger.info("starting reduction")
 
         asymmetry = self._calculate_asymmetry(current_period_data, first_spec_dataarray)
-        self._fit_and_publish_params(asymmetry)
+        _fit_and_publish_params(
+            self, self._fit_data, self._parameter_setters, self._parameter_error_setters, asymmetry
+        )
 
         logger.info("reduction complete")
 
@@ -480,7 +478,7 @@ class MuonLifetimeReducer(Reducer, StandardReadable):
         )
 
     def _fit_data(self, data: sc.DataArray) -> ModelResult | None:
-        return _fit_muon_model(self._model, self._fit_parameters, data)
+        return _fit_model(self._model, self._fit_parameters, data)
 
     async def reduce_data(self, dae: Dae) -> None:
         """Apply the normalization.
@@ -503,14 +501,14 @@ class MuonLifetimeReducer(Reducer, StandardReadable):
         da = _rebin_and_sum(
             current_period_data, first_spec_dataarray.coords["tof"], self._time_bin_edges
         )
-        da.variances += 0.5
+        da.variances += VARIANCE_ADDITION
 
-        _fit_and_publish_muon_params(
+        _fit_and_publish_params(
             self,
             self._fit_data,
             self._parameter_setters,
             self._parameter_error_setters,
-            da / denominator,
+            da / denominator,  # Normalize by good frames
         )
         logger.info("reduction complete")
 
