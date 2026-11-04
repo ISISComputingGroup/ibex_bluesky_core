@@ -186,9 +186,6 @@ def _rebin_and_sum(
     return da
 
 
-MUON_LIFETIME_MODEL = lmfit.Model(muon_lifetime)
-
-
 class MuonAsymmetryReducer(Reducer, StandardReadable):
     r"""DAE reducer which exposes a fitted asymmetry quantity.
 
@@ -441,7 +438,7 @@ class MuonLifetimeReducer(Reducer, StandardReadable):
         prefix: str,
         detectors: npt.NDArray[np.int32],
         time_bin_edges: sc.Variable | None = None,
-        model: Model = MUON_LIFETIME_MODEL,
+        model: Model,
         fit_parameters: lmfit.Parameters,
     ) -> None:
         """Create a new Muon lifetime reducer.
@@ -461,7 +458,6 @@ class MuonLifetimeReducer(Reducer, StandardReadable):
                 Use :py:obj:`None` to not apply any rebinning to the data.
             model: :external:py:obj:`lmfit.model.Model` object describing the model to fit to
                 the muon data. The independent variable must be :math:`t` (time, in nanoseconds).
-                Defaults to :py:obj:`muon_lifetime` model.
             fit_parameters: :external:py:obj:`lmfit.parameter.Parameters` object describing
                 the initial parameters (and constraints) for each fit parameter.
 

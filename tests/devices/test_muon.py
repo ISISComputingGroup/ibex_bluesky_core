@@ -476,7 +476,7 @@ def test_muon_lifetime():
 
 def test_lifetime_reducer_defaults_to_muon_lifetime_model():
     reducer = MuonLifetimeReducer(
-        prefix="UNITTEST:", detectors=np.array([1]), fit_parameters=lifetime_model_params
+        prefix="UNITTEST:", detectors=np.array([1]), model=lifetime_model, fit_parameters=lifetime_model_params
     )
 
     assert reducer._model.func is muon_lifetime
@@ -489,7 +489,7 @@ def test_lifetime_reducer_defaults_to_muon_lifetime_model():
 def test_lifetime_reducer_missing_parameters():
     with pytest.raises(ValueError, match=r"Missing parameters: .*"):
         MuonLifetimeReducer(
-            prefix="UNITTEST:", detectors=np.array([1]), fit_parameters=lmfit.Parameters()
+            prefix="UNITTEST:", detectors=np.array([1]), model=lifetime_model, fit_parameters=lmfit.Parameters()
         )
 
 
