@@ -438,7 +438,7 @@ class MuonLifetimeReducer(Reducer, StandardReadable):
         prefix: str,
         detectors: npt.NDArray[np.int32],
         time_bin_edges: sc.Variable | None = None,
-        model: Model,
+        model: Model | None = None,
         fit_parameters: lmfit.Parameters,
     ) -> None:
         """Create a new Muon lifetime reducer.
@@ -458,12 +458,13 @@ class MuonLifetimeReducer(Reducer, StandardReadable):
                 Use :py:obj:`None` to not apply any rebinning to the data.
             model: :external:py:obj:`lmfit.model.Model` object describing the model to fit to
                 the muon data. The independent variable must be :math:`t` (time, in nanoseconds).
+                Defaults to :py:obj:`muon_lifetime`.
             fit_parameters: :external:py:obj:`lmfit.parameter.Parameters` object describing
                 the initial parameters (and constraints) for each fit parameter.
 
         """
         self.detectors = detectors
-        self._model = model
+        self._model = model if model is not None else Model(muon_lifetime)
         self._fit_parameters = fit_parameters
         self._time_bin_edges = time_bin_edges
 
