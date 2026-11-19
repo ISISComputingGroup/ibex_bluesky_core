@@ -1,0 +1,28 @@
+
+
+``ibex_bluesky_core.devices.simpledae``
+=======================================
+        
+        
+        
+
+.. automodule:: ibex_bluesky_core.devices.simpledae
+    :members:
+    :show-inheritance:
+
+    
+    
+    
+
+    
+    
+    .. rubric:: Members
+
+    .. autosummary::
+        :nosignatures:
+    
+        SimpleDae
+        check_dae_strategies
+        monitor_normalising_dae
+    
+    

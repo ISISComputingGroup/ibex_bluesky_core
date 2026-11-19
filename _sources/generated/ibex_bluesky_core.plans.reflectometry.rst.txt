@@ -1,0 +1,26 @@
+
+
+``ibex_bluesky_core.plans.reflectometry``
+=========================================
+        
+        
+
+.. automodule:: ibex_bluesky_core.plans.reflectometry
+    :members:
+    :show-inheritance:
+
+    
+    
+    
+
+    
+    
+    .. rubric:: Members
+
+    .. autosummary::
+        :nosignatures:
+    
+        refl_adaptive_scan
+        refl_scan
+    
+    
