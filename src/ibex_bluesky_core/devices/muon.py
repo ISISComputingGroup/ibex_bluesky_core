@@ -137,7 +137,7 @@ def _fit_and_publish_params(
     parameter_setters: dict[str, typing.Callable[[float], None]],
     parameter_error_setters: dict[str, typing.Callable[[float], None]],
     data: sc.DataArray,
-) -> None:
+) -> ModelResult:
     fit_result = fit_data(data)
 
     if fit_result is None:
@@ -150,6 +150,8 @@ def _fit_and_publish_params(
 
         setter(result.value)
         parameter_error_setters[param](result.stderr)
+
+    return fit_result
 
 
 def _muon_fit_readable_signals(owner: object, model: Model) -> list[Device]:
@@ -358,7 +360,7 @@ class MuonAsymmetryReducer(Reducer, StandardReadable):
         logger.info("starting reduction")
 
         asymmetry = self._calculate_asymmetry(current_period_data, first_spec_dataarray)
-        _fit_and_publish_params(
+        _ = _fit_and_publish_params(
             self, self._fit_data, self._parameter_setters, self._parameter_error_setters, asymmetry
         )
 
@@ -440,6 +442,7 @@ class MuonLifetimeReducer(Reducer, StandardReadable):
         time_bin_edges: sc.Variable | None = None,
         model: Model | None = None,
         fit_parameters: lmfit.Parameters,
+        publish_n_ratio: bool = True,
     ) -> None:
         """Create a new Muon lifetime reducer.
 
@@ -461,12 +464,17 @@ class MuonLifetimeReducer(Reducer, StandardReadable):
                 Defaults to :py:obj:`muon_lifetime`.
             fit_parameters: :external:py:obj:`lmfit.parameter.Parameters` object describing
                 the initial parameters (and constraints) for each fit parameter.
+            publish_n_ratio: `bool` describing whether to publish the ratio of N0 and N1 fitted
+                quantities. This only works if the model in use publishes these quantities.
+                By default, uses the :py:obj:`muon_lifetime` which allows for this. Defaults to
+                ``True``.
 
         """
         self.detectors = detectors
         self._model = model if model is not None else Model(muon_lifetime)
         self._fit_parameters = fit_parameters
         self._time_bin_edges = time_bin_edges
+        self._publish_n_ratio = publish_n_ratio
 
         self._first_det = DaeSpectra(
             dae_prefix=prefix + "DAE:", spectra=int(detectors[0]), period=0
@@ -477,6 +485,10 @@ class MuonLifetimeReducer(Reducer, StandardReadable):
         self._parameter_setters, self._parameter_error_setters = _create_fit_parameter_signals(
             self, self._model, fit_parameters
         )
+
+        if self._publish_n_ratio:
+            self.n_ratio, self._n_ratio_setter = soft_signal_r_and_setter(float, 0.0)
+            self.n_ratio_err, self._n_ratio_err_setter = soft_signal_r_and_setter(float, 0.0)
 
     def _fit_data(self, data: sc.DataArray) -> ModelResult | None:
         return _fit_model(self._model, self._fit_parameters, data)
@@ -504,13 +516,19 @@ class MuonLifetimeReducer(Reducer, StandardReadable):
         )
         da.variances += VARIANCE_ADDITION
 
-        _fit_and_publish_params(
+        result = _fit_and_publish_params(
             self,
             self._fit_data,
             self._parameter_setters,
             self._parameter_error_setters,
             da / denominator,  # Normalize by good frames
         )
+
+        if self._publish_n_ratio:
+            n_ratio_result = result.params["N0"] / result.params["N1"]
+            self._n_ratio_setter(n_ratio_result.value)
+            self._n_ratio_err_setter(n_ratio_result.stderr)
+
         logger.info("reduction complete")
 
     def additional_readable_signals(self, dae: Dae) -> list[Device]:
@@ -518,7 +536,12 @@ class MuonLifetimeReducer(Reducer, StandardReadable):
 
         :meta private:
         """
-        return _muon_fit_readable_signals(self, self._model)
+        signals = _muon_fit_readable_signals(self, self._model)
+
+        if self._publish_n_ratio:
+            signals.extend([self.n_ratio, self.n_ratio_err])
+
+        return signals
 
     # As we have dynamic attributes, tell pyright that __getattr__ may return any type.
     __getattr__: typing.Callable[[str], typing.Any]

@@ -514,6 +514,8 @@ def test_lifetime_reducer_readable_signals(lifetime_dae, lifetime_reducer):
         lifetime_reducer.N_1_err,
         lifetime_reducer.lambda_1,
         lifetime_reducer.lambda_1_err,
+        lifetime_reducer.n_ratio,
+        lifetime_reducer.n_ratio_err,
     }
 
 
@@ -570,6 +572,7 @@ async def test_lifetime_reducer_real_data():
         detectors=np.array([1, 2]),
         fit_parameters=_linear_params(),
         model=lmfit.Model(_linear),
+        publish_n_ratio=False,
     )
 
     dae: SimpleDae[PeriodPerPointController, MEventsWaiter, MuonLifetimeReducer] = SimpleDae(
