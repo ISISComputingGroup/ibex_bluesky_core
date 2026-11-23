@@ -1,6 +1,8 @@
 # pyright: reportMissingParameterType=false
+import asyncio
 from contextlib import nullcontext
-from unittest.mock import ANY, MagicMock, call, patch
+from types import SimpleNamespace
+from unittest.mock import ANY, AsyncMock, MagicMock, call, patch
 
 import bluesky.plan_stubs as bps
 import bluesky.plans as bp
@@ -203,7 +205,11 @@ async def test_block_set_with_settle_time_longer_than_timeout():
         BlockWriteConfig(use_completion_callback=False, set_timeout_s=1, settle_time_s=30)
     )
 
-    with patch("ibex_bluesky_core.devices.block.asyncio.sleep") as mock_aio_sleep:
+    mock_aio_sleep = AsyncMock()
+    with patch(
+        "ibex_bluesky_core.devices.block.asyncio",
+        SimpleNamespace(sleep=mock_aio_sleep, wait_for=asyncio.wait_for),
+    ):
         await block.set(20)
         mock_aio_sleep.assert_called_once_with(30)
 
@@ -214,7 +220,11 @@ async def test_block_set_waiting_for_global_moving_flag():
     )
 
     set_mock_value(block.global_moving, False)
-    with patch("ibex_bluesky_core.devices.block.asyncio.sleep") as mock_aio_sleep:
+    mock_aio_sleep = AsyncMock()
+    with patch(
+        "ibex_bluesky_core.devices.block.asyncio",
+        SimpleNamespace(sleep=mock_aio_sleep, wait_for=asyncio.wait_for),
+    ):
         await block.set(10)
         # Only check first call, as wait_for_value from ophyd_async gives us a few more...
         assert mock_aio_sleep.mock_calls[0] == call(GLOBAL_MOVING_FLAG_PRE_WAIT)
@@ -226,7 +236,11 @@ async def test_block_set_waiting_for_global_moving_flag_timeout():
     )
 
     set_mock_value(block.global_moving, True)
-    with patch("ibex_bluesky_core.devices.block.asyncio.sleep") as mock_aio_sleep:
+    mock_aio_sleep = AsyncMock()
+    with patch(
+        "ibex_bluesky_core.devices.block.asyncio",
+        SimpleNamespace(sleep=mock_aio_sleep, wait_for=asyncio.wait_for),
+    ):
         with pytest.raises(TimeoutError):
             await block.set(10)
         # Only check first call, as wait_for_value from ophyd_async gives us a few more...
