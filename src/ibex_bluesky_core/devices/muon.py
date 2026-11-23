@@ -464,7 +464,7 @@ class MuonLifetimeReducer(Reducer, StandardReadable):
                 Defaults to :py:obj:`muon_lifetime`.
             fit_parameters: :external:py:obj:`lmfit.parameter.Parameters` object describing
                 the initial parameters (and constraints) for each fit parameter.
-            publish_n_ratio: `bool` describing whether to publish the ratio of N0 and N1 fitted
+            publish_n_ratio: `bool` describing whether to publish the ratio of N_0 and N_1 fitted
                 quantities. This only works if the model in use publishes these quantities.
                 By default, uses the :py:obj:`muon_lifetime` which allows for this. Defaults to
                 ``True``.
@@ -525,7 +525,7 @@ class MuonLifetimeReducer(Reducer, StandardReadable):
         )
 
         if self._publish_n_ratio:
-            n_ratio_result = result.params["N0"] / result.params["N1"]
+            n_ratio_result = result.params["N_0"] / result.params["N_1"]
             self._n_ratio_setter(n_ratio_result.value)
             self._n_ratio_err_setter(n_ratio_result.stderr)
 
