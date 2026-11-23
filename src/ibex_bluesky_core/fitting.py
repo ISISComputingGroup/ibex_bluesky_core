@@ -338,7 +338,7 @@ class Polynomial(Fit):
     @classmethod
     def interesting_params(cls) -> list[str]:
         """Return parameters that are interesting for ie. the plot title."""
-        return []
+        return None
 
     @classmethod
     def _check_degree(cls, args: tuple[int, ...]) -> int:
