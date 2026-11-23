@@ -452,6 +452,7 @@ class SlitScan(Fit):
         :ref:`fit_slitscan` model and parameter descriptions
 
     """
+
     equation = """See
     https://isiscomputinggroup.github.io/ibex_bluesky_core/callbacks/fitting/standard_fits.html#fit-slitscan
     for model function"""
