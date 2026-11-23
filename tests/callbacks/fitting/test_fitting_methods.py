@@ -1219,3 +1219,7 @@ class TestFlatLines:
 def test_fit_method_has_interesting_params(fit_method: Fit):
     # check that for a given fitting method, the length of interesting params is more than 0
     assert len(fit_method().interesting_params()) > 0  # pyright: ignore reportCallIssue
+
+
+def test_polynomial_has_no_interesting_params():
+    assert len(Polynomial().interesting_params()) == 0  # pyright: ignore reportCallIssue
