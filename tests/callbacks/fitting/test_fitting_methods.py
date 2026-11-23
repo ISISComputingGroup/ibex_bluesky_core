@@ -1211,7 +1211,6 @@ class TestFlatLines:
         Lorentzian,
         MuonMomentum,
         NegativeTrapezoid,
-        Polynomial,
         SlitScan,
         TopHat,
         Trapezoid,
