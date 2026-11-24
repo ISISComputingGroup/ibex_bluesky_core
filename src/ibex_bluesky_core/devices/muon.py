@@ -78,7 +78,7 @@ def double_damped_oscillator(  # ruff:ignore[too-many-arguments, too-many-positi
     )
 
 
-def muon_lifetime(
+def _muon_lifetime(
     t: NDArray[np.floating],
     N_0: float,  # ruff:ignore[invalid-argument-name]
     lambda_0: float,
@@ -88,7 +88,7 @@ def muon_lifetime(
     return N_0 * np.exp(-lambda_0 * t) + N_1 * np.exp(-lambda_1 * t)
 
 
-muon_lifetime_model = Model(muon_lifetime)
+muon_lifetime_model = Model(_muon_lifetime)
 r"""lmfit :external:py:obj:`~lmfit.model.Model` for a muon decay/lifetime,
 as a function of time :math:`t`.
 

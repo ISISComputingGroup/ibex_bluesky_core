@@ -19,7 +19,7 @@ from ibex_bluesky_core.devices.muon import (
     _rebin_and_sum,
     damped_oscillator,
     double_damped_oscillator,
-    muon_lifetime,
+    _muon_lifetime,
     muon_lifetime_model,
 )
 from ibex_bluesky_core.devices.simpledae import MEventsWaiter, PeriodPerPointController, SimpleDae
@@ -463,7 +463,7 @@ async def lifetime_dae(lifetime_reducer):
 
 def test_muon_lifetime():
     np.testing.assert_allclose(
-        muon_lifetime(
+        _muon_lifetime(
             t=np.array([0.0, 1000.0], dtype=np.float64),
             N_0=2.0,
             lambda_0=1e-3,
@@ -475,7 +475,7 @@ def test_muon_lifetime():
 
 
 def test_lifetime_reducer_with_muon_lifetime_model(lifetime_reducer):
-    assert lifetime_reducer._model.func is muon_lifetime
+    assert lifetime_reducer._model.func is _muon_lifetime
     assert lifetime_reducer._time_bin_edges is None
 
     for name in (
