@@ -16,10 +16,10 @@ from ibex_bluesky_core.devices.muon import (
     _fit_and_publish_params,
     _fit_model,
     _muon_fit_readable_signals,
+    _muon_lifetime,
     _rebin_and_sum,
     damped_oscillator,
     double_damped_oscillator,
-    _muon_lifetime,
     muon_lifetime_model,
 )
 from ibex_bluesky_core.devices.simpledae import MEventsWaiter, PeriodPerPointController, SimpleDae
