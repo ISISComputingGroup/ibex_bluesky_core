@@ -1,0 +1,16 @@
+
+
+``ibex_bluesky_core.version``
+=============================
+
+.. automodule:: ibex_bluesky_core.version
+    :members:
+    :show-inheritance:
+
+    
+    
+    
+
+    
+    
+    
