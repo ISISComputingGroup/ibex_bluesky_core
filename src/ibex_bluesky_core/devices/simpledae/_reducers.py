@@ -600,3 +600,40 @@ class DSpacingMappingReducer(Reducer, StandardReadable):
         :meta private:
         """
         return [self.dspacing]
+
+class MultiRegionOfInterestReducer(Reducer, StandardReadable):
+    def __init__(
+        self,
+        *,
+        prefix: str,
+        detector_spectra_rois: typing.Mapping[str, Sequence[int]],
+        sum_detector: Callable[
+            [Collection[DaeSpectra]], Awaitable[sc.Variable | sc.DataArray]
+        ] = sum_spectra,
+    ) -> None:
+        dae_prefix = prefix + "DAE:"
+        self.detector_rois = {name: DeviceVector(
+            {i: DaeSpectra(dae_prefix=dae_prefix, spectra=i, period=0) for i in detector_spectra}
+        ) for (name, detector_spectra) in detector_spectra_rois.items()}
+
+        roi_setters: dict[str, typing.Callable[[float], None]] = {}
+        roi_err_setters: dict[str, typing.Callable[[float], None]] = {}
+
+        for roi_name in detector_spectra_rois.keys():
+
+            det_counts, det_counts_setter = soft_signal_r_and_setter(float, 0.0)
+            setattr(self, roi_name, det_counts)
+            roi_setters[roi_name] = det_counts_setter
+
+            det_counts_stddev, det_counts_stddev_setter = soft_signal_r_and_setter(
+                float, 0.0
+            )
+            setattr(self, f"{roi_name}_err", det_counts_stddev)
+            roi_err_setters[roi_name] = det_counts_stddev_setter
+
+        self.sum_detector = sum_detector
+
+        super().__init__(name="")
+
+    # As we have dynamic attributes, tell pyright that __getattr__ may return any type.
+    __getattr__: typing.Callable[[str], typing.Any]
