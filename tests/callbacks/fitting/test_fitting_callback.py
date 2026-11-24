@@ -16,7 +16,12 @@ def test_guess_called():
     def model(x: npt.NDArray[np.float64]):
         return x
 
-    fit = FitMethod(model=lmfit.Model(model), guess=guess)
+    fit = FitMethod(
+        model=lmfit.Model(model),
+        guess=guess,
+        fit_name="name",
+        interesting_params=["x0"],
+    )
     lf = LiveFit(fit, y="y", x="x")
 
     x = 1
@@ -46,7 +51,9 @@ def test_lmfit_model_called():
         model_mock()
         return x
 
-    fit = FitMethod(model=lmfit.Model(model), guess=guess)
+    fit = FitMethod(
+        model=lmfit.Model(model), guess=guess, fit_name="blah", interesting_params=["x"]
+    )
 
     lf = LiveFit(fit, y="y", x="x")
 
@@ -76,7 +83,12 @@ def test_model_called():
         model_mock()
         return x
 
-    fit = FitMethod(model=model, guess=guess)
+    fit = FitMethod(
+        model=model,
+        guess=guess,
+        fit_name="name",
+        interesting_params=["x0"],
+    )
     # Does not pass the function to lmfit before FitMethod
 
     lf = LiveFit(fit, y="y", x="x")
@@ -103,7 +115,7 @@ def test_model_called_with_weights_if_yerr_is_given():
 
     model = lmfit.Model(lambda x: x)
     model.fit = MagicMock()
-    method = FitMethod(model=model, guess=guess)
+    method = FitMethod(model=model, guess=guess, fit_name="blah", interesting_params=["x"])
     lf = LiveFit(method, y="y", x="x", yerr="yerr")
 
     x = 1
@@ -129,7 +141,12 @@ def test_warning_given_if_yerr_is_0():
 
     model = lmfit.Model(lambda x: x)
     model.fit = MagicMock()
-    method = FitMethod(model=model, guess=guess)
+    method = FitMethod(
+        model=model,
+        guess=guess,
+        fit_name="name",
+        interesting_params=["x0"],
+    )
     lf = LiveFit(method, y="y", x="x", yerr="yerr")
 
     x = 1

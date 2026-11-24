@@ -124,6 +124,8 @@ def _angle_scan_callback_and_fit(
     fit_method = FitMethod(
         model=Gaussian.model(),
         guess=gaussian_max_y_guess,
+        fit_name="Gaussian",
+        interesting_params=["x0"],
     )
 
     angle_scan_callbacks = ISISCallbacks(
