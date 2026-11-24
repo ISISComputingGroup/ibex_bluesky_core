@@ -504,7 +504,7 @@ def test_lifetime_reducer_default_model_n_ratio_is_n0_over_n1():
     reducer = MuonLifetimeReducer(
         prefix="UNITTEST:",
         detectors=np.array([1]),
-        fit_parameters=lifetime_model_params.copy(),
+        fit_parameters=lifetime_model_params,
     )
 
     reducer._fit_parameters["N_0"].value = 900.0
