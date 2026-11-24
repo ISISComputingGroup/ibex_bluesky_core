@@ -31,7 +31,7 @@ __all__ = [
     "MuonLifetimeReducer",
     "damped_oscillator",
     "double_damped_oscillator",
-    "muon_lifetime",
+    "muon_lifetime_model",
 ]
 
 
@@ -85,13 +85,21 @@ def muon_lifetime(
     N_1: float,  # ruff:ignore[invalid-argument-name]
     lambda_1: float,
 ) -> NDArray[np.floating]:
-    r"""Equation for a muon decay/lifetime, as a function of time :math:`t`.
+    return N_0 * np.exp(-lambda_0 * t) + N_1 * np.exp(-lambda_1 * t)
+
+
+muon_lifetime_model = Model(muon_lifetime)
+r"""lmfit :external:py:obj:`~lmfit.model.Model` for a muon decay/lifetime,
+as a function of time :math:`t`.
 
     .. math::
 
         N_0 e^{-\lambda_0 t} + N_1 e^{-\lambda_1 t}
-    """
-    return N_0 * np.exp(-lambda_0 * t) + N_1 * np.exp(-lambda_1 * t)
+
+Also defines a derived parameter, ``n_ratio`` (:math:`N_0 / N_1`).
+"""
+muon_lifetime_model.set_param_hint("n_ratio", expr="N_0/N_1")
+muon_lifetime_model.make_params()
 
 
 def _create_fit_parameter_signals(
@@ -104,7 +112,7 @@ def _create_fit_parameter_signals(
     parameter_setters: dict[str, typing.Callable[[float], None]] = {}
     parameter_error_setters: dict[str, typing.Callable[[float], None]] = {}
 
-    for param in fit_parameters:
+    for param in model.param_names:
         signal, setter = soft_signal_r_and_setter(float, 0.0)
         setattr(owner, param, signal)
         parameter_setters[param] = setter
@@ -152,11 +160,11 @@ def _fit_and_publish_params(
         parameter_error_setters[param](result.stderr)
 
 
-def _muon_fit_readable_signals(owner: object, fit_parameters: lmfit.Parameters) -> list[Device]:
+def _muon_fit_readable_signals(owner: object, model: Model) -> list[Device]:
     signal_values = []
     signal_errors = []
 
-    for param in fit_parameters:
+    for param in model.param_names:
         signal_values.append(getattr(owner, param))
         signal_errors.append(getattr(owner, f"{param}_err"))
 
@@ -369,7 +377,7 @@ class MuonAsymmetryReducer(Reducer, StandardReadable):
 
         :meta private:
         """
-        return _muon_fit_readable_signals(self, self._fit_parameters)
+        return _muon_fit_readable_signals(self, self._model)
 
     # As we have dynamic attributes, tell pyright that __getattr__ may return any type.
     __getattr__: typing.Callable[[str], typing.Any]
@@ -384,7 +392,8 @@ class MuonLifetimeReducer(Reducer, StandardReadable):
 
     The array of normalized counts (:math:`C`) against time (:math:`t`, in nanoseconds)
     is fitted using a user-specified model - for example,
-    :py:obj:`muon_decay <ibex_bluesky_core.devices.muon.muon_decay>`
+    :py:obj:`muon_lifetime_model <ibex_bluesky_core.devices.muon.muon_lifetime_model>`,
+    which also exposes the derived parameter ``n_ratio`` (:math:`N_0 / N_1`).
 
     The resulting fit parameters, along with their uncertainties, are exposed as
     signals from this reducer. For example, for a model like:
@@ -438,7 +447,7 @@ class MuonLifetimeReducer(Reducer, StandardReadable):
         prefix: str,
         detectors: npt.NDArray[np.int32],
         time_bin_edges: sc.Variable | None = None,
-        model: Model | None = None,
+        model: Model,
         fit_parameters: lmfit.Parameters,
     ) -> None:
         """Create a new Muon lifetime reducer.
@@ -458,18 +467,14 @@ class MuonLifetimeReducer(Reducer, StandardReadable):
                 Use :py:obj:`None` to not apply any rebinning to the data.
             model: :external:py:obj:`lmfit.model.Model` object describing the model to fit to
                 the muon data. The independent variable must be :math:`t` (time, in nanoseconds).
-                Defaults to :py:obj:`muon_lifetime`.
+                For example, :py:obj:`muon_lifetime_model`.
             fit_parameters: :external:py:obj:`lmfit.parameter.Parameters` object describing
                 the initial parameters (and constraints) for each fit parameter.
 
         """
         self.detectors = detectors
-        self._model = model if model is not None else Model(muon_lifetime)
+        self._model = model
         self._fit_parameters = fit_parameters
-
-        if model is None:
-            self._fit_parameters.add("n_ratio", expr="N_0/N_1")
-
         self._time_bin_edges = time_bin_edges
 
         self._first_det = DaeSpectra(
@@ -479,7 +484,7 @@ class MuonLifetimeReducer(Reducer, StandardReadable):
         super().__init__(name="")
 
         self._parameter_setters, self._parameter_error_setters = _create_fit_parameter_signals(
-            self, self._model, self._fit_parameters
+            self, self._model, fit_parameters
         )
 
     def _fit_data(self, data: sc.DataArray) -> ModelResult | None:
@@ -522,7 +527,7 @@ class MuonLifetimeReducer(Reducer, StandardReadable):
 
         :meta private:
         """
-        return _muon_fit_readable_signals(self, self._fit_parameters)
+        return _muon_fit_readable_signals(self, self._model)
 
     # As we have dynamic attributes, tell pyright that __getattr__ may return any type.
     __getattr__: typing.Callable[[str], typing.Any]
