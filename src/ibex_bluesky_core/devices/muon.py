@@ -466,6 +466,10 @@ class MuonLifetimeReducer(Reducer, StandardReadable):
         self.detectors = detectors
         self._model = model if model is not None else Model(muon_lifetime)
         self._fit_parameters = fit_parameters
+
+        if model is None:
+            self._fit_parameters.add("n_ratio", expr="N_0/N_1")
+
         self._time_bin_edges = time_bin_edges
 
         self._first_det = DaeSpectra(
@@ -477,6 +481,12 @@ class MuonLifetimeReducer(Reducer, StandardReadable):
         self._parameter_setters, self._parameter_error_setters = _create_fit_parameter_signals(
             self, self._model, fit_parameters
         )
+
+        if model is None:
+            self.n_ratio, self._parameter_setters["n_ratio"] = soft_signal_r_and_setter(float, 0.0)
+            self.n_ratio_err, self._parameter_error_setters["n_ratio"] = soft_signal_r_and_setter(
+                float, 0.0
+            )
 
     def _fit_data(self, data: sc.DataArray) -> ModelResult | None:
         return _fit_model(self._model, self._fit_parameters, data)
@@ -518,7 +528,10 @@ class MuonLifetimeReducer(Reducer, StandardReadable):
 
         :meta private:
         """
-        return _muon_fit_readable_signals(self, self._model)
+        signals = _muon_fit_readable_signals(self, self._model)
+        if "n_ratio" in self._parameter_setters:
+            signals += [self.n_ratio, self.n_ratio_err]
+        return signals
 
     # As we have dynamic attributes, tell pyright that __getattr__ may return any type.
     __getattr__: typing.Callable[[str], typing.Any]

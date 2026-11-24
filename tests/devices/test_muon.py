@@ -443,7 +443,6 @@ def lifetime_reducer():
         prefix="UNITTEST:",
         detectors=np.array([1, 2]),
         fit_parameters=lifetime_model_params,
-        model=lifetime_model,
     )
 
 
@@ -478,15 +477,40 @@ def test_lifetime_reducer_defaults_to_muon_lifetime_model():
     reducer = MuonLifetimeReducer(
         prefix="UNITTEST:",
         detectors=np.array([1]),
-        model=lifetime_model,
         fit_parameters=lifetime_model_params,
     )
 
     assert reducer._model.func is muon_lifetime
     assert reducer._time_bin_edges is None
 
-    for name in ("N_0", "N_0_err", "lambda_0", "lambda_0_err", "N_1", "lambda_1_err"):
+    for name in (
+        "N_0",
+        "N_0_err",
+        "lambda_0",
+        "lambda_0_err",
+        "N_1",
+        "lambda_1_err",
+        "n_ratio",
+        "n_ratio_err",
+    ):
         assert hasattr(reducer, name)
+
+    signals = reducer.additional_readable_signals(MagicMock())
+    assert reducer.n_ratio in signals
+    assert reducer.n_ratio_err in signals
+
+
+def test_lifetime_reducer_default_model_n_ratio_is_n0_over_n1():
+    reducer = MuonLifetimeReducer(
+        prefix="UNITTEST:",
+        detectors=np.array([1]),
+        fit_parameters=lifetime_model_params.copy(),
+    )
+
+    reducer._fit_parameters["N_0"].value = 900.0
+    reducer._fit_parameters["N_1"].value = 120.0
+
+    assert reducer._fit_parameters["n_ratio"].value == pytest.approx(7.5)
 
 
 def test_lifetime_reducer_missing_parameters():
@@ -514,6 +538,8 @@ def test_lifetime_reducer_readable_signals(lifetime_dae, lifetime_reducer):
         lifetime_reducer.N_1_err,
         lifetime_reducer.lambda_1,
         lifetime_reducer.lambda_1_err,
+        lifetime_reducer.n_ratio,
+        lifetime_reducer.n_ratio_err,
     }
 
 
@@ -523,7 +549,9 @@ def test_lifetime_reducer_fit_data_delegates(lifetime_reducer):
     with patch("ibex_bluesky_core.devices.muon._fit_model") as fit_mock:
         result = lifetime_reducer._fit_data(data)
 
-    fit_mock.assert_called_once_with(lifetime_model, lifetime_model_params, data)
+    fit_mock.assert_called_once_with(
+        lifetime_reducer._model, lifetime_reducer._fit_parameters, data
+    )
     assert result is fit_mock.return_value
 
 
