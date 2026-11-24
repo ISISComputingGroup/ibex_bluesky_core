@@ -422,7 +422,7 @@ def test_muon_fit_readable_signals_returns_values_then_errors():
     owner = MagicMock(spec=[])
     owner.m, owner.m_err, owner.c, owner.c_err = (MagicMock() for _ in range(4))
 
-    signals = _muon_fit_readable_signals(owner, lmfit.Model(_linear))
+    signals = _muon_fit_readable_signals(owner, _linear_params())
 
     assert signals == [owner.m, owner.c, owner.m_err, owner.c_err]
 

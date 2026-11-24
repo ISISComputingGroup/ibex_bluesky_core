@@ -104,7 +104,7 @@ def _create_fit_parameter_signals(
     parameter_setters: dict[str, typing.Callable[[float], None]] = {}
     parameter_error_setters: dict[str, typing.Callable[[float], None]] = {}
 
-    for param in model.param_names:
+    for param in fit_parameters:
         signal, setter = soft_signal_r_and_setter(float, 0.0)
         setattr(owner, param, signal)
         parameter_setters[param] = setter
@@ -152,11 +152,11 @@ def _fit_and_publish_params(
         parameter_error_setters[param](result.stderr)
 
 
-def _muon_fit_readable_signals(owner: object, model: Model) -> list[Device]:
+def _muon_fit_readable_signals(owner: object, fit_parameters: lmfit.Parameters) -> list[Device]:
     signal_values = []
     signal_errors = []
 
-    for param in model.param_names:
+    for param in fit_parameters:
         signal_values.append(getattr(owner, param))
         signal_errors.append(getattr(owner, f"{param}_err"))
 
@@ -369,7 +369,7 @@ class MuonAsymmetryReducer(Reducer, StandardReadable):
 
         :meta private:
         """
-        return _muon_fit_readable_signals(self, self._model)
+        return _muon_fit_readable_signals(self, self._fit_parameters)
 
     # As we have dynamic attributes, tell pyright that __getattr__ may return any type.
     __getattr__: typing.Callable[[str], typing.Any]
@@ -479,14 +479,8 @@ class MuonLifetimeReducer(Reducer, StandardReadable):
         super().__init__(name="")
 
         self._parameter_setters, self._parameter_error_setters = _create_fit_parameter_signals(
-            self, self._model, fit_parameters
+            self, self._model, self._fit_parameters
         )
-
-        if model is None:
-            self.n_ratio, self._parameter_setters["n_ratio"] = soft_signal_r_and_setter(float, 0.0)
-            self.n_ratio_err, self._parameter_error_setters["n_ratio"] = soft_signal_r_and_setter(
-                float, 0.0
-            )
 
     def _fit_data(self, data: sc.DataArray) -> ModelResult | None:
         return _fit_model(self._model, self._fit_parameters, data)
@@ -528,10 +522,7 @@ class MuonLifetimeReducer(Reducer, StandardReadable):
 
         :meta private:
         """
-        signals = _muon_fit_readable_signals(self, self._model)
-        if "n_ratio" in self._parameter_setters:
-            signals += [self.n_ratio, self.n_ratio_err]
-        return signals
+        return _muon_fit_readable_signals(self, self._fit_parameters)
 
     # As we have dynamic attributes, tell pyright that __getattr__ may return any type.
     __getattr__: typing.Callable[[str], typing.Any]
