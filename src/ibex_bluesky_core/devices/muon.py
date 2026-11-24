@@ -31,7 +31,7 @@ __all__ = [
     "MuonLifetimeReducer",
     "damped_oscillator",
     "double_damped_oscillator",
-    "muon_lifetime",
+    "muon_lifetime_model",
 ]
 
 
@@ -78,20 +78,28 @@ def double_damped_oscillator(  # ruff:ignore[too-many-arguments, too-many-positi
     )
 
 
-def muon_lifetime(
+def _muon_lifetime(
     t: NDArray[np.floating],
     N_0: float,  # ruff:ignore[invalid-argument-name]
     lambda_0: float,
     N_1: float,  # ruff:ignore[invalid-argument-name]
     lambda_1: float,
 ) -> NDArray[np.floating]:
-    r"""Equation for a muon decay/lifetime, as a function of time :math:`t`.
+    return N_0 * np.exp(-lambda_0 * t) + N_1 * np.exp(-lambda_1 * t)
+
+
+muon_lifetime_model = Model(_muon_lifetime)
+r"""lmfit :external:py:obj:`~lmfit.model.Model` for a muon decay/lifetime,
+as a function of time :math:`t`.
 
     .. math::
 
         N_0 e^{-\lambda_0 t} + N_1 e^{-\lambda_1 t}
-    """
-    return N_0 * np.exp(-lambda_0 * t) + N_1 * np.exp(-lambda_1 * t)
+
+Also defines a derived parameter, ``n_ratio`` (:math:`N_0 / N_1`).
+"""
+muon_lifetime_model.set_param_hint("n_ratio", expr="N_0/N_1")
+muon_lifetime_model.make_params()
 
 
 def _create_fit_parameter_signals(
@@ -384,7 +392,8 @@ class MuonLifetimeReducer(Reducer, StandardReadable):
 
     The array of normalized counts (:math:`C`) against time (:math:`t`, in nanoseconds)
     is fitted using a user-specified model - for example,
-    :py:obj:`muon_decay <ibex_bluesky_core.devices.muon.muon_decay>`
+    :py:obj:`muon_lifetime_model <ibex_bluesky_core.devices.muon.muon_lifetime_model>`,
+    which also exposes the derived parameter ``n_ratio`` (:math:`N_0 / N_1`).
 
     The resulting fit parameters, along with their uncertainties, are exposed as
     signals from this reducer. For example, for a model like:
@@ -438,7 +447,7 @@ class MuonLifetimeReducer(Reducer, StandardReadable):
         prefix: str,
         detectors: npt.NDArray[np.int32],
         time_bin_edges: sc.Variable | None = None,
-        model: Model | None = None,
+        model: Model,
         fit_parameters: lmfit.Parameters,
     ) -> None:
         """Create a new Muon lifetime reducer.
@@ -458,13 +467,13 @@ class MuonLifetimeReducer(Reducer, StandardReadable):
                 Use :py:obj:`None` to not apply any rebinning to the data.
             model: :external:py:obj:`lmfit.model.Model` object describing the model to fit to
                 the muon data. The independent variable must be :math:`t` (time, in nanoseconds).
-                Defaults to :py:obj:`muon_lifetime`.
+                For example, :py:obj:`muon_lifetime_model`.
             fit_parameters: :external:py:obj:`lmfit.parameter.Parameters` object describing
                 the initial parameters (and constraints) for each fit parameter.
 
         """
         self.detectors = detectors
-        self._model = model if model is not None else Model(muon_lifetime)
+        self._model = model
         self._fit_parameters = fit_parameters
         self._time_bin_edges = time_bin_edges
 

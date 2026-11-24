@@ -16,10 +16,11 @@ from ibex_bluesky_core.devices.muon import (
     _fit_and_publish_params,
     _fit_model,
     _muon_fit_readable_signals,
+    _muon_lifetime,
     _rebin_and_sum,
     damped_oscillator,
     double_damped_oscillator,
-    muon_lifetime,
+    muon_lifetime_model,
 )
 from ibex_bluesky_core.devices.simpledae import MEventsWaiter, PeriodPerPointController, SimpleDae
 
@@ -32,13 +33,12 @@ damped_oscillator_params.add("omega_0", 0.1, min=0)
 damped_oscillator_params.add("phi_0", 0.0)
 damped_oscillator_params.add("lambda_0", 0.001)
 
-lifetime_model = lmfit.Model(muon_lifetime)
-
-lifetime_model_params = lmfit.Parameters()
-lifetime_model_params.add("N_0", 900.0, min=0)
-lifetime_model_params.add("lambda_0", 8e-4, min=0)
-lifetime_model_params.add("N_1", 120.0, min=0)
-lifetime_model_params.add("lambda_1", 1.2e-4, min=0)
+muon_lifetime_model_params = muon_lifetime_model.make_params(
+    N_0={"value": 900.0, "min": 0},
+    lambda_0={"value": 8e-4, "min": 0},
+    N_1={"value": 120.0, "min": 0},
+    lambda_1={"value": 1.2e-4, "min": 0},
+)
 
 
 @pytest.fixture
@@ -442,8 +442,8 @@ def lifetime_reducer():
     return MuonLifetimeReducer(
         prefix="UNITTEST:",
         detectors=np.array([1, 2]),
-        fit_parameters=lifetime_model_params,
-        model=lifetime_model,
+        model=muon_lifetime_model,
+        fit_parameters=muon_lifetime_model_params,
     )
 
 
@@ -463,7 +463,7 @@ async def lifetime_dae(lifetime_reducer):
 
 def test_muon_lifetime():
     np.testing.assert_allclose(
-        muon_lifetime(
+        _muon_lifetime(
             t=np.array([0.0, 1000.0], dtype=np.float64),
             N_0=2.0,
             lambda_0=1e-3,
@@ -474,19 +474,27 @@ def test_muon_lifetime():
     )
 
 
-def test_lifetime_reducer_defaults_to_muon_lifetime_model():
-    reducer = MuonLifetimeReducer(
-        prefix="UNITTEST:",
-        detectors=np.array([1]),
-        model=lifetime_model,
-        fit_parameters=lifetime_model_params,
-    )
+def test_lifetime_reducer_with_muon_lifetime_model(lifetime_reducer):
+    assert lifetime_reducer._model.func is _muon_lifetime
+    assert lifetime_reducer._time_bin_edges is None
 
-    assert reducer._model.func is muon_lifetime
-    assert reducer._time_bin_edges is None
+    for name in (
+        "N_0",
+        "N_0_err",
+        "lambda_0",
+        "lambda_0_err",
+        "N_1",
+        "lambda_1_err",
+        "n_ratio",
+        "n_ratio_err",
+    ):
+        assert hasattr(lifetime_reducer, name)
 
-    for name in ("N_0", "N_0_err", "lambda_0", "lambda_0_err", "N_1", "lambda_1_err"):
-        assert hasattr(reducer, name)
+
+def test_muon_lifetime_model_n_ratio_is_n0_over_n1():
+    params = muon_lifetime_model.make_params(N_0=900.0, lambda_0=8e-4, N_1=120.0, lambda_1=1.2e-4)
+
+    assert params["n_ratio"].value == pytest.approx(7.5)
 
 
 def test_lifetime_reducer_missing_parameters():
@@ -494,7 +502,7 @@ def test_lifetime_reducer_missing_parameters():
         MuonLifetimeReducer(
             prefix="UNITTEST:",
             detectors=np.array([1]),
-            model=lifetime_model,
+            model=muon_lifetime_model,
             fit_parameters=lmfit.Parameters(),
         )
 
@@ -514,6 +522,8 @@ def test_lifetime_reducer_readable_signals(lifetime_dae, lifetime_reducer):
         lifetime_reducer.N_1_err,
         lifetime_reducer.lambda_1,
         lifetime_reducer.lambda_1_err,
+        lifetime_reducer.n_ratio,
+        lifetime_reducer.n_ratio_err,
     }
 
 
@@ -523,7 +533,7 @@ def test_lifetime_reducer_fit_data_delegates(lifetime_reducer):
     with patch("ibex_bluesky_core.devices.muon._fit_model") as fit_mock:
         result = lifetime_reducer._fit_data(data)
 
-    fit_mock.assert_called_once_with(lifetime_model, lifetime_model_params, data)
+    fit_mock.assert_called_once_with(muon_lifetime_model, muon_lifetime_model_params, data)
     assert result is fit_mock.return_value
 
 
