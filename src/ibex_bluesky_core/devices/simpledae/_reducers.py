@@ -619,17 +619,20 @@ class MultiRegionOfInterestReducer(Reducer, StandardReadable):
         """
         self._roi_setters: dict[str, typing.Callable[[float], None]] = {}
         self._roi_err_setters: dict[str, typing.Callable[[float], None]] = {}
-        self._detector_rois: dict[str, npt.NDArray[np.int64]] = {}
+        self.detector_rois: dict[str, npt.NDArray[np.int64]] = {}
 
         for roi_name, detector_spectra in detector_spectra_rois.items():
-            self._detector_rois[roi_name] = np.array(detector_spectra, dtype=np.int64)
+            self.detector_rois[roi_name] = np.array(detector_spectra, dtype=np.int64)
 
-            det_counts, det_counts_setter = soft_signal_r_and_setter(float, 0.0)
+            det_counts, det_counts_setter = soft_signal_r_and_setter(float, 0.0, name=roi_name)
             setattr(self, roi_name, det_counts)
             self._roi_setters[roi_name] = det_counts_setter
 
-            det_counts_stddev, det_counts_stddev_setter = soft_signal_r_and_setter(float, 0.0)
-            setattr(self, f"{roi_name}_err", det_counts_stddev)
+            roi_err_name = f"{roi_name}_err"
+            det_counts_stddev, det_counts_stddev_setter = soft_signal_r_and_setter(
+                float, 0.0, name=roi_err_name
+            )
+            setattr(self, roi_err_name, det_counts_stddev)
             self._roi_err_setters[roi_name] = det_counts_stddev_setter
 
         super().__init__(name="")
@@ -644,7 +647,7 @@ class MultiRegionOfInterestReducer(Reducer, StandardReadable):
 
         all_current_period_data = await dae.trigger_and_get_specdata()
 
-        for roi_name, detectors in self._detector_rois.items():
+        for roi_name, detectors in self.detector_rois.items():
             summed_counts = float(np.sum(all_current_period_data[detectors]))
             self._roi_setters[roi_name](summed_counts)
             # See doc\architectural_decisions\005-variance-addition.md

@@ -2,10 +2,11 @@
 
 import functools
 import logging
-from collections.abc import Callable, Generator
+from collections.abc import Callable, Generator, Sequence
 from typing import Any, ParamSpec, TypedDict
 
 import matplotlib.pyplot as plt
+import numpy as np
 from bluesky.preprocessors import subs_wrapper
 from bluesky.utils import Msg
 from lmfit.model import ModelResult
@@ -34,12 +35,11 @@ P = ParamSpec("P")
 class RockingScanResult(TypedDict):
     """Result from the rocking scan plan."""
 
-    fit_a: ModelResult | None
-    """Fit of region A, or :py:obj:`None` if the fit failed."""
-    fit_b: ModelResult | None
-    """Fit of region B, or :py:obj:`None` if the fit failed."""
+    fits: dict[str, ModelResult | None]
+    """Fit of each region of interest, keyed by ROI name. A value is :py:obj:`None` if
+    that fit failed."""
     fit_avg: ModelResult | None
-    "Average fit of regions A and B, or :py:obj:`None` if either fit failed."
+    """Average fit of all regions of interest, or :py:obj:`None` if any fit failed."""
 
 
 def _region_callbacks(
@@ -68,27 +68,25 @@ def rocking_scan(
     dae: SimpleDae[PeriodPerPointController, Waiter, MultiRegionOfInterestReducer],
     *,
     x: str,
-    roi_a: str,
-    roi_b: str,
     fit_method: FitMethod,
-    average_method: Callable[[ModelResult, ModelResult], ModelResult] = average_model_results,
+    average_method: Callable[[Sequence[ModelResult]], ModelResult] = average_model_results,
 ) -> Callable[
     [Callable[P, Generator[Msg, None, Any]]],
     Callable[P, Generator[Msg, None, RockingScanResult]],
 ]:
     """SANS rocking scan decorator.
 
-    Decorates a plan, fitting the same model independently to each of two
-    regions of interest exposed by the DAE's
+    Decorates a plan, fitting the same model independently to each region of interest
+    exposed by the DAE's
     :py:obj:`~ibex_bluesky_core.devices.simpledae.MultiRegionOfInterestReducer`. Once the
-    plan has finished, the two fits are averaged.
+    plan has finished, the fits are averaged.
 
     The decorated plan is responsible for moving axes, configuring the DAE (for example,
     setting the number of periods) and reading *dae* at each point. Calling the decorated
     plan returns a :py:obj:`RockingScanResult` instead of the plan's own return value.
     For example::
 
-        @rocking_scan(dae, x=block.name, roi_a="a", roi_b="b")
+        @rocking_scan(dae, x=block.name, fit_method=Gaussian.fit())
         def my_scan(start: float, stop: float, num: int):
             yield from bps.mv(dae.number_of_periods, num)
             yield from bp.scan([dae], block, start, stop, num=num)
@@ -97,13 +95,11 @@ def rocking_scan(
         result = yield from my_scan(-1, 1, 21)
 
     Args:
-        dae: The DAE being read by the plan. Its reducer must expose both *roi_a* and *roi_b*.
+        dae: The DAE being read by the plan. Its reducer must have at least one ROI.
         x: Name of the field to use as the independent variable in fits and plots,
             typically the name of the scanned movable.
-        roi_a: Name of the first region of interest on the reducer.
-        roi_b: Name of the second region of interest on the reducer.
         fit_method: Method of fitting to apply to each region.
-        average_method: Method of averaging the results from the fits of the two ROIs.
+        average_method: Method of averaging the results from the fits of all ROIs.
 
     Returns:
         A decorator which wraps a plan function.
@@ -120,8 +116,6 @@ def rocking_scan(
                     f(*args, **kwargs),
                     dae,
                     x=x,
-                    roi_a=roi_a,
-                    roi_b=roi_b,
                     fit_method=fit_method,
                     average_method=average_method,
                 )
@@ -132,47 +126,44 @@ def rocking_scan(
     return decorator
 
 
-def _rocking_scan_wrapper(  # ruff:ignore[too-many-arguments]
+def _rocking_scan_wrapper(
     plan: Generator[Msg, None, Any],
     dae: SimpleDae[PeriodPerPointController, Waiter, MultiRegionOfInterestReducer],
     *,
     x: str,
-    roi_a: str,
-    roi_b: str,
     fit_method: FitMethod,
-    average_method: Callable[[ModelResult, ModelResult], ModelResult],
+    average_method: Callable[[Sequence[ModelResult]], ModelResult],
 ) -> Generator[Msg, None, RockingScanResult]:
     logger.info("Starting rocking scan")
+
     check_dae_strategies(
         dae,
         expected_controller=PeriodPerPointController,
         expected_reducer=MultiRegionOfInterestReducer,
     )
-    reducer = dae.reducer
+
+    roi_names = list(dae.reducer.detector_rois)
+    if not roi_names:
+        raise ValueError("Reducer must have at least one ROI.")
 
     yield from ensure_connected(dae)
-
     yield from call_qt_aware(plt.close, "all")
-    _, (ax_a, ax_b) = yield from call_qt_aware(plt.subplots, nrows=2)
+    _, axes = yield from call_qt_aware(plt.subplots, nrows=len(roi_names), squeeze=False)
 
-    callbacks_a = _region_callbacks(reducer, roi_a, x, ax_a, fit_method)
-    callbacks_b = _region_callbacks(reducer, roi_b, x, ax_b, fit_method)
+    callbacks = {
+        roi_name: _region_callbacks(dae.reducer, roi_name, x, ax, fit_method)
+        for roi_name, ax in zip(roi_names, np.ravel(axes), strict=True)
+    }
 
-    yield from subs_wrapper(plan, callbacks_a.subs + callbacks_b.subs)
+    yield from subs_wrapper(plan, [sub for cb in callbacks.values() for sub in cb.subs])
 
-    fit_a = callbacks_a.live_fit.result
-    fit_b = callbacks_b.live_fit.result
-    fit_avg = None if not (fit_a and fit_b) else average_method(fit_a, fit_b)
+    fits = {roi_name: cb.live_fit.result for roi_name, cb in callbacks.items()}
+    fits_values = list(fits.values())
+    fit_avg = average_method(fits_values) if all(fits_values) else None
 
-    logger.info(
-        "Finished rocking scan, fit A = %s, fit B = %s, avg = %s",
-        fit_a,
-        fit_b,
-        fit_avg,
-    )
+    logger.info("Finished rocking scan, fits = %s, avg = %s", fits, fit_avg)
 
     return {
-        "fit_a": fit_a,
-        "fit_b": fit_b,
+        "fits": fits,
         "fit_avg": fit_avg,
     }

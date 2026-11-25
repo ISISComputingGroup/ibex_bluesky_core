@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import math
 import os
+from collections.abc import Sequence
 from typing import Any, Protocol, TypeVar
 
 import matplotlib
@@ -204,13 +205,13 @@ def calculate_polarisation(
     return polarisation
 
 
-def average_model_results(a: ModelResult, b: ModelResult) -> ModelResult:
-    """Plain average of two fits of the same model into a single ModelResult.
+def average_model_results(results: Sequence[ModelResult]) -> ModelResult:
+    """Plain average of any number of fits of the same model into a single ModelResult.
 
-    (a + b) / 2 = c
+    (r_1 + r_2 + ... + r_n) / n = c
     Args:
-        a: :external+lmfit:py:obj:`ModelResult <lmfit.model.ModelResult>`
-        b: :external+lmfit:py:obj:`ModelResult <lmfit.model.ModelResult>`
+        results: A non-empty sequence of
+            :external+lmfit:py:obj:`ModelResult <lmfit.model.ModelResult>` from the same model.
 
     Returns:
         c: :external+lmfit:py:obj:`ModelResult <lmfit.model.ModelResult>` of averaged
@@ -218,30 +219,36 @@ def average_model_results(a: ModelResult, b: ModelResult) -> ModelResult:
 
     """
 
-    def _combine_param(
-        va: float, ea: float | None, vb: float, eb: float | None
-    ) -> tuple[float, float | None]:
-        if ea is None or eb is None:
-            return (va + vb) / 2, None
+    def _combine_param(values: list[float], errs: list[float | None]) -> tuple[float, float | None]:
+        if not all(errs):
+            return sum(values) / len(values), None
 
-        mean = (
-            sc.scalar(va, variance=ea**2, dtype="float64")
-            + sc.scalar(vb, variance=eb**2, dtype="float64")
-        ) / 2
+        params = sc.array(
+            dims=["fit"],
+            values=values,
+            variances=[e**2 for e in errs if e is not None],
+            dtype="float64",
+        )
+        mean = params.sum() / len(values)
         return float(mean.value), math.sqrt(mean.variance)
 
-    if a.model.param_names != b.model.param_names:
+    if not results:
+        raise ValueError("At least one result is required")
+
+    first = results[0]
+    if any(r.model.param_names != first.model.param_names for r in results):
         raise ValueError("Results must come from the same model")
 
-    params: Parameters = a.params.copy()
-    for name in a.model.param_names:
-        pa, pb = a.params[name], b.params[name]
-
-        value, stderr = _combine_param(pa.value, pa.stderr, pb.value, pb.stderr)
+    params: Parameters = first.params.copy()
+    for name in first.model.param_names:
+        value, stderr = _combine_param(
+            [r.params[name].value for r in results],
+            [r.params[name].stderr for r in results],
+        )
         params[name].set(value=value)
         params[name].stderr = stderr
 
-    avg = ModelResult(a.model, params)
+    avg = ModelResult(first.model, params)
     avg.best_values = params.valuesdict()
-    avg.best_fit = a.model.eval(params, **a.userkws)  # pyright: ignore
+    avg.best_fit = first.model.eval(params, **first.userkws)  # pyright: ignore
     return avg
