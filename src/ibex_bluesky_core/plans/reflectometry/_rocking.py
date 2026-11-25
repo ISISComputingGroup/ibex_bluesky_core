@@ -59,7 +59,7 @@ def _region_callbacks(
         ax=ax,
         live_fit_logger_postfix=f"_{roi_name}",
         human_readable_file_postfix=f"_{roi_name}",
-        plot_png_postfix=f"_{roi_name}",
+        save_plot_to_png=False,
         set_title_to_fit_result=True,
     )
 
