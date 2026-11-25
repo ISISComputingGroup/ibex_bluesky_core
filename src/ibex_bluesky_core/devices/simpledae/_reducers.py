@@ -601,7 +601,10 @@ class DSpacingMappingReducer(Reducer, StandardReadable):
         """
         return [self.dspacing]
 
+
 class MultiRegionOfInterestReducer(Reducer, StandardReadable):
+    """DAE reducer which exposes multiple regions of interest, derived from the same DAE data."""
+
     def __init__(
         self,
         *,
@@ -611,29 +614,69 @@ class MultiRegionOfInterestReducer(Reducer, StandardReadable):
             [Collection[DaeSpectra]], Awaitable[sc.Variable | sc.DataArray]
         ] = sum_spectra,
     ) -> None:
+        """DAE reducer which exposes multiple regions of interest, derived from the same DAE data.
+
+        For each grouping of detector spectra IDs provided, will exposed a quantity for summed
+        counts given the same DAE data acquired.
+
+        :param prefix: PV prefix for the :py:obj:`SimpleDae`.
+        :param detector_spectra_rois: A mapping of ROI names to groups of detector spectra IDs.
+        :param sum_detector: The summing method to use over ROI spectra.
+        """
         dae_prefix = prefix + "DAE:"
-        self.detector_rois = {name: DeviceVector(
-            {i: DaeSpectra(dae_prefix=dae_prefix, spectra=i, period=0) for i in detector_spectra}
-        ) for (name, detector_spectra) in detector_spectra_rois.items()}
+        self._roi_setters: dict[str, typing.Callable[[float], None]] = {}
+        self._roi_err_setters: dict[str, typing.Callable[[float], None]] = {}
 
-        roi_setters: dict[str, typing.Callable[[float], None]] = {}
-        roi_err_setters: dict[str, typing.Callable[[float], None]] = {}
-
-        for roi_name in detector_spectra_rois.keys():
+        for roi_name, detector_spectra in detector_spectra_rois.items():
+            self.detector_rois = {
+                roi_name: DeviceVector(
+                    {
+                        i: DaeSpectra(dae_prefix=dae_prefix, spectra=i, period=0)
+                        for i in detector_spectra
+                    }
+                )
+            }
 
             det_counts, det_counts_setter = soft_signal_r_and_setter(float, 0.0)
             setattr(self, roi_name, det_counts)
-            roi_setters[roi_name] = det_counts_setter
+            self._roi_setters[roi_name] = det_counts_setter
 
-            det_counts_stddev, det_counts_stddev_setter = soft_signal_r_and_setter(
-                float, 0.0
-            )
+            det_counts_stddev, det_counts_stddev_setter = soft_signal_r_and_setter(float, 0.0)
             setattr(self, f"{roi_name}_err", det_counts_stddev)
-            roi_err_setters[roi_name] = det_counts_stddev_setter
+            self._roi_err_setters[roi_name] = det_counts_stddev_setter
 
         self.sum_detector = sum_detector
 
         super().__init__(name="")
+
+    async def reduce_data(self, dae: Dae) -> None:
+        """Perform the reduction.
+
+        Sums ROI spectra by the given summing method.
+        :meta private:
+        """
+        logger.info("starting reduction")
+
+        results = await asyncio.gather(
+            *(self.sum_detector(v.values()) for v in self.detector_rois.values())
+        )
+        for (roi_name, _), result in zip(self.detector_rois.items(), results, strict=True):
+            self._roi_setters[roi_name](float(result.value))
+            self._roi_err_setters[roi_name](float(result.variance))
+
+    def additional_readable_signals(self, dae: Dae) -> list[Device]:
+        """Publish interesting signals derived or used by this reducer.
+
+        :meta private:
+        """
+        signal_values = []
+        signal_errors = []
+
+        for roi_name in self._roi_setters:
+            signal_values.append(getattr(self, roi_name))
+            signal_errors.append(getattr(self, f"{roi_name}_err"))
+
+        return signal_values + signal_errors
 
     # As we have dynamic attributes, tell pyright that __getattr__ may return any type.
     __getattr__: typing.Callable[[str], typing.Any]
