@@ -143,8 +143,6 @@ def _rocking_scan_wrapper(
     )
 
     roi_names = list(dae.reducer.detector_rois)
-    if not roi_names:
-        raise ValueError("Reducer must have at least one ROI.")
 
     yield from ensure_connected(dae)
     yield from call_qt_aware(plt.close, "all")
