@@ -617,6 +617,8 @@ class MultiRegionOfInterestReducer(Reducer, StandardReadable):
 
         :param detector_spectra_rois: A mapping of ROI names to groups of detector spectra IDs.
         """
+        if not detector_spectra_rois:
+            raise ValueError("Reducer must have at least one ROI.")
 
         self._roi_setters: dict[str, typing.Callable[[float], None]] = {}
         self._roi_err_setters: dict[str, typing.Callable[[float], None]] = {}
