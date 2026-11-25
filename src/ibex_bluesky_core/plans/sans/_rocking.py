@@ -1,4 +1,4 @@
-"""Reflectometry rocking scan plan."""
+"""SANS rocking scan plan."""
 
 import functools
 import logging
@@ -76,7 +76,7 @@ def rocking_scan(
     [Callable[P, Generator[Msg, None, Any]]],
     Callable[P, Generator[Msg, None, RockingScanResult]],
 ]:
-    """Rocking scan decorator.
+    """SANS rocking scan decorator.
 
     Decorates a plan, fitting the same model independently to each of two
     regions of interest exposed by the DAE's
