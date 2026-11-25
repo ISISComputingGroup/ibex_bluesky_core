@@ -19,6 +19,7 @@ from ibex_bluesky_core.plans.reflectometry._det_map_align import (
     angle_scan_plan,
     height_and_angle_scan_plan,
 )
+from ibex_bluesky_core.plans.reflectometry._rocking import rocking_scan
 from ibex_bluesky_core.utils import centred_pixel
 
 __all__ = [
@@ -28,6 +29,7 @@ __all__ = [
     "optimise_axis_against_intensity",
     "refl_adaptive_scan",
     "refl_scan",
+    "rocking_scan",
 ]
 
 
