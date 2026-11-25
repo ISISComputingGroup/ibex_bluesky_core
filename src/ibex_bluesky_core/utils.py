@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import math
 import os
 from typing import Any, Protocol, TypeVar
 
@@ -13,12 +14,16 @@ from bluesky.protocols import NamedMovable, Readable
 
 __all__ = [
     "NamedReadableAndMovable",
+    "average_model_results",
     "calculate_polarisation",
     "center_of_mass_of_area_under_curve",
     "centred_pixel",
     "get_pv_prefix",
     "is_matplotlib_backend_qt",
 ]
+
+from lmfit import Parameters
+from lmfit.model import ModelResult
 
 T = TypeVar("T", sc.Variable, sc.DataArray)
 
@@ -197,3 +202,46 @@ def calculate_polarisation(
     polarisation.variances = (partial_a**2 * a.variances) + (partial_b**2 * b.variances)
 
     return polarisation
+
+
+def average_model_results(a: ModelResult, b: ModelResult) -> ModelResult:
+    """Plain average of two fits of the same model into a single ModelResult.
+
+    (a + b) / 2 = c
+    Args:
+        a: :external+lmfit:py:obj:`ModelResult <lmfit.model.ModelResult>`
+        b: :external+lmfit:py:obj:`ModelResult <lmfit.model.ModelResult>`
+
+    Returns:
+        c: :external+lmfit:py:obj:`ModelResult <lmfit.model.ModelResult>` of averaged
+        model parameters with propagated error margins.
+
+    """
+
+    def _combine_param(
+        va: float, ea: float | None, vb: float, eb: float | None
+    ) -> tuple[float, float | None]:
+        if ea is None or eb is None:
+            return (va + vb) / 2, None
+
+        mean = (
+            sc.scalar(va, variance=ea**2, dtype="float64")
+            + sc.scalar(vb, variance=eb**2, dtype="float64")
+        ) / 2
+        return float(mean.value), math.sqrt(mean.variance)
+
+    if a.model.param_names != b.model.param_names:
+        raise ValueError("Results must come from the same model")
+
+    params: Parameters = a.params.copy()
+    for name in a.model.param_names:
+        pa, pb = a.params[name], b.params[name]
+
+        value, stderr = _combine_param(pa.value, pa.stderr, pb.value, pb.stderr)
+        params[name].set(value=value)
+        params[name].stderr = stderr
+
+    avg = ModelResult(a.model, params)
+    avg.best_values = params.valuesdict()
+    avg.best_fit = a.model.eval(params, **a.userkws)  # pyright: ignore
+    return avg

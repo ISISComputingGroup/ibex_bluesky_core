@@ -20,12 +20,13 @@ from ibex_bluesky_core.devices.simpledae._reducers import (
     VARIANCE_ADDITION,
     DSpacingMappingReducer,
     MonitorNormalizer,
+    MultiRegionOfInterestReducer,
     PeriodGoodFramesNormalizer,
     PeriodSpecIntegralsReducer,
     ScalarNormalizer,
     sum_spectra,
     tof_bounded_spectra,
-    wavelength_bounded_spectra, MultiRegionOfInterestReducer,
+    wavelength_bounded_spectra,
 )
 from ibex_bluesky_core.devices.simpledae._strategies import (
     Controller,
@@ -59,6 +60,7 @@ __all__ = [
     "GoodUahWaiter",
     "MEventsWaiter",
     "MonitorNormalizer",
+    "MultiRegionOfInterestReducer",
     "PeriodGoodFramesNormalizer",
     "PeriodGoodFramesWaiter",
     "PeriodPerPointController",
@@ -76,7 +78,6 @@ __all__ = [
     "sum_spectra",
     "tof_bounded_spectra",
     "wavelength_bounded_spectra",
-    "MultiRegionOfInterestReducer",
 ]
 
 TController_co = TypeVar("TController_co", bound="Controller", default=Controller, covariant=True)
