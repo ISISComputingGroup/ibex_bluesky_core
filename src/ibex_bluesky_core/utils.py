@@ -211,7 +211,7 @@ def average_model_results(results: Sequence[ModelResult]) -> ModelResult:
     (r_1 + r_2 + ... + r_n) / n = c
     Args:
         results: A non-empty sequence of
-            :external+lmfit:py:obj:`ModelResult <lmfit.model.ModelResult>` from the same model.
+        :external+lmfit:py:obj:`ModelResult <lmfit.model.ModelResult>` from the same model.
 
     Returns:
         c: :external+lmfit:py:obj:`ModelResult <lmfit.model.ModelResult>` of averaged
