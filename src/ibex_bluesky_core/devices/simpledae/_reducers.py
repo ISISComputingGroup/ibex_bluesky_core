@@ -608,34 +608,21 @@ class MultiRegionOfInterestReducer(Reducer, StandardReadable):
     def __init__(
         self,
         *,
-        prefix: str,
         detector_spectra_rois: typing.Mapping[str, Sequence[int]],
-        sum_detector: Callable[
-            [Collection[DaeSpectra]], Awaitable[sc.Variable | sc.DataArray]
-        ] = sum_spectra,
     ) -> None:
         """DAE reducer which exposes multiple regions of interest, derived from the same DAE data.
 
         For each grouping of detector spectra IDs provided, will exposed a quantity for summed
         counts given the same DAE data acquired.
 
-        :param prefix: PV prefix for the :py:obj:`SimpleDae`.
         :param detector_spectra_rois: A mapping of ROI names to groups of detector spectra IDs.
-        :param sum_detector: The summing method to use over ROI spectra.
         """
-        dae_prefix = prefix + "DAE:"
         self._roi_setters: dict[str, typing.Callable[[float], None]] = {}
         self._roi_err_setters: dict[str, typing.Callable[[float], None]] = {}
+        self._detector_rois: dict[str, npt.NDArray[np.int64]] = {}
 
         for roi_name, detector_spectra in detector_spectra_rois.items():
-            self.detector_rois = {
-                roi_name: DeviceVector(
-                    {
-                        i: DaeSpectra(dae_prefix=dae_prefix, spectra=i, period=0)
-                        for i in detector_spectra
-                    }
-                )
-            }
+            self._detector_rois[roi_name] = np.array(detector_spectra, dtype=np.int64)
 
             det_counts, det_counts_setter = soft_signal_r_and_setter(float, 0.0)
             setattr(self, roi_name, det_counts)
@@ -645,24 +632,26 @@ class MultiRegionOfInterestReducer(Reducer, StandardReadable):
             setattr(self, f"{roi_name}_err", det_counts_stddev)
             self._roi_err_setters[roi_name] = det_counts_stddev_setter
 
-        self.sum_detector = sum_detector
-
         super().__init__(name="")
 
     async def reduce_data(self, dae: Dae) -> None:
         """Perform the reduction.
 
-        Sums ROI spectra by the given summing method.
+        Acquires spectrum data from the DAE once, then sums the counts of each ROI's spectra.
         :meta private:
         """
         logger.info("starting reduction")
 
-        results = await asyncio.gather(
-            *(self.sum_detector(v.values()) for v in self.detector_rois.values())
-        )
-        for (roi_name, _), result in zip(self.detector_rois.items(), results, strict=True):
-            self._roi_setters[roi_name](float(result.value))
-            self._roi_err_setters[roi_name](float(result.variance))
+        all_current_period_data = await dae.trigger_and_get_specdata()
+
+        for roi_name, detectors in self._detector_rois.items():
+            summed_counts = float(np.sum(all_current_period_data[detectors]))
+            self._roi_setters[roi_name](summed_counts)
+            # See doc\architectural_decisions\005-variance-addition.md
+            # for justification of this addition to variances.
+            self._roi_err_setters[roi_name](math.sqrt(summed_counts + VARIANCE_ADDITION))
+
+        logger.info("reduction complete")
 
     def additional_readable_signals(self, dae: Dae) -> list[Device]:
         """Publish interesting signals derived or used by this reducer.
