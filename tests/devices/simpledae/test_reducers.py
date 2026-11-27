@@ -17,7 +17,7 @@ from ibex_bluesky_core.devices.simpledae import (
     ScalarNormalizer,
     SimpleDae,
     tof_bounded_spectra,
-    wavelength_bounded_spectra,
+    wavelength_bounded_spectra, MultiRegionOfInterestReducer,
 )
 
 
@@ -1123,3 +1123,8 @@ def test_dspacing_reducer_bad_two_theta_shape():
                 dims=["tof"], values=[0, 1], unit=sc.units.angstrom, dtype="float64"
             ),
         )
+
+
+def test_multi_region_interest_reducer_no_rois():
+    with pytest.raises(ValueError, match="Reducer must have at least one ROI."):
+        MultiRegionOfInterestReducer(detector_spectra_rois={})

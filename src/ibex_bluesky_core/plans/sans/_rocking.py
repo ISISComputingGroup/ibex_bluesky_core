@@ -153,6 +153,7 @@ def _rocking_scan_wrapper(
         for roi_name, ax in zip(roi_names, np.ravel(axes), strict=True)
     }
 
+    # Runs the wrapped plan
     yield from subs_wrapper(plan, [sub for cb in callbacks.values() for sub in cb.subs])
 
     fits = {roi_name: cb.live_fit.result for roi_name, cb in callbacks.items()}
@@ -164,7 +165,7 @@ def _rocking_scan_wrapper(
     else:
         for i in none_indices:
             logger.warning("Fit for ROI '%s' is None", list(fits)[i])
-        fit_avg = None
+        raise ValueError("At least one ROI fit failed so fit result is not available.")
 
     logger.info("Finished rocking scan, fits = %s, avg = %s", fits, fit_avg)
 
