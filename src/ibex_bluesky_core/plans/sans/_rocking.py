@@ -157,7 +157,14 @@ def _rocking_scan_wrapper(
 
     fits = {roi_name: cb.live_fit.result for roi_name, cb in callbacks.items()}
     fits_values = list(fits.values())
-    fit_avg = average_method(fits_values) if all(fits_values) else None
+
+    none_indices = [i for i, v in enumerate(fits_values) if v is None]
+    if none_indices:
+        for i in none_indices:
+            logger.warning(f"Fit for ROI '{list(fits)[i]}' is None")
+        fit_avg = None
+    else:
+        fit_avg = average_method(fits_values)
 
     logger.info("Finished rocking scan, fits = %s, avg = %s", fits, fit_avg)
 
