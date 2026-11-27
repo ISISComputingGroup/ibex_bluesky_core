@@ -1,10 +1,17 @@
 # pyright: reportMissingParameterType=false
+import typing
+from unittest import mock
 from unittest.mock import patch
 
+import numpy as np
 import pytest
 import scipp as sc
+from lmfit.model import ModelResult
+from numpy.ma.testutils import assert_close
 from uncertainties import ufloat, unumpy
 
+from ibex_bluesky_core import utils
+from ibex_bluesky_core.fitting import Gaussian, Linear
 from ibex_bluesky_core.utils import (
     calculate_polarisation,
     centred_pixel,
@@ -105,3 +112,112 @@ def test_polarisation_arrays_of_different_sizes():
         expected_exception=ValueError, match=r"Dimensions/shape of a and b must match."
     ):
         calculate_polarisation(var_a, var_b)
+
+
+@pytest.mark.parametrize(
+    ("values", "errs", "expected_value", "expected_err"),
+    [
+        ([1.0, 2.0, 3.0], [0.5, 0.6, 0.7], 2.0, 0.35),
+        ([1.0, 2.0, 3.0], [0.5, None, 0.5], 2.0, None),
+    ],
+)
+def test_average_model_results_combine_param(
+    values: list[float], errs: list[float | None], expected_value: float, expected_err: float | None
+):
+    actual_value, actual_err = utils._average_values(values, errs)
+    assert_close(actual_value, expected_value, decimal=3)
+
+    if expected_err:
+        assert_close(actual_err, expected_err, decimal=3)
+    else:
+        assert not actual_err
+
+
+def _sum_values(values: list[float], errs: list[float | None]) -> tuple[float, float | None]:
+    if any(e is None for e in errs):
+        return sum(values), None
+    return sum(values), sum(typing.cast("list[float]", errs))
+
+
+@pytest.mark.parametrize(
+    ("m", "c", "expected_m", "expected_c"),
+    [
+        (
+            ([1.0, 2.0, 3.0], [0.5, 0.6, 0.7]),
+            ([4.0, 5.0, 6.0], [0.1, 0.2, 0.3]),
+            (6.0, 1.8),
+            (15.0, 0.6),
+        ),
+        (
+            ([1.0, 2.0, 3.0], [0.5, None, 0.5]),
+            ([4.0, 5.0, 6.0], [0.1, 0.2, 0.3]),
+            (6.0, None),
+            (15.0, 0.6),
+        ),
+        (
+            ([1.0, 2.0, 3.0], [0.5, 0.6, 0.7]),
+            ([4.0, 5.0, 6.0], [None, 0.2, 0.3]),
+            (6.0, 1.8),
+            (15.0, None),
+        ),
+    ],
+)
+def test_average_model_results_returns_correct(
+    m: tuple[list[float], list[float | None]],
+    c: tuple[list[float], list[float | None]],
+    expected_m: tuple[float, float | None],
+    expected_c: tuple[float, float | None],
+):
+    m_values, m_errs = m
+    c_values, c_errs = c
+    expected_m_value, expected_m_err = expected_m
+    expected_c_value, expected_c_err = expected_c
+
+    model = Linear.model()
+    x = np.array([0.0, 1.0, 2.0, 3.0])
+
+    results = []
+    for m_value, m_err, c_value, c_err in zip(m_values, m_errs, c_values, c_errs, strict=True):
+        params = model.make_params(c1=m_value, c0=c_value)
+        params["c1"].stderr = m_err
+        params["c0"].stderr = c_err
+        res = ModelResult(model, params)
+        res.userkws = {"x": x}
+        results.append(res)
+
+    with mock.patch("ibex_bluesky_core.utils._average_values", side_effect=_sum_values):
+        avg = utils.average_model_results(results)
+
+    assert isinstance(avg, ModelResult)
+    assert avg.model is model
+
+    assert avg.params["c1"].value == pytest.approx(expected_m_value)
+    assert avg.params["c0"].value == pytest.approx(expected_c_value)
+
+    if expected_m_err is None:
+        assert avg.params["c1"].stderr is None
+    else:
+        assert avg.params["c1"].stderr == pytest.approx(expected_m_err)
+
+    if expected_c_err is None:
+        assert avg.params["c0"].stderr is None
+    else:
+        assert avg.params["c0"].stderr == pytest.approx(expected_c_err)
+
+    assert avg.best_values == pytest.approx({"c1": expected_m_value, "c0": expected_c_value})
+    assert avg.best_fit == pytest.approx(expected_m_value * x + expected_c_value)
+
+
+def test_average_model_results_missing():
+    with pytest.raises(ValueError, match="At least one result is required"):
+        utils.average_model_results([])
+
+
+def test_average_model_results_diff_models():
+    modela = Linear.model()
+    modelb = Gaussian.model()
+
+    with pytest.raises(ValueError, match="Results must come from the same model"):
+        utils.average_model_results(
+            [ModelResult(modela, modela.make_params()), ModelResult(modelb, modelb.make_params())]
+        )

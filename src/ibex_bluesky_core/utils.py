@@ -205,6 +205,20 @@ def calculate_polarisation(
     return polarisation
 
 
+def _average_values(values: list[float], errs: list[float | None]) -> tuple[float, float | None]:
+    if any(e is None for e in errs):
+        return sum(values) / len(values), None
+
+    params = sc.array(
+        dims=["fit"],
+        values=values,
+        variances=[e**2 for e in errs if e is not None],
+        dtype="float64",
+    )
+    mean = params.sum() / len(values)
+    return float(mean.value), math.sqrt(mean.variance)
+
+
 def average_model_results(results: Sequence[ModelResult]) -> ModelResult:
     """Plain average of any number of fits of the same model into a single ModelResult.
 
@@ -218,20 +232,6 @@ def average_model_results(results: Sequence[ModelResult]) -> ModelResult:
         model parameters with propagated error margins.
 
     """
-
-    def _combine_param(values: list[float], errs: list[float | None]) -> tuple[float, float | None]:
-        if not all(errs):
-            return sum(values) / len(values), None
-
-        params = sc.array(
-            dims=["fit"],
-            values=values,
-            variances=[e**2 for e in errs if e is not None],
-            dtype="float64",
-        )
-        mean = params.sum() / len(values)
-        return float(mean.value), math.sqrt(mean.variance)
-
     if not results:
         raise ValueError("At least one result is required")
 
@@ -241,7 +241,7 @@ def average_model_results(results: Sequence[ModelResult]) -> ModelResult:
 
     params: Parameters = first.params.copy()
     for name in first.model.param_names:
-        value, stderr = _combine_param(
+        value, stderr = _average_values(
             [r.params[name].value for r in results],
             [r.params[name].stderr for r in results],
         )
