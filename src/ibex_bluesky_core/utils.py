@@ -2,7 +2,9 @@
 
 from __future__ import annotations
 
+import math
 import os
+from collections.abc import Sequence
 from typing import Any, Protocol, TypeVar
 
 import matplotlib
@@ -13,12 +15,16 @@ from bluesky.protocols import NamedMovable, Readable
 
 __all__ = [
     "NamedReadableAndMovable",
+    "average_model_results",
     "calculate_polarisation",
     "center_of_mass_of_area_under_curve",
     "centred_pixel",
     "get_pv_prefix",
     "is_matplotlib_backend_qt",
 ]
+
+from lmfit import Parameters
+from lmfit.model import ModelResult
 
 T = TypeVar("T", sc.Variable, sc.DataArray)
 
@@ -197,3 +203,52 @@ def calculate_polarisation(
     polarisation.variances = (partial_a**2 * a.variances) + (partial_b**2 * b.variances)
 
     return polarisation
+
+
+def _average_values(values: list[float], errs: list[float | None]) -> tuple[float, float | None]:
+    if any(e is None for e in errs):
+        return sum(values) / len(values), None
+
+    params = sc.array(
+        dims=["fit"],
+        values=values,
+        variances=[e**2 for e in errs if e is not None],
+        dtype="float64",
+    )
+    mean = params.sum() / len(values)
+    return float(mean.value), math.sqrt(mean.variance)
+
+
+def average_model_results(results: Sequence[ModelResult]) -> ModelResult:
+    """Plain average of any number of fits of the same model into a single ModelResult.
+
+    (r_1 + r_2 + ... + r_n) / n = c
+    Args:
+        results: A non-empty sequence of
+        :external+lmfit:py:obj:`ModelResult <lmfit.model.ModelResult>` from the same model.
+
+    Returns:
+        c: :external+lmfit:py:obj:`ModelResult <lmfit.model.ModelResult>` of averaged
+        model parameters with propagated error margins.
+
+    """
+    if not results:
+        raise ValueError("At least one result is required")
+
+    first = results[0]
+    if any(r.model.param_names != first.model.param_names for r in results):
+        raise ValueError("Results must come from the same model")
+
+    params: Parameters = first.params.copy()
+    for name in first.model.param_names:
+        value, stderr = _average_values(
+            [r.params[name].value for r in results],
+            [r.params[name].stderr for r in results],
+        )
+        params[name].set(value=value)
+        params[name].stderr = stderr
+
+    avg = ModelResult(first.model, params)
+    avg.best_values = params.valuesdict()
+    avg.best_fit = first.model.eval(params, **first.userkws)  # pyright: ignore
+    return avg

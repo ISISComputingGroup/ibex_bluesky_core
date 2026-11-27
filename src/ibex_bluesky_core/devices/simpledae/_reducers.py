@@ -600,3 +600,76 @@ class DSpacingMappingReducer(Reducer, StandardReadable):
         :meta private:
         """
         return [self.dspacing]
+
+
+class MultiRegionOfInterestReducer(Reducer, StandardReadable):
+    """DAE reducer which exposes multiple regions of interest, derived from the same DAE data."""
+
+    def __init__(
+        self,
+        *,
+        detector_spectra_rois: typing.Mapping[str, Sequence[int]],
+    ) -> None:
+        """DAE reducer which exposes multiple regions of interest, derived from the same DAE data.
+
+        For each grouping of detector spectra IDs provided, will exposed a quantity for summed
+        counts given the same DAE data acquired.
+
+        :param detector_spectra_rois: A mapping of ROI names to groups of detector spectra IDs.
+        """
+        if not detector_spectra_rois:
+            raise ValueError("Reducer must have at least one ROI.")
+
+        self._roi_setters: dict[str, typing.Callable[[float], None]] = {}
+        self._roi_err_setters: dict[str, typing.Callable[[float], None]] = {}
+        self.detector_rois: dict[str, npt.NDArray[np.int64]] = {}
+
+        for roi_name, detector_spectra in detector_spectra_rois.items():
+            self.detector_rois[roi_name] = np.array(detector_spectra, dtype=np.int64)
+
+            det_counts, det_counts_setter = soft_signal_r_and_setter(float, 0.0)
+            setattr(self, roi_name, det_counts)
+            self._roi_setters[roi_name] = det_counts_setter
+
+            roi_err_name = f"{roi_name}_err"
+            det_counts_stddev, det_counts_stddev_setter = soft_signal_r_and_setter(float, 0.0)
+            setattr(self, roi_err_name, det_counts_stddev)
+            self._roi_err_setters[roi_name] = det_counts_stddev_setter
+
+        super().__init__(name="")
+
+    async def reduce_data(self, dae: Dae) -> None:
+        """Perform the reduction.
+
+        Acquires spectrum data from the DAE once, then sums the counts of each ROI's spectra.
+        :meta private:
+        """
+        logger.info("starting reduction")
+
+        all_current_period_data = await dae.trigger_and_get_specdata()
+
+        for roi_name, detectors in self.detector_rois.items():
+            summed_counts = float(np.sum(all_current_period_data[detectors]))
+            self._roi_setters[roi_name](summed_counts)
+            # See doc\architectural_decisions\005-variance-addition.md
+            # for justification of this addition to variances.
+            self._roi_err_setters[roi_name](math.sqrt(summed_counts + VARIANCE_ADDITION))
+
+        logger.info("reduction complete")
+
+    def additional_readable_signals(self, dae: Dae) -> list[Device]:
+        """Publish interesting signals derived or used by this reducer.
+
+        :meta private:
+        """
+        signal_values = []
+        signal_errors = []
+
+        for roi_name in self._roi_setters:
+            signal_values.append(getattr(self, roi_name))
+            signal_errors.append(getattr(self, f"{roi_name}_err"))
+
+        return signal_values + signal_errors
+
+    # As we have dynamic attributes, tell pyright that __getattr__ may return any type.
+    __getattr__: typing.Callable[[str], typing.Any]
