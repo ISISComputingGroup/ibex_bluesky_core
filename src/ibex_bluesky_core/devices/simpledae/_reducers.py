@@ -632,9 +632,7 @@ class MultiRegionOfInterestReducer(Reducer, StandardReadable):
             self._roi_setters[roi_name] = det_counts_setter
 
             roi_err_name = f"{roi_name}_err"
-            det_counts_stddev, det_counts_stddev_setter = soft_signal_r_and_setter(
-                float, 0.0
-            )
+            det_counts_stddev, det_counts_stddev_setter = soft_signal_r_and_setter(float, 0.0)
             setattr(self, roi_err_name, det_counts_stddev)
             self._roi_err_setters[roi_name] = det_counts_stddev_setter
 
