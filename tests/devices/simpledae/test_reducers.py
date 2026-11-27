@@ -1,19 +1,23 @@
 # pyright: reportMissingParameterType=false
 import math
 import re
+from unittest import mock
 from unittest.mock import AsyncMock
 
 import numpy as np
 import pytest
 import scipp as sc
+from numpy.ma.testutils import assert_close
 from ophyd_async.core import get_mock_put, set_mock_units, set_mock_value
 
 from ibex_bluesky_core.devices.simpledae import (
     VARIANCE_ADDITION,
     DSpacingMappingReducer,
+    MEventsWaiter,
     MonitorNormalizer,
     MultiRegionOfInterestReducer,
     PeriodGoodFramesNormalizer,
+    PeriodPerPointController,
     PeriodSpecIntegralsReducer,
     ScalarNormalizer,
     SimpleDae,
@@ -1129,3 +1133,57 @@ def test_dspacing_reducer_bad_two_theta_shape():
 def test_multi_region_interest_reducer_no_rois():
     with pytest.raises(ValueError, match=r"Reducer must have at least one ROI."):
         MultiRegionOfInterestReducer(detector_spectra_rois={})
+
+
+DETECTOR_SPECTRA_ROIS = {"a": [1, 2, 3], "b": [4, 5, 6], "c": [7, 8, 9]}
+
+
+@pytest.fixture
+def roi_reducer():
+    return MultiRegionOfInterestReducer(detector_spectra_rois=DETECTOR_SPECTRA_ROIS)
+
+
+@pytest.fixture
+async def roi_dae(roi_reducer):
+    dae = SimpleDae(
+        prefix="UNITTEST:",
+        reducer=roi_reducer,
+        waiter=MEventsWaiter(5000),
+        controller=PeriodPerPointController(save_run=False),
+    )
+
+    await dae.connect(mock=True)
+
+    return dae
+
+
+def test_multi_region_interest_reducer_readable_signals(roi_dae, roi_reducer):
+    assert set(roi_reducer.additional_readable_signals(roi_dae)) == {
+        roi_reducer.a,
+        roi_reducer.a_err,
+        roi_reducer.b,
+        roi_reducer.b_err,
+        roi_reducer.c,
+        roi_reducer.c_err,
+    }
+
+
+async def test_multi_region_interest_reducer_reduce_data(roi_dae, roi_reducer):
+    def fake_trigger_and_get_specdata():
+        # Row index is the spectrum number; row 0 is the "junk" detector 0.
+        return np.array([[s, s + 1, s + 2] for s in range(10)])
+
+    with mock.patch(
+        "ibex_bluesky_core.devices.dae.Dae.trigger_and_get_specdata",
+        side_effect=fake_trigger_and_get_specdata,
+    ):
+        await roi_reducer.reduce_data(roi_dae)
+
+        assert await roi_reducer.a.get_value() == 27
+        assert_close(await roi_reducer.a_err.get_value(), 5.244, decimal=3)
+
+        assert await roi_reducer.b.get_value() == 54
+        assert_close(await roi_reducer.b_err.get_value(), 7.382, decimal=3)
+
+        assert await roi_reducer.c.get_value() == 81
+        assert_close(await roi_reducer.c_err.get_value(), 9.028, decimal=3)
